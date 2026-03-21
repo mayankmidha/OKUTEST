@@ -3,20 +3,21 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-
-import { BrandAuthShell } from '@/components/brand-auth-shell'
-import { okuCtaCopy } from '@/lib/cta-copy'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Loader2, ArrowRight, User, Mail, Phone, Lock, Heart, Shield } from 'lucide-react'
 
 const roles = [
   {
-    label: 'Client',
+    label: 'I seek therapy',
     value: 'CLIENT',
-    description: 'Book sessions, complete assessments, and track your care journey.',
+    description: 'Book sessions, clinical assessments, and track your care.',
+    icon: Heart
   },
   {
-    label: 'Practitioner',
+    label: 'I am a provider',
     value: 'THERAPIST',
-    description: 'Create a professional account to manage appointments, clients, and availability.',
+    description: 'Manage clinical practice, appointments, and telehealth.',
+    icon: Shield
   },
 ] as const
 
@@ -67,7 +68,7 @@ export default function SignupPage() {
         return
       }
 
-      router.push('/auth/login?message=Account%20created%20successfully')
+      router.push('/auth/login?message=Welcome to the community! Please sign in.')
     } catch {
       setError('Unable to create account right now. Please try again.')
     } finally {
@@ -76,135 +77,153 @@ export default function SignupPage() {
   }
 
   return (
-    <BrandAuthShell
-      description={okuCtaCopy.entry.signupDescription}
-      eyebrow={okuCtaCopy.entry.signupBadge}
-      footer={
-        <p>
-          Already have access?{' '}
-          <Link className="font-medium text-[#2f6a5b] transition hover:text-stone-900" href="/auth/login">
-            Sign in securely
-          </Link>
-        </p>
-      }
-      title={okuCtaCopy.entry.signupTitle}
-    >
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">Create access</p>
-        <h2 className="mt-3 font-serif text-3xl text-stone-950">Choose the role that fits how you use the platform.</h2>
-        <p className="mt-3 max-w-xl text-sm leading-7 text-stone-600">
-          Clients can start self-reflection and booking right away. Practitioner accounts can be created now and verified by admin after review.
-        </p>
-      </div>
+    <div className="min-h-screen bg-oku-cream py-20 px-6 relative overflow-hidden">
+      {/* Background aesthetic shapes */}
+      <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-oku-purple/5 rounded-full -translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
+      
+      <div className="max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
+          
+          {/* Left Column: Context */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-10"
+          >
+            <Link href="/">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
+                alt="OKU Therapy" 
+                className="h-12 w-auto" 
+              />
+            </Link>
+            
+            <div className="space-y-6">
+              <h1 className="text-6xl font-display font-bold text-oku-dark tracking-tighter leading-[0.9]">
+                Begin your <br />
+                <span className="italic font-script text-oku-purple lowercase text-5xl md:text-7xl">journey</span> with us.
+              </h1>
+              <p className="text-xl text-oku-taupe font-display italic max-w-md leading-relaxed">
+                Join our collective of seekers and healers. Your privacy and care are our innermost priorities.
+              </p>
+            </div>
 
-      <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-        {error ? (
-          <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
-        ) : null}
+            <div className="grid grid-cols-2 gap-6">
+               <div className="bg-white/50 p-6 rounded-3xl border border-oku-taupe/5">
+                  <Shield className="text-oku-purple mb-3" size={24} />
+                  <p className="text-sm font-bold text-oku-dark">Safe Space</p>
+                  <p className="text-xs text-oku-taupe mt-1">Fully encrypted data.</p>
+               </div>
+               <div className="bg-white/50 p-6 rounded-3xl border border-oku-taupe/5">
+                  <Heart className="text-oku-purple mb-3" size={24} />
+                  <p className="text-sm font-bold text-oku-dark">Human-Led</p>
+                  <p className="text-xs text-oku-taupe mt-1">Real therapists, real care.</p>
+               </div>
+            </div>
+          </motion.div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="name">
-            Full name
-          </label>
-          <input
-            className="w-full rounded-[20px] border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
-            id="name"
-            onChange={(event) => handleChange('name', event.target.value)}
-            placeholder="Aarav Sharma"
-            required
-            value={formData.name}
-          />
-        </div>
+          {/* Right Column: Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white p-10 md:p-12 rounded-[3.5rem] border border-white shadow-2xl relative z-10"
+          >
+            {error && (
+              <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <Lock size={16} /> {error}
+              </div>
+            )}
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="w-full rounded-[20px] border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
-              id="email"
-              onChange={(event) => handleChange('email', event.target.value)}
-              placeholder="name@example.com"
-              required
-              type="email"
-              value={formData.email}
-            />
-          </div>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Role Selection */}
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Who are you?</label>
+                <div className="grid grid-cols-2 gap-4">
+                  {roles.map((r) => {
+                    const active = formData.role === r.value
+                    const Icon = r.icon
+                    return (
+                      <button
+                        key={r.value}
+                        type="button"
+                        onClick={() => handleChange('role', r.value)}
+                        className={`p-6 rounded-3xl text-left transition-all border ${
+                          active 
+                          ? 'bg-oku-dark border-oku-dark text-white shadow-xl scale-105' 
+                          : 'bg-oku-cream-warm/20 border-oku-taupe/10 text-oku-dark hover:border-oku-purple/50'
+                        }`}
+                      >
+                        <Icon size={20} className={`mb-3 ${active ? 'text-oku-purple' : 'text-oku-taupe'}`} />
+                        <p className="text-xs font-black uppercase tracking-widest mb-1">{r.label}</p>
+                        <p className={`text-[10px] leading-relaxed ${active ? 'text-white/60' : 'text-oku-taupe'}`}>{r.description}</p>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="phone">
-              Phone
-            </label>
-            <input
-              className="w-full rounded-[20px] border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
-              id="phone"
-              onChange={(event) => handleChange('phone', event.target.value)}
-              placeholder="+91 98765 43210"
-              value={formData.phone}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="password">
-            Password
-          </label>
-          <input
-            className="w-full rounded-[20px] border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
-            id="password"
-            minLength={6}
-            onChange={(event) => handleChange('password', event.target.value)}
-            placeholder="Minimum 6 characters"
-            required
-            type="password"
-            value={formData.password}
-          />
-        </div>
-
-        <fieldset>
-          <legend className="mb-3 block text-sm font-medium text-stone-700">Choose your role</legend>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {roles.map((role) => {
-              const isSelected = formData.role === role.value
-
-              return (
-                <label
-                  className={`rounded-[24px] border p-5 transition ${
-                    isSelected
-                      ? 'border-stone-900 bg-stone-950 text-stone-50 shadow-[0_14px_40px_rgba(20,16,12,0.18)]'
-                      : 'border-stone-200 bg-white text-stone-700 hover:border-stone-300 hover:bg-stone-50'
-                  }`}
-                  key={role.value}
-                >
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Full Name</label>
                   <input
-                    checked={isSelected}
-                    className="sr-only"
-                    name="role"
-                    onChange={() => handleChange('role', role.value)}
-                    type="radio"
-                    value={role.value}
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                    placeholder="Enter your name"
                   />
-                  <span className="block text-base font-semibold">{role.label}</span>
-                  <span className={`mt-2 block text-sm leading-6 ${isSelected ? 'text-stone-300' : 'text-stone-600'}`}>
-                    {role.description}
-                  </span>
-                </label>
-              )
-            })}
-          </div>
-        </fieldset>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                    placeholder="name@example.com"
+                  />
+                </div>
+              </div>
 
-        <button
-          className="w-full rounded-full bg-[#2f6a5b] px-5 py-3 text-sm font-medium text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isLoading}
-          type="submit"
-        >
-          {isLoading ? 'Creating account...' : formData.role === 'CLIENT' ? 'Start as a client' : 'Apply as a practitioner'}
-        </button>
-      </form>
-    </BrandAuthShell>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Password</label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={formData.password}
+                  onChange={(e) => handleChange('password', e.target.value)}
+                  className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                  placeholder="Min. 6 characters"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 group"
+              >
+                {isLoading ? (
+                  <Loader2 size={20} className="animate-spin" />
+                ) : (
+                  <>Create Account <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
+                )}
+              </button>
+
+              <div className="text-center">
+                <p className="text-sm text-oku-taupe">
+                  Already have an account?{' '}
+                  <Link href="/auth/login" className="text-oku-purple font-bold hover:underline ml-1">
+                    Sign in securely
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      </div>
+    </div>
   )
 }
