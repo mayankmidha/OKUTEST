@@ -6,74 +6,6 @@ import V1Header from './V1Header'
 export default function OriginalV1AboutUs() {
   return (
     <div className="min-h-screen bg-white">
-      <style jsx global>{`
-        .dynamic-button {
-          display: inline-block;
-          padding: 8px 40px;
-          background-color: transparent;
-          color: #2D2D2D;
-          text-decoration: none;
-          border-radius: 1050px;
-          font-family: 'Helvetica', Arial, sans-serif;
-          font-size: 16px;
-          font-weight: 400;
-          border: 1px solid #2D2D2D;
-          position: relative;
-          overflow: hidden;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          z-index: 1;
-          cursor: pointer;
-        }
-
-        .dynamic-button::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: #2D2D2D;
-          border-radius: 50px;
-          transform: scale(1);
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          z-index: -1;
-        }
-
-        .dynamic-button::after {
-          content: '›';
-          position: absolute;
-          right: 20px;
-          top: 50%;
-          transform: translateY(-50%) scale(0);
-          background-color: #2D2D2D;
-          color: white;
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          font-weight: bold;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          opacity: 0;
-        }
-
-        .dynamic-button:hover {
-          color: #2D2D2D;
-          padding-right: 70px;
-        }
-
-        .dynamic-button:hover::before {
-          transform: scale(0);
-        }
-
-        .dynamic-button:hover::after {
-          transform: translateY(-50%) scale(1);
-          opacity: 1;
-        }
-      `}</style>
-
       <V1Header />
 
       {/* Hero Section */}
@@ -119,7 +51,7 @@ export default function OriginalV1AboutUs() {
               href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
               target="_blank"
               rel="noopener noreferrer"
-              className="dynamic-button inline-block"
+              className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full text-base font-medium hover:bg-gray-800 transition-colors"
             >
               Begin your journey
             </a>
