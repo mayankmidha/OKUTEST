@@ -1,123 +1,122 @@
 'use client'
 
 import Link from 'next/link'
+import { ArrowRight, Users, MessageSquare, Heart, Sparkles } from 'lucide-react'
 
 export default function OriginalV1People() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            <b>You're not alone.</b>
-          </h1>
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            We hold space for
-          </h2>
-          <div className="relative">
-            <h2 className="text-4xl font-bold text-gray-900 underline decoration-wavy decoration-gray-400">
-              your belonging
-            </h2>
+          <div className="inline-block px-4 py-2 bg-oku-purple/10 rounded-full mb-6">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple">Community</span>
           </div>
-          <p className="text-xl text-gray-600 mt-8 mb-8 max-w-2xl mx-auto">
+          <h1 className="text-6xl md:text-8xl font-display font-bold text-gray-900 mb-6 tracking-tighter">
+            You're not alone.
+          </h1>
+          <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-8">
+            We hold space for <br />
+            <span className="italic font-script text-oku-purple lowercase text-5xl md:text-7xl underline decoration-wavy decoration-oku-purple/30">
+              your belonging.
+            </span>
+          </h2>
+          <p className="text-xl text-gray-600 mt-8 mb-12 max-w-2xl mx-auto font-display italic leading-relaxed">
             <strong>Oku | People</strong> is a collective space for those who ache for connection. A space to share the weight, find community, and gently begin again.
           </p>
-          <a 
-            href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full text-base font-medium hover:bg-gray-800 transition-colors"
+          <Link 
+            href="/auth/signup"
+            className="inline-block bg-gray-900 text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-oku-purple transition-all shadow-xl"
           >
             Join our community
-          </a>
+          </Link>
+        </div>
+      </div>
+
+      {/* This space is for you if... */}
+      <div className="bg-gray-50 py-32">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">A refuge for the unseen.</h2>
+            <p className="text-oku-taupe font-display italic text-lg">This space is for you if...</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              "You've felt like too much in traditional spaces",
+              "Your body remembers what words cannot express",
+              "You've never seen yourself fully reflected",
+              "You carry generational weight and stories",
+              "Your queerness has been misunderstood",
+              "Your healing doesn't follow a straight line",
+              "You're new to therapy and want to begin gently",
+              "You want more than just coping tools",
+              "You seek a connection that feels like home"
+            ].map((text, i) => (
+              <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-all">
+                <div className="mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-oku-purple/20 flex items-center justify-center text-oku-purple">
+                  <Sparkles size={12} />
+                </div>
+                <p className="text-gray-700 font-medium leading-relaxed">{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Community Section */}
-      <div className="bg-gray-50 py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Our Community</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {/* Placeholder for community members - you can add actual people here */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="w-20 h-20 bg-gray-300 rounded-full mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 text-center">Community Member</h3>
-              <p className="text-gray-600 text-center text-sm">Finding healing through connection</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="w-20 h-20 bg-gray-300 rounded-full mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 text-center">Community Member</h3>
-              <p className="text-gray-600 text-center text-sm">Sharing stories, building understanding</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="w-20 h-20 bg-gray-300 rounded-full mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 text-center">Community Member</h3>
-              <p className="text-gray-600 text-center text-sm">Growing together in gentle spaces</p>
-            </div>
+      <div className="bg-white py-32">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto mb-20">
+            <h2 className="text-4xl font-display font-bold text-gray-900 mb-6">Our Gatherings</h2>
+            <p className="text-lg text-gray-600 leading-relaxed italic">
+              Beyond one-on-one therapy, we host community circles, support groups, and workshops designed to foster collective healing.
+            </p>
           </div>
 
-          <div className="text-center">
-            <h3 className="text-2xl font-semibold text-gray-900 mb-6">This space is for you if...</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left max-w-4xl mx-auto">
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">You've felt like too much in traditional spaces</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">Your body remembers what words cannot express</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">You've never seen yourself fully reflected</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">You carry generational weight and stories</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">Your queerness has been questioned or misunderstood</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">You've lived between cultures and identities</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">Your healing doesn't follow a straight line</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">You're new to therapy and want to begin gently</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-gray-400 text-xl">•</span>
-                <p className="text-gray-700">You want more than just coping tools and strategies</p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
+            <div className="p-12 rounded-[3.5rem] bg-oku-purple/5 border border-oku-purple/10">
+              <Users className="text-oku-purple mb-6" size={40} />
+              <h3 className="text-2xl font-display font-bold text-gray-900 mb-4">Collective Circles</h3>
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                Facilitated small group sessions focusing on shared experiences—from grief to identity.
+              </p>
+              <Link href="/auth/signup" className="text-oku-purple font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:translate-x-2 transition-transform">
+                Get Notified of Circles <ArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="p-12 rounded-[3.5rem] bg-gray-900 text-white shadow-2xl">
+              <MessageSquare className="text-oku-purple mb-6" size={40} />
+              <h3 className="text-2xl font-display font-bold mb-4">Digital Community</h3>
+              <p className="text-gray-400 mb-8 leading-relaxed">
+                A private, safe space for our clients to connect, share resources, and support each other.
+              </p>
+              <Link href="/auth/signup" className="text-oku-purple font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:translate-x-2 transition-transform">
+                Join the Platform <ArrowRight size={14} />
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gray-900 text-white py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to find your people?</h2>
-          <p className="text-xl mb-8 text-gray-300">You don't have to walk this path alone.</p>
-          <div className="space-y-4">
-            <a 
-              href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-white text-gray-900 px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100 transition-colors"
+      <div className="bg-gray-50 py-32 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <h2 className="text-5xl font-display font-bold text-gray-900 mb-8 tracking-tighter">Ready to find your people?</h2>
+          <p className="text-2xl mb-12 text-oku-taupe font-script italic">"You don't have to walk this path alone."</p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link 
+              href="/therapists"
+              className="bg-gray-900 text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-oku-purple transition-all shadow-xl"
             >
               Start with a consultation
-            </a>
-            <div className="text-gray-400">
-              <p>Or join our community gatherings</p>
-            </div>
+            </Link>
+            <Link 
+              href="/auth/signup"
+              className="bg-white text-gray-900 border border-gray-200 px-10 py-5 rounded-full text-lg font-bold hover:bg-gray-50 transition-all"
+            >
+              Join the community
+            </Link>
           </div>
         </div>
       </div>

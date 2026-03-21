@@ -20,13 +20,17 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-12">
+          <nav className="hidden md:flex items-center gap-10">
             <Link href="/services" className={`${isActive('/services')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>Services</Link>
             <Link href="/assessments" className={`${isActive('/assessments')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>Assessments</Link>
             <Link href="/therapists" className={`${isActive('/therapists')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>Therapists</Link>
             <Link href="/about-us" className={`${isActive('/about-us')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>About Us</Link>
-            <Link href="/auth/login" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-purple hover:text-oku-dark transition-colors">
+            <div className="h-6 w-px bg-oku-taupe/10 mx-2" />
+            <Link href="/auth/login" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark transition-colors">
               Login
+            </Link>
+            <Link href="/auth/signup" className="bg-oku-dark text-white px-6 py-3 rounded-full text-[10px] uppercase tracking-[0.4em] font-black hover:bg-oku-purple transition-all shadow-lg">
+              Sign Up
             </Link>
           </nav>
 
