@@ -11,17 +11,26 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { bio, hourlyRate } = await req.json()
+    const { name, bio, hourlyRate, licenseNumber, specialization } = await req.json()
 
-    const profile = await prisma.practitionerProfile.update({
-      where: { userId: session.user.id },
-      data: {
-        bio,
-        hourlyRate: parseFloat(hourlyRate)
-      }
-    })
+    // Update User and PractitionerProfile in a transaction
+    const [updatedUser, updatedProfile] = await prisma.$transaction([
+      prisma.user.update({
+        where: { id: session.user.id },
+        data: { name }
+      }),
+      prisma.practitionerProfile.update({
+        where: { userId: session.user.id },
+        data: {
+          bio,
+          hourlyRate: parseFloat(hourlyRate),
+          licenseNumber,
+          specialization
+        }
+      })
+    ])
 
-    return NextResponse.json(profile)
+    return NextResponse.json({ user: updatedUser, profile: updatedProfile })
   } catch (error) {
     console.error("Profile update error:", error)
     return new NextResponse("Internal Server Error", { status: 500 })
