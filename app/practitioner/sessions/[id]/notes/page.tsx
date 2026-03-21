@@ -12,15 +12,17 @@ export default async function SessionNotesPage({ params }: { params: { id: strin
     redirect("/dashboard")
   }
 
-  const therapistSession = await prisma.session.findUnique({
+  const therapistSession = await prisma.appointment.findUnique({
     where: { id: params.id },
     include: { 
-        client: { include: { user: true } },
+        client: true,
         soapNote: true
     }
   })
 
-  if (!therapistSession) redirect("/practitioner/dashboard")
+  if (!therapistSession || therapistSession.practitionerId !== session.user.id) {
+    redirect("/practitioner/dashboard")
+  }
 
   return (
     <div className="min-h-screen bg-oku-cream">
@@ -29,9 +31,9 @@ export default async function SessionNotesPage({ params }: { params: { id: strin
         <div className="mb-12">
           <Link href="/practitioner/dashboard" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark transition-colors">← Schedule</Link>
           <h1 className="text-4xl font-display font-bold text-oku-dark mt-4 tracking-tighter">Clinical Note</h1>
-          <p className="text-lg text-oku-taupe font-script mt-2">Session with {therapistSession.client.user.name}</p>
+          <p className="text-lg text-oku-taupe font-script mt-2">Session with {therapistSession.client.name}</p>
           <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe/60 mt-2">
-            {new Date(therapistSession.scheduledTime).toLocaleString()}
+            {new Date(therapistSession.startTime).toLocaleString()}
           </p>
         </div>
 

@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Header from "@/components/Header"
-import { Video, Clock, ShieldCheck } from "lucide-react"
+import { Clock, ShieldCheck } from "lucide-react"
 
 export default async function TelehealthSessionPage({ params }: { params: { id: string } }) {
   const session = await auth()
@@ -11,19 +11,19 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
     redirect("/auth/login")
   }
 
-  const sessionDetails = await prisma.session.findUnique({
+  const sessionDetails = await prisma.appointment.findUnique({
     where: { id: params.id },
     include: { 
-        client: { include: { user: true } },
-        therapist: { include: { user: true } } 
+        client: true,
+        practitioner: true
     }
   })
 
   if (!sessionDetails) return <div>Session not found</div>
 
   // Access Control
-  const isClient = sessionDetails.client.userId === session.user.id
-  const isTherapist = sessionDetails.therapist.userId === session.user.id
+  const isClient = sessionDetails.clientId === session.user.id
+  const isTherapist = sessionDetails.practitionerId === session.user.id
 
   if (!isClient && !isTherapist) {
       return <div>Unauthorized access to this session.</div>
@@ -31,7 +31,7 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
 
   // Time Check (Allow joining 10 mins before)
   const now = new Date()
-  const scheduledTime = new Date(sessionDetails.scheduledTime)
+  const scheduledTime = new Date(sessionDetails.startTime)
   const tenMinutesBefore = new Date(scheduledTime.getTime() - 10 * 60000)
   
   // For demo/dev purposes, we might want to relax this check or make it visible
@@ -73,7 +73,7 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
             <div className="flex items-center gap-4">
                 <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                 <h1 className="text-white font-display font-bold text-lg tracking-wide">
-                    {isClient ? `Session with ${sessionDetails.therapist.user.name}` : `Session with ${sessionDetails.client.user.name}`}
+                    {isClient ? `Session with ${sessionDetails.practitioner.name}` : `Session with ${sessionDetails.client.name}`}
                 </h1>
             </div>
             <div className="flex items-center gap-4">
@@ -87,7 +87,7 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
         {/* Video Frame */}
         <div className="flex-1 relative bg-black">
             <iframe
-                src={`https://meet.jit.si/${roomName}?config.prejoinPageEnabled=false&interfaceConfig.TOOLBAR_BUTTONS=['microphone','camera','closedcaptions','desktop','fullscreen','fodeviceselection','hangup','profile','chat','recording','livestreaming','etherpad','sharedvideo','settings','raisehand','videoquality','filmstrip','invite','feedback','stats','shortcuts','tileview','videobackgroundblur','download','help','mute-everyone','security']`}
+                src={`https://meet.jit.si/${roomName}?config.prejoinPageEnabled=false`}
                 allow="camera; microphone; fullscreen; display-capture; autoplay"
                 className="w-full h-full border-0"
             ></iframe>

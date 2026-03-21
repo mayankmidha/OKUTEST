@@ -23,9 +23,9 @@ export async function POST(req: Request) {
     const payment = event.payload.payment.entity
     console.log(`Razorpay Payment successful for ${payment.order_id}`)
     
-    // Logic to update Session and Payment records in Prisma
+    // Logic to update Appointment and Payment records in Prisma
     /*
-    await prisma.session.update({
+    await prisma.appointment.update({
       where: { razorpayOrderId: payment.order_id },
       data: { status: 'confirmed', paidAt: new Date(), razorpayPaymentId: payment.id }
     })

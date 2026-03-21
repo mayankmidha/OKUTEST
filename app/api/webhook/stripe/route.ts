@@ -25,11 +25,11 @@ export async function POST(req: Request) {
     // Handle successful payment
     console.log(`Payment successful for ${session.id}`)
     
-    // Logic to update Session and Payment records in Prisma
+    // Logic to update Appointment and Payment records in Prisma
     /*
-    await prisma.session.update({
-      where: { paymentId: session.id },
-      data: { status: 'confirmed', paidAt: new Date() }
+    await prisma.appointment.update({
+      where: { stripePaymentId: session.id },
+      data: { status: 'CONFIRMED' }
     })
     */
   }
