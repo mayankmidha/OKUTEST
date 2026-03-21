@@ -1,0 +1,262 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(CLIENT)
+  password      String?   // For credentials auth
+  phone         String?
+  bio           String?   @db.Text
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  clientProfile ClientProfile?
+  practitionerProfile PractitionerProfile?
+  clientAppointments     Appointment[] @relation("ClientAppointments")
+  practitionerAppointments Appointment[] @relation("PractitionerAppointments")
+  payments      Payment[]
+  assessmentAnswers AssessmentAnswer[]
+  moodEntries    MoodEntry[]
+  auditLogs      AuditLog[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ClientProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  dateOfBirth    DateTime?
+  gender        String?
+  medicalHistory String?  @db.Text
+  noShowCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments   Appointment[]
+  assessments    AssessmentAnswer[]
+  moodEntries    MoodEntry[]
+}
+
+model PractitionerProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  licenseNumber   String?
+  specialization String[]
+  bio             String?  @db.Text
+  hourlyRate      Float?
+  sessionDuration Int      @default(50) // mins
+  bufferDuration  Int      @default(10) // mins
+  isVerified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments     Appointment[]
+  availability     Availability[]
+}
+
+model Availability {
+  id                  String              @id @default(cuid())
+  practitionerProfileId String
+  dayOfWeek           Int                 // 0=Sunday, 6=Saturday
+  startTime           String              // "09:00"
+  endTime             String              // "17:00"
+  
+  practitionerProfile PractitionerProfile @relation(fields: [practitionerProfileId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  clientId       String
+  practitionerId String
+  serviceId      String
+  startTime     DateTime
+  endTime       DateTime
+  status        AppointmentStatus @default(SCHEDULED)
+  attendanceStatus String?         // "present", "no_show"
+  noShowFeeCharged Float?
+  notes         String?           @db.Text
+  googleEventId  String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  client         User              @relation("ClientAppointments", fields: [clientId], references: [id], map: "Appointment_clientId_fkey")
+  practitioner  User              @relation("PractitionerAppointments", fields: [practitionerId], references: [id], map: "Appointment_practitionerId_fkey")
+  service       Service          @relation(fields: [serviceId], references: [id])
+  clientProfile   ClientProfile?     @relation(fields: [clientId], references: [userId], map: "Appointment_clientProfile_fkey")
+  practitionerProfile PractitionerProfile? @relation(fields: [practitionerId], references: [userId], map: "Appointment_practitionerProfile_fkey")
+  payments       Payment[]
+  soapNote       SoapNote?
+
+  @@index([clientId])
+  @@index([practitionerId])
+  @@index([serviceId])
+  @@index([status])
+  @@index([startTime])
+}
+
+model SoapNote {
+  id              String      @id @default(cuid())
+  appointmentId   String      @unique
+  subjective      String?     @db.Text
+  objective       String?     @db.Text
+  assessment      String?     @db.Text
+  plan            String?     @db.Text
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  appointment     Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+}
+
+model Assessment {
+  id          String   @id @default(cuid())
+  title       String   @unique
+  description String?  @db.Text
+  questions   Json     // Store assessment questions
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  answers     AssessmentAnswer[]
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  duration    Int      // Duration in minutes
+  price       Float
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments Appointment[]
+}
+
+model MoodEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  mood        Int      // 1-10 scale
+  notes       String?  @db.Text
+  tags        String[]  // Optional tags for mood tracking
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "MoodEntry_userId_fkey")
+  clientProfile ClientProfile?  @relation(fields: [userId], references: [userId], map: "MoodEntry_clientProfile_fkey")
+}
+
+model AssessmentAnswer {
+  id           String   @id @default(cuid())
+  userId        String
+  assessmentId  String
+  answers       Json     // Store user's answers
+  score         Float?
+  result        String?
+  completedAt   DateTime @default(now())
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "AssessmentAnswer_userId_fkey")
+  assessment    Assessment      @relation(fields: [assessmentId], references: [id], map: "AssessmentAnswer_assessmentId_fkey")
+  clientProfile ClientProfile?  @relation(fields: [userId], references: [userId], map: "AssessmentAnswer_clientProfile_fkey")
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  appointmentId  String
+  userId         String
+  amount         Float
+  stripePaymentId String?
+  processor      String?
+  status         PaymentStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  appointment    Appointment    @relation(fields: [appointmentId], references: [id], map: "Payment_appointmentId_fkey")
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Payment_userId_fkey")
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  userId       String
+  action       String
+  resourceType String
+  resourceId   String
+  changes      String?  @db.Text
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  CLIENT
+  PRACTITIONER
+  ADMIN
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}

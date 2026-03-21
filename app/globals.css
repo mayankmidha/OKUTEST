@@ -1,0 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@400;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-oku-taupe/10;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-oku-cream font-body text-oku-dark antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  .nav-pill {
+    @apply bg-oku-nav-pill backdrop-blur-md border border-white/20 rounded-pill px-8 py-3 shadow-sm;
+  }
+  
+  .btn-primary {
+    @apply bg-oku-purple text-oku-dark px-8 py-3 rounded-pill font-semibold transition-all hover:bg-opacity-90 active:scale-95;
+  }
+
+  .footer-col-even {
+    @apply rotate-4;
+  }
+
+  .footer-col-odd {
+    @apply rotate-[-4deg];
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-oku-cream;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-oku-purple rounded-full;
+}
