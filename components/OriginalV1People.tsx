@@ -124,6 +124,48 @@ export default function OriginalV1People() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Services</h4>
+              <ul className="space-y-2">
+                <li><Link href="/services" className="text-gray-600 hover:text-gray-900">Individual Therapy</Link></li>
+                <li><Link href="/services" className="text-gray-600 hover:text-gray-900">Trauma & EMDR</Link></li>
+                <li><Link href="/services" className="text-gray-600 hover:text-gray-900">Movement Therapy</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">About</h4>
+              <ul className="space-y-2">
+                <li><Link href="/about-us" className="text-gray-600 hover:text-gray-900">Our Story</Link></li>
+                <li><Link href="/people" className="text-gray-600 hover:text-gray-900">Our People</Link></li>
+                <li><Link href="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Resources</h4>
+              <ul className="space-y-2">
+                <li><Link href="/blog" className="text-gray-600 hover:text-gray-900">Blog</Link></li>
+                <li><Link href="/privacy" className="text-gray-600 hover:text-gray-900">Privacy</Link></li>
+                <li><Link href="/assessments" className="text-gray-600 hover:text-gray-900">Assessments</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Connect</h4>
+              <ul className="space-y-2">
+                <li><a href="https://wa.me/919953879928" className="text-gray-600 hover:text-gray-900">WhatsApp</a></li>
+                <li><a href="mailto:hello@okutherapy.com" className="text-gray-600 hover:text-gray-900">Email</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">
+            <p>&copy; 2024 OKU Therapy. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
