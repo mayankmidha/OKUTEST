@@ -5,14 +5,16 @@ import { NextResponse } from "next/server"
 export async function POST(req: Request) {
   const session = await auth()
 
-  if (!session?.user?.id) {
-    return new NextResponse("Unauthorized", { status: 401 })
-  }
-
   const { type, responses, score, result } = await req.json()
 
   if (!type || !responses || score === undefined || !result) {
     return new NextResponse("Missing fields", { status: 400 })
+  }
+
+  // If user is not logged in, we return 200 but don't save to DB
+  // The frontend will handle storing it in sessionStorage
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Guest assessment completed" }, { status: 200 })
   }
 
   // Ensure assessment definition exists
@@ -21,26 +23,16 @@ export async function POST(req: Request) {
     update: {},
     create: {
       title: type,
-      questions: [], // Placeholder as we don't have questions from frontend
+      questions: [], // We store definition in code, but keep DB for records
       description: "Auto-generated assessment type",
     },
   })
-
-  // Parse responses if it's a string
-  let parsedResponses = responses
-  if (typeof responses === 'string') {
-    try {
-      parsedResponses = JSON.parse(responses)
-    } catch (e) {
-      // Keep as string if parsing fails
-    }
-  }
 
   const assessmentAnswer = await prisma.assessmentAnswer.create({
     data: {
       userId: session.user.id,
       assessmentId: assessmentDef.id,
-      answers: parsedResponses,
+      answers: responses,
       score,
       result,
     }

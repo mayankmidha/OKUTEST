@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         }
     })
 
-    // Create Appointment
+    // Create Appointment with PENDING status (requires advance payment)
     const appointment = await prisma.appointment.create({
       data: {
           clientId: session.user.id,
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
           serviceId: service.id,
           startTime: startTime,
           endTime: endTime,
-          status: AppointmentStatus.SCHEDULED
+          status: AppointmentStatus.PENDING
       }
     })
 

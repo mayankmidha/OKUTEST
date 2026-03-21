@@ -22,8 +22,9 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-12">
             <Link href="/services" className={`${isActive('/services')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>Services</Link>
+            <Link href="/assessments" className={`${isActive('/assessments')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>Assessments</Link>
+            <Link href="/therapists" className={`${isActive('/therapists')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>Therapists</Link>
             <Link href="/about-us" className={`${isActive('/about-us')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>About Us</Link>
-            <Link href="/people" className={`${isActive('/people')} transition-colors text-[10px] uppercase tracking-[0.4em] font-black`}>People</Link>
             <Link href="/auth/login" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-purple hover:text-oku-dark transition-colors">
               Login
             </Link>
@@ -54,18 +55,25 @@ export default function Header() {
                 Services
               </Link>
               <Link 
+                href="/assessments" 
+                className={`${isActive('/assessments')} block px-6 py-2 text-[10px] uppercase tracking-[0.4em] font-black`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Assessments
+              </Link>
+              <Link 
+                href="/therapists" 
+                className={`${isActive('/therapists')} block px-6 py-2 text-[10px] uppercase tracking-[0.4em] font-black`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Therapists
+              </Link>
+              <Link 
                 href="/about-us" 
                 className={`${isActive('/about-us')} block px-6 py-2 text-[10px] uppercase tracking-[0.4em] font-black`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About Us
-              </Link>
-              <Link 
-                href="/people" 
-                className={`${isActive('/people')} block px-6 py-2 text-[10px] uppercase tracking-[0.4em] font-black`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                People
               </Link>
               <Link 
                 href="/auth/login" 

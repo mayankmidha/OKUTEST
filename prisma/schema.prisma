@@ -246,6 +246,7 @@ enum UserRole {
 }
 
 enum AppointmentStatus {
+  PENDING
   SCHEDULED
   CONFIRMED
   COMPLETED

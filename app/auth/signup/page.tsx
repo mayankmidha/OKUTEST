@@ -32,6 +32,17 @@ export default function SignupPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  // Pre-fill from session storage (lead nurturing)
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      const pendingTrial = sessionStorage.getItem('pending_trial_booking')
+      if (pendingTrial) {
+        const data = JSON.parse(pendingTrial)
+        setFormData(prev => ({ ...prev, name: data.guestName || '', email: data.guestEmail || '' }))
+      }
+    }
+  })
+
   const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((current) => ({ ...current, [field]: value }))
   }
@@ -42,7 +53,7 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

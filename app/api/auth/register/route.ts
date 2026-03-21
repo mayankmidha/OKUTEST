@@ -36,6 +36,17 @@ export async function POST(req: Request) {
       },
     })
 
+    // Lead Nurturing: Log the registration event
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'USER_REGISTERED',
+        resourceType: 'USER',
+        resourceId: user.id,
+        changes: JSON.stringify({ name: user.name, email: user.email }),
+      }
+    })
+
     return NextResponse.json(
       { message: 'User created successfully', userId: user.id },
       { status: 201 }

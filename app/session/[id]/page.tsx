@@ -2,7 +2,8 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Header from "@/components/Header"
-import { Clock, ShieldCheck } from "lucide-react"
+import { Clock, ShieldCheck, UserMinus, AlertTriangle } from "lucide-react"
+import NoShowButton from "./NoShowButton"
 
 export default async function TelehealthSessionPage({ params }: { params: { id: string } }) {
   const session = await auth()
@@ -84,13 +85,39 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
             </div>
         </header>
 
-        {/* Video Frame */}
-        <div className="flex-1 relative bg-black">
-            <iframe
-                src={`https://meet.jit.si/${roomName}?config.prejoinPageEnabled=false`}
-                allow="camera; microphone; fullscreen; display-capture; autoplay"
-                className="w-full h-full border-0"
-            ></iframe>
+        <div className="flex-1 flex overflow-hidden">
+            {/* Video Frame */}
+            <div className="flex-1 relative bg-black">
+                <iframe
+                    src={`https://meet.jit.si/${roomName}?config.prejoinPageEnabled=false`}
+                    allow="camera; microphone; fullscreen; display-capture; autoplay"
+                    className="w-full h-full border-0"
+                ></iframe>
+            </div>
+
+            {/* Therapist Sidebar Controls */}
+            {isTherapist && (
+                <div className="w-80 bg-oku-dark border-l border-white/10 p-8 flex flex-col gap-8">
+                    <div>
+                        <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-white/40 mb-4">Patient Information</h4>
+                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <p className="text-white font-bold">{sessionDetails.client.name}</p>
+                            <p className="text-white/40 text-xs">Joined 0 times today</p>
+                        </div>
+                    </div>
+
+                    <div className="flex-grow">
+                        <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-white/40 mb-4">Attendance Control</h4>
+                        <div className="bg-oku-purple/5 p-6 rounded-3xl border border-oku-purple/10">
+                            <AlertTriangle className="text-oku-purple mb-4" size={20} />
+                            <p className="text-white/80 text-sm leading-relaxed mb-6">
+                                If the patient hasn't joined within 15 minutes of the start time, you can mark this as a "No Show."
+                            </p>
+                            <NoShowButton sessionId={sessionDetails.id} startTime={sessionDetails.startTime.toISOString()} />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     </div>
   )

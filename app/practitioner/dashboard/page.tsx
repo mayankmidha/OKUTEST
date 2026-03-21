@@ -1,553 +1,214 @@
-'use client'
-
-import { useState, useEffect } from 'react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Calendar, Users, Clock, DollarSign, FileText, Video, Settings, Bell, TrendingUp, Star, MessageSquare, LogOut, UserPlus, Award, Target, Activity } from 'lucide-react'
+import Header from '@/components/Header'
+import { 
+  Calendar, Users, Clock, DollarSign, 
+  Video, Bell, Activity, TrendingUp, 
+  Star, MessageSquare, ArrowRight 
+} from 'lucide-react'
+import { AppointmentStatus, UserRole } from '@prisma/client'
 
-export default function TherapistDashboardPage() {
-  const [user, setUser] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [todaySessions, setTodaySessions] = useState<any[]>([])
-  const [weeklyStats, setWeeklyStats] = useState<any>({})
-  const [upcomingSessions, setUpcomingSessions] = useState<any[]>([])
-  const [notifications, setNotifications] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState('overview')
-  const router = useRouter()
-
-  const handleLogout = () => {
-    localStorage.removeItem('user')
-    setUser(null)
-    router.push('/auth/login')
+export default async function PractitionerDashboardPage() {
+  const session = await auth()
+  
+  if (!session?.user || session.user.role !== UserRole.THERAPIST) {
+    redirect('/auth/login')
   }
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user')
-    if (userData) {
-      setUser(JSON.parse(userData))
+  // Fetch REAL practitioner data
+  const practitioner = await prisma.practitionerProfile.findUnique({
+    where: { userId: session.user.id },
+    include: {
+      user: true,
+      appointments: {
+        where: {
+          startTime: { gte: new Date(new Date().setHours(0,0,0,0)) },
+          status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
+        },
+        include: {
+          client: true,
+          service: true
+        },
+        orderBy: { startTime: 'asc' }
+      }
     }
-    
-    // Mock data for therapist dashboard
-    setTodaySessions([
-      {
-        id: '1',
-        client: { name: 'Sarah Johnson', email: 'sarah@email.com' },
-        time: '10:00 AM',
-        duration: '60 mins',
-        type: 'Individual Therapy',
-        status: 'confirmed',
-        location: 'Online',
-        notes: 'Initial consultation'
-      },
-      {
-        id: '2',
-        client: { name: 'Michael Chen', email: 'michael@email.com' },
-        time: '2:00 PM',
-        duration: '45 mins',
-        type: 'Follow-up',
-        status: 'confirmed',
-        location: 'Online',
-        notes: 'Progress review'
-      }
-    ])
-    
-    setWeeklyStats({
-      totalSessions: 24,
-      totalHours: 36,
-      earnings: 24000,
-      averageRating: 4.8,
-      newClients: 3,
-      completedSessions: 22,
-      cancelledSessions: 2
-    })
-    
-    setUpcomingSessions([
-      {
-        id: '3',
-        client: { name: 'Emma Davis', email: 'emma@email.com' },
-        date: '2024-03-26',
-        time: '11:00 AM',
-        type: 'Individual Therapy',
-        status: 'scheduled'
-      },
-      {
-        id: '4',
-        client: { name: 'James Wilson', email: 'james@email.com' },
-        date: '2024-03-27',
-        time: '3:00 PM',
-        type: 'Assessment',
-        status: 'scheduled'
-      }
-    ])
-    
-    setNotifications([
-      {
-        id: '1',
-        title: 'New Client Booking',
-        message: 'Emma Davis booked a session for tomorrow',
-        type: 'booking',
-        date: '2024-03-25',
-        read: false
-      },
-      {
-        id: '2',
-        title: 'Payment Received',
-        message: 'Payment received for session with Sarah Johnson',
-        type: 'payment',
-        date: '2024-03-24',
-        read: false
-      }
-    ])
-    
-    setLoading(false)
-  }, [])
+  })
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-oku-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-oku-purple mx-auto"></div>
-          <p className="mt-4 text-oku-dark">Loading...</p>
-        </div>
-      </div>
-    )
-  }
+  if (!practitioner) redirect('/auth/login')
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-oku-cream flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-oku-dark mb-4 font-display">Please Login</h1>
-          <p className="text-oku-taupe mb-8">You need to be logged in to access your dashboard.</p>
-          <Link 
-            href="/auth/login"
-            className="btn-primary"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  const todaySessions = practitioner.appointments.filter(a => {
+      const today = new Date().setHours(0,0,0,0)
+      return new Date(a.startTime).setHours(0,0,0,0) === today
+  })
+
+  const upcomingSessions = practitioner.appointments.filter(a => {
+      return new Date(a.startTime) > new Date()
+  })
+
+  // Calculate some basic stats
+  const totalCompleted = await prisma.appointment.count({
+      where: { 
+          practitionerId: session.user.id,
+          status: AppointmentStatus.COMPLETED
+      }
+  })
+
+  const totalEarnings = await prisma.payment.aggregate({
+      where: {
+          appointment: { practitionerId: session.user.id },
+          status: 'COMPLETED'
+      },
+      _sum: { amount: true }
+  })
 
   return (
     <div className="min-h-screen bg-oku-cream">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <Header />
+      <div className="max-w-7xl mx-auto py-12 px-6 md:px-12 lg:px-20">
+        
         {/* Header */}
-        <div className="px-4 py-6 sm:px-0 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-oku-dark font-display">
-                Practice Dashboard
-              </h1>
-              <p className="text-oku-taupe mt-2">Manage your therapy practice efficiently</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
+          <div>
+            <h1 className="text-4xl font-display font-bold text-oku-dark tracking-tighter">
+              Practice Overview
+            </h1>
+            <p className="text-oku-taupe mt-2 font-display italic">Manage your space and your people.</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/practitioner/schedule" className="btn-primary py-4 px-8">
+              Open Schedule
+            </Link>
+          </div>
+        </div>
+
+        {/* Real Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          <div className="bg-white p-6 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Today</p>
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-display font-bold text-oku-dark">{todaySessions.length}</p>
+              <Video className="text-oku-purple opacity-20" size={32} />
             </div>
-            <div className="flex items-center gap-3">
-              <button className="relative p-2 text-oku-taupe hover:text-oku-dark transition-colors">
-                <Bell className="h-5 w-5" />
-                {notifications.filter(n => !n.read).length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-oku-red rounded-full"></span>
+          </div>
+          <div className="bg-white p-6 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Clients</p>
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-display font-bold text-oku-dark">{totalCompleted > 0 ? 'Active' : '0'}</p>
+              <Users className="text-oku-purple opacity-20" size={32} />
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Earnings</p>
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-display font-bold text-oku-dark">${totalEarnings._sum.amount || 0}</p>
+              <DollarSign className="text-oku-purple opacity-20" size={32} />
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Next Up</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-bold text-oku-dark">
+                {upcomingSessions[0] ? new Date(upcomingSessions[0].startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'No sessions'}
+              </p>
+              <Clock className="text-oku-purple opacity-20" size={32} />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Today's Schedule */}
+          <div className="lg:col-span-2">
+            <section className="bg-white p-10 rounded-[3rem] border border-oku-taupe/10 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-display font-bold text-oku-dark">Today's Sessions</h2>
+                <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe bg-oku-cream-warm px-3 py-1 rounded-full">
+                   {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                </span>
+              </div>
+
+              <div className="space-y-6">
+                {todaySessions.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <p className="text-oku-taupe font-display italic">No sessions scheduled for today.</p>
+                  </div>
+                ) : (
+                  todaySessions.map((session) => (
+                    <div key={session.id} className="flex items-center justify-between p-6 bg-oku-cream/30 rounded-3xl border border-oku-taupe/5 group hover:bg-white hover:shadow-xl transition-all duration-500">
+                      <div className="flex items-center gap-6">
+                        <div className="text-center min-w-[60px]">
+                           <p className="text-xl font-display font-bold text-oku-dark">
+                             {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                           </p>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Start</p>
+                        </div>
+                        <div className="h-10 w-px bg-oku-taupe/10" />
+                        <div>
+                          <p className="font-bold text-oku-dark text-lg">{session.client.name}</p>
+                          <p className="text-sm text-oku-taupe italic">{session.service.name}</p>
+                        </div>
+                      </div>
+                      <Link href={`/session/${session.id}`} className="bg-oku-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-colors shadow-lg">
+                        Launch Session
+                      </Link>
+                    </div>
+                  ))
                 )}
-              </button>
-              <Link 
-                href="/practitioner/profile"
-                className="p-2 text-oku-taupe hover:text-oku-dark transition-colors"
-              >
-                <Settings className="h-5 w-5" />
-              </Link>
-              <button 
-                onClick={handleLogout}
-                className="p-2 text-oku-taupe hover:text-oku-dark transition-colors"
-                title="Logout"
-              >
-                <LogOut className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="px-4 py-6 sm:px-0 mb-6">
-          <div className="bg-white rounded-card shadow-sm border border-oku-taupe/10 p-1">
-            <nav className="flex flex-wrap gap-2">
-              {[
-                { id: 'overview', label: 'Overview', icon: Activity },
-                { id: 'schedule', label: 'Schedule', icon: Calendar },
-                { id: 'clients', label: 'Clients', icon: Users },
-                { id: 'appointments', label: 'Appointments', icon: Video },
-                { id: 'earnings', label: 'Earnings', icon: DollarSign },
-                { id: 'availability', label: 'Availability', icon: Clock }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    activeTab === tab.id 
-                      ? 'bg-oku-purple text-white' 
-                      : 'text-oku-taupe hover:bg-oku-cream hover:text-oku-dark'
-                  }`}
-                >
-                  <tab.icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="px-4 py-6 sm:px-0">
-          {activeTab === 'overview' && (
-            <div className="space-y-6">
-              {/* Quick Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Total Sessions</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">{weeklyStats.totalSessions}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-blue/10 rounded-full flex items-center justify-center">
-                      <Video className="h-6 w-6 text-oku-blue" />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Total Hours</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">{weeklyStats.totalHours}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-green/10 rounded-full flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-oku-green" />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Earnings</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">₹{weeklyStats.earnings.toLocaleString()}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-purple/10 rounded-full flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 text-oku-purple" />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Avg Rating</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">{weeklyStats.averageRating}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-pink/10 rounded-full flex items-center justify-center">
-                      <Star className="h-6 w-6 text-oku-pink" />
-                    </div>
-                  </div>
-                </div>
               </div>
+            </section>
+          </div>
 
-              {/* Today's Schedule */}
-              <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-oku-dark font-display">Today's Schedule</h2>
-                  <Link 
-                    href="/practitioner/schedule"
-                    className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-                  >
-                    View Full Schedule →
-                  </Link>
-                </div>
-                <div className="space-y-4">
-                  {todaySessions.map((session) => (
-                    <div key={session.id} className="flex items-center justify-between p-4 bg-oku-cream/50 rounded-card border-l-4 border-oku-green">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 bg-oku-green/10 rounded-full flex items-center justify-center">
-                          <Video className="h-5 w-5 text-oku-green" />
+          {/* Right Sidebar - Practice Health */}
+          <div className="space-y-8">
+            <section className="bg-oku-purple text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+               <div className="relative z-10">
+                  <h3 className="text-2xl font-display font-bold mb-4 tracking-tighter">Practice Health</h3>
+                  <div className="space-y-6 mt-8">
+                     <div>
+                        <div className="flex justify-between text-[10px] uppercase tracking-widest font-black mb-2 opacity-60">
+                           <span>Attendance Rate</span>
+                           <span>94%</span>
                         </div>
+                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                           <div className="h-full bg-white w-[94%] shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                        </div>
+                     </div>
+                     <div>
+                        <div className="flex justify-between text-[10px] uppercase tracking-widest font-black mb-2 opacity-60">
+                           <span>Profile Completion</span>
+                           <span>100%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                           <div className="h-full bg-white w-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2" />
+            </section>
+
+            <section className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
+                <h3 className="text-xl font-display font-bold text-oku-dark mb-6">Recent Activity</h3>
+                <div className="space-y-6">
+                    <div className="flex gap-4">
+                        <div className="w-2 h-2 rounded-full bg-oku-green mt-1.5" />
                         <div>
-                          <p className="font-medium text-oku-dark">{session.client.name}</p>
-                          <p className="text-sm text-oku-taupe">{session.type} • {session.duration}</p>
+                            <p className="text-sm font-bold text-oku-dark">New Assessment</p>
+                            <p className="text-xs text-oku-taupe">A client completed a Trauma Screening.</p>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium text-oku-dark">{session.time}</p>
-                        <p className="text-sm text-oku-taupe">{session.location}</p>
-                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Activity */}
-              <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-oku-dark font-display">Recent Activity</h2>
-                  <Link 
-                    href="/practitioner/activity"
-                    className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-                  >
-                    View All →
-                  </Link>
-                </div>
-                <div className="space-y-4">
-                  {[
-                    { type: 'session', title: 'Session Completed', client: 'Sarah Johnson', date: '2024-03-24', status: 'completed' },
-                    { type: 'booking', title: 'New Booking', client: 'Emma Davis', date: '2024-03-23', status: 'confirmed' },
-                    { type: 'payment', title: 'Payment Received', client: 'Michael Chen', date: '2024-03-22', status: 'completed' }
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-center gap-3 p-4 bg-oku-cream/50 rounded-card">
-                      <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                        activity.type === 'session' ? 'bg-oku-blue/10' : 
-                        activity.type === 'booking' ? 'bg-oku-green/10' : 'bg-oku-purple/10'
-                      }`}>
-                        {activity.type === 'session' ? (
-                          <Video className="h-5 w-5 text-oku-blue" />
-                        ) : activity.type === 'booking' ? (
-                          <UserPlus className="h-5 w-5 text-oku-green" />
-                        ) : (
-                          <DollarSign className="h-5 w-5 text-oku-purple" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-oku-dark">{activity.title}</p>
-                        <p className="text-sm text-oku-taupe">{activity.client} • {activity.date}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'schedule' && (
-            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-              <h2 className="text-lg font-semibold text-oku-dark mb-4 font-display">Weekly Schedule</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, index) => (
-                  <div key={day} className="border border-oku-taupe/20 rounded-lg p-4">
-                    <h3 className="font-medium text-oku-dark mb-3">{day}</h3>
-                    <div className="space-y-2">
-                      {index < 5 ? (
-                        <>
-                          <div className="text-sm p-2 bg-oku-green/10 text-oku-green rounded">10:00 AM - Sarah J.</div>
-                          <div className="text-sm p-2 bg-oku-blue/10 text-oku-blue rounded">2:00 PM - Michael C.</div>
-                        </>
-                      ) : (
-                        <div className="text-sm text-oku-taupe text-center py-4">No sessions</div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'clients' && (
-            <div className="space-y-6">
-              <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-oku-dark font-display">Client Management</h2>
-                  <Link 
-                    href="/practitioner/clients"
-                    className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-                  >
-                    View All →
-                  </Link>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[
-                    { name: 'Sarah Johnson', email: 'sarah@email.com', sessions: 12, nextSession: '2024-03-25', status: 'active' },
-                    { name: 'Michael Chen', email: 'michael@email.com', sessions: 8, nextSession: '2024-03-26', status: 'active' },
-                    { name: 'Emma Davis', email: 'emma@email.com', sessions: 4, nextSession: '2024-03-26', status: 'new' }
-                  ].map((client, index) => (
-                    <div key={index} className="border border-oku-taupe/20 rounded-lg p-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="h-10 w-10 bg-oku-purple/10 rounded-full flex items-center justify-center">
-                          <Users className="h-5 w-5 text-oku-purple" />
-                        </div>
+                    <div className="flex gap-4">
+                        <div className="w-2 h-2 rounded-full bg-oku-purple mt-1.5" />
                         <div>
-                          <p className="font-medium text-oku-dark">{client.name}</p>
-                          <p className="text-sm text-oku-taupe">{client.email}</p>
+                            <p className="text-sm font-bold text-oku-dark">Payment Received</p>
+                            <p className="text-xs text-oku-taupe">Trial call payment processed successfully.</p>
                         </div>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-oku-taupe">Sessions:</span>
-                          <span className="font-medium text-oku-dark">{client.sessions}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-oku-taupe">Next Session:</span>
-                          <span className="font-medium text-oku-dark">{client.nextSession}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-oku-taupe">Status:</span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            client.status === 'active' ? 'bg-oku-green/10 text-oku-green' : 
-                            client.status === 'new' ? 'bg-oku-blue/10 text-oku-blue' : 'bg-oku-taupe/10 text-oku-taupe'
-                          }`}>
-                            {client.status}
-                          </span>
-                        </div>
-                      </div>
                     </div>
-                  ))}
                 </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'appointments' && (
-            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-oku-dark font-display">Upcoming Appointments</h2>
-                <Link 
-                  href="/practitioner/appointments"
-                  className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-                >
-                  Manage →
-                </Link>
-              </div>
-              <div className="space-y-4">
-                {upcomingSessions.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-4 bg-oku-cream/50 rounded-card border-l-4 border-oku-blue">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 bg-oku-blue/10 rounded-full flex items-center justify-center">
-                        <Video className="h-5 w-5 text-oku-blue" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-oku-dark">{appointment.client.name}</p>
-                        <p className="text-sm text-oku-taupe">{appointment.type}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-oku-dark">{appointment.time}</p>
-                      <p className="text-sm text-oku-taupe">{appointment.date}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'earnings' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">This Month</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">₹{weeklyStats.earnings.toLocaleString()}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-green/10 rounded-full flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-oku-green" />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Total Earned</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">₹{(weeklyStats.earnings * 3).toLocaleString()}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-purple/10 rounded-full flex items-center justify-center">
-                      <Award className="h-6 w-6 text-oku-purple" />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Avg per Session</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">₹{Math.round(weeklyStats.earnings / weeklyStats.totalSessions)}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-blue/10 rounded-full flex items-center justify-center">
-                      <Target className="h-6 w-6 text-oku-blue" />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-oku-taupe">Pending</p>
-                      <p className="text-2xl font-bold text-oku-dark mt-1">₹4,500</p>
-                    </div>
-                    <div className="h-12 w-12 bg-oku-orange/10 rounded-full flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-oku-orange" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'availability' && (
-            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-oku-dark font-display">Availability Settings</h2>
-                <Link 
-                  href="/practitioner/availability"
-                  className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-                >
-                  Configure →
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-medium text-oku-dark mb-4">Working Hours</h3>
-                  <div className="space-y-3">
-                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => (
-                      <div key={day} className="flex items-center justify-between p-3 bg-oku-cream/50 rounded">
-                        <span className="font-medium text-oku-dark">{day}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-oku-taupe">9:00 AM - 6:00 PM</span>
-                          <div className="h-2 w-2 bg-oku-green rounded-full"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium text-oku-dark mb-4">Weekend Availability</h3>
-                  <div className="space-y-3">
-                    {['Saturday', 'Sunday'].map((day) => (
-                      <div key={day} className="flex items-center justify-between p-3 bg-oku-cream/50 rounded">
-                        <span className="font-medium text-oku-dark">{day}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-oku-taupe">10:00 AM - 2:00 PM</span>
-                          <div className="h-2 w-2 bg-oku-orange rounded-full"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Notifications */}
-        {notifications.filter(n => !n.read).length > 0 && (
-          <div className="px-4 py-6 sm:px-0">
-            <div className="bg-oku-blue/5 border border-oku-blue/20 rounded-card p-4">
-              <div className="flex items-center gap-3">
-                <Bell className="h-5 w-5 text-oku-blue" />
-                <div className="flex-1">
-                  <p className="font-medium text-oku-dark">New Notifications</p>
-                  <p className="text-sm text-oku-taupe">{notifications.filter(n => !n.read).length} unread notifications</p>
-                </div>
-                <button 
-                  onClick={() => {
-                    setNotifications(notifications.map(n => ({ ...n, read: true })))
-                  }}
-                  className="text-sm text-oku-blue hover:text-oku-purple font-medium transition-colors"
-                >
-                  Mark as Read
-                </button>
-              </div>
-            </div>
+            </section>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )

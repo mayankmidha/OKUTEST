@@ -65,12 +65,20 @@ export default async function TherapistsPage() {
                   </div>
                 </div>
 
-                <Link 
-                    href={`/book/${practitioner.id}`} 
-                    className="block w-full text-center bg-oku-dark text-white py-4 rounded-pill font-black text-[10px] uppercase tracking-[0.4em] hover:bg-opacity-80 transition-all shadow-xl"
-                >
-                  Book Session
-                </Link>
+                <div className="flex flex-col gap-3">
+                  <Link 
+                      href={`/book/${practitioner.id}`} 
+                      className="block w-full text-center bg-oku-dark text-white py-4 rounded-pill font-black text-[10px] uppercase tracking-[0.4em] hover:bg-opacity-80 transition-all shadow-xl"
+                  >
+                    Book Full Session
+                  </Link>
+                  <Link 
+                      href={`/book/${practitioner.id}/trial`} 
+                      className="block w-full text-center bg-white text-oku-purple border border-oku-purple py-4 rounded-pill font-black text-[10px] uppercase tracking-[0.4em] hover:bg-oku-purple/5 transition-all"
+                  >
+                    Free 15-Min Trial
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

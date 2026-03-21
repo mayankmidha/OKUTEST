@@ -11,6 +11,27 @@ export const metadata: Metadata = {
     apple: '/favicon.ico',
   },
   keywords: 'therapy, psychotherapy, mental health, trauma-informed, queer-affirmative, inclusive care',
+  openGraph: {
+    title: 'OKU Therapy',
+    description: 'Inclusive, trauma-informed mental health care.',
+    url: 'https://okutherapy.com',
+    siteName: 'OKU Therapy',
+    images: [
+      {
+        url: 'https://okutherapy.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'OKU Therapy',
+    description: 'Inclusive, trauma-informed mental health care.',
+    images: ['https://okutherapy.com/og-image.jpg'],
+  },
 }
 
 export default function RootLayout({
