@@ -6,6 +6,10 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'OKU Therapy - Inclusive, Trauma-Informed Care',
   description: 'OKU is a psychotherapy collective offering inclusive, trauma-informed care for all parts of who you are. Book a free consultation to begin gently.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
   keywords: 'therapy, psychotherapy, mental health, trauma-informed, queer-affirmative, inclusive care',
 }
 

@@ -16,9 +16,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
-            <span className="font-display text-2xl font-bold text-oku-dark group-hover:text-oku-purple transition-colors">
-              OKU Therapy
-            </span>
+            <img src="/logo.svg" alt="OKU Therapy" className="h-8 w-8 transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Desktop Navigation */}
