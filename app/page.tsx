@@ -1,5 +1,5 @@
-import OriginalV1Homepage from '@/components/OriginalV1Homepage'
+import ExactV1Homepage from '@/components/ExactV1Homepage'
 
 export default function HomePage() {
-  return <OriginalV1Homepage />
+  return <ExactV1Homepage />
 }

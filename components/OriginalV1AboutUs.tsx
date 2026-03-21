@@ -1,21 +1,80 @@
+'use client'
+
 import Link from 'next/link'
+import V1Header from './V1Header'
 
 export default function OriginalV1AboutUs() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="text-2xl font-semibold">OKU Therapy</Link>
-            <div className="flex space-x-8">
-              <Link href="/services" className="text-gray-700 hover:text-gray-900">Services</Link>
-              <Link href="/about-us" className="text-gray-700 hover:text-gray-900">About Us</Link>
-              <Link href="/people" className="text-gray-700 hover:text-gray-900">People</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <style jsx global>{`
+        .dynamic-button {
+          display: inline-block;
+          padding: 8px 40px;
+          background-color: transparent;
+          color: #2D2D2D;
+          text-decoration: none;
+          border-radius: 1050px;
+          font-family: 'Helvetica', Arial, sans-serif;
+          font-size: 16px;
+          font-weight: 400;
+          border: 1px solid #2D2D2D;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1;
+          cursor: pointer;
+        }
+
+        .dynamic-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #2D2D2D;
+          border-radius: 50px;
+          transform: scale(1);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: -1;
+        }
+
+        .dynamic-button::after {
+          content: '›';
+          position: absolute;
+          right: 20px;
+          top: 50%;
+          transform: translateY(-50%) scale(0);
+          background-color: #2D2D2D;
+          color: white;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: bold;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0;
+        }
+
+        .dynamic-button:hover {
+          color: #2D2D2D;
+          padding-right: 70px;
+        }
+
+        .dynamic-button:hover::before {
+          transform: scale(0);
+        }
+
+        .dynamic-button:hover::after {
+          transform: translateY(-50%) scale(1);
+          opacity: 1;
+        }
+      `}</style>
+
+      <V1Header />
 
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-6 py-20">
@@ -56,15 +115,14 @@ export default function OriginalV1AboutUs() {
           </div>
 
           <div className="mt-12 text-center">
-            <Link 
+            <a 
               href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block border border-gray-900 text-gray-900 px-8 py-3 rounded-full text-base font-medium hover:bg-gray-900 hover:text-white transition-all duration-300 relative overflow-hidden group"
+              className="dynamic-button inline-block"
             >
-              <span className="relative z-10">Begin your journey</span>
-              <span className="absolute right-6 top-1/2 transform -translate-y-1/2 text-xl transition-all duration-300 group-hover:translate-x-2">›</span>
-            </Link>
+              Begin your journey
+            </a>
           </div>
         </div>
       </div>
