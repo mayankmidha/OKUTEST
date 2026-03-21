@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import V1Header from './V1Header'
 
 export default function ExactV1Homepage() {
   const [currentText, setCurrentText] = useState('grief')
@@ -22,8 +21,6 @@ export default function ExactV1Homepage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <V1Header />
-
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-4xl mx-auto">
@@ -220,6 +217,115 @@ export default function ExactV1Homepage() {
         </div>
       </div>
 
+      {/* Qualified Section with Vector Image */}
+      <div className="py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                <b>qualified and</b>
+              </h2>
+              <div className="relative">
+                <h2 className="text-4xl font-bold text-gray-900 underline decoration-wavy decoration-gray-400">
+                  ethical
+                </h2>
+              </div>
+              <div className="mt-8 space-y-4 text-lg text-gray-700">
+                <p>
+                  Every therapist at Oku is professionally trained and qualified including RCI Licensed Clinical Psychologists, psychodynamic therapists, queer affirmative therapists.
+                </p>
+                <p>
+                  We combine clinical precision with cultural humility, ensuring your mental health is in grounded, ethical hands.
+                </p>
+              </div>
+            </div>
+            <div className="order-first lg:order-last">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/06/Vector-1.png" 
+                alt="Qualified and Ethical" 
+                className="w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Therapists Section */}
+      <div id="therapists" className="bg-gray-50 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Not just <b>therapists,</b>
+            </h2>
+            <div className="relative">
+              <h3 className="text-4xl font-bold text-gray-900 underline decoration-wavy decoration-gray-400">
+                people first
+              </h3>
+            </div>
+            <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">
+              Meet our team of <strong>licensed therapists, facilitators, psychologists and listeners</strong>—bringing care, context, and presence into every session.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" 
+                alt="Dr. Suraj Singh" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Dr. Suraj Singh</h3>
+              <p className="text-gray-600 text-sm">Consultant Psychiatrist</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg" 
+                alt="Tanisha Singh" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Tanisha Singh</h3>
+              <p className="text-gray-600 text-sm">Clinical Psychologist (A.) & Psychodynamic Psychotherapist</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/Rananjay--579x1024.jpg" 
+                alt="Rananjay Singh" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Rananjay Singh</h3>
+              <p className="text-gray-600 text-sm">Queer affirmative therapist and family therapist</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/Amna-670x1024.jpg" 
+                alt="Amna Ansari" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Amna Ansari</h3>
+              <p className="text-gray-600 text-sm">Clinical psychologist (A.)</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/Mohit-911x1024.jpg" 
+                alt="Mohit Dudeja" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Mohit Dudeja</h3>
+              <p className="text-gray-600 text-sm">Queer affirmative therapist</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg" 
+                alt="Gursheel Kaur" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Gursheel Kaur</h3>
+              <p className="text-gray-600 text-sm">Psychodynamic Psychotherapist</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* CTA Section */}
       <div className="bg-gray-900 text-white py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -235,48 +341,6 @@ export default function ExactV1Homepage() {
           </a>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Services</h4>
-              <ul className="space-y-2">
-                <li><Link href="/services" className="text-gray-600 hover:text-gray-900">Individual Therapy</Link></li>
-                <li><Link href="/services" className="text-gray-600 hover:text-gray-900">Trauma & EMDR</Link></li>
-                <li><Link href="/services" className="text-gray-600 hover:text-gray-900">Movement Therapy</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">About</h4>
-              <ul className="space-y-2">
-                <li><Link href="/about-us" className="text-gray-600 hover:text-gray-900">Our Story</Link></li>
-                <li><Link href="/people" className="text-gray-600 hover:text-gray-900">Our People</Link></li>
-                <li><Link href="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li><Link href="/blog" className="text-gray-600 hover:text-gray-900">Blog</Link></li>
-                <li><Link href="/privacy" className="text-gray-600 hover:text-gray-900">Privacy</Link></li>
-                <li><Link href="/assessments" className="text-gray-600 hover:text-gray-900">Assessments</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Connect</h4>
-              <ul className="space-y-2">
-                <li><a href="https://wa.me/919953879928" className="text-gray-600 hover:text-gray-900">WhatsApp</a></li>
-                <li><a href="mailto:hello@okutherapy.com" className="text-gray-600 hover:text-gray-900">Email</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">
-            <p>&copy; 2024 OKU Therapy. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
