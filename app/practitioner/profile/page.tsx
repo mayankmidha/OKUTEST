@@ -1,89 +1,34 @@
-'use client'
-
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
-  PractitionerLoadingState,
   PractitionerPill,
   PractitionerSectionCard,
   PractitionerShell,
 } from '@/components/practitioner-shell/practitioner-shell'
-import { getCurrentUser, logoutUser } from '@/lib/auth'
+import { UserRole } from '@prisma/client'
+import EditProfileForm from './EditProfileForm'
 
-type PractitionerProfileData = {
-  bio: string | null
-  isVerified: boolean
-  licenseNumber: string | null
-  specialization: string[]
-  hourlyRate: number | null
-  user: {
-    email: string
-    name: string | null
-  }
-}
-
-export default function PractitionerProfilePage() {
-  const user = getCurrentUser()
-  const router = useRouter()
-  const [profile, setProfile] = useState<PractitionerProfileData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    if (!user || user.role !== 'THERAPIST') {
-      router.replace('/auth/login')
-      return
-    }
-
-    const fetchProfile = async () => {
-      try {
-        // Mock profile data
-        setProfile({
-          bio: 'Experienced therapist specializing in anxiety, depression, and trauma recovery. Committed to creating a safe, compassionate space for healing and growth.',
-          isVerified: true,
-          licenseNumber: 'PSY-2023-001',
-          specialization: ['Anxiety', 'Depression', 'Trauma', 'CBT', 'Mindfulness'],
-          hourlyRate: 150,
-          user: {
-            email: user.email,
-            name: user.name
-          }
-        })
-      } catch (error) {
-        console.error('Error fetching profile:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    void fetchProfile()
-  }, [router, user])
-
-  if (isLoading) {
-    return <PractitionerLoadingState message="Loading profile..." />
+export default async function PractitionerProfilePage() {
+  const session = await auth()
+  
+  if (!session?.user || session.user.role !== UserRole.THERAPIST) {
+    redirect('/auth/login')
   }
 
-  if (!user || user.role !== 'THERAPIST') {
-    return null
-  }
+  const practitioner = await prisma.practitionerProfile.findUnique({
+    where: { userId: session.user.id },
+    include: { user: true }
+  })
+
+  if (!practitioner) redirect('/practitioner/dashboard')
 
   return (
     <PractitionerShell
       badge="Profile"
       currentPath="/practitioner/profile"
-      description="Your professional presence, credentials, and practice details—all in one place."
-      headerActions={
-        <button
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-          onClick={() => {
-            logoutUser()
-            router.push('/auth/login')
-          }}
-          type="button"
-        >
-          Sign out
-        </button>
-      }
+      description="Manage your professional presence and practice details."
       heroActions={
         <>
           <Link
@@ -92,61 +37,55 @@ export default function PractitionerProfilePage() {
           >
             Dashboard
           </Link>
-          <Link
-            className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-            href="/practitioner/schedule"
-          >
-            Schedule
-          </Link>
         </>
       }
-      title="Profile"
+      title="Your Profile"
     >
-      <div className="space-y-8">
-        <PractitionerSectionCard title="Professional Information">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-              <p className="text-slate-900">{user.name}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <p className="text-slate-900">{user.email}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">License Number</label>
-              <p className="text-slate-900">{profile?.licenseNumber || 'Not provided'}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Hourly Rate</label>
-              <p className="text-slate-900">${profile?.hourlyRate || 'Not set'}/hour</p>
-            </div>
-          </div>
-        </PractitionerSectionCard>
+      <div className="grid lg:grid-cols-3 gap-12">
+        <div className="lg:col-span-2 space-y-8">
+          <PractitionerSectionCard title="Professional Overview">
+             <EditProfileForm initialData={practitioner} />
+          </PractitionerSectionCard>
 
-        <PractitionerSectionCard title="Bio">
-          <p className="text-slate-700 leading-relaxed">
-            {profile?.bio || 'No bio provided yet.'}
-          </p>
-        </PractitionerSectionCard>
+          <PractitionerSectionCard title="Credentials & Verification">
+            <div className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100">
+               <div>
+                  <p className="text-sm font-bold text-slate-900">License Number</p>
+                  <p className="text-slate-600 font-mono">{practitioner.licenseNumber || 'Not provided'}</p>
+               </div>
+               <PractitionerPill tone={practitioner.isVerified ? "emerald" : "amber"}>
+                  {practitioner.isVerified ? 'Verified Account' : 'Awaiting Verification'}
+               </PractitionerPill>
+            </div>
+          </PractitionerSectionCard>
+        </div>
 
-        <PractitionerSectionCard title="Specializations">
-          <div className="flex flex-wrap gap-2">
-            {profile?.specialization.map((spec, index) => (
-              <PractitionerPill key={index} tone="sky">
-                {spec}
-              </PractitionerPill>
-            ))}
-          </div>
-        </PractitionerSectionCard>
-
-        <PractitionerSectionCard title="Verification Status">
-          <div className="flex items-center gap-2">
-            <PractitionerPill tone={profile?.isVerified ? "emerald" : "amber"}>
-              {profile?.isVerified ? 'Verified' : 'Pending Verification'}
-            </PractitionerPill>
-          </div>
-        </PractitionerSectionCard>
+        <div className="lg:col-span-1">
+           <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl sticky top-28">
+              <div className="text-center mb-8">
+                 <div className="w-24 h-24 rounded-full bg-white/10 mx-auto mb-4 overflow-hidden border-2 border-white/20">
+                    {practitioner.user.avatar ? <img src={practitioner.user.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🧘</div>}
+                 </div>
+                 <h3 className="text-xl font-display font-bold">{practitioner.user.name}</h3>
+                 <p className="text-oku-purple font-script text-lg">Public Preview</p>
+              </div>
+              
+              <div className="space-y-4">
+                 <div className="bg-white/5 p-4 rounded-2xl">
+                    <p className="text-[10px] uppercase tracking-widest opacity-40 mb-1">Hourly Rate</p>
+                    <p className="text-xl font-bold">${practitioner.hourlyRate || 0}/hr</p>
+                 </div>
+                 <div className="bg-white/5 p-4 rounded-2xl">
+                    <p className="text-[10px] uppercase tracking-widest opacity-40 mb-1">Specialties</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                       {practitioner.specialization.map(s => (
+                          <span key={s} className="text-[9px] bg-white/10 px-2 py-1 rounded-md">{s}</span>
+                       ))}
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
       </div>
     </PractitionerShell>
   )

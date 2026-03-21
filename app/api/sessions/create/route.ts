@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     const practitionerProfileId = formData.get('therapistId') as string
     const dateStr = formData.get('date') as string
     const timeStr = formData.get('time') as string
+    const serviceId = formData.get('serviceId') as string
 
     if (!practitionerProfileId || !dateStr || !timeStr) {
       return new NextResponse('Missing required fields', { status: 400 })
@@ -27,33 +28,31 @@ export async function POST(req: Request) {
     const [hours, minutes] = timeStr.split(':')
     startTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
 
-    // Calculate end time (default 1 hour)
-    const endTime = new Date(startTime)
-    endTime.setHours(endTime.getHours() + 1)
+    // Calculate end time (default 1 hour or service duration)
+    let duration = 60
+    let finalServiceId = serviceId
 
-    // Ensure ClientProfile exists for the user
-    let clientProfile = await prisma.clientProfile.findUnique({
-      where: { userId: session.user.id }
-    })
-
-    if (!clientProfile) {
-      clientProfile = await prisma.clientProfile.create({
-          data: { userId: session.user.id }
-      })
+    if (serviceId) {
+        const s = await prisma.service.findUnique({ where: { id: serviceId } })
+        if (s) duration = s.duration
+    } else {
+        // Ensure a default service exists if none selected
+        const service = await prisma.service.upsert({
+            where: { name: 'Standard Therapy Session' },
+            update: {},
+            create: {
+                name: 'Standard Therapy Session',
+                description: 'One hour individual therapy session',
+                duration: 60,
+                price: 150.0,
+                isActive: true
+            }
+        })
+        finalServiceId = service.id
     }
 
-    // Ensure a default service exists
-    const service = await prisma.service.upsert({
-        where: { name: 'Standard Therapy Session' },
-        update: {},
-        create: {
-            name: 'Standard Therapy Session',
-            description: 'One hour individual therapy session',
-            duration: 60,
-            price: 150.0,
-            isActive: true
-        }
-    })
+    const endTime = new Date(startTime)
+    endTime.setMinutes(endTime.getMinutes() + duration)
 
     // Correctly resolve practitionerId (it might be a profile ID)
     let finalPractitionerId = practitionerProfileId
@@ -70,7 +69,7 @@ export async function POST(req: Request) {
       data: {
           clientId: session.user.id,
           practitionerId: finalPractitionerId,
-          serviceId: service.id,
+          serviceId: finalServiceId,
           startTime: startTime,
           endTime: endTime,
           status: AppointmentStatus.PENDING

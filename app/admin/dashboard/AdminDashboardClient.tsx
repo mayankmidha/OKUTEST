@@ -77,22 +77,71 @@ export default function AdminDashboardClient({
         
         {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Revenue</p>
-              <p className="text-4xl font-display font-bold text-oku-dark">${stats.totalRevenue.toLocaleString()}</p>
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Revenue</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">${stats.totalRevenue.toLocaleString()}</p>
+              </div>
+              <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Appointments</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">{stats.totalAppointments}</p>
+              </div>
+              <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Verified Therapists</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">{therapists.filter(t => t.practitionerProfile?.isVerified).length}</p>
+              </div>
+              <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Clients</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">{clients.length}</p>
+              </div>
             </div>
-            <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Appointments</p>
-              <p className="text-4xl font-display font-bold text-oku-dark">{stats.totalAppointments}</p>
-            </div>
-            <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Active Therapists</p>
-              <p className="text-4xl font-display font-bold text-oku-dark">{therapists.filter(t => t.practitionerProfile?.isVerified).length}</p>
-            </div>
-            <div className="bg-white p-8 rounded-[2rem] border border-oku-taupe/10 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Total Clients</p>
-              <p className="text-4xl font-display font-bold text-oku-dark">{clients.length}</p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+               <div className="bg-oku-dark text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-display font-bold mb-6 tracking-tighter">System Health</h3>
+                    <div className="space-y-6">
+                       <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                          <span className="text-sm opacity-60">Pending Verifications</span>
+                          <span className="font-bold text-oku-purple">{therapists.filter(t => !t.practitionerProfile?.isVerified).length}</span>
+                       </div>
+                       <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                          <span className="text-sm opacity-60">Active Services</span>
+                          <span className="font-bold text-oku-purple">{services.filter(s => s.isActive).length}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                          <span className="text-sm opacity-60">Database Status</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest bg-green-500/20 text-green-400 px-2 py-1 rounded">Operational</span>
+                       </div>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2" />
+               </div>
+
+               <div className="bg-white p-10 rounded-[3rem] border border-oku-taupe/10 shadow-sm">
+                  <h3 className="text-2xl font-display font-bold text-oku-dark mb-6 tracking-tighter">Recent Client Growth</h3>
+                  <div className="flex items-end gap-2 h-40">
+                     {/* Mock Chart Visualization */}
+                     {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
+                        <div key={i} className="flex-1 bg-oku-purple/20 rounded-t-lg relative group">
+                           <div 
+                             className="absolute bottom-0 left-0 right-0 bg-oku-purple rounded-t-lg transition-all duration-1000" 
+                             style={{ height: `${h}%` }}
+                           />
+                        </div>
+                     ))}
+                  </div>
+                  <div className="flex justify-between mt-4 text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40">
+                     <span>Mon</span>
+                     <span>Tue</span>
+                     <span>Wed</span>
+                     <span>Thu</span>
+                     <span>Fri</span>
+                     <span>Sat</span>
+                     <span>Sun</span>
+                  </div>
+               </div>
             </div>
           </div>
         )}
