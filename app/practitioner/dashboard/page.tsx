@@ -1,240 +1,417 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import {
-  PractitionerActionTile,
-  PractitionerLoadingState,
-  PractitionerPill,
-  PractitionerSectionCard,
-  PractitionerShell,
-  PractitionerStatCard,
-} from '@/components/practitioner-shell/practitioner-shell'
-import { getCurrentUser, logoutUser } from '@/lib/auth'
+import { Calendar, Users, Clock, DollarSign, FileText, Video, Settings, Bell, TrendingUp, Star, MessageSquare } from 'lucide-react'
 
-type PractitionerAppointment = {
-  id: string
-  startTime: string
-  endTime: string
-  notes: string | null
-  client: {
-    name: string | null
-    email: string
-  }
-}
-
-type PractitionerDashboardResponse = {
-  todays: PractitionerAppointment[]
-  stats: {
-    appointments: number
-    clients: number
-    completed: number
-  }
-}
-
-export default function PractitionerDashboard() {
-  const user = getCurrentUser()
-  const router = useRouter()
-  const [todaysAppointments, setTodaysAppointments] = useState<PractitionerAppointment[]>([])
-  const [weekStats, setWeekStats] = useState({ appointments: 0, clients: 0, completed: 0 })
-  const [isLoading, setIsLoading] = useState(true)
+export default function PractitionerDashboardPage() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [todaySessions, setTodaySessions] = useState<any[]>([])
+  const [weeklyStats, setWeeklyStats] = useState<any>({})
+  const [upcomingSessions, setUpcomingSessions] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<any[]>([])
 
   useEffect(() => {
-    if (!user || user.role !== 'THERAPIST') {
-      router.replace('/auth/login')
-      return
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      setUser(JSON.parse(userData))
     }
-
-    const fetchPractitionerData = async () => {
-      try {
-        const response = await fetch('/api/practitioner/appointments')
-
-        if (response.ok) {
-          const data = (await response.json()) as PractitionerDashboardResponse
-          setTodaysAppointments(data.todays)
-          setWeekStats(data.stats)
-        }
-      } catch (error) {
-        console.error('Error fetching practitioner data:', error)
-      } finally {
-        setIsLoading(false)
+    
+    // Mock data for demo
+    setTodaySessions([
+      {
+        id: '1',
+        client: 'Sarah Johnson',
+        time: '10:00 AM',
+        type: 'Individual Therapy',
+        status: 'confirmed',
+        duration: '60 mins'
+      },
+      {
+        id: '2',
+        client: 'Michael Chen',
+        time: '2:00 PM',
+        type: 'Assessment',
+        status: 'confirmed',
+        duration: '90 mins'
       }
-    }
+    ])
+    
+    setWeeklyStats({
+      totalSessions: 24,
+      totalHours: 36,
+      totalEarnings: 54000,
+      averageRating: 4.8,
+      newClients: 3
+    })
+    
+    setUpcomingSessions([
+      {
+        id: '1',
+        client: 'Sarah Johnson',
+        date: '2024-03-25',
+        time: '10:00 AM',
+        type: 'Individual Therapy',
+        status: 'confirmed'
+      },
+      {
+        id: '2',
+        client: 'Emma Wilson',
+        date: '2024-03-26',
+        time: '3:00 PM',
+        type: 'Follow-up',
+        status: 'pending'
+      }
+    ])
+    
+    setNotifications([
+      {
+        id: '1',
+        title: 'New Booking',
+        message: 'Emma Wilson booked a session for March 26',
+        type: 'booking',
+        date: '2024-03-24',
+        read: false
+      }
+    ])
+    
+    setLoading(false)
+  }, [])
 
-    void fetchPractitionerData()
-  }, [router, user])
-
-  if (isLoading) {
-    return <PractitionerLoadingState message="Loading your dashboard..." />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-oku-cream flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-oku-purple mx-auto"></div>
+          <p className="mt-4 text-oku-dark">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
-  if (!user || user.role !== 'THERAPIST') {
-    return null
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-oku-cream flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-oku-dark mb-4 font-display">Please Login</h1>
+          <p className="text-oku-taupe mb-8">You need to be logged in to access the dashboard.</p>
+          <Link 
+            href="/auth/login"
+            className="btn-primary"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <PractitionerShell
-      badge="Practice command center"
-      currentPath="/practitioner/dashboard"
-      description={`A calm workspace for ${user.name ?? 'your practice'} with today's schedule, caseload, and quick actions in one place.`}
-      headerActions={
-        <button
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-          onClick={() => {
-            logoutUser()
-            router.push('/auth/login')
-          }}
-          type="button"
-        >
-          Sign out
-        </button>
-      }
-      heroActions={
-        <>
-          <Link
-            className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
-            href="/practitioner/appointments"
-          >
-            View appointments
-          </Link>
-          <Link
-            className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-            href="/practitioner/availability"
-          >
-            Manage availability
-          </Link>
-        </>
-      }
-      title={`Welcome back, ${user.name ?? 'Practitioner'}`}
-    >
-      <div className="mb-6 flex flex-wrap gap-2">
-        <PractitionerPill tone="emerald">Verified practice</PractitionerPill>
-        <PractitionerPill tone="sky">{todaysAppointments.length} appointment{todaysAppointments.length === 1 ? '' : 's'} today</PractitionerPill>
-        <PractitionerPill tone="slate">{weekStats.clients} active clients</PractitionerPill>
-      </div>
+    <div className="min-h-screen bg-oku-cream">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="px-4 py-6 sm:px-0 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-oku-dark font-display">Therapist Dashboard</h1>
+              <p className="text-oku-taupe mt-2">Manage your practice and clients</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button className="relative p-2 text-oku-taupe hover:text-oku-dark transition-colors">
+                <Bell className="h-5 w-5" />
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-oku-red rounded-full"></span>
+                )}
+              </button>
+              <Link 
+                href="/practitioner/profile"
+                className="p-2 text-oku-taupe hover:text-oku-dark transition-colors"
+              >
+                <Settings className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <PractitionerStatCard
-          accent="from-sky-500 to-cyan-500"
-          detail="Appointments scheduled for today."
-          label="Today's appointments"
-          value={todaysAppointments.length}
-        />
-        <PractitionerStatCard
-          accent="from-emerald-500 to-teal-500"
-          detail="Practice flow over the current week."
-          label="This week"
-          value={weekStats.appointments}
-        />
-        <PractitionerStatCard
-          accent="from-violet-500 to-indigo-500"
-          detail="Clients currently in your caseload."
-          label="Active clients"
-          value={weekStats.clients}
-        />
-        <PractitionerStatCard
-          accent="from-amber-500 to-orange-500"
-          detail="Completed sessions this week."
-          label="Completed"
-          value={weekStats.completed}
-        />
-      </div>
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
-        <PractitionerSectionCard
-          action={
-            <Link className="text-sm font-medium text-sky-700 transition hover:text-sky-900" href="/practitioner/appointments">
-              View calendar
-            </Link>
-          }
-          description="Today's appointments are surfaced here with time, client context, and note previews."
-          title="Today's schedule"
-        >
-          {todaysAppointments.length > 0 ? (
+        {/* Today's Schedule */}
+        <div className="px-4 py-6 sm:px-0 mb-8">
+          <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-oku-dark font-display">Today's Schedule</h2>
+              <Link 
+                href="/practitioner/schedule"
+                className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
+              >
+                View Full Schedule →
+              </Link>
+            </div>
             <div className="space-y-4">
-              {todaysAppointments.map((appointment) => (
-                <article
-                  className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-4 transition hover:border-slate-300 hover:bg-white"
-                  key={appointment.id}
-                >
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-950">{appointment.client.name ?? 'Client'}</h3>
-                        <p className="mt-1 text-sm text-slate-500">{appointment.client.email}</p>
-                      </div>
-                    <PractitionerPill tone="emerald">Scheduled</PractitionerPill>
+              {todaySessions.map((session) => (
+                <div key={session.id} className="flex items-center justify-between p-4 bg-oku-cream/50 rounded-card border-l-4 border-oku-green">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-oku-green/10 rounded-full flex items-center justify-center">
+                      <Video className="h-5 w-5 text-oku-green" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-oku-dark">{session.client}</p>
+                      <p className="text-sm text-oku-taupe">{session.type} • {session.duration}</p>
+                    </div>
                   </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-600">
-                    <span className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-                      {new Date(appointment.startTime).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                      {' - '}
-                      {new Date(appointment.endTime).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                  <div className="text-right">
+                    <p className="font-medium text-oku-dark">{session.time}</p>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-oku-green/10 text-oku-green">
+                      {session.status}
                     </span>
                   </div>
-
-                  {appointment.notes ? <p className="mt-3 text-sm leading-6 text-slate-600">{appointment.notes}</p> : null}
-                </article>
+                </div>
               ))}
             </div>
-          ) : (
-            <div className="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
-              <p className="text-base font-medium text-slate-900">No appointments scheduled for today.</p>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Your calendar is clear, so this is a good time to update availability or review client context.
-              </p>
-            </div>
-          )}
-        </PractitionerSectionCard>
-
-        <PractitionerSectionCard
-          action={
-            <Link className="text-sm font-medium text-sky-700 transition hover:text-sky-900" href="/practitioner/profile">
-              Open profile
-            </Link>
-          }
-          description="Fast access to the parts of the workspace you use most during a live day."
-          title="Quick actions"
-        >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <PractitionerActionTile
-              accent="from-sky-500 to-cyan-500"
-              description="Open your live schedule and review the day's flow."
-              href="/practitioner/appointments"
-              icon="A"
-              title="Appointments"
-            />
-            <PractitionerActionTile
-              accent="from-emerald-500 to-teal-500"
-              description="See the people already in your care and their context."
-              href="/practitioner/clients"
-              icon="C"
-              title="Clients"
-            />
-            <PractitionerActionTile
-              accent="from-violet-500 to-indigo-500"
-              description="Adjust working hours and weekly availability."
-              href="/practitioner/availability"
-              icon="V"
-              title="Availability"
-            />
-            <PractitionerActionTile
-              accent="from-amber-500 to-orange-500"
-              description="Review your verified profile and update details."
-              href="/practitioner/profile"
-              icon="P"
-              title="Profile"
-            />
           </div>
-        </PractitionerSectionCard>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="px-4 py-6 sm:px-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-oku-taupe">Weekly Sessions</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">{weeklyStats.totalSessions}</p>
+                </div>
+                <div className="h-12 w-12 bg-oku-blue/10 rounded-full flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-oku-blue" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <Link 
+                  href="/practitioner/schedule"
+                  className="text-sm text-oku-blue hover:text-oku-purple font-medium transition-colors"
+                >
+                  Manage Schedule →
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-oku-taupe">Total Hours</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">{weeklyStats.totalHours}</p>
+                </div>
+                <div className="h-12 w-12 bg-oku-green/10 rounded-full flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-oku-green" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <Link 
+                  href="/practitioner/analytics"
+                  className="text-sm text-oku-green hover:text-oku-purple font-medium transition-colors"
+                >
+                  View Analytics →
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-oku-taupe">Earnings</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">₹{weeklyStats.totalEarnings.toLocaleString()}</p>
+                </div>
+                <div className="h-12 w-12 bg-oku-purple/10 rounded-full flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-oku-purple" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <Link 
+                  href="/practitioner/earnings"
+                  className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
+                >
+                  View Earnings →
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-oku-taupe">Avg Rating</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">{weeklyStats.averageRating}</p>
+                </div>
+                <div className="h-12 w-12 bg-oku-pink/10 rounded-full flex items-center justify-center">
+                  <Star className="h-6 w-6 text-oku-pink" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <Link 
+                  href="/practitioner/reviews"
+                  className="text-sm text-oku-pink hover:text-oku-purple font-medium transition-colors"
+                >
+                  View Reviews →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="px-4 py-6 sm:px-0">
+          <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+            <h2 className="text-lg font-semibold text-oku-dark mb-4 font-display">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link 
+                href="/practitioner/schedule"
+                className="flex items-center gap-3 p-4 bg-oku-blue/5 border border-oku-blue/20 rounded-card hover:bg-oku-blue/10 transition-colors"
+              >
+                <Calendar className="h-5 w-5 text-oku-blue" />
+                <div>
+                  <p className="font-medium text-oku-dark">Schedule</p>
+                  <p className="text-xs text-oku-taupe">Manage availability</p>
+                </div>
+              </Link>
+              
+              <Link 
+                href="/practitioner/clients"
+                className="flex items-center gap-3 p-4 bg-oku-green/5 border border-oku-green/20 rounded-card hover:bg-oku-green/10 transition-colors"
+              >
+                <Users className="h-5 w-5 text-oku-green" />
+                <div>
+                  <p className="font-medium text-oku-dark">Clients</p>
+                  <p className="text-xs text-oku-taupe">View client list</p>
+                </div>
+              </Link>
+              
+              <Link 
+                href="/practitioner/appointments"
+                className="flex items-center gap-3 p-4 bg-oku-purple/5 border border-oku-purple/20 rounded-card hover:bg-oku-purple/10 transition-colors"
+              >
+                <Video className="h-5 w-5 text-oku-purple" />
+                <div>
+                  <p className="font-medium text-oku-dark">Sessions</p>
+                  <p className="text-xs text-oku-taupe">View appointments</p>
+                </div>
+              </Link>
+              
+              <Link 
+                href="/practitioner/notes"
+                className="flex items-center gap-3 p-4 bg-oku-pink/5 border border-oku-pink/20 rounded-card hover:bg-oku-pink/10 transition-colors"
+              >
+                <FileText className="h-5 w-5 text-oku-pink" />
+                <div>
+                  <p className="font-medium text-oku-dark">Notes</p>
+                  <p className="text-xs text-oku-taupe">Session notes</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Upcoming Sessions & New Clients */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 py-6 sm:px-0">
+          {/* Upcoming Sessions */}
+          <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-oku-dark font-display">Upcoming Sessions</h2>
+              <Link 
+                href="/practitioner/appointments"
+                className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
+              >
+                View All
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {upcomingSessions.map((session) => (
+                <div key={session.id} className="flex items-center justify-between p-4 bg-oku-cream/50 rounded-card">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                      session.status === 'confirmed' ? 'bg-oku-green/10' : 'bg-oku-orange/10'
+                    }`}>
+                      <Calendar className={`h-5 w-5 ${
+                        session.status === 'confirmed' ? 'text-oku-green' : 'text-oku-orange'
+                      }`} />
+                    </div>
+                    <div>
+                      <p className="font-medium text-oku-dark">{session.client}</p>
+                      <p className="text-sm text-oku-taupe">{session.type}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium text-oku-dark">{session.time}</p>
+                    <p className="text-sm text-oku-taupe">{session.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* New Clients */}
+          <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-oku-dark font-display">New Clients</h2>
+              <Link 
+                href="/practitioner/clients"
+                className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
+              >
+                View All
+              </Link>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-oku-cream/50 rounded-card">
+                <div className="h-10 w-10 bg-oku-blue/10 rounded-full flex items-center justify-center">
+                  <Users className="h-5 w-5 text-oku-blue" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-oku-dark">Emma Wilson</p>
+                  <p className="text-sm text-oku-taupe">Joined March 20, 2024</p>
+                </div>
+                <div className="text-right">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-oku-blue/10 text-oku-blue">
+                    New
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-oku-cream/50 rounded-card">
+                <div className="h-10 w-10 bg-oku-green/10 rounded-full flex items-center justify-center">
+                  <Users className="h-5 w-5 text-oku-green" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-oku-dark">Michael Chen</p>
+                  <p className="text-sm text-oku-taupe">Joined March 18, 2024</p>
+                </div>
+                <div className="text-right">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-oku-green/10 text-oku-green">
+                    Active
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Notifications */}
+        {notifications.filter(n => !n.read).length > 0 && (
+          <div className="px-4 py-6 sm:px-0">
+            <div className="bg-oku-blue/5 border border-oku-blue/20 rounded-card p-4">
+              <div className="flex items-center gap-3">
+                <Bell className="h-5 w-5 text-oku-blue" />
+                <div className="flex-1">
+                  <p className="font-medium text-oku-dark">New Booking</p>
+                  <p className="text-sm text-oku-taupe">{notifications.find(n => !n.read)?.message}</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    setNotifications(notifications.map(n => ({ ...n, read: true })))
+                  }}
+                  className="text-sm text-oku-blue hover:text-oku-purple font-medium transition-colors"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </PractitionerShell>
+    </div>
   )
 }

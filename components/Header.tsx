@@ -11,12 +11,14 @@ export default function Header() {
   const isActive = (path: string) => pathname === path ? 'text-oku-dark font-bold' : 'text-oku-taupe hover:text-oku-dark'
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent backdrop-blur-sm">
+    <header className="sticky top-0 z-50 bg-oku-cream/95 backdrop-blur-sm border-b border-oku-taupe/10">
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
-            <img src="/images/logo.png" alt="OKU Therapy" className="h-14 w-auto drop-shadow-sm transition-transform group-hover:scale-105" />
+            <span className="font-display text-2xl font-bold text-oku-dark group-hover:text-oku-purple transition-colors">
+              OKU Therapy
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
