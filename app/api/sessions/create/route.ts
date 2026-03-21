@@ -55,11 +55,21 @@ export async function POST(req: Request) {
         }
     })
 
+    // Correctly resolve practitionerId (it might be a profile ID)
+    let finalPractitionerId = practitionerProfileId
+    const profile = await prisma.practitionerProfile.findUnique({
+      where: { id: practitionerProfileId },
+      select: { userId: true }
+    })
+    if (profile) {
+      finalPractitionerId = profile.userId
+    }
+
     // Create Appointment with PENDING status (requires advance payment)
     const appointment = await prisma.appointment.create({
       data: {
           clientId: session.user.id,
-          practitionerId: practitionerProfileId,
+          practitionerId: finalPractitionerId,
           serviceId: service.id,
           startTime: startTime,
           endTime: endTime,

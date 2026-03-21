@@ -26,12 +26,22 @@ export async function POST(req: Request) {
   const start = new Date(startTime)
   const end = new Date(start.getTime() + 15 * 60000)
 
+  // Correctly resolve practitionerId (it might be a profile ID)
+  let finalPractitionerId = practitionerId
+  const profile = await prisma.practitionerProfile.findUnique({
+    where: { id: practitionerId },
+    select: { userId: true }
+  })
+  if (profile) {
+    finalPractitionerId = profile.userId
+  }
+
   // If logged in, create real appointment
   if (session?.user?.id) {
     const appointment = await prisma.appointment.create({
       data: {
         clientId: session.user.id,
-        practitionerId: practitionerId,
+        practitionerId: finalPractitionerId,
         serviceId: service.id,
         startTime: start,
         endTime: end,
