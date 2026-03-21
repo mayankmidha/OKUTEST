@@ -27,7 +27,7 @@ export default function V1LoginPage() {
       else if (isTherapist) redirectUrl = '/practitioner/dashboard'
       
       // Store user in localStorage for session
-      localStorage.setItem('oku_user', JSON.stringify({
+      localStorage.setItem('user', JSON.stringify({
         id: Math.random().toString(36).substr(2, 9),
         email,
         name: email.split('@')[0],
@@ -139,6 +139,10 @@ export default function V1LoginPage() {
             <div>
               <span className="font-medium">Admin:</span> admin@demo.com / demo123
             </div>
+          </div>
+          <div className="mt-4 text-xs text-gray-500">
+            <p><strong>Note:</strong> Use these credentials to test different dashboard access levels.</p>
+            <p>Client → Client Dashboard | Practitioner → Therapist Dashboard | Admin → Admin Dashboard</p>
           </div>
         </div>
       </div>

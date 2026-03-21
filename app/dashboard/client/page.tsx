@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Calendar, Clock, TrendingUp, Users, FileText, Heart, MessageSquare, Video, CreditCard, Settings, Bell } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Calendar, Clock, TrendingUp, Users, FileText, Heart, MessageSquare, Video, CreditCard, Settings, Bell, LogOut } from 'lucide-react'
 
 export default function ClientDashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -10,6 +11,13 @@ export default function ClientDashboardPage() {
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([])
   const [recentActivity, setRecentActivity] = useState<any[]>([])
   const [notifications, setNotifications] = useState<any[]>([])
+  const router = useRouter()
+
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    setUser(null)
+    router.push('/auth/login')
+  }
 
   useEffect(() => {
     const userData = localStorage.getItem('user')
@@ -121,6 +129,13 @@ export default function ClientDashboardPage() {
               >
                 <Settings className="h-5 w-5" />
               </Link>
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-oku-taupe hover:text-oku-dark transition-colors"
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>

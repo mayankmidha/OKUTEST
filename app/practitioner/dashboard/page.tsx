@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Calendar, Users, Clock, DollarSign, FileText, Video, Settings, Bell, TrendingUp, Star, MessageSquare } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Calendar, Users, Clock, DollarSign, FileText, Video, Settings, Bell, TrendingUp, Star, MessageSquare, LogOut } from 'lucide-react'
 
 export default function PractitionerDashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -11,6 +12,13 @@ export default function PractitionerDashboardPage() {
   const [weeklyStats, setWeeklyStats] = useState<any>({})
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([])
   const [notifications, setNotifications] = useState<any[]>([])
+  const router = useRouter()
+
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    setUser(null)
+    router.push('/auth/login')
+  }
 
   useEffect(() => {
     const userData = localStorage.getItem('user')
@@ -130,6 +138,13 @@ export default function PractitionerDashboardPage() {
               >
                 <Settings className="h-5 w-5" />
               </Link>
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-oku-taupe hover:text-oku-dark transition-colors"
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
