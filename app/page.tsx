@@ -1,5 +1,5 @@
-import FastHomepage from '@/components/FastHomepage'
+import V1Homepage from '@/components/V1Homepage'
 
 export default function HomePage() {
-  return <FastHomepage />
+  return <V1Homepage />
 }

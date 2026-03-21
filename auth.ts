@@ -1,11 +1,20 @@
-import NextAuth from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/lib/prisma"
+import NextAuth, { DefaultSession } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import bcrypt from "bcryptjs"
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      role: string
+    } & DefaultSession["user"]
+  }
+  
+  interface User {
+    role: string
+  }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       credentials: {
@@ -13,36 +22,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        let user = null
- 
-        // logic to verify if user exists
-        user = await prisma.user.findUnique({
-          where: { email: credentials.email as string }
-        })
- 
-        if (!user) {
-          throw new Error("User not found.")
+        // Demo mode - accept any email/password
+        const email = credentials.email as string
+        const password = credentials.password as string
+        
+        if (!email || !password) {
+          throw new Error("Email and password required")
         }
         
-        if (!user.password) {
-            throw new Error("User has no password set.")
+        // Determine role based on email
+        const isAdmin = email.includes('admin')
+        const isTherapist = email.includes('therapist') || email.includes('doctor') || email.includes('dr.')
+        
+        let role = 'CLIENT'
+        if (isAdmin) role = 'ADMIN'
+        else if (isTherapist) role = 'THERAPIST'
+        
+        return {
+          id: Math.random().toString(36).substr(2, 9),
+          email,
+          name: email.split('@')[0],
+          role
         }
-
-        const passwordsMatch = await bcrypt.compare(credentials.password as string, user.password)
-
-        if (!passwordsMatch) {
-            throw new Error("Invalid password.")
-        }
- 
-        // return user object with their profile data
-        return user
       },
     }),
   ],
   pages: {
     signIn: "/auth/login",
   },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET || "demo-secret-key",
+  session: {
+    strategy: "jwt"
+  },
+  trustHost: true,
   callbacks: {
     async session({ session, token }: { session: any, token: any }) {
         if (token.sub && session.user) {
@@ -53,22 +65,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         return session;
     },
-    async jwt({ token }: { token: any }) {
-      if (!token.sub) return token;
-      const user = await prisma.user.findUnique({ where: { id: token.sub } });
-      if (!user) return token;
-      token.role = user.role;
+    async jwt({ token, user }: { token: any, user?: any }) {
+      if (user) {
+        token.role = user.role;
+      }
       return token;
-    },
-    async redirect({ url, baseUrl }: { url: string, baseUrl: string }) {
-      // If the user is just logging in and being sent to /dashboard (default), 
-      // we can let the middleware or the page itself handle the refined redirect,
-      // or we can try to influence it here. 
-      // However, the cleanest way is often a middleware or a client-side check.
-      // For now, let's ensure it at least returns to the baseUrl if it's an internal link.
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
     }
   }
 })
