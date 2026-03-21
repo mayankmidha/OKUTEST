@@ -134,7 +134,7 @@ export default function ExactV1Homepage() {
             <div className="grid grid-cols-4 gap-8 mb-12">
               <div className="text-center">
                 <img 
-                  src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png" 
+                  src="/uploads/2025/06/Frame-23-2.png" 
                   alt="Slow Healing" 
                   className="w-24 h-24 mx-auto mb-4"
                 />
@@ -143,7 +143,7 @@ export default function ExactV1Homepage() {
               </div>
               <div className="text-center">
                 <img 
-                  src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23.png" 
+                  src="/uploads/2025/06/Frame-23.png" 
                   alt="Depth Work" 
                   className="w-24 h-24 mx-auto mb-4"
                 />
@@ -152,7 +152,7 @@ export default function ExactV1Homepage() {
               </div>
               <div className="text-center">
                 <img 
-                  src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-3.png" 
+                  src="/uploads/2025/06/Frame-23-3.png" 
                   alt="Whole Self" 
                   className="w-24 h-24 mx-auto mb-4"
                 />
@@ -161,7 +161,7 @@ export default function ExactV1Homepage() {
               </div>
               <div className="text-center">
                 <img 
-                  src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-1.png" 
+                  src="/uploads/2025/06/Frame-23-1.png" 
                   alt="Welcoming Space" 
                   className="w-24 h-24 mx-auto mb-4"
                 />
@@ -193,7 +193,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-3.png" 
+                src="/uploads/2025/06/Frame-23-3.png" 
                 alt="Whole Self" 
                 className="w-20 h-20 mx-auto mb-4"
               />
@@ -202,7 +202,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-1.png" 
+                src="/uploads/2025/06/Frame-23-1.png" 
                 alt="Welcoming Space" 
                 className="w-20 h-20 mx-auto mb-4"
               />
@@ -241,7 +241,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="order-first lg:order-last">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Vector-1.png" 
+                src="/uploads/2025/06/Vector-1.png" 
                 alt="Qualified and Ethical" 
                 className="w-full h-auto"
               />
@@ -270,7 +270,7 @@ export default function ExactV1Homepage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" 
+                src="/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" 
                 alt="Dr. Suraj Singh" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />
@@ -279,7 +279,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg" 
+                src="/uploads/2025/07/Tanisha_-821x1024.jpg" 
                 alt="Tanisha Singh" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />
@@ -288,7 +288,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Rananjay--579x1024.jpg" 
+                src="/uploads/2025/07/Rananjay--579x1024.jpg" 
                 alt="Rananjay Singh" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />
@@ -297,7 +297,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Amna-670x1024.jpg" 
+                src="/uploads/2025/07/Amna-670x1024.jpg" 
                 alt="Amna Ansari" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />
@@ -306,7 +306,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Mohit-911x1024.jpg" 
+                src="/uploads/2025/07/Mohit-911x1024.jpg" 
                 alt="Mohit Dudeja" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />
@@ -315,7 +315,7 @@ export default function ExactV1Homepage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg" 
+                src="/uploads/2025/07/gursheel_pfp-1024x980.jpg" 
                 alt="Gursheel Kaur" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />

@@ -20,7 +20,7 @@ export default function OriginalV1AboutUs() {
           </div>
           <div className="order-first lg:order-last">
             <img 
-              src="https://okutherapy.com/wp-content/uploads/2025/07/Group-21-1024x520.png" 
+              src="/uploads/2025/07/Group-21-1024x520.png" 
               alt="OKU Therapy" 
               className="w-full h-auto rounded-lg shadow-lg"
             />
