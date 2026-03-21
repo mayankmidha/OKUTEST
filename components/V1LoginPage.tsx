@@ -22,7 +22,7 @@ export default function V1LoginPage() {
       const isAdmin = email.includes('admin')
       const isTherapist = email.includes('therapist') || email.includes('practitioner')
       
-      let redirectUrl = '/dashboard'
+      let redirectUrl = '/dashboard/client'
       if (isAdmin) redirectUrl = '/admin/dashboard'
       else if (isTherapist) redirectUrl = '/practitioner/dashboard'
       
