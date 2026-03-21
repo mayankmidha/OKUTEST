@@ -1,5 +1,7 @@
 import NextAuth, { DefaultSession } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import { prisma } from "@/lib/prisma"
+import bcrypt from "bcryptjs"
 
 declare module "next-auth" {
   interface Session {
@@ -18,31 +20,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        // Demo mode - accept any email/password
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
         const email = credentials.email as string
         const password = credentials.password as string
-        
-        if (!email || !password) {
-          throw new Error("Email and password required")
+
+        // REAL Authentication from DB
+        const user = await prisma.user.findUnique({
+          where: { email }
+        })
+
+        if (!user || !user.password) {
+          return null
         }
-        
-        // Determine role based on email
-        const isAdmin = email.includes('admin')
-        const isTherapist = email.includes('therapist') || email.includes('doctor') || email.includes('dr.')
-        
-        let role = 'CLIENT'
-        if (isAdmin) role = 'ADMIN'
-        else if (isTherapist) role = 'THERAPIST'
-        
+
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+
+        if (!isPasswordValid) {
+          return null
+        }
+
         return {
-          id: Math.random().toString(36).substr(2, 9),
-          email,
-          name: email.split('@')[0],
-          role
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role
         }
       },
     }),
@@ -50,7 +58,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/login",
   },
-  secret: process.env.AUTH_SECRET || "demo-secret-key",
   session: {
     strategy: "jwt"
   },
