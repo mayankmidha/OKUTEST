@@ -20,7 +20,7 @@ export default function DashboardPage() {
       return
     }
 
-    if (session.user?.role === 'PRACTITIONER') {
+    if (session.user?.role === 'THERAPIST') {
       router.replace('/practitioner/dashboard')
       return
     }

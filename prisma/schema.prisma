@@ -241,7 +241,7 @@ model AuditLog {
 
 enum UserRole {
   CLIENT
-  PRACTITIONER
+  THERAPIST
   ADMIN
 }
 

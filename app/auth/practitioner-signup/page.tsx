@@ -58,7 +58,7 @@ export default function PractitionerSignupPage() {
         },
         body: JSON.stringify({
           ...formData,
-          role: 'PRACTITIONER',
+          role: 'THERAPIST',
           consultationFee: parseFloat(formData.consultationFee) || 0
         }),
       })

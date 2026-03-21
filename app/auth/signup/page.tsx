@@ -15,7 +15,7 @@ const roles = [
   },
   {
     label: 'Practitioner',
-    value: 'PRACTITIONER',
+    value: 'THERAPIST',
     description: 'Create a professional account to manage appointments, clients, and availability.',
   },
 ] as const

@@ -9,7 +9,7 @@ import { UserRole } from "@prisma/client"
 export default async function ScheduleManagementPage() {
   const session = await auth()
 
-  if (!session?.user || session.user.role !== UserRole.PRACTITIONER) {
+  if (!session?.user || session.user.role !== UserRole.THERAPIST) {
     redirect("/dashboard")
   }
 

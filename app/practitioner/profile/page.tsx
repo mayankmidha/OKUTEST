@@ -30,7 +30,7 @@ export default function PractitionerProfilePage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!user || user.role !== 'PRACTITIONER') {
+    if (!user || user.role !== 'THERAPIST') {
       router.replace('/auth/login')
       return
     }
@@ -63,7 +63,7 @@ export default function PractitionerProfilePage() {
     return <PractitionerLoadingState message="Loading profile..." />
   }
 
-  if (!user || user.role !== 'PRACTITIONER') {
+  if (!user || user.role !== 'THERAPIST') {
     return null
   }
 

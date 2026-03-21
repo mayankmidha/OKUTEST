@@ -6,8 +6,8 @@ import { UserRole } from '@prisma/client'
 export async function POST(req: Request) {
   const session = await auth()
   
-  // Check for PRACTITIONER role
-  if (!session?.user?.email || session.user.role !== UserRole.PRACTITIONER) {
+  // Check for THERAPIST role
+  if (!session?.user?.email || session.user.role !== UserRole.THERAPIST) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
