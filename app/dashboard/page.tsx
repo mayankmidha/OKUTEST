@@ -1,42 +1,26 @@
-'use client'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { getCurrentUser } from '@/lib/auth'
+export default async function DashboardPage() {
+  const session = await auth()
 
-export default function DashboardPage() {
-  const router = useRouter()
-  const user = getCurrentUser()
+  if (!session?.user) {
+    redirect('/auth/login')
+  }
 
-  useEffect(() => {
-    if (!user) {
-      router.replace('/auth/login')
-      return
-    }
+  const role = session.user.role
 
-    if (user.role === 'CLIENT') {
-      router.replace('/dashboard/client')
-      return
-    }
+  if (role === 'CLIENT') {
+    redirect('/dashboard/client')
+  }
 
-    if (user.role === 'THERAPIST') {
-      router.replace('/practitioner/dashboard')
-      return
-    }
+  if (role === 'THERAPIST') {
+    redirect('/practitioner/dashboard')
+  }
 
-    if (user.role === 'ADMIN') {
-      router.replace('/admin/dashboard')
-      return
-    }
+  if (role === 'ADMIN') {
+    redirect('/admin/dashboard')
+  }
 
-    router.replace('/auth/login')
-  }, [user, router])
-
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-gray-600">Redirecting to your dashboard...</p>
-      </div>
-    </div>
-  )
+  redirect('/auth/login')
 }

@@ -89,6 +89,56 @@ export default function ExactV1Homepage() {
         </div>
       </section>
 
+      {/* Approach Section - with images */}
+      <div className="bg-gray-50 py-32">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-4xl font-display font-bold text-gray-900 mb-16 text-center">A place to <b>explore</b></h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div className="text-center group">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png" 
+                alt="Slow Healing" 
+                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
+              />
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Slow Healing</h3>
+              <p className="text-gray-600">We move at the pace your story asks for—never rushed.</p>
+            </div>
+            <div className="text-center group">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23.png" 
+                alt="Depth Work" 
+                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
+              />
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Depth Work</h3>
+              <p className="text-gray-600">We meet what's beneath, not just what's visible.</p>
+            </div>
+            <div className="text-center group">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-3.png" 
+                alt="Whole Self" 
+                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
+              />
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Whole Self</h3>
+              <p className="text-gray-600">Your culture, identity, body—all of you is held here.</p>
+            </div>
+            <div className="text-center group">
+              <img 
+                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-1.png" 
+                alt="Welcoming Space" 
+                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
+              />
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Welcoming Space</h3>
+              <p className="text-gray-600">A calm, non-clinical space designed for ease and safety.</p>
+            </div>
+          </div>
+
+          <p className="mt-20 text-xl text-gray-600 max-w-4xl mx-auto text-center font-display italic leading-relaxed">
+            Oku was created as a gentle refuge for those <strong>who feel unseen</strong> in traditional therapy spaces. Whether you're unpacking generational pain, navigating identity, or simply seeking to <strong>reconnect with yourself</strong>, we invite you to explore—<strong>without pressure or performance.</strong>
+          </p>
+        </div>
+      </div>
+
       {/* Services List */}
       <div id="services" className="py-32 bg-white">
         <div className="max-w-6xl mx-auto px-6">

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { signIn } from 'next-auth/react'
 
 export default function V1LoginPage() {
   const [email, setEmail] = useState('')
@@ -16,30 +17,24 @@ export default function V1LoginPage() {
     setIsLoading(true)
     setError('')
 
-    // Simple demo authentication
-    if (email && password) {
-      // Determine role based on email
-      const isAdmin = email.includes('admin')
-      const isTherapist = email.includes('therapist') || email.includes('practitioner')
-      
-      let redirectUrl = '/dashboard/client'
-      if (isAdmin) redirectUrl = '/admin/dashboard'
-      else if (isTherapist) redirectUrl = '/practitioner/dashboard'
-      
-      // Store user in localStorage for session
-      localStorage.setItem('user', JSON.stringify({
-        id: Math.random().toString(36).substr(2, 9),
+    try {
+      const result = await signIn('credentials', {
         email,
-        name: email.split('@')[0],
-        role: isAdmin ? 'ADMIN' : isTherapist ? 'THERAPIST' : 'CLIENT'
-      }))
-      
-      router.push(redirectUrl)
-    } else {
-      setError('Please enter email and password')
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError(result.error)
+      } else {
+        router.push('/dashboard')
+        router.refresh()
+      }
+    } catch (err) {
+      setError('An error occurred during sign in')
+    } finally {
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
   }
 
   return (
