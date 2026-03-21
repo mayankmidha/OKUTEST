@@ -3,13 +3,17 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, TrendingUp, Users, FileText, Heart, MessageSquare, Video, CreditCard, Settings, Bell, LogOut } from 'lucide-react'
+import { Calendar, Clock, Users, FileText, Heart, MessageSquare, Video, CreditCard, Settings, Bell, LogOut, Search, Filter, Star, MapPin, Phone, Mail } from 'lucide-react'
+import { therapists, getAvailableTherapists } from '@/lib/therapists'
 
 export default function ClientDashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [upcomingSessions, setUpcomingSessions] = useState<any[]>([])
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [selectedTherapist, setSelectedTherapist] = useState<any>(null)
+  const [bookingStep, setBookingStep] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [specialtyFilter, setSpecialtyFilter] = useState('all')
+  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([])
   const [notifications, setNotifications] = useState<any[]>([])
   const router = useRouter()
 
@@ -25,49 +29,24 @@ export default function ClientDashboardPage() {
       setUser(JSON.parse(userData))
     }
     
-    // Mock data for demo
-    setUpcomingSessions([
+    setUpcomingAppointments([
       {
         id: '1',
-        therapist: 'Dr. Suraj Singh',
+        therapist: therapists[0],
         date: '2024-03-25',
         time: '10:00 AM',
         type: 'Individual Therapy',
-        status: 'confirmed'
-      },
-      {
-        id: '2',
-        therapist: 'Tanisha Singh',
-        date: '2024-03-28',
-        time: '2:00 PM',
-        type: 'Assessment',
-        status: 'pending'
-      }
-    ])
-    
-    setRecentActivity([
-      {
-        id: '1',
-        type: 'session',
-        title: 'Session with Dr. Suraj Singh',
-        description: 'Completed individual therapy session',
-        date: '2024-03-20',
-        status: 'completed'
-      },
-      {
-        id: '2',
-        type: 'assessment',
-        title: 'Anxiety Assessment',
-        description: 'Completed anxiety assessment',
-        date: '2024-03-18',
-        status: 'completed'
+        status: 'confirmed',
+        duration: '60 mins',
+        location: 'Online',
+        notes: 'Initial consultation'
       }
     ])
     
     setNotifications([
       {
         id: '1',
-        title: 'Session Reminder',
+        title: 'Appointment Reminder',
         message: 'Your session with Dr. Suraj Singh is tomorrow at 10:00 AM',
         type: 'reminder',
         date: '2024-03-24',
@@ -77,6 +56,30 @@ export default function ClientDashboardPage() {
     
     setLoading(false)
   }, [])
+
+  const availableTherapists = getAvailableTherapists()
+  const allSpecialties = Array.from(new Set(therapists.flatMap(t => t.specialties)))
+  
+  const filteredTherapists = availableTherapists.filter(therapist => {
+    const matchesSearch = therapist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         therapist.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         therapist.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+    
+    const matchesSpecialty = specialtyFilter === 'all' || 
+                           therapist.specialties.some(s => s.toLowerCase().includes(specialtyFilter.toLowerCase()))
+    
+    return matchesSearch && matchesSpecialty
+  })
+
+  const handleBookAppointment = (therapist: any) => {
+    setSelectedTherapist(therapist)
+    setBookingStep(2)
+  }
+
+  const handleTimeSlotSelect = (date: string, time: string) => {
+    alert(`Appointment booked with ${selectedTherapist.name} on ${date} at ${time}`)
+    setBookingStep(3)
+  }
 
   if (loading) {
     return (
@@ -113,8 +116,10 @@ export default function ClientDashboardPage() {
         <div className="px-4 py-6 sm:px-0 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-oku-dark font-display">Welcome back, {user.name || user.email}</h1>
-              <p className="text-oku-taupe mt-2">Here's your mental health journey overview</p>
+              <h1 className="text-3xl font-bold text-oku-dark font-display">
+                Welcome back, {user.name || user.email}
+              </h1>
+              <p className="text-oku-taupe mt-2">Your mental health journey continues</p>
             </div>
             <div className="flex items-center gap-3">
               <button className="relative p-2 text-oku-taupe hover:text-oku-dark transition-colors">
@@ -146,63 +151,25 @@ export default function ClientDashboardPage() {
             <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-oku-taupe">Upcoming Sessions</p>
-                  <p className="text-2xl font-bold text-oku-dark mt-1">{upcomingSessions.length}</p>
+                  <p className="text-sm font-medium text-oku-taupe">Upcoming Appointments</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">{upcomingAppointments.length}</p>
                 </div>
                 <div className="h-12 w-12 bg-oku-blue/10 rounded-full flex items-center justify-center">
                   <Calendar className="h-6 w-6 text-oku-blue" />
                 </div>
               </div>
-              <div className="mt-4">
-                <Link 
-                  href="/dashboard/client/book"
-                  className="text-sm text-oku-blue hover:text-oku-purple font-medium transition-colors"
-                >
-                  Book New Session →
-                </Link>
-              </div>
             </div>
-
             <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-oku-taupe">Completed Sessions</p>
-                  <p className="text-2xl font-bold text-oku-dark mt-1">12</p>
+                  <p className="text-sm font-medium text-oku-taupe">Therapists Available</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">{availableTherapists.length}</p>
                 </div>
                 <div className="h-12 w-12 bg-oku-green/10 rounded-full flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-oku-green" />
+                  <Users className="h-6 w-6 text-oku-green" />
                 </div>
-              </div>
-              <div className="mt-4">
-                <Link 
-                  href="/dashboard/client/sessions"
-                  className="text-sm text-oku-green hover:text-oku-purple font-medium transition-colors"
-                >
-                  View All Sessions →
-                </Link>
               </div>
             </div>
-
-            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-oku-taupe">Assessments</p>
-                  <p className="text-2xl font-bold text-oku-dark mt-1">3</p>
-                </div>
-                <div className="h-12 w-12 bg-oku-purple/10 rounded-full flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-oku-purple" />
-                </div>
-              </div>
-              <div className="mt-4">
-                <Link 
-                  href="/dashboard/client/assessments"
-                  className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-                >
-                  Take Assessment →
-                </Link>
-              </div>
-            </div>
-
             <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
               <div className="flex items-center justify-between">
                 <div>
@@ -213,173 +180,216 @@ export default function ClientDashboardPage() {
                   <Heart className="h-6 w-6 text-oku-pink" />
                 </div>
               </div>
-              <div className="mt-4">
-                <Link 
-                  href="/dashboard/client/mood"
-                  className="text-sm text-oku-pink hover:text-oku-purple font-medium transition-colors"
-                >
-                  Track Mood →
-                </Link>
+            </div>
+            <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-oku-taupe">Assessments</p>
+                  <p className="text-2xl font-bold text-oku-dark mt-1">3</p>
+                </div>
+                <div className="h-12 w-12 bg-oku-purple/10 rounded-full flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-oku-purple" />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Booking Flow */}
+        <div className="px-4 py-6 sm:px-0">
+          <div className="bg-white rounded-card shadow-sm border border-oku-taupe/10 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-oku-dark font-display">Book a Session</h2>
+              <div className="flex items-center gap-2 text-sm text-oku-taupe">
+                {bookingStep > 1 && (
+                  <button 
+                    onClick={() => setBookingStep(bookingStep - 1)}
+                    className="text-oku-purple hover:text-oku-blue font-medium"
+                  >
+                    ← Back
+                  </button>
+                )}
+                <span className="text-oku-taupe">Step {bookingStep} of 3</span>
+              </div>
+            </div>
+
+            {bookingStep === 1 && (
+              <div>
+                <h3 className="text-lg font-medium text-oku-dark mb-4">Find Your Therapist</h3>
+                
+                {/* Search and Filters */}
+                <div className="mb-6 space-y-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-5 w-5 text-oku-taupe" />
+                    <input
+                      type="text"
+                      placeholder="Search by name, specialty, or title..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-oku-taupe/20 rounded-lg focus:ring-2 focus:ring-oku-purple focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <select
+                      value={specialtyFilter}
+                      onChange={(e) => setSpecialtyFilter(e.target.value)}
+                      className="px-4 py-2 border border-oku-taupe/20 rounded-lg focus:ring-2 focus:ring-oku-purple focus:border-transparent"
+                    >
+                      <option value="all">All Specialties</option>
+                      {allSpecialties.map(specialty => (
+                        <option key={specialty} value={specialty.toLowerCase()}>
+                          {specialty}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Therapist Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-96 overflow-y-auto">
+                  {filteredTherapists.map((therapist) => (
+                    <div key={therapist.id} className="bg-white border border-oku-taupe/20 rounded-lg p-4 hover:border-oku-purple/50 transition-colors">
+                      <div className="flex items-start gap-4">
+                        <img 
+                          src={therapist.image} 
+                          alt={therapist.name}
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-oku-dark">{therapist.name}</h3>
+                          <p className="text-sm text-oku-taupe mb-2">{therapist.title}</p>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {therapist.specialties.slice(0, 3).map(specialty => (
+                              <span key={specialty} className="text-xs bg-oku-purple/10 text-oku-purple px-2 py-1 rounded-full">
+                                {specialty}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-oku-taupe">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                              <span>{therapist.rating}</span>
+                            </div>
+                            <span>• {therapist.experience} experience</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-oku-taupe">
+                            <span>• ₹{therapist.consultationFee}/session</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleBookAppointment(therapist)}
+                        className="w-full mt-4 bg-oku-purple text-white py-2 rounded-lg font-medium hover:bg-oku-purple/90 transition-colors"
+                      >
+                        Book Session
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {bookingStep === 2 && selectedTherapist && (
+              <div>
+                <h3 className="text-lg font-medium text-oku-dark mb-4">Select Date & Time</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-oku-dark mb-2">Available Dates</label>
+                    <div className="grid grid-cols-7 gap-2">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
+                        <div key={day} className="text-center p-2 border border-oku-taupe/20 rounded">
+                          <div className="text-xs font-medium">{day}</div>
+                          <div className="text-xs text-oku-taupe">25</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-oku-dark mb-2">Available Time Slots</label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'].map(time => (
+                        <button
+                          key={time}
+                          onClick={() => handleTimeSlotSelect('2024-03-25', time)}
+                          className="w-full text-left px-3 py-2 border border-oku-taupe/20 rounded hover:bg-oku-purple/10 hover:border-oku-purple/50 transition-colors"
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {bookingStep === 3 && (
+              <div className="text-center py-8">
+                <div className="mb-6">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Video className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-oku-dark mb-2">Appointment Confirmed!</h3>
+                  <p className="text-oku-taupe mb-4">
+                    Your session with <strong>{selectedTherapist?.name}</strong> is scheduled for <strong>March 25, 2024 at 10:00 AM</strong>
+                  </p>
+                </div>
+                
+                <div className="flex flex-col md:flex-row gap-4 justify-center">
+                  <button
+                    onClick={() => setBookingStep(2)}
+                    className="px-6 py-3 border border-oku-taupe/20 rounded-lg hover:bg-oku-cream transition-colors"
+                  >
+                    Reschedule
+                  </button>
+                  <Link
+                    href="/dashboard/client"
+                    className="px-6 py-3 bg-oku-purple text-white rounded-lg font-medium hover:bg-oku-purple/90 transition-colors"
+                  >
+                    Back to Dashboard
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Upcoming Appointments */}
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-            <h2 className="text-lg font-semibold text-oku-dark mb-4 font-display">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Link 
-                href="/dashboard/client/book"
-                className="flex items-center gap-3 p-4 bg-oku-blue/5 border border-oku-blue/20 rounded-card hover:bg-oku-blue/10 transition-colors"
-              >
-                <Video className="h-5 w-5 text-oku-blue" />
-                <div>
-                  <p className="font-medium text-oku-dark">Book Session</p>
-                  <p className="text-xs text-oku-taupe">Schedule with therapist</p>
-                </div>
-              </Link>
-              
-              <Link 
-                href="/dashboard/client/assessments"
-                className="flex items-center gap-3 p-4 bg-oku-purple/5 border border-oku-purple/20 rounded-card hover:bg-oku-purple/10 transition-colors"
-              >
-                <FileText className="h-5 w-5 text-oku-purple" />
-                <div>
-                  <p className="font-medium text-oku-dark">Assessment</p>
-                  <p className="text-xs text-oku-taupe">Take mental health test</p>
-                </div>
-              </Link>
-              
-              <Link 
-                href="/dashboard/client/mood"
-                className="flex items-center gap-3 p-4 bg-oku-pink/5 border border-oku-pink/20 rounded-card hover:bg-oku-pink/10 transition-colors"
-              >
-                <Heart className="h-5 w-5 text-oku-pink" />
-                <div>
-                  <p className="font-medium text-oku-dark">Track Mood</p>
-                  <p className="text-xs text-oku-taupe">Daily mood journal</p>
-                </div>
-              </Link>
-              
-              <Link 
-                href="/dashboard/client/messages"
-                className="flex items-center gap-3 p-4 bg-oku-green/5 border border-oku-green/20 rounded-card hover:bg-oku-green/10 transition-colors"
-              >
-                <MessageSquare className="h-5 w-5 text-oku-green" />
-                <div>
-                  <p className="font-medium text-oku-dark">Messages</p>
-                  <p className="text-xs text-oku-taupe">Chat with therapist</p>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Upcoming Sessions & Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 py-6 sm:px-0">
-          {/* Upcoming Sessions */}
-          <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-oku-dark font-display">Upcoming Sessions</h2>
+              <h2 className="text-lg font-semibold text-oku-dark font-display">Your Upcoming Sessions</h2>
               <Link 
-                href="/dashboard/client/sessions"
+                href="/dashboard/client/appointments"
                 className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
               >
-                View All
+                View All →
               </Link>
             </div>
+            
             <div className="space-y-4">
-              {upcomingSessions.map((session) => (
-                <div key={session.id} className="flex items-center justify-between p-4 bg-oku-cream/50 rounded-card">
+              {upcomingAppointments.map((appointment) => (
+                <div key={appointment.id} className="flex items-center justify-between p-4 bg-oku-cream/50 rounded-card border-l-4 border-oku-green">
                   <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                      session.status === 'confirmed' ? 'bg-oku-green/10' : 'bg-oku-orange/10'
-                    }`}>
-                      <Calendar className={`h-5 w-5 ${
-                        session.status === 'confirmed' ? 'text-oku-green' : 'text-oku-orange'
-                      }`} />
+                    <div className="h-10 w-10 bg-oku-green/10 rounded-full flex items-center justify-center">
+                      <Video className="h-5 w-5 text-oku-green" />
                     </div>
                     <div>
-                      <p className="font-medium text-oku-dark">{session.therapist}</p>
-                      <p className="text-sm text-oku-taupe">{session.type}</p>
+                      <p className="font-medium text-oku-dark">{appointment.therapist.name}</p>
+                      <p className="text-sm text-oku-taupe">{appointment.type} • {appointment.duration}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-oku-dark">{session.time}</p>
-                    <p className="text-sm text-oku-taupe">{session.date}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="bg-white p-6 rounded-card shadow-sm border border-oku-taupe/10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-oku-dark font-display">Recent Activity</h2>
-              <Link 
-                href="/dashboard/client/activity"
-                className="text-sm text-oku-purple hover:text-oku-blue font-medium transition-colors"
-              >
-                View All
-              </Link>
-            </div>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-center gap-3 p-4 bg-oku-cream/50 rounded-card">
-                  <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                    activity.type === 'session' ? 'bg-oku-blue/10' : 'bg-oku-purple/10'
-                  }`}>
-                    {activity.type === 'session' ? (
-                      <Video className="h-5 w-5 text-oku-blue" />
-                    ) : (
-                      <FileText className="h-5 w-5 text-oku-purple" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-oku-dark">{activity.title}</p>
-                    <p className="text-sm text-oku-taupe">{activity.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-oku-taupe">{activity.date}</p>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      activity.status === 'completed' 
-                        ? 'bg-oku-green/10 text-oku-green' 
-                        : 'bg-oku-orange/10 text-oku-orange'
-                    }`}>
-                      {activity.status}
-                    </span>
+                    <p className="font-medium text-oku-dark">{appointment.time}</p>
+                    <p className="text-sm text-oku-taupe">{appointment.date}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
-        {/* Notifications */}
-        {notifications.filter(n => !n.read).length > 0 && (
-          <div className="px-4 py-6 sm:px-0">
-            <div className="bg-oku-blue/5 border border-oku-blue/20 rounded-card p-4">
-              <div className="flex items-center gap-3">
-                <Bell className="h-5 w-5 text-oku-blue" />
-                <div className="flex-1">
-                  <p className="font-medium text-oku-dark">New Notification</p>
-                  <p className="text-sm text-oku-taupe">{notifications.find(n => !n.read)?.message}</p>
-                </div>
-                <button 
-                  onClick={() => {
-                    setNotifications(notifications.map(n => ({ ...n, read: true })))
-                  }}
-                  className="text-sm text-oku-blue hover:text-oku-purple font-medium transition-colors"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
