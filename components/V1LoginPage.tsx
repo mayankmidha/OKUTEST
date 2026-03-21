@@ -44,20 +44,6 @@ export default function V1LoginPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="text-2xl font-semibold">OKU Therapy</Link>
-            <div className="flex space-x-8">
-              <Link href="/services" className="text-gray-700 hover:text-gray-900">Services</Link>
-              <Link href="/about-us" className="text-gray-700 hover:text-gray-900">About Us</Link>
-              <Link href="/people" className="text-gray-700 hover:text-gray-900">People</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Login Form */}
       <div className="max-w-md mx-auto px-6 py-20">
         <div className="text-center mb-8">
