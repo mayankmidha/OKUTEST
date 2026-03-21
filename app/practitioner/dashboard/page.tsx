@@ -65,7 +65,6 @@ export default async function PractitionerDashboardPage() {
 
   return (
     <div className="min-h-screen bg-oku-cream">
-      <Header />
       <div className="max-w-7xl mx-auto py-12 px-6 md:px-12 lg:px-20">
         
         {/* Header */}

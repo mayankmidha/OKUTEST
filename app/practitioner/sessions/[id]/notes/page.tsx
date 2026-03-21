@@ -26,7 +26,6 @@ export default async function SessionNotesPage({ params }: { params: { id: strin
 
   return (
     <div className="min-h-screen bg-oku-cream">
-      <Header />
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="mb-12">
           <Link href="/practitioner/dashboard" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark transition-colors">← Schedule</Link>

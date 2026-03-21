@@ -91,7 +91,6 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
 
   return (
     <div className="min-h-screen bg-transparent">
-      <Header />
       <div className="max-w-3xl mx-auto px-6 py-20">
         <AnimatePresence mode="wait">
           {showResult ? (

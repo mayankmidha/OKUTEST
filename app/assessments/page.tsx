@@ -16,7 +16,6 @@ const icons: Record<string, any> = {
 export default function AssessmentsListPage() {
   return (
     <div className="min-h-screen bg-transparent">
-      <Header />
       <div className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <motion.h1 

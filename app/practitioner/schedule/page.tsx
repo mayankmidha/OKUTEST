@@ -32,7 +32,6 @@ export default async function ScheduleManagementPage() {
 
   return (
     <div className="min-h-screen bg-oku-cream py-20 px-6">
-      <Header />
       <div className="max-w-4xl mx-auto bg-white p-12 rounded-[3rem] border border-oku-taupe/10 shadow-xl mt-12">
         <h1 className="text-4xl font-display font-bold text-oku-dark mb-8">Manage Availability</h1>
         

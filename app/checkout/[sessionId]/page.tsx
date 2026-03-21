@@ -25,9 +25,9 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
   }
 
   return (
-    <div className="min-h-screen bg-oku-cream">
-        <Header />
-        <div className="max-w-3xl mx-auto px-6 py-24">
+    <div className="min-h-screen bg-oku-cream py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+
             <h1 className="text-4xl font-display font-bold text-oku-dark mb-8 text-center">Complete Booking</h1>
             
             <div className="bg-white p-8 rounded-card border border-oku-taupe/10 shadow-lg mb-8">
