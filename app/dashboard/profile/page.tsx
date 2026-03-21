@@ -4,11 +4,15 @@ import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import ClientProfileForm from './ClientProfileForm'
 
-export default async function ClientProfilePage() {
+export default async function ProfilePage() {
   const session = await auth()
   
   if (!session?.user) {
     redirect('/auth/login')
+  }
+
+  if (session.user.role === 'THERAPIST') {
+    redirect('/practitioner/profile')
   }
 
   const user = await prisma.user.findUnique({

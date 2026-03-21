@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, User, Mail, Shield, Briefcase, DollarSign } from 'lucide-react'
+import { Loader2, Save, User, Shield, Briefcase, DollarSign } from 'lucide-react'
 
 export default function EditProfileForm({ initialData }: { initialData: any }) {
   const [formData, setFormData] = useState({
@@ -48,7 +48,7 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-2">
           <label className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 flex items-center gap-2">
-            <User size={12} /> Full Name
+            <User size={12} /> Professional Name
           </label>
           <input
             type="text"

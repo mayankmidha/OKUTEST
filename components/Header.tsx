@@ -69,6 +69,13 @@ export default function Header() {
                     >
                       <LayoutDashboard size={14} /> Dashboard
                     </Link>
+                    <Link 
+                      href="/dashboard/profile"
+                      className="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-cream hover:text-oku-dark transition-colors"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <User size={14} /> Profile
+                    </Link>
                     <button 
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-red hover:bg-oku-red/5 transition-colors border-t border-oku-taupe/5"
