@@ -77,68 +77,71 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-oku-cream py-20 px-6 relative overflow-hidden">
-      {/* Background aesthetic shapes */}
-      <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-oku-purple/5 rounded-full -translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-oku-cream py-24 px-6 relative overflow-hidden">
+      {/* Immersive Background */}
+      <div className="absolute top-0 left-0 w-[100vw] h-[100vw] bg-oku-purple/5 rounded-full -translate-y-1/2 -translate-x-1/2 blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[60vw] h-[60vw] bg-oku-sage/10 rounded-full translate-y-1/2 translate-x-1/4 blur-[120px] pointer-events-none" />
       
-      <div className="max-w-5xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="grid lg:grid-cols-2 gap-24 items-center">
           
-          {/* Left Column: Context */}
+          {/* Left Column: Philosophical Context */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-10"
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-12"
           >
-            <Link href="/">
+            <Link href="/" className="inline-block">
               <img 
                 src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
                 alt="OKU Therapy" 
-                className="h-12 w-auto" 
+                className="h-10 w-auto opacity-80" 
               />
             </Link>
             
-            <div className="space-y-6">
-              <h1 className="text-6xl font-display font-bold text-oku-dark tracking-tighter leading-[0.9]">
+            <div className="space-y-8">
+              <h1 className="text-7xl font-display font-bold text-oku-dark tracking-tighter leading-[0.85]">
                 Begin your <br />
-                <span className="italic font-script text-oku-purple lowercase text-5xl md:text-7xl">journey</span> with us.
+                <span className="italic font-script text-oku-purple lowercase text-6xl md:text-8xl">unfolding</span>.
               </h1>
-              <p className="text-xl text-oku-taupe font-display italic max-w-md leading-relaxed">
-                Join our collective of seekers and healers. Your privacy and care are our innermost priorities.
+              <p className="text-xl text-oku-taupe font-display italic max-w-md leading-relaxed opacity-70">
+                A sanctuary designed for deep reflection and clinical excellence. Join a collective that honors your journey.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-               <div className="bg-white/50 p-6 rounded-3xl border border-oku-taupe/5">
-                  <Shield className="text-oku-purple mb-3" size={24} />
-                  <p className="text-sm font-bold text-oku-dark">Safe Space</p>
-                  <p className="text-xs text-oku-taupe mt-1">Fully encrypted data.</p>
+            <div className="grid grid-cols-2 gap-8 max-w-md">
+               <div className="bg-white/40 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/60 shadow-sm">
+                  <Shield className="text-oku-purple mb-4 opacity-60" size={28} strokeWidth={1} />
+                  <p className="text-sm font-bold text-oku-dark">Privacy First</p>
+                  <p className="text-[10px] uppercase tracking-widest text-oku-taupe mt-2 font-black opacity-40">End-to-End Secure</p>
                </div>
-               <div className="bg-white/50 p-6 rounded-3xl border border-oku-taupe/5">
-                  <Heart className="text-oku-purple mb-3" size={24} />
-                  <p className="text-sm font-bold text-oku-dark">Human-Led</p>
-                  <p className="text-xs text-oku-taupe mt-1">Real therapists, real care.</p>
+               <div className="bg-white/40 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/60 shadow-sm">
+                  <Heart className="text-oku-pink mb-4 opacity-60" size={28} strokeWidth={1} />
+                  <p className="text-sm font-bold text-oku-dark">Care-Centric</p>
+                  <p className="text-[10px] uppercase tracking-widest text-oku-taupe mt-2 font-black opacity-40">Clinical Excellence</p>
                </div>
             </div>
           </motion.div>
 
-          {/* Right Column: Form */}
+          {/* Right Column: Registration Form */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-10 md:p-12 rounded-[3.5rem] border border-white shadow-2xl relative z-10"
+            transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="bg-white/50 backdrop-blur-3xl p-12 md:p-16 rounded-[4.5rem] border border-white/80 shadow-[0_40px_100px_rgba(0,0,0,0.04)]"
           >
             {error && (
-              <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                <Lock size={16} /> {error}
+              <div className="mb-10 p-5 bg-red-50/50 backdrop-blur-sm border border-red-100/50 rounded-3xl text-red-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
+                <Lock size={18} strokeWidth={1.5} /> {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-10">
               {/* Role Selection */}
-              <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Who are you?</label>
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-5">
+                <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Intention</label>
+                <div className="grid grid-cols-2 gap-6">
                   {roles.map((r) => {
                     const active = formData.role === r.value
                     const Icon = r.icon
@@ -147,55 +150,56 @@ export default function SignupPage() {
                         key={r.value}
                         type="button"
                         onClick={() => handleChange('role', r.value)}
-                        className={`p-6 rounded-3xl text-left transition-all border ${
+                        className={`p-8 rounded-[2.5rem] text-left transition-all duration-500 border relative overflow-hidden group ${
                           active 
-                          ? 'bg-oku-dark border-oku-dark text-white shadow-xl scale-105' 
-                          : 'bg-oku-cream-warm/20 border-oku-taupe/10 text-oku-dark hover:border-oku-purple/50'
+                          ? 'bg-oku-dark border-oku-dark text-white shadow-2xl scale-[1.02]' 
+                          : 'bg-white/40 border-white text-oku-dark hover:border-oku-purple/30'
                         }`}
                       >
-                        <Icon size={20} className={`mb-3 ${active ? 'text-oku-purple' : 'text-oku-taupe'}`} />
-                        <p className="text-xs font-black uppercase tracking-widest mb-1">{r.label}</p>
-                        <p className={`text-[10px] leading-relaxed ${active ? 'text-white/60' : 'text-oku-taupe'}`}>{r.description}</p>
+                        <Icon size={24} strokeWidth={1.5} className={`mb-4 relative z-10 transition-colors duration-500 ${active ? 'text-oku-purple' : 'text-oku-taupe/40 group-hover:text-oku-purple'}`} />
+                        <p className="text-[10px] font-black uppercase tracking-widest mb-2 relative z-10">{r.label}</p>
+                        <p className={`text-[9px] leading-relaxed relative z-10 transition-colors duration-500 ${active ? 'text-white/50' : 'text-oku-taupe/60'}`}>{r.description}</p>
+                        {active && <div className="absolute top-0 right-0 w-24 h-24 bg-oku-purple/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />}
                       </button>
                     )
                   })}
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Full Name</label>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Name</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
-                    className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                    placeholder="Enter your name"
+                    className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                    placeholder="Full Name"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Email</label>
+                <div className="space-y-3">
+                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Email</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                    placeholder="name@example.com"
+                    className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                    placeholder="email@example.com"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Password</label>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Security</label>
                 <input
                   type="password"
                   required
                   minLength={6}
                   value={formData.password}
                   onChange={(e) => handleChange('password', e.target.value)}
-                  className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                  className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
                   placeholder="Min. 6 characters"
                 />
               </div>
@@ -203,20 +207,20 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 group"
+                className="w-full bg-oku-dark text-white py-6 rounded-full flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-oku-dark/10 hover:bg-oku-purple-dark hover:-translate-y-1 transition-all duration-500 disabled:opacity-50 group mt-4"
               >
                 {isLoading ? (
                   <Loader2 size={20} className="animate-spin" />
                 ) : (
-                  <>Create Account <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
+                  <>Create Account <ArrowRight size={18} strokeWidth={1.5} className="group-hover:translate-x-2 transition-transform duration-500" /></>
                 )}
               </button>
 
               <div className="text-center">
-                <p className="text-sm text-oku-taupe">
-                  Already have an account?{' '}
-                  <Link href="/auth/login" className="text-oku-purple font-bold hover:underline ml-1">
-                    Sign in securely
+                <p className="text-xs text-oku-taupe opacity-60">
+                  Already part of our collective?{' '}
+                  <Link href="/auth/login" className="text-oku-purple font-black hover:underline ml-1">
+                    Sign In
                   </Link>
                 </p>
               </div>

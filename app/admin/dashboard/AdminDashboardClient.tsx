@@ -104,19 +104,19 @@ function AdminDashboardContent({
 
       <div className="space-y-10">
         {activeTab === 'overview' && (
-          <div className="space-y-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <DashboardCard subtitle="Gross Revenue" icon={DollarSign} variant="pastel-green">
-                <p className="text-4xl font-display font-bold">${stats.totalRevenue.toLocaleString()}</p>
+          <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <DashboardCard subtitle="Gross Revenue" icon={DollarSign} variant="green">
+                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${stats.totalRevenue.toLocaleString()}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Total Bookings" icon={Calendar} variant="pastel-purple">
-                <p className="text-4xl font-display font-bold">{stats.totalAppointments}</p>
+              <DashboardCard subtitle="Total Bookings" icon={Calendar} variant="purple">
+                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{stats.totalAppointments}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Verified Team" icon={Shield} variant="pastel-peach">
-                <p className="text-4xl font-display font-bold">{therapists.filter((t: any) => t.practitionerProfile?.isVerified).length}</p>
+              <DashboardCard subtitle="Verified Team" icon={Shield} variant="pink">
+                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{therapists.filter((t: any) => t.practitionerProfile?.isVerified).length}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Registered Seekers" icon={Users}>
-                <p className="text-4xl font-display font-bold text-oku-dark">{clients.length}</p>
+              <DashboardCard subtitle="Registered Seekers" icon={Users} variant="white">
+                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{clients.length}</p>
               </DashboardCard>
             </div>
 

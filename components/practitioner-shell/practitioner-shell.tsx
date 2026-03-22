@@ -1,9 +1,18 @@
+'use client'
+
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  Calendar, Users, Clock, Settings, 
+  ChevronRight, LogOut, Bell, Search,
+  LayoutDashboard, UserCircle, Briefcase
+} from 'lucide-react'
 
 type PractitionerNavLink = {
   href: string
   label: string
+  icon: any
 }
 
 type PractitionerShellProps = {
@@ -16,57 +25,16 @@ type PractitionerShellProps = {
   title: string
 }
 
-type PractitionerSectionCardProps = {
-  action?: ReactNode
-  actions?: ReactNode
-  children: ReactNode
-  className?: string
-  description?: string
-  title: string
-}
-
-type PractitionerStatCardProps = {
-  accent?: string
-  detail?: string
-  label: string
-  value: string | number
-}
-
-type PractitionerActionTileProps = {
-  accent?: string
-  description: string
-  href: string
-  icon: string
-  title: string
-}
-
-type PractitionerPillTone = 'emerald' | 'sky' | 'amber' | 'rose' | 'slate'
-
-type PractitionerLoadingStateProps = {
-  message: string
-}
-
 const NAV_LINKS: PractitionerNavLink[] = [
-  { href: '/practitioner/dashboard', label: 'Dashboard' },
-  { href: '/practitioner/appointments', label: 'Appointments' },
-  { href: '/practitioner/clients', label: 'Clients' },
-  { href: '/practitioner/availability', label: 'Availability' },
-  { href: '/practitioner/profile', label: 'Profile' },
+  { href: '/practitioner/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/practitioner/appointments', label: 'Schedule', icon: Calendar },
+  { href: '/practitioner/clients', label: 'Patients', icon: Users },
+  { href: '/practitioner/availability', label: 'Hours', icon: Clock },
+  { href: '/practitioner/profile', label: 'Clinical Profile', icon: UserCircle },
 ]
 
-const PILL_STYLES: Record<PractitionerPillTone, string> = {
-  emerald: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  sky: 'border-sky-200 bg-sky-50 text-sky-700',
-  amber: 'border-amber-200 bg-amber-50 text-amber-700',
-  rose: 'border-rose-200 bg-rose-50 text-rose-700',
-  slate: 'border-slate-200 bg-slate-100 text-slate-700',
-}
-
 function isActiveLink(currentPath: string, href: string) {
-  if (currentPath === href) {
-    return true
-  }
-
+  if (currentPath === href) return true
   return currentPath.startsWith(`${href}/`)
 }
 
@@ -80,80 +48,140 @@ export function PractitionerShell({
   title,
 }: PractitionerShellProps) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.12),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.12),_transparent_28%),linear-gradient(180deg,_#f7fafc_0%,_#eff8f6_45%,_#f8fafc_100%)] text-slate-900">
-      <div className="absolute left-[-7rem] top-[-7rem] h-72 w-72 rounded-full bg-sky-400/10 blur-3xl" />
-      <div className="absolute right-[-6rem] top-[18rem] h-80 w-80 rounded-full bg-emerald-400/10 blur-3xl" />
-      <div className="absolute bottom-[-8rem] left-[18%] h-72 w-72 rounded-full bg-teal-400/8 blur-3xl" />
+    <div className="min-h-screen bg-oku-cream font-sans text-oku-dark selection:bg-oku-purple/20">
+      {/* Sophisticated Background Layers */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-oku-purple/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-oku-sage/5 rounded-full blur-[100px]" />
+      </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <header className="rounded-[1.75rem] border border-white/70 bg-white/85 px-5 py-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-                href="/practitioner/dashboard"
-              >
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-slate-950">
-                  O
-                </span>
-                Practitioner Care
-              </Link>
+      <div className="relative flex min-h-screen">
+        {/* Modern Sidebar */}
+        <aside className="w-80 border-r border-oku-taupe/5 bg-white/40 backdrop-blur-3xl hidden xl:flex flex-col sticky top-0 h-screen">
+          <div className="p-10">
+            <Link href="/" className="block mb-12">
+               <img src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 w-auto grayscale brightness-0 opacity-80" />
+            </Link>
 
-              <nav className="hidden flex-wrap items-center gap-1 rounded-full bg-slate-100 p-1.5 md:flex">
-                {NAV_LINKS.map((link) => {
-                  const active = isActiveLink(currentPath, link.href)
+            <nav className="space-y-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-4 opacity-40">Clinical Workspace</p>
+              {NAV_LINKS.map((link) => {
+                const active = isActiveLink(currentPath, link.href)
+                const Icon = link.icon
 
-                  return (
-                    <Link
-                      className={[
-                        'rounded-full px-4 py-2 text-sm font-medium transition',
-                        active
-                          ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200'
-                          : 'text-slate-500 hover:text-slate-900',
-                      ].join(' ')}
-                      href={link.href}
-                      key={link.href}
-                    >
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`flex items-center gap-4 px-6 py-4 rounded-[1.5rem] transition-all duration-500 group ${
+                      active 
+                      ? 'bg-oku-dark text-white shadow-2xl shadow-oku-dark/10' 
+                      : 'text-oku-taupe hover:bg-white hover:text-oku-dark hover:shadow-xl hover:shadow-oku-taupe/5'
+                    }`}
+                  >
+                    <Icon size={18} strokeWidth={active ? 2 : 1.5} className={active ? 'text-oku-purple' : 'group-hover:text-oku-purple transition-colors'} />
+                    <span className={`text-[11px] font-black uppercase tracking-widest ${active ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`}>
                       {link.label}
-                    </Link>
-                  )
-                })}
-              </nav>
+                    </span>
+                  </Link>
+                )
+              })}
+            </nav>
+          </div>
+
+          <div className="mt-auto p-10 border-t border-oku-taupe/5">
+             <div className="bg-oku-dark rounded-[2rem] p-6 text-white relative overflow-hidden group cursor-pointer">
+                <div className="relative z-10 flex items-center justify-between">
+                   <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest opacity-40 mb-1">Support</p>
+                      <p className="text-xs font-bold">Clinical Help Desk</p>
+                   </div>
+                   <ChevronRight size={14} className="opacity-40 group-hover:translate-x-1 transition-transform" />
+                </div>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-oku-purple/20 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+             </div>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col">
+          {/* Top Navigation */}
+          <header className="h-24 border-b border-oku-taupe/5 bg-white/20 backdrop-blur-md px-10 flex items-center justify-between sticky top-0 z-40">
+            <div className="flex items-center gap-6 xl:hidden">
+                <Link href="/practitioner/dashboard">
+                    <span className="text-2xl font-black text-oku-dark">O.</span>
+                </Link>
             </div>
 
-            {headerActions ? <div className="flex flex-wrap items-center gap-3">{headerActions}</div> : null}
-          </div>
-        </header>
+            <div className="hidden md:flex items-center gap-4 bg-oku-cream-warm/40 px-6 py-2.5 rounded-full border border-oku-taupe/5">
+                <Search size={14} className="text-oku-taupe opacity-40" />
+                <input type="text" placeholder="Search patients or sessions..." className="bg-transparent border-none outline-none text-[11px] font-medium placeholder:text-oku-taupe/40 w-64" />
+            </div>
 
-        <section className="mt-6 rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,_rgba(255,255,255,0.95)_0%,_rgba(240,249,255,0.92)_50%,_rgba(236,253,245,0.95)_100%)] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-8">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                {badge}
+            <div className="flex items-center gap-4">
+              {headerActions}
+              <div className="h-10 w-px bg-oku-taupe/10 mx-2 hidden sm:block" />
+              <button className="w-12 h-12 rounded-2xl bg-white border border-oku-taupe/5 flex items-center justify-center text-oku-taupe hover:text-oku-dark transition-colors relative">
+                  <Bell size={18} strokeWidth={1.5} />
+                  <span className="absolute top-3 right-3 w-2 h-2 bg-oku-purple rounded-full border-2 border-white" />
+              </button>
+              <button className="w-12 h-12 rounded-2xl bg-oku-dark text-white flex items-center justify-center hover:bg-oku-purple-dark transition-all">
+                  <LogOut size={18} strokeWidth={1.5} />
+              </button>
+            </div>
+          </header>
+
+          {/* Hero / Page Header Section */}
+          <div className="p-10 pb-4">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="rounded-[3.5rem] bg-white p-12 lg:p-16 border border-oku-taupe/5 shadow-[0_32px_80px_rgba(0,0,0,0.02)] relative overflow-hidden"
+            >
+              <div className="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
+                <div className="max-w-3xl">
+                  <div className="inline-flex items-center gap-3 rounded-full bg-oku-purple/10 px-5 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] text-oku-purple-dark border border-oku-purple/10 mb-8">
+                    <span className="h-1.5 w-1.5 rounded-full bg-oku-purple animate-pulse" />
+                    {badge}
+                  </div>
+                  <h1 className="text-5xl lg:text-7xl font-display font-bold text-oku-dark tracking-tighter leading-[0.85]">
+                    {title}
+                  </h1>
+                  <p className="mt-8 text-lg font-display italic text-oku-taupe max-w-2xl leading-relaxed opacity-70">
+                    {description}
+                  </p>
+                </div>
+
+                {heroActions && <div className="flex flex-wrap gap-4">{heroActions}</div>}
               </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
-                {title}
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">{description}</p>
-            </div>
 
-            {heroActions ? <div className="flex flex-wrap gap-3">{heroActions}</div> : null}
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-oku-purple/5 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-oku-sage/5 rounded-full blur-[80px] -translate-x-1/2 translate-y-1/2" />
+            </motion.section>
           </div>
-        </section>
 
-        <main className="pb-12 pt-6">{children}</main>
+          {/* Content Area */}
+          <div className="flex-1 p-10 pt-6">
+            {children}
+          </div>
+
+          <footer className="p-10 pt-0 text-[10px] font-black uppercase tracking-[0.4em] text-oku-taupe opacity-30 text-center">
+             Clinical Excellence • Privacy Preserved • OKU Protocol v2.5
+          </footer>
+        </main>
       </div>
     </div>
   )
 }
 
-export function PractitionerLoadingState({ message }: PractitionerLoadingStateProps) {
+export function PractitionerLoadingState({ message }: { message: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.12),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.12),_transparent_28%),linear-gradient(180deg,_#f7fafc_0%,_#eff8f6_45%,_#f8fafc_100%)]">
-      <div className="rounded-[2rem] border border-white/80 bg-white/90 px-8 py-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600" />
-        <p className="mt-4 text-sm font-medium text-slate-600">{message}</p>
+    <div className="min-h-screen bg-oku-cream flex items-center justify-center p-10">
+      <div className="text-center space-y-6">
+        <div className="w-16 h-16 border-4 border-oku-purple/20 border-t-oku-purple rounded-full animate-spin mx-auto" />
+        <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe animate-pulse">{message}</p>
       </div>
     </div>
   )
@@ -166,77 +194,90 @@ export function PractitionerSectionCard({
   className = '',
   description,
   title,
-}: PractitionerSectionCardProps) {
+}: {
+  action?: ReactNode
+  actions?: ReactNode
+  children: ReactNode
+  className?: string
+  description?: string
+  title: string
+}) {
   return (
-    <section
-      className={[
-        'rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6',
-        className,
-      ].join(' ')}
-    >
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <section className={`bg-white rounded-[3rem] p-10 border border-oku-taupe/5 shadow-sm hover:shadow-xl transition-all duration-700 ${className}`}>
+      <div className="mb-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">{title}</h2>
-          {description ? <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p> : null}
+          <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">{title}</h2>
+          {description && <p className="mt-2 text-sm text-oku-taupe font-display italic opacity-60">{description}</p>}
         </div>
-        {action || actions ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            {action ? <div>{action}</div> : null}
-            {actions ? <div>{actions}</div> : null}
+        {(action || actions) && (
+          <div className="flex shrink-0 flex-wrap items-center gap-3">
+            {action}
+            {actions}
           </div>
-        ) : null}
+        )}
       </div>
       {children}
     </section>
   )
 }
 
-export function PractitionerStatCard({ accent = 'from-sky-500 to-cyan-500', detail, label, value }: PractitionerStatCardProps) {
+export function PractitionerStatCard({ accent = 'bg-oku-purple', detail, label, value }: { accent?: string, detail?: string, label: string, value: string | number }) {
   return (
-    <div className="rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5 shadow-[0_12px_40px_rgba(15,23,42,0.06)]">
-      <div className={`h-1.5 w-16 rounded-full bg-gradient-to-r ${accent}`} />
-      <p className="mt-4 text-sm font-medium text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-      {detail ? <p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p> : null}
+    <div className="bg-white/60 backdrop-blur-md rounded-[2.5rem] p-8 border border-white shadow-sm hover:shadow-2xl transition-all duration-500 group">
+      <div className={`h-1.5 w-12 rounded-full mb-8 opacity-40 group-hover:opacity-100 transition-all duration-500 ${accent}`} />
+      <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-2">{label}</p>
+      <p className="text-4xl font-display font-bold text-oku-dark tracking-tighter">{value}</p>
+      {detail && <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-oku-purple opacity-60">{detail}</p>}
     </div>
   )
 }
 
 export function PractitionerActionTile({
-  accent = 'from-sky-500 to-emerald-500',
   description,
   href,
-  icon,
+  icon: Icon,
   title,
-}: PractitionerActionTileProps) {
+}: {
+  description: string
+  href: string
+  icon: any
+  title: string
+}) {
   return (
     <Link
-      className="group flex h-full flex-col rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5 shadow-[0_12px_40px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-[0_16px_50px_rgba(14,165,233,0.12)]"
       href={href}
+      className="group bg-white rounded-[2.5rem] p-10 border border-oku-taupe/5 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
     >
-      <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${accent} text-lg font-semibold text-white shadow-lg shadow-sky-500/20`}>
-        {icon}
+      <div className="w-14 h-14 rounded-2xl bg-oku-cream flex items-center justify-center text-oku-dark group-hover:bg-oku-dark group-hover:text-white transition-all duration-500 mb-10 shadow-inner">
+        <Icon size={24} strokeWidth={1.5} />
       </div>
-      <div className="mt-8 flex-1">
-        <h3 className="text-base font-semibold text-slate-950">{title}</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+      <div className="flex-1">
+        <h3 className="text-xl font-display font-bold text-oku-dark mb-2">{title}</h3>
+        <p className="text-sm text-oku-taupe font-display italic leading-relaxed opacity-60">{description}</p>
       </div>
-      <span className="mt-6 inline-flex items-center text-sm font-medium text-sky-700 transition group-hover:text-sky-900">
-        Open workspace
-      </span>
+      <div className="mt-10 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-oku-purple opacity-40 group-hover:opacity-100 transition-all">
+        Open Workspace <ChevronRight size={12} />
+      </div>
     </Link>
   )
 }
 
 export function PractitionerPill({
   children,
-  tone = 'slate',
+  tone = 'purple',
 }: {
   children: ReactNode
-  tone?: PractitionerPillTone
+  tone?: 'purple' | 'sage' | 'pink' | 'dark'
 }) {
+  const styles = {
+    purple: 'bg-oku-purple/10 text-oku-purple-dark border-oku-purple/10',
+    sage: 'bg-oku-sage/10 text-oku-dark border-oku-sage/10',
+    pink: 'bg-oku-pink/10 text-oku-dark border-oku-pink/10',
+    dark: 'bg-oku-dark text-white border-oku-dark',
+  }
+
   return (
-    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${PILL_STYLES[tone]}`}>
+    <span className={`inline-flex items-center rounded-full border px-4 py-1.5 text-[9px] font-black uppercase tracking-widest ${styles[tone]}`}>
       {children}
     </span>
   )

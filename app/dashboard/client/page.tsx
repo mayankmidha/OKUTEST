@@ -82,21 +82,21 @@ export default async function ClientDashboardPage() {
       />
 
       {/* Stats Grid - Pastel Themed */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        <DashboardCard subtitle="Upcoming" icon={Calendar} variant="pastel-purple">
-          <p className="text-4xl font-display font-bold">{upcomingAppointments.length}</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+        <DashboardCard subtitle="Upcoming" icon={Calendar} variant="purple">
+          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{upcomingAppointments.length}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Clinical" icon={ClipboardCheck} variant="pastel-green">
-          <p className="text-4xl font-display font-bold">{recentAssessments.length}</p>
+        <DashboardCard subtitle="Clinical" icon={ClipboardCheck} variant="green">
+          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{recentAssessments.length}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Wellness" icon={Heart} variant="pastel-peach">
-          <p className="text-4xl font-display font-bold">{user.clientProfile?.noShowCount === 0 ? 'Optimal' : 'Standard'}</p>
+        <DashboardCard subtitle="Wellness" icon={Heart} variant="pink">
+          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{user.clientProfile?.noShowCount === 0 ? 'Optimal' : 'Standard'}</p>
         </DashboardCard>
         <DashboardCard subtitle="Today's Mood" icon={Sparkles} variant="dark">
-          <p className="text-sm font-bold opacity-80 mb-1">
+          <p className="text-lg font-bold opacity-90 mb-2">
             {user.moodEntries?.[0] ? `Feeling Better` : 'Start Tracking'}
           </p>
-          <Link href="/dashboard/client/mood" className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Update Journey →</Link>
+          <Link href="/dashboard/client/mood" className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple hover:text-white transition-colors">Update Journey →</Link>
         </DashboardCard>
       </div>
 
@@ -181,16 +181,16 @@ export default async function ClientDashboardPage() {
             <Link href="/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
           </DashboardCard>
 
-          <DashboardCard title="Suggested for You" icon={Sparkles} className="bg-[#F0FDF4] border-[#DCFCE7] text-[#166534]">
+          <DashboardCard title="Suggested for You" icon={Sparkles} variant="sage">
             <div className="space-y-6 mt-4">
               {practitioners.map(p => (
                 <Link key={p.id} href={`/book/${p.id}/trial`} className="flex items-center gap-4 group">
-                  <div className="w-12 h-12 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
                     {p.user?.avatar ? <img src={p.user.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl text-oku-purple bg-oku-purple/10">🧘</div>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-current group-hover:text-oku-purple transition-colors truncate">{p.user?.name || 'Specialist'}</p>
-                    <p className="text-[10px] uppercase tracking-widest font-black opacity-60">Trauma-Informed</p>
+                    <p className="text-sm font-bold text-oku-dark group-hover:text-oku-purple transition-colors truncate">{p.user?.name || 'Specialist'}</p>
+                    <p className="text-[10px] uppercase tracking-widest font-black opacity-40 mt-1">Trauma-Informed</p>
                   </div>
                 </Link>
               ))}

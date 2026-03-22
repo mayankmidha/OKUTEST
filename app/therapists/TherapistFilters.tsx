@@ -113,65 +113,76 @@ export default function TherapistFilters({ therapists, specialties }: { therapis
             {filtered.map((practitioner) => (
               <motion.div 
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 key={practitioner.id} 
-                className="group bg-white rounded-[3rem] overflow-hidden shadow-sm border border-oku-taupe/10 hover:shadow-2xl transition-all"
+                className="group bg-white rounded-[4rem] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.02)] border border-oku-taupe/5 hover:shadow-[0_40px_100px_rgba(0,0,0,0.06)] transition-all duration-700 hover:-translate-y-2"
               >
-                <div className="h-56 bg-oku-purple/5 relative overflow-hidden">
+                <div className="h-72 bg-oku-cream relative overflow-hidden">
                   {practitioner.user.avatar ? (
                       <img 
                           src={practitioner.user.avatar} 
                           alt={practitioner.user.name} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0"
                       />
                   ) : (
-                      <div className="w-full h-full flex items-center justify-center text-oku-purple text-6xl opacity-20">OKU</div>
+                      <div className="w-full h-full flex items-center justify-center text-oku-purple/20 text-8xl font-display font-black tracking-tighter">OKU</div>
                   )}
-                  <div className="absolute top-6 left-6">
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-oku-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                  <div className="absolute top-8 left-8">
                      {practitioner.isVerified && (
-                        <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-xl border border-white">
-                           <ShieldCheck size={14} className="text-green-600" />
-                           <span className="text-[8px] font-black uppercase tracking-widest text-oku-dark">Verified Specialist</span>
+                        <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2.5 shadow-2xl border border-white">
+                           <ShieldCheck size={14} className="text-oku-purple" strokeWidth={2} />
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-oku-dark">Verified Provider</span>
                         </div>
                      )}
                   </div>
-                  <div className="absolute bottom-6 right-6">
-                     <span className="bg-oku-dark text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">
-                          ${practitioner.hourlyRate || 150}/hr
+                  
+                  <div className="absolute bottom-8 right-8 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                     <span className="bg-white text-oku-dark px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl border border-white">
+                          ${practitioner.hourlyRate || 150} / Session
                       </span>
                   </div>
                 </div>
                 
-                <div className="p-8">
-                  <h2 className="text-3xl font-display font-bold text-oku-dark mb-1">{practitioner.user.name}</h2>
-                  <p className="text-oku-purple font-script text-xl mb-6 italic">Clinical Practitioner</p>
+                <div className="p-10 lg:p-12">
+                  <div className="mb-8">
+                    <h2 className="text-4xl font-display font-bold text-oku-dark mb-2 tracking-tighter">{practitioner.user.name}</h2>
+                    <p className="text-oku-purple font-script text-2xl italic opacity-60">Clinical Specialist</p>
+                  </div>
                   
-                  <p className="text-sm text-oku-taupe mb-8 line-clamp-2 leading-relaxed opacity-80">
-                    {practitioner.bio || "No bio available."}
+                  <p className="text-sm text-oku-taupe mb-10 line-clamp-2 leading-[1.8] font-display italic opacity-80">
+                    "{practitioner.bio || "Devoted to holding space for your unfolding journey and psychological wellness."}"
                   </p>
 
-                  <div className="flex flex-wrap gap-2 mb-8 h-12 overflow-hidden">
-                    {(practitioner.specialization || []).map((spec: string, i: number) => (
-                      <span key={i} className="text-[9px] uppercase tracking-widest font-black bg-oku-cream-warm/30 px-3 py-1 rounded-full text-oku-taupe border border-oku-taupe/5">
+                  <div className="flex flex-wrap gap-2.5 mb-10 h-14 overflow-hidden">
+                    {(practitioner.specialization || []).slice(0, 3).map((spec: string, i: number) => (
+                      <span key={i} className="text-[9px] uppercase tracking-[0.2em] font-black bg-oku-cream-warm/40 px-4 py-2 rounded-full text-oku-taupe border border-oku-taupe/5">
                         {spec.trim()}
                       </span>
                     ))}
+                    {(practitioner.specialization?.length > 3) && (
+                        <span className="text-[9px] uppercase tracking-[0.2em] font-black text-oku-purple/40 px-2 py-2">
+                            +{practitioner.specialization.length - 3} More
+                        </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     <Link 
                         href={`/book/${practitioner.id}`} 
-                        className="flex-1 bg-oku-dark text-white py-4 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-oku-purple transition-all text-center shadow-lg active:scale-95"
+                        className="bg-oku-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-purple-dark transition-all text-center shadow-2xl shadow-oku-dark/10 active:scale-95"
                     >
-                      Book Session
+                      Book Care
                     </Link>
                     <Link 
                         href={`/book/${practitioner.id}/trial`} 
-                        className="flex-1 bg-white text-oku-dark border border-oku-taupe/20 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
+                        className="bg-white text-oku-dark border border-oku-taupe/10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
                     >
-                      Free Trial
+                      Trial
                     </Link>
                   </div>
                 </div>

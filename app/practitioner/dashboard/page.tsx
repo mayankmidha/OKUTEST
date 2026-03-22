@@ -115,20 +115,21 @@ export default async function PractitionerDashboardPage() {
       />
 
       {/* Stats Grid - Pastel Themed */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        <DashboardCard subtitle="Today" icon={Video} variant="pastel-purple">
-          <p className="text-4xl font-display font-bold">{todaySessions.length}</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+        <DashboardCard subtitle="Today" icon={Video} variant="purple">
+          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{todaySessions.length}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Practice" icon={TrendingUp} variant="pastel-green">
-          <p className="text-4xl font-display font-bold">{totalCompleted}</p>
+        <DashboardCard subtitle="Practice" icon={TrendingUp} variant="green">
+          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{totalCompleted}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Revenue" icon={DollarSign} variant="pastel-peach">
-          <p className="text-4xl font-display font-bold">${totalEarnings._sum.amount || 0}</p>
+        <DashboardCard subtitle="Revenue" icon={DollarSign} variant="sage">
+          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalEarnings._sum.amount || 0}</p>
         </DashboardCard>
         <DashboardCard subtitle="Next Up" icon={Clock} variant="dark">
-          <p className="text-sm font-bold truncate pr-2">
+          <p className="text-lg font-bold truncate pr-2 opacity-90">
             {upcomingSessions[0] ? upcomingSessions[0].client?.name : 'Queue clear'}
           </p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mt-2">Active Session Window</p>
         </DashboardCard>
       </div>
 

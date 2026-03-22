@@ -101,19 +101,19 @@ export default function PractitionerAvailabilityPage() {
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <PractitionerStatCard
-          accent="from-sky-500 to-cyan-500"
+          accent="bg-oku-sage"
           detail="Days currently marked available."
           label="Available days"
           value={slots.filter((slot) => slot.isAvailable).length}
         />
         <PractitionerStatCard
-          accent="from-emerald-500 to-teal-500"
+          accent="bg-oku-pink"
           detail="Days currently marked off."
           label="Unavailable days"
           value={slots.filter((slot) => !slot.isAvailable).length}
         />
         <PractitionerStatCard
-          accent="from-violet-500 to-indigo-500"
+          accent="bg-oku-purple"
           detail="The current availability set visible to the practice."
           label="Schedule status"
           value="Up to date"
@@ -122,35 +122,35 @@ export default function PractitionerAvailabilityPage() {
 
       <div className="mt-6">
         <PractitionerSectionCard
-          action={<PractitionerPill tone="sky">Week view</PractitionerPill>}
-          actions={<PractitionerPill tone="emerald">Saved</PractitionerPill>}
+          action={<PractitionerPill tone="purple">Week view</PractitionerPill>}
+          actions={<PractitionerPill tone="sage">Saved</PractitionerPill>}
           description="Set weekly hours, block off time, and keep your schedule easy to scan."
           title="Availability grid"
         >
-          <div className="mb-5 rounded-[1.5rem] border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-800">
+          <div className="mb-5 rounded-[1.5rem] border border-oku-purple/20 bg-oku-purple/5 px-4 py-3 text-sm text-oku-purple-dark">
             {message}
           </div>
 
           <div className="space-y-3">
             {slots.map((slot) => (
               <div
-                className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-4 transition hover:border-slate-300 hover:bg-white"
+                className="rounded-[1.5rem] border border-oku-taupe/5 bg-white p-4 transition hover:border-oku-taupe/10 hover:shadow-lg"
                 key={slot.day}
               >
                 <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr_1fr_auto] lg:items-center">
                   <div>
-                    <div className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{slot.day}</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-taupe opacity-40">{slot.day}</div>
                     <div className="mt-2 flex items-center gap-2">
-                      <PractitionerPill tone={slot.isAvailable ? 'emerald' : 'slate'}>
+                      <PractitionerPill tone={slot.isAvailable ? 'sage' : 'dark'}>
                         {slot.isAvailable ? 'Available' : 'Off'}
                       </PractitionerPill>
                     </div>
                   </div>
 
-                  <label className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                  <label className="flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-oku-taupe">
                     Start
                     <input
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100 disabled:bg-slate-100 disabled:text-slate-400"
+                      className="w-full rounded-2xl border border-oku-taupe/5 bg-oku-cream/20 px-3 py-2 text-oku-dark shadow-inner outline-none transition focus:border-oku-purple/30 disabled:opacity-30"
                       disabled={!slot.isAvailable}
                       onChange={(event) => updateSlot(slot.day, { startTime: event.target.value })}
                       type="time"
@@ -158,10 +158,10 @@ export default function PractitionerAvailabilityPage() {
                     />
                   </label>
 
-                  <label className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                  <label className="flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-oku-taupe">
                     End
                     <input
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100 disabled:bg-slate-100 disabled:text-slate-400"
+                      className="w-full rounded-2xl border border-oku-taupe/5 bg-oku-cream/20 px-3 py-2 text-oku-dark shadow-inner outline-none transition focus:border-oku-purple/30 disabled:opacity-30"
                       disabled={!slot.isAvailable}
                       onChange={(event) => updateSlot(slot.day, { endTime: event.target.value })}
                       type="time"
@@ -169,10 +169,10 @@ export default function PractitionerAvailabilityPage() {
                     />
                   </label>
 
-                  <label className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                  <label className="inline-flex items-center gap-3 rounded-full border border-oku-taupe/5 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-widest text-oku-dark shadow-sm cursor-pointer hover:bg-oku-cream transition-colors">
                     <input
                       checked={slot.isAvailable}
-                      className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                      className="h-4 w-4 rounded border-oku-taupe/20 text-oku-purple focus:ring-oku-purple"
                       onChange={(event) => updateSlot(slot.day, { isAvailable: event.target.checked })}
                       type="checkbox"
                     />

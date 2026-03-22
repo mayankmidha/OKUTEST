@@ -76,15 +76,15 @@ export default async function AdminFinancialsPage() {
 
       <div className="space-y-12">
         {/* Global Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <DashboardCard subtitle="Gross Volume (GMV)" icon={DollarSign} variant="dark">
-               <p className="text-4xl font-display font-bold text-white">${totalGrossRevenue.toLocaleString()}</p>
+               <p className="text-5xl font-display font-bold text-white tracking-tighter">${totalGrossRevenue.toLocaleString()}</p>
             </DashboardCard>
-            <DashboardCard subtitle="Platform Net (20%)" icon={ArrowUpRight} variant="pastel-green">
-               <p className="text-4xl font-display font-bold">${totalPlatformCut.toLocaleString()}</p>
+            <DashboardCard subtitle="Platform Net (20%)" icon={ArrowUpRight} variant="green">
+               <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalPlatformCut.toLocaleString()}</p>
             </DashboardCard>
-            <DashboardCard subtitle="Provider Liabilities" icon={Wallet} variant="pastel-purple">
-               <p className="text-4xl font-display font-bold">${totalTherapistPayouts.toLocaleString()}</p>
+            <DashboardCard subtitle="Provider Liabilities" icon={Wallet} variant="purple">
+               <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalTherapistPayouts.toLocaleString()}</p>
             </DashboardCard>
         </div>
 

@@ -10,6 +10,7 @@ import {
   Briefcase, History, Clock, HelpCircle, Sparkles
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function DashboardSidebar() {
   const pathname = usePathname()
@@ -17,91 +18,113 @@ export function DashboardSidebar() {
   const role = session?.user?.role
 
   const clientLinks = [
-    { label: 'Overview', href: '/dashboard/client', icon: LayoutDashboard },
-    { label: 'My Sessions', href: '/dashboard/client/book', icon: History },
-    { label: 'Wellness Tracker', href: '/dashboard/client/mood', icon: Heart },
-    { label: 'Clinical Hub', href: '/assessments', icon: ClipboardCheck },
-    { label: 'Find Support', href: '/therapists', icon: Sparkles },
-    { label: 'Profile', href: '/dashboard/profile', icon: Settings },
+    { label: 'Overview', href: '/dashboard/client', icon: LayoutDashboard, color: 'text-oku-purple' },
+    { label: 'Sessions', href: '/dashboard/client/book', icon: History, color: 'text-oku-blue' },
+    { label: 'Wellness', href: '/dashboard/client/mood', icon: Heart, color: 'text-oku-pink' },
+    { label: 'Clinical', href: '/assessments', icon: ClipboardCheck, color: 'text-oku-green' },
+    { label: 'Therapists', href: '/therapists', icon: Sparkles, color: 'text-oku-sage' },
+    { label: 'Settings', href: '/dashboard/profile', icon: Settings, color: 'text-oku-taupe' },
   ]
 
   const therapistLinks = [
-    { label: 'Command Center', href: '/practitioner/dashboard', icon: Activity },
-    { label: 'Session Ledger', href: '/practitioner/appointments', icon: Calendar },
-    { label: 'Clinical Schedule', href: '/practitioner/schedule', icon: Clock },
-    { label: 'Patient Roster', href: '/practitioner/clients', icon: Users },
-    { label: 'My Profile', href: '/practitioner/profile', icon: Settings },
-    { label: 'Practitioner Care', href: '/contact', icon: HelpCircle },
+    { label: 'Center', href: '/practitioner/dashboard', icon: Activity, color: 'text-oku-purple' },
+    { label: 'Sessions', href: '/practitioner/appointments', icon: Calendar, color: 'text-oku-blue' },
+    { label: 'Schedule', href: '/practitioner/schedule', icon: Clock, color: 'text-oku-green' },
+    { label: 'Patients', href: '/practitioner/clients', icon: Users, color: 'text-oku-pink' },
+    { label: 'Profile', href: '/practitioner/profile', icon: Settings, color: 'text-oku-taupe' },
+    { label: 'Support', href: '/contact', icon: HelpCircle, color: 'text-oku-sage' },
   ]
 
   const adminLinks = [
-    { label: 'Platform Pulse', href: '/admin/dashboard', icon: Shield },
-    { label: 'Financial Ledger', href: '/admin/financials', icon: DollarSign },
-    { label: 'Therapist Onboarding', href: '/admin/dashboard?tab=therapists', icon: Users },
-    { label: 'Security & Logs', href: '/admin/dashboard?tab=audit', icon: FileText },
-    { label: 'Service Catalog', href: '/admin/dashboard?tab=services', icon: Briefcase },
+    { label: 'Pulse', href: '/admin/dashboard', icon: Shield, color: 'text-oku-purple' },
+    { label: 'Financials', href: '/admin/financials', icon: DollarSign, color: 'text-oku-blue' },
+    { label: 'Therapists', href: '/admin/dashboard?tab=therapists', icon: Users, color: 'text-oku-green' },
+    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: FileText, color: 'text-oku-pink' },
+    { label: 'Services', href: '/admin/dashboard?tab=services', icon: Briefcase, color: 'text-oku-sage' },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
 
   return (
-    <aside className="w-72 bg-[#F8F9FA] border-r border-oku-taupe/10 min-h-screen flex flex-col sticky top-0 z-40">
-      <div className="p-8 border-b border-oku-taupe/10 bg-white">
-        <Link href="/">
-          <img 
+    <aside className="w-80 bg-oku-page-bg/50 backdrop-blur-3xl border-r border-oku-taupe/5 min-h-screen flex flex-col sticky top-0 z-40 p-6 gap-8">
+      <div className="px-4 py-6">
+        <Link href="/" className="block group">
+          <motion.img 
+            whileHover={{ scale: 1.05 }}
             src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
             alt="OKU" 
-            className="h-8 w-auto transition-transform hover:scale-105" 
+            className="h-10 w-auto" 
           />
         </Link>
       </div>
 
-      <nav className="flex-1 p-6 space-y-2 overflow-y-auto custom-scrollbar">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-taupe/40 mb-6 ml-2">Main Terminal</p>
-        {links.map((link) => {
-          const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
-          const Icon = link.icon
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center justify-between group p-4 rounded-2xl transition-all duration-300 ${
-                active 
-                ? 'bg-white text-oku-dark shadow-md scale-[1.02] border border-oku-purple/20' 
-                : 'text-oku-taupe hover:bg-white/50 hover:text-oku-dark'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-xl transition-colors ${active ? 'bg-oku-purple/10 text-oku-purple' : 'bg-oku-cream-warm/30 text-oku-taupe group-hover:bg-white group-hover:text-oku-dark'}`}>
-                   <Icon size={16} />
+      <nav className="flex-1 space-y-2 px-2">
+        <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-oku-taupe/40 mb-8 ml-4">Terminal</p>
+        <div className="space-y-1">
+          {links.map((link) => {
+            const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
+            const Icon = link.icon
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="relative group block"
+              >
+                {active && (
+                  <motion.div 
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 bg-white rounded-3xl shadow-xl shadow-oku-taupe/5 border border-oku-taupe/10"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <div className={`relative flex items-center justify-between p-4 rounded-3xl transition-all duration-500 ${
+                  active 
+                  ? 'text-oku-dark' 
+                  : 'text-oku-taupe hover:text-oku-dark hover:translate-x-1'
+                }`}>
+                  <div className="flex items-center gap-5">
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                      active 
+                      ? 'bg-oku-page-bg shadow-inner border border-oku-taupe/5' 
+                      : 'bg-white/40 group-hover:bg-white group-hover:shadow-md'
+                    }`}>
+                       <Icon size={18} strokeWidth={1.5} className={active ? link.color : 'text-oku-taupe group-hover:text-oku-dark'} />
+                    </div>
+                    <span className={`text-[11px] uppercase tracking-[0.2em] font-medium ${active ? 'text-oku-dark' : ''}`}>{link.label}</span>
+                  </div>
+                  {active && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="w-1.5 h-1.5 rounded-full bg-oku-purple" 
+                    />
+                  )}
                 </div>
-                <span className={`text-[10px] uppercase tracking-widest font-black ${active ? 'text-oku-dark' : ''}`}>{link.label}</span>
-              </div>
-              <ChevronRight size={14} className={`transition-transform duration-500 ${active ? 'opacity-100 rotate-90' : 'opacity-0'}`} />
-            </Link>
-          )
-        })}
+              </Link>
+            )
+          })}
+        </div>
       </nav>
 
-      <div className="p-6 border-t border-oku-taupe/10 space-y-4 bg-white/50">
-        <div className="bg-white p-4 rounded-2xl border border-oku-taupe/10 flex items-center gap-4 shadow-sm">
-           <div className="w-10 h-10 rounded-full bg-[#E0E7FF] flex items-center justify-center text-[#4338CA] font-display font-bold border-2 border-white shadow-inner">
-              {session?.user?.name?.substring(0, 1)}
+      <div className="mt-auto space-y-6">
+        <div className="p-6 rounded-[2.5rem] bg-white shadow-2xl shadow-oku-taupe/10 border border-oku-taupe/5 group transition-all duration-500 hover:shadow-oku-purple/5">
+           <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-oku-purple/30 to-oku-blue/30 flex items-center justify-center text-oku-dark font-display font-medium shadow-inner">
+                 {session?.user?.name?.substring(0, 1)}
+              </div>
+              <div className="flex-1 min-w-0">
+                 <p className="text-[11px] font-medium uppercase tracking-widest text-oku-dark truncate">{session?.user?.name}</p>
+                 <p className="text-[9px] uppercase tracking-widest text-oku-taupe/60 font-medium">{role?.toLowerCase()}</p>
+              </div>
            </div>
-           <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-dark truncate">{session?.user?.name}</p>
-              <p className="text-[8px] uppercase tracking-widest text-oku-taupe font-bold">{role === 'THERAPIST' ? 'Clinical Provider' : role}</p>
-           </div>
+           <button 
+             onClick={() => signOut({ callbackUrl: '/' })}
+             className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-oku-page-bg hover:bg-red-50 hover:text-red-500 text-oku-taupe transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-medium border border-oku-taupe/5"
+           >
+             <LogOut size={14} strokeWidth={1.5} />
+             <span>Sign Out</span>
+           </button>
         </div>
-        <button 
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="w-full flex items-center gap-4 p-4 text-oku-taupe hover:text-red-600 transition-all group"
-        >
-          <div className="p-2 rounded-xl bg-oku-cream-warm/30 group-hover:bg-red-50 group-hover:text-red-600 transition-colors">
-             <LogOut size={16} />
-          </div>
-          <span className="text-[10px] uppercase tracking-widest font-black">Secure Logout</span>
-        </button>
       </div>
     </aside>
   )

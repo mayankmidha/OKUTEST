@@ -48,12 +48,12 @@ export default async function PractitionerProfilePage() {
           </PractitionerSectionCard>
 
           <PractitionerSectionCard title="Credentials & Verification">
-            <div className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <div className="flex items-center justify-between p-6 bg-white rounded-2xl border border-oku-taupe/5 shadow-sm">
                <div>
-                  <p className="text-sm font-bold text-slate-900">License Number</p>
-                  <p className="text-slate-600 font-mono">{practitioner.licenseNumber || 'Not provided'}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40 mb-1">License Number</p>
+                  <p className="text-oku-dark font-mono text-sm">{practitioner.licenseNumber || 'Not provided'}</p>
                </div>
-               <PractitionerPill tone={practitioner.isVerified ? "emerald" : "amber"}>
+               <PractitionerPill tone={practitioner.isVerified ? "sage" : "pink"}>
                   {practitioner.isVerified ? 'Verified Account' : 'Awaiting Verification'}
                </PractitionerPill>
             </div>

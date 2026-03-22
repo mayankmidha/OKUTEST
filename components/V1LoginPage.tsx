@@ -43,67 +43,67 @@ export default function V1LoginPage() {
 
   return (
     <div className="min-h-screen bg-oku-cream flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background aesthetic shapes */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-oku-purple/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-oku-purple/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
+      {/* Refined Background Aesthetic */}
+      <div className="absolute top-0 right-0 w-[80vw] h-[80vw] bg-oku-purple/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[60vw] h-[60vw] bg-oku-sage/5 rounded-full translate-y-1/2 -translate-x-1/4 blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 w-[50vw] h-[50vw] bg-oku-pink/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-[160px] opacity-20 pointer-events-none" />
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full"
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-md w-full relative z-10"
       >
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-block mb-8">
+        <div className="text-center mb-12">
+          <Link href="/" className="inline-block mb-10">
             <img 
               src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
               alt="OKU Therapy" 
-              className="h-12 w-auto mx-auto" 
+              className="h-10 w-auto mx-auto opacity-80" 
             />
           </Link>
-          <h1 className="text-4xl font-display font-bold text-oku-dark tracking-tighter mb-3">Welcome back.</h1>
-          <p className="text-oku-taupe font-display italic">Secure access to your sanctuary.</p>
+          <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter mb-4">Welcome Home.</h1>
+          <p className="text-oku-taupe font-display italic text-lg opacity-60">Your sanctuary is waiting for you.</p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-md p-10 rounded-[3rem] border border-white shadow-2xl relative z-10">
+        <div className="bg-white/40 backdrop-blur-3xl p-12 rounded-[4rem] border border-white/60 shadow-[0_32px_80px_rgba(0,0,0,0.03)]">
           {message && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-              <ShieldCheck size={16} /> {message}
+            <div className="mb-8 p-5 bg-green-50/50 backdrop-blur-sm border border-green-100/50 rounded-3xl text-green-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
+              <ShieldCheck size={18} strokeWidth={1.5} /> {message}
             </div>
           )}
 
           {error && (
             <motion.div 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-8 p-5 bg-red-50/50 backdrop-blur-sm border border-red-100/50 rounded-3xl text-red-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3"
             >
-              <Lock size={16} /> {error}
+              <Lock size={18} strokeWidth={1.5} /> {error}
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Email Address</label>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Identity</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-oku-cream-warm/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                placeholder="name@example.com"
+                className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                placeholder="email@example.com"
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center px-2">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe">Password</label>
-              </div>
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Secret</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-oku-cream-warm/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
                 placeholder="••••••••"
               />
             </div>
@@ -111,29 +111,36 @@ export default function V1LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 group"
+              className="w-full bg-oku-dark text-white py-6 rounded-full flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-oku-dark/10 hover:bg-oku-purple-dark hover:-translate-y-1 transition-all duration-500 disabled:opacity-50 group"
             >
               {isLoading ? (
                 <Loader2 size={20} className="animate-spin" />
               ) : (
-                <>Sign In <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
+                <>Enter Sanctuary <ArrowRight size={18} strokeWidth={1.5} className="group-hover:translate-x-2 transition-transform duration-500" /></>
               )}
             </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-oku-taupe/5 text-center">
-            <p className="text-sm text-oku-taupe">
-              New to Oku?{' '}
-              <Link href="/auth/signup" className="text-oku-purple font-bold hover:underline ml-1">
-                Create an account
+          <div className="mt-12 pt-10 border-t border-oku-taupe/5 text-center">
+            <p className="text-xs text-oku-taupe opacity-60">
+              New to our collective?{' '}
+              <Link href="/auth/signup" className="text-oku-purple font-black hover:underline ml-1">
+                Begin Here
               </Link>
             </p>
           </div>
         </div>
 
-        <p className="text-center mt-8 text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe opacity-40">
-          Secure & Encrypted • HIPAA Compliant
-        </p>
+        <div className="flex justify-center gap-8 mt-12">
+            <div className="flex items-center gap-2 opacity-30 grayscale">
+                <ShieldCheck size={14} />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">HIPAA Secure</span>
+            </div>
+            <div className="flex items-center gap-2 opacity-30 grayscale">
+                <Lock size={14} />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">AES-256</span>
+            </div>
+        </div>
       </motion.div>
     </div>
   )

@@ -1,71 +1,80 @@
 'use client'
 
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 
 export default function Footer() {
   return (
-    <footer className="bg-oku-dark text-oku-cream py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-        <div className="flex flex-col items-center mb-24">
-           <h2 className="text-[12vw] md:text-[8vw] font-display font-bold leading-none tracking-tighter opacity-5 select-none text-white">
-            OKU THERAPY
-          </h2>
-          <div className="mt-[-4vw] flex flex-col items-center text-center">
-             <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
-                alt="OKU Therapy" 
-                className="h-16 w-auto mb-6 brightness-0 invert" 
-             />
-             <p className="text-oku-taupe font-display italic text-xl max-w-md">Inclusive, trauma-informed, and relational care.</p>
+    <footer className="bg-oku-page-bg border-t border-oku-taupe/10 py-32 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-32">
+          <div>
+            <motion.img 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
+              alt="OKU Therapy" 
+              className="h-16 w-auto mb-10" 
+            />
+            <h2 className="text-5xl md:text-6xl font-display text-oku-dark leading-tight mb-8">
+              A sanctuary for <br />
+              <span className="text-oku-taupe italic">healing and growth.</span>
+            </h2>
+            <p className="text-oku-taupe text-lg max-w-md leading-relaxed">
+              Inclusive, trauma-informed, and relational care designed to help you navigate life's complexities with grace.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
+            <div>
+              <h4 className="font-medium mb-8 uppercase tracking-[0.2em] text-[11px] text-oku-dark">Explore</h4>
+              <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
+                <li><Link href="/about-us" className="hover:text-oku-purple transition-colors">Our Story</Link></li>
+                <li><Link href="/therapists" className="hover:text-oku-purple transition-colors">Our People</Link></li>
+                <li><Link href="/services" className="hover:text-oku-purple transition-colors">Services</Link></li>
+                <li><Link href="/blog" className="hover:text-oku-purple transition-colors">Blog</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-medium mb-8 uppercase tracking-[0.2em] text-[11px] text-oku-dark">Support</h4>
+              <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
+                <li><Link href="/contact" className="hover:text-oku-blue transition-colors">Contact Us</Link></li>
+                <li><Link href="/faq" className="hover:text-oku-blue transition-colors">FAQs</Link></li>
+                <li><Link href="/emergency" className="hover:text-oku-blue transition-colors">Emergency</Link></li>
+              </ul>
+            </div>
+
+            <div className="col-span-2 md:col-span-1">
+              <h4 className="font-medium mb-8 uppercase tracking-[0.2em] text-[11px] text-oku-dark">Connect</h4>
+              <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
+                <li><a href="https://instagram.com/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">Instagram</a></li>
+                <li><a href="https://linkedin.com/company/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">LinkedIn</a></li>
+                <li><a href="https://wa.me/919953879928" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">WhatsApp</a></li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
-          <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5">
-            <h4 className="font-bold mb-6 uppercase tracking-[0.2em] text-[10px] text-oku-purple-dark">Explore</h4>
-            <ul className="space-y-4 text-xs font-black uppercase tracking-widest">
-              <li><Link href="/about-us" className="text-oku-taupe hover:text-white transition-colors">Our Story</Link></li>
-              <li><Link href="/therapists" className="text-oku-taupe hover:text-white transition-colors">Our People</Link></li>
-              <li><Link href="/services" className="text-oku-taupe hover:text-white transition-colors">Services</Link></li>
-              <li><Link href="/blog" className="text-oku-taupe hover:text-white transition-colors">Blog</Link></li>
-            </ul>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-oku-taupe/5"></div>
           </div>
-
-          <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5">
-            <h4 className="font-bold mb-6 uppercase tracking-[0.2em] text-[10px] text-oku-blue-dark">Support</h4>
-            <ul className="space-y-4 text-xs font-black uppercase tracking-widest">
-              <li><Link href="/contact" className="text-oku-taupe hover:text-white transition-colors">Contact Us</Link></li>
-              <li><Link href="/faq" className="text-oku-taupe hover:text-white transition-colors">FAQs</Link></li>
-              <li><Link href="/emergency" className="text-oku-taupe hover:text-white transition-colors">Emergency</Link></li>
-            </ul>
-          </div>
-
-          <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5">
-            <h4 className="font-bold mb-6 uppercase tracking-[0.2em] text-[10px] text-oku-green-dark">Legal</h4>
-            <ul className="space-y-4 text-xs font-black uppercase tracking-widest">
-              <li><Link href="/privacy" className="text-oku-taupe hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-oku-taupe hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/cookies" className="text-oku-taupe hover:text-white transition-colors">Cookie Policy</Link></li>
-            </ul>
-          </div>
-
-          <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5">
-            <h4 className="font-bold mb-6 uppercase tracking-[0.2em] text-[10px] text-oku-pink-dark">Connect</h4>
-            <ul className="space-y-4 text-xs font-black uppercase tracking-widest">
-              <li><a href="https://instagram.com/okutherapy" target="_blank" rel="noopener noreferrer" className="text-oku-taupe hover:text-white transition-colors">Instagram</a></li>
-              <li><a href="https://linkedin.com/company/okutherapy" target="_blank" rel="noopener noreferrer" className="text-oku-taupe hover:text-white transition-colors">LinkedIn</a></li>
-              <li><a href="https://wa.me/919953879928" target="_blank" rel="noopener noreferrer" className="text-oku-taupe hover:text-white transition-colors">WhatsApp</a></li>
-            </ul>
+          <div className="relative flex justify-center">
+            <span className="bg-oku-page-bg px-6 text-[10vw] font-display font-bold text-oku-taupe/5 select-none uppercase tracking-tighter">
+              OKU THERAPY
+            </span>
           </div>
         </div>
 
-        <div className="border-t border-white/5 mt-24 pt-12 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-oku-taupe text-[8px] uppercase tracking-[0.4em] font-black opacity-40">
+        <div className="mt-12 flex flex-col md:flex-row justify-between items-center gap-8">
+          <p className="text-oku-taupe text-[10px] uppercase tracking-[0.3em] font-medium opacity-60">
             &copy; {new Date().getFullYear()} OKU Therapy Collective. All rights reserved.
           </p>
-          <div className="flex gap-8">
-             <Link href="/privacy" className="text-oku-taupe hover:text-white transition-colors text-[8px] uppercase tracking-[0.4em] font-black opacity-40">Privacy</Link>
-             <Link href="/terms" className="text-oku-taupe hover:text-white transition-colors text-[8px] uppercase tracking-[0.4em] font-black opacity-40">Terms</Link>
+          <div className="flex gap-12">
+             <Link href="/privacy" className="text-oku-taupe hover:text-oku-dark transition-colors text-[10px] uppercase tracking-[0.3em] font-medium opacity-60">Privacy Policy</Link>
+             <Link href="/terms" className="text-oku-taupe hover:text-oku-dark transition-colors text-[10px] uppercase tracking-[0.3em] font-medium opacity-60">Terms of Service</Link>
           </div>
         </div>
       </div>
