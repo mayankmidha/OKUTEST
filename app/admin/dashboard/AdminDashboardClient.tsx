@@ -9,7 +9,7 @@ import {
   Search, Filter, MoreVertical, ExternalLink,
   Calendar, FileText, Zap, AlertTriangle, Megaphone
 } from 'lucide-react'
-import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus } from '../actions'
+import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus, updatePlatformSettings } from '../actions'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 
@@ -30,7 +30,18 @@ function AdminDashboardContent({
   const router = useRouter()
   const currentTab = searchParams.get('tab') || 'overview'
   const [activeTab, setActiveTab] = useState(currentTab)
-  const [settings, setSettings] = useState(initialSettings || { maintenanceMode: false, platformFeePercent: 20 })
+  const [settings, setSettingsState] = useState(initialSettings || { maintenanceMode: false, platformFeePercent: 20 })
+  const [isSavingSetting, setIsSavingSetting] = useState(false)
+
+  const setSettings = async (newSettings: any) => {
+    setSettingsState(newSettings)
+    setIsSavingSetting(true)
+    try {
+       await updatePlatformSettings(newSettings)
+    } finally {
+       setIsSavingSetting(false)
+    }
+  }
   
   useEffect(() => {
     setActiveTab(currentTab)

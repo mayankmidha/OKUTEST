@@ -46,6 +46,10 @@ export default async function AdminDashboardPage() {
     take: 50
   })
 
+  const settings = await prisma.platformSettings.findUnique({
+    where: { id: 'global' }
+  }) || { maintenanceMode: false, platformFeePercent: 20 }
+
   const stats = {
     totalRevenue: completedPayments._sum.amount || 0,
     totalAppointments: totalAppointments,
@@ -59,6 +63,7 @@ export default async function AdminDashboardPage() {
         therapists={therapists || []} 
         services={services || []} 
         clients={clients || []} 
+        settings={settings}
       />
     </div>
   )

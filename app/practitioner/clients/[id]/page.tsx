@@ -23,6 +23,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     },
     include: {
         clientProfile: true,
+        intakeForm: true,
         clientAppointments: {
             where: { practitionerId: session.user.id },
             include: { soapNote: true, service: true },
@@ -88,6 +89,31 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                             <p className="text-sm italic text-oku-taupe">{clientData.bio || 'No bio provided.'}</p>
                         </div>
                     </div>
+                </div>
+
+                {/* Intake Form Data */}
+                <div className="bg-oku-cream-warm/30 p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-oku-dark mb-6 flex items-center gap-2">
+                        <Shield size={16} className="text-oku-purple" /> Intake & Safety
+                    </h3>
+                    {clientData.intakeForm ? (
+                        <div className="space-y-6">
+                            <div>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Emergency Contact</p>
+                                <p className="text-sm font-medium">{clientData.intakeForm.emergencyContact}</p>
+                            </div>
+                            <div>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Medical History</p>
+                                <p className="text-sm text-oku-dark leading-relaxed">{clientData.intakeForm.medicalHistory || 'None reported.'}</p>
+                            </div>
+                            <div className="pt-4 border-t border-oku-taupe/5 flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-green-700">Consent Signed</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-xs italic text-oku-taupe opacity-60">Intake form not yet submitted.</p>
+                    )}
                 </div>
 
                 <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">

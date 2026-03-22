@@ -13,6 +13,12 @@ export default async function AdminFinancialsPage() {
     redirect('/auth/login')
   }
 
+  // Fetch global settings for dynamic fee
+  const settings = await prisma.platformSettings.findUnique({
+    where: { id: 'global' }
+  })
+  const PLATFORM_FEE_PERCENTAGE = (settings?.platformFeePercent || 20) / 100
+
   // Fetch all completed payments
   const payments = await prisma.payment.findMany({
     where: { status: 'COMPLETED' },
@@ -33,7 +39,6 @@ export default async function AdminFinancialsPage() {
 
   // Calculate stats
   const totalGrossRevenue = payments.reduce((acc, p) => acc + p.amount, 0)
-  const PLATFORM_FEE_PERCENTAGE = 0.20
   const totalPlatformCut = totalGrossRevenue * PLATFORM_FEE_PERCENTAGE
   const totalTherapistPayouts = totalGrossRevenue - totalPlatformCut
 
@@ -80,7 +85,7 @@ export default async function AdminFinancialsPage() {
             <DashboardCard subtitle="Gross Volume (GMV)" icon={<DollarSign size={20} strokeWidth={1.5} />} variant="dark">
                <p className="text-5xl font-display font-bold text-white tracking-tighter">${totalGrossRevenue.toLocaleString()}</p>
             </DashboardCard>
-            <DashboardCard subtitle="Platform Net (20%)" icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="green">
+            <DashboardCard subtitle={`Platform Net (${settings?.platformFeePercent || 20}%)`} icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="green">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalPlatformCut.toLocaleString()}</p>
             </DashboardCard>
             <DashboardCard subtitle="Provider Liabilities" icon={<Wallet size={20} strokeWidth={1.5} />} variant="purple">

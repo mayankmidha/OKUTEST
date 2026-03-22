@@ -62,3 +62,17 @@ export async function toggleServiceStatus(serviceId: string, isActive: boolean) 
   })
   revalidatePath('/admin/dashboard')
 }
+
+export async function updatePlatformSettings(data: { maintenanceMode?: boolean, platformFeePercent?: number }) {
+  await checkAdmin()
+  await prisma.platformSettings.upsert({
+    where: { id: 'global' },
+    update: data,
+    create: {
+      id: 'global',
+      maintenanceMode: data.maintenanceMode ?? false,
+      platformFeePercent: data.platformFeePercent ?? 20.0
+    }
+  })
+  revalidatePath('/admin/dashboard')
+}
