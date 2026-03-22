@@ -62,8 +62,18 @@ export default function AssessmentsListPage() {
                     <p className="text-oku-taupe mb-8 flex-grow">
                       {assessment.description}
                     </p>
+                    <div className="flex gap-4 mb-8">
+                       <div className="bg-oku-cream-warm/30 px-3 py-2 rounded-xl text-center flex-1">
+                          <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe opacity-60">Time</p>
+                          <p className="font-bold text-oku-dark text-sm">~3 mins</p>
+                       </div>
+                       <div className="bg-oku-cream-warm/30 px-3 py-2 rounded-xl text-center flex-1">
+                          <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe opacity-60">Items</p>
+                          <p className="font-bold text-oku-dark text-sm">{assessment.questions.length} Qs</p>
+                       </div>
+                    </div>
                     <div className="flex items-center text-oku-purple font-bold gap-2">
-                      Start Assessment <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                      Start Clinical Screening <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
