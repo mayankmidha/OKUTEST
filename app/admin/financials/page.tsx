@@ -77,13 +77,13 @@ export default async function AdminFinancialsPage() {
       <div className="space-y-12">
         {/* Global Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <DashboardCard subtitle="Gross Volume (GMV)" icon={DollarSign} variant="dark">
+            <DashboardCard subtitle="Gross Volume (GMV)" icon={<DollarSign size={20} strokeWidth={1.5} />} variant="dark">
                <p className="text-5xl font-display font-bold text-white tracking-tighter">${totalGrossRevenue.toLocaleString()}</p>
             </DashboardCard>
-            <DashboardCard subtitle="Platform Net (20%)" icon={ArrowUpRight} variant="green">
+            <DashboardCard subtitle="Platform Net (20%)" icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="green">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalPlatformCut.toLocaleString()}</p>
             </DashboardCard>
-            <DashboardCard subtitle="Provider Liabilities" icon={Wallet} variant="purple">
+            <DashboardCard subtitle="Provider Liabilities" icon={<Wallet size={20} strokeWidth={1.5} />} variant="purple">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalTherapistPayouts.toLocaleString()}</p>
             </DashboardCard>
         </div>
@@ -128,7 +128,7 @@ export default async function AdminFinancialsPage() {
             </div>
 
             {/* Transactions */}
-            <DashboardCard title="Recent Volume" icon={TrendingUp}>
+            <DashboardCard title="Recent Volume" icon={<TrendingUp size={20} strokeWidth={1.5} />}>
                 <div className="space-y-8 mt-4">
                     {payments.slice(0, 8).map(p => (
                         <div key={p.id} className="flex justify-between items-center border-b border-oku-taupe/5 pb-6 last:border-0 group cursor-pointer">

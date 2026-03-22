@@ -18,29 +18,29 @@ export function DashboardSidebar() {
   const role = session?.user?.role
 
   const clientLinks = [
-    { label: 'Overview', href: '/dashboard/client', icon: LayoutDashboard, color: 'text-oku-purple' },
-    { label: 'Sessions', href: '/dashboard/client/book', icon: History, color: 'text-oku-blue' },
-    { label: 'Wellness', href: '/dashboard/client/mood', icon: Heart, color: 'text-oku-pink' },
-    { label: 'Clinical', href: '/assessments', icon: ClipboardCheck, color: 'text-oku-green' },
-    { label: 'Therapists', href: '/therapists', icon: Sparkles, color: 'text-oku-sage' },
-    { label: 'Settings', href: '/dashboard/profile', icon: Settings, color: 'text-oku-taupe' },
+    { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
+    { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
+    { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
+    { label: 'Clinical', href: '/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
+    { label: 'Therapists', href: '/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
+    { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
   ]
 
   const therapistLinks = [
-    { label: 'Center', href: '/practitioner/dashboard', icon: Activity, color: 'text-oku-purple' },
-    { label: 'Sessions', href: '/practitioner/appointments', icon: Calendar, color: 'text-oku-blue' },
-    { label: 'Schedule', href: '/practitioner/schedule', icon: Clock, color: 'text-oku-green' },
-    { label: 'Patients', href: '/practitioner/clients', icon: Users, color: 'text-oku-pink' },
-    { label: 'Profile', href: '/practitioner/profile', icon: Settings, color: 'text-oku-taupe' },
-    { label: 'Support', href: '/contact', icon: HelpCircle, color: 'text-oku-sage' },
+    { label: 'Center', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
+    { label: 'Sessions', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
+    { label: 'Schedule', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
+    { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
+    { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
+    { label: 'Support', href: '/contact', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
   ]
 
   const adminLinks = [
-    { label: 'Pulse', href: '/admin/dashboard', icon: Shield, color: 'text-oku-purple' },
-    { label: 'Financials', href: '/admin/financials', icon: DollarSign, color: 'text-oku-blue' },
-    { label: 'Therapists', href: '/admin/dashboard?tab=therapists', icon: Users, color: 'text-oku-green' },
-    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: FileText, color: 'text-oku-pink' },
-    { label: 'Services', href: '/admin/dashboard?tab=services', icon: Briefcase, color: 'text-oku-sage' },
+    { label: 'Pulse', href: '/admin/dashboard', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
+    { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
+    { label: 'Therapists', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
+    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <FileText size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
+    { label: 'Services', href: '/admin/dashboard?tab=services', icon: <Briefcase size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
@@ -63,7 +63,7 @@ export function DashboardSidebar() {
         <div className="space-y-1">
           {links.map((link) => {
             const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
-            const Icon = link.icon
+            const renderedIcon = link.icon
             return (
               <Link
                 key={link.href}
@@ -88,7 +88,9 @@ export function DashboardSidebar() {
                       ? 'bg-oku-page-bg shadow-inner border border-oku-taupe/5' 
                       : 'bg-white/40 group-hover:bg-white group-hover:shadow-md'
                     }`}>
-                       <Icon size={18} strokeWidth={1.5} className={active ? link.color : 'text-oku-taupe group-hover:text-oku-dark'} />
+                       <div className={active ? link.color : 'text-oku-taupe group-hover:text-oku-dark'}>
+                          {renderedIcon}
+                       </div>
                     </div>
                     <span className={`text-[11px] uppercase tracking-[0.2em] font-medium ${active ? 'text-oku-dark' : ''}`}>{link.label}</span>
                   </div>

@@ -46,7 +46,7 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
     <form onSubmit={handleSubmit} className="space-y-10">
       
       {/* 1. Legal & Consent */}
-      <DashboardCard title="1. Legal Consent & Informed Care" icon={ShieldCheck}>
+      <DashboardCard title="1. Legal Consent & Informed Care" icon={<ShieldCheck size={20} strokeWidth={1.5} />}>
         <div className="space-y-6">
           <p className="text-sm text-oku-taupe leading-relaxed italic">
             "By checking the boxes below, you acknowledge that you have read and understood the terms of care at Oku Therapy, including our approach to clinical safety, confidentiality boundaries, and professional ethics."
@@ -81,7 +81,7 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
       </DashboardCard>
 
       {/* 2. Medical History */}
-      <DashboardCard title="2. Medical Intake & Safety" icon={FileText}>
+      <DashboardCard title="2. Medical Intake & Safety" icon={<FileText size={20} strokeWidth={1.5} />}>
         <div className="space-y-8">
           <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Emergency Contact (Required)</label>

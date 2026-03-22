@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar as CalendarIcon, Clock, Plus, Trash2, ShieldAlert, CheckCircle2, ChevronRight, X, AlertTriangle } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock, Plus, Trash2, ShieldAlert, CheckCircle2, ChevronRight, X, AlertTriangle, Calendar } from 'lucide-react'
 import { updateWeeklyAvailability, addAvailabilityOverride, blockDate, deleteOverride, deleteBlockedDate } from './actions'
 import { DashboardCard } from '@/components/DashboardCard'
 
@@ -77,7 +77,7 @@ export default function CalendarScheduler({
       {/* 2. Overrides & Blocked Dates */}
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Specific Date Overrides */}
-        <DashboardCard title="Exceptions" subtitle="Specific Date Overrides" icon={CalendarIcon}>
+        <DashboardCard title="Exceptions" subtitle="Specific Date Overrides" icon={<Calendar size={20} strokeWidth={1.5} />}>
           <div className="space-y-4 mt-4">
             {overrides.length === 0 && !isAddingOverride && (
               <p className="text-xs text-oku-taupe italic opacity-60 py-10 text-center">No specific date overrides found.</p>
@@ -145,7 +145,7 @@ export default function CalendarScheduler({
         </DashboardCard>
 
         {/* Blocked Dates / Vacation */}
-        <DashboardCard title="Away Mode" subtitle="Time Off & Vacation" icon={AlertTriangle} variant="dark" className="relative overflow-hidden group shadow-oku-purple/10">
+        <DashboardCard title="Away Mode" subtitle="Time Off & Vacation" icon={<AlertTriangle size={20} strokeWidth={1.5} />} variant="dark" className="relative overflow-hidden group shadow-oku-purple/10">
           <div className="relative z-10 mt-4 space-y-4">
             <button 
               onClick={async () => {

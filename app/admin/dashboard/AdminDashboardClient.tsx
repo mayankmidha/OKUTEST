@@ -106,47 +106,47 @@ function AdminDashboardContent({
         {activeTab === 'overview' && (
           <div className="space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <DashboardCard subtitle="Gross Revenue" icon={DollarSign} variant="green">
+              <DashboardCard subtitle="Gross Revenue" icon={<DollarSign size={20} strokeWidth={1.5} />} variant="green">
                 <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${stats.totalRevenue.toLocaleString()}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Total Bookings" icon={Calendar} variant="purple">
+              <DashboardCard subtitle="Total Bookings" icon={<Calendar size={20} strokeWidth={1.5} />} variant="purple">
                 <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{stats.totalAppointments}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Verified Team" icon={Shield} variant="pink">
+              <DashboardCard subtitle="Verified Team" icon={<Shield size={20} strokeWidth={1.5} />} variant="pink">
                 <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{therapists.filter((t: any) => t.practitionerProfile?.isVerified).length}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Registered Seekers" icon={Users} variant="white">
+              <DashboardCard subtitle="Registered Seekers" icon={<Users size={20} strokeWidth={1.5} />} variant="white">
                 <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{clients.length}</p>
               </DashboardCard>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-               <DashboardCard title="System Metrics" icon={BarChart3} variant="dark" className="relative overflow-hidden group">
+               <DashboardCard title="System Metrics" icon={<BarChart3 size={20} strokeWidth={1.5} />} variant="dark" className="relative overflow-hidden group">
                   <div className="space-y-8 relative z-10 mt-4">
                      <div className="space-y-3">
                         <div className="flex justify-between text-[10px] uppercase tracking-widest font-black opacity-40">
                            <span>Therapist Onboarding Progress</span>
-                           <span>{Math.round((therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100)}%</span>
+                           <span>{Math.round((therapists.filter((t: any) => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100)}%</span>
                         </div>
                         <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                           <div className="h-full bg-oku-purple transition-all duration-1000" style={{ width: `${(therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100}%` }} />
+                           <div className="h-full bg-oku-purple transition-all duration-1000" style={{ width: `${(therapists.filter((t: any) => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100}%` }} />
                         </div>
                      </div>
                      <div className="grid grid-cols-2 gap-8">
                         <div className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:bg-white/10 transition-all">
                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Pending</p>
-                           <p className="text-2xl font-bold">{therapists.filter(t => !t.practitionerProfile?.isVerified).length}</p>
+                           <p className="text-2xl font-bold">{therapists.filter((t: any) => !t.practitionerProfile?.isVerified).length}</p>
                         </div>
                         <div className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:bg-white/10 transition-all">
                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Active Services</p>
-                           <p className="text-2xl font-bold">{services.filter(s => s.isActive).length}</p>
+                           <p className="text-2xl font-bold">{services.filter((s: any) => s.isActive).length}</p>
                         </div>
                      </div>
                   </div>
                   <div className="absolute bottom-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
                </DashboardCard>
 
-               <DashboardCard title="Broadcast Hub" icon={Megaphone} className="bg-oku-purple/5 border-oku-purple/10">
+               <DashboardCard title="Broadcast Hub" icon={<Megaphone size={20} strokeWidth={1.5} />} className="bg-oku-purple/5 border-oku-purple/10">
                   <div className="space-y-6 mt-4">
                      <p className="text-sm text-oku-taupe italic leading-relaxed">Push system-wide announcements to all logged-in users (therapists & clients).</p>
                      <textarea 
@@ -261,7 +261,7 @@ function AdminDashboardContent({
             </div>
             <div className="p-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {services.map(s => (
+                {services.map((s: any) => (
                   <div key={s.id} className="group p-8 bg-oku-cream/20 border border-oku-taupe/5 rounded-[2.5rem] hover:bg-white hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                     <div className="flex justify-between items-start mb-8">
                       <div className="p-4 rounded-2xl bg-white text-oku-purple shadow-sm group-hover:bg-oku-purple group-hover:text-white transition-colors duration-500">
@@ -335,7 +335,7 @@ function AdminDashboardContent({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-oku-taupe/5">
-                  {clients.map(c => (
+                  {clients.map((c: any) => (
                     <tr key={c.id} className="hover:bg-oku-cream/20 transition-all duration-300 group">
                       <td className="p-8">
                          <div className="flex items-center gap-4">
@@ -369,7 +369,7 @@ function AdminDashboardContent({
 
         {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
-          <DashboardCard title="Global Configuration" icon={Settings}>
+          <DashboardCard title="Global Configuration" icon={<Settings size={20} strokeWidth={1.5} />}>
              <div className="space-y-10 max-w-2xl mt-4">
                 <div className="flex items-center justify-between p-8 bg-oku-cream/30 rounded-3xl border border-oku-taupe/5">
                    <div>

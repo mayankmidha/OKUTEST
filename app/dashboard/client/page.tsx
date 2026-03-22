@@ -83,16 +83,16 @@ export default async function ClientDashboardPage() {
 
       {/* Stats Grid - Pastel Themed */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-        <DashboardCard subtitle="Upcoming" icon={Calendar} variant="purple">
+        <DashboardCard subtitle="Upcoming" icon={<Calendar size={20} strokeWidth={1.5} />} variant="purple">
           <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{upcomingAppointments.length}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Clinical" icon={ClipboardCheck} variant="green">
+        <DashboardCard subtitle="Clinical" icon={<ClipboardCheck size={20} strokeWidth={1.5} />} variant="green">
           <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{recentAssessments.length}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Wellness" icon={Heart} variant="pink">
+        <DashboardCard subtitle="Wellness" icon={<Heart size={20} strokeWidth={1.5} />} variant="pink">
           <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{user.clientProfile?.noShowCount === 0 ? 'Optimal' : 'Standard'}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Today's Mood" icon={Sparkles} variant="dark">
+        <DashboardCard subtitle="Today's Mood" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="dark">
           <p className="text-lg font-bold opacity-90 mb-2">
             {user.moodEntries?.[0] ? `Feeling Better` : 'Start Tracking'}
           </p>
@@ -144,7 +144,7 @@ export default async function ClientDashboardPage() {
             </div>
           </section>
 
-          <DashboardCard title="Clinical Resource Library" icon={BookOpen} variant="dark" className="relative overflow-hidden group">
+          <DashboardCard title="Clinical Resource Library" icon={<BookOpen size={20} strokeWidth={1.5} />} variant="dark" className="relative overflow-hidden group">
              <div className="relative z-10">
                 <p className="text-white/60 mb-10 max-w-md italic font-display">Worksheets and tools curated specifically for your profile.</p>
                 <div className="grid md:grid-cols-2 gap-4">
@@ -164,7 +164,7 @@ export default async function ClientDashboardPage() {
 
         {/* Sidebar */}
         <div className="space-y-8">
-          <DashboardCard title="Care Records" icon={FileText}>
+          <DashboardCard title="Care Records" icon={<FileText size={20} strokeWidth={1.5} />}>
             <div className="space-y-8 mt-4">
               {recentAssessments.length === 0 ? (
                 <p className="text-sm text-oku-taupe italic opacity-60">No screenings recorded yet.</p>
@@ -181,7 +181,7 @@ export default async function ClientDashboardPage() {
             <Link href="/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
           </DashboardCard>
 
-          <DashboardCard title="Suggested for You" icon={Sparkles} variant="sage">
+          <DashboardCard title="Suggested for You" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="sage">
             <div className="space-y-6 mt-4">
               {practitioners.map(p => (
                 <Link key={p.id} href={`/book/${p.id}/trial`} className="flex items-center gap-4 group">

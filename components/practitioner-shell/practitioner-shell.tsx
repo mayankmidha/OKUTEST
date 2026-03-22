@@ -12,7 +12,7 @@ import {
 type PractitionerNavLink = {
   href: string
   label: string
-  icon: any
+  icon: ReactNode
 }
 
 type PractitionerShellProps = {
@@ -26,11 +26,11 @@ type PractitionerShellProps = {
 }
 
 const NAV_LINKS: PractitionerNavLink[] = [
-  { href: '/practitioner/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/practitioner/appointments', label: 'Schedule', icon: Calendar },
-  { href: '/practitioner/clients', label: 'Patients', icon: Users },
-  { href: '/practitioner/availability', label: 'Hours', icon: Clock },
-  { href: '/practitioner/profile', label: 'Clinical Profile', icon: UserCircle },
+  { href: '/practitioner/dashboard', label: 'Overview', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/appointments', label: 'Schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/clients', label: 'Patients', icon: <Users size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/availability', label: 'Hours', icon: <Clock size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/profile', label: 'Clinical Profile', icon: <UserCircle size={18} strokeWidth={1.5} /> },
 ]
 
 function isActiveLink(currentPath: string, href: string) {
@@ -67,7 +67,7 @@ export function PractitionerShell({
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-4 opacity-40">Clinical Workspace</p>
               {NAV_LINKS.map((link) => {
                 const active = isActiveLink(currentPath, link.href)
-                const Icon = link.icon
+                const renderedIcon = link.icon
 
                 return (
                   <Link
@@ -79,7 +79,9 @@ export function PractitionerShell({
                       : 'text-oku-taupe hover:bg-white hover:text-oku-dark hover:shadow-xl hover:shadow-oku-taupe/5'
                     }`}
                   >
-                    <Icon size={18} strokeWidth={active ? 2 : 1.5} className={active ? 'text-oku-purple' : 'group-hover:text-oku-purple transition-colors'} />
+                    <div className={active ? 'text-oku-purple' : 'group-hover:text-oku-purple transition-colors'}>
+                        {renderedIcon}
+                    </div>
                     <span className={`text-[11px] font-black uppercase tracking-widest ${active ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`}>
                       {link.label}
                     </span>
@@ -235,12 +237,12 @@ export function PractitionerStatCard({ accent = 'bg-oku-purple', detail, label, 
 export function PractitionerActionTile({
   description,
   href,
-  icon: Icon,
+  icon,
   title,
 }: {
   description: string
   href: string
-  icon: any
+  icon: ReactNode
   title: string
 }) {
   return (
@@ -249,7 +251,7 @@ export function PractitionerActionTile({
       className="group bg-white rounded-[2.5rem] p-10 border border-oku-taupe/5 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
     >
       <div className="w-14 h-14 rounded-2xl bg-oku-cream flex items-center justify-center text-oku-dark group-hover:bg-oku-dark group-hover:text-white transition-all duration-500 mb-10 shadow-inner">
-        <Icon size={24} strokeWidth={1.5} />
+        {icon}
       </div>
       <div className="flex-1">
         <h3 className="text-xl font-display font-bold text-oku-dark mb-2">{title}</h3>

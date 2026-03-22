@@ -116,16 +116,16 @@ export default async function PractitionerDashboardPage() {
 
       {/* Stats Grid - Pastel Themed */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-        <DashboardCard subtitle="Today" icon={Video} variant="purple">
+        <DashboardCard subtitle="Today" icon={<Video size={20} strokeWidth={1.5} />} variant="purple">
           <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{todaySessions.length}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Practice" icon={TrendingUp} variant="green">
+        <DashboardCard subtitle="Practice" icon={<TrendingUp size={20} strokeWidth={1.5} />} variant="green">
           <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{totalCompleted}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Revenue" icon={DollarSign} variant="sage">
+        <DashboardCard subtitle="Revenue" icon={<DollarSign size={20} strokeWidth={1.5} />} variant="sage">
           <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalEarnings._sum.amount || 0}</p>
         </DashboardCard>
-        <DashboardCard subtitle="Next Up" icon={Clock} variant="dark">
+        <DashboardCard subtitle="Next Up" icon={<Clock size={20} strokeWidth={1.5} />} variant="dark">
           <p className="text-lg font-bold truncate pr-2 opacity-90">
             {upcomingSessions[0] ? upcomingSessions[0].client?.name : 'Queue clear'}
           </p>
@@ -169,7 +169,7 @@ export default async function PractitionerDashboardPage() {
             </div>
           </section>
 
-          <DashboardCard title="Practitioner Support" icon={Heart} variant="dark" className="relative overflow-hidden bg-oku-purple-dark shadow-oku-purple-dark/20">
+          <DashboardCard title="Practitioner Support" icon={<Heart size={20} strokeWidth={1.5} />} variant="dark" className="relative overflow-hidden bg-oku-purple-dark shadow-oku-purple-dark/20">
              <div className="relative z-10">
                 <p className="text-white leading-relaxed italic mb-8 font-display text-lg opacity-90">
                    "Your capacity to hold space for others begins with your own gentle returning."
@@ -180,7 +180,7 @@ export default async function PractitionerDashboardPage() {
         </div>
 
         <div className="space-y-8">
-          <DashboardCard title="Clinical Reflections" icon={FileText}>
+          <DashboardCard title="Clinical Reflections" icon={<FileText size={20} strokeWidth={1.5} />}>
               <div className="space-y-8 mt-4">
                   {(!recentNotes || recentNotes.length === 0) ? (
                       <p className="text-sm text-oku-taupe italic opacity-60 text-center py-6">No notes recorded yet.</p>
