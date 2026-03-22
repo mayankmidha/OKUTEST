@@ -19,7 +19,7 @@ export default async function ClientClinicalHub() {
   }
 
   // Fetch all clinical data for this client
-  const [intake, assessmentAnswers, treatmentPlans] = await Promise.all([
+  const [intake, assessmentAnswers, treatmentPlans, assignedTasks] = await Promise.all([
     prisma.intakeForm.findUnique({ where: { userId: session.user.id } }),
     prisma.assessmentAnswer.findMany({
       where: { userId: session.user.id },
@@ -30,6 +30,13 @@ export default async function ClientClinicalHub() {
       where: { clientId: session.user.id },
       orderBy: { createdAt: 'desc' },
       include: { practitioner: { select: { name: true } } }
+    }),
+    prisma.assignedAssessment.findMany({
+      where: { clientId: session.user.id, status: 'PENDING' },
+      include: { 
+        assessment: true,
+        practitioner: { select: { name: true } }
+      }
     })
   ])
 
@@ -44,6 +51,40 @@ export default async function ClientClinicalHub() {
           </Link>
         }
       />
+
+      {/* 0. Pending Clinical Assignments */}
+      {assignedTasks.length > 0 && (
+        <section className="mb-12">
+           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mb-6 ml-2">Clinical Actions Required</h2>
+           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {assignedTasks.map(task => {
+                const slug = ASSESSMENTS.find(a => a.title === task.assessment.title)?.slug
+                return (
+                  <div key={task.id} className="bg-oku-purple text-white p-8 rounded-[2.5rem] shadow-xl shadow-oku-purple/20 relative overflow-hidden group">
+                     <div className="relative z-10">
+                        <div className="flex justify-between items-start mb-6">
+                           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                              <Sparkles size={20} />
+                           </div>
+                           <span className="text-[9px] font-black uppercase tracking-widest bg-white/10 px-2 py-1 rounded-full border border-white/10">Assigned</span>
+                        </div>
+                        <h3 className="text-xl font-display font-bold mb-2 leading-tight">{task.assessment.title}</h3>
+                        <p className="text-xs text-white/60 mb-8 italic">Requested by {task.practitioner.name}</p>
+                        
+                        <Link 
+                          href={slug ? `/assessments/${slug}?assignmentId=${task.id}` : `/assessments?assignmentId=${task.id}`}
+                          className="w-full py-4 bg-white text-oku-purple rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-oku-cream transition-all shadow-lg"
+                        >
+                          Complete Now <ArrowRight size={14} />
+                        </Link>
+                     </div>
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+                  </div>
+                )
+              })}
+           </div>
+        </section>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-12">

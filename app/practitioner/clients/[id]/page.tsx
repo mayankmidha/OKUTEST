@@ -2,9 +2,11 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { ArrowLeft, User, Activity, FileText, Heart, Shield, Calendar } from 'lucide-react'
-import { UserRole } from '@prisma/client'
+import { ArrowLeft, User, Activity, FileText, Heart, Shield, Calendar, Mail, Phone, ExternalLink } from 'lucide-react'
+import { UserRole, AppointmentStatus } from '@prisma/client'
 import { TreatmentPlanManager } from '@/components/TreatmentPlanManager'
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
+import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -14,84 +16,110 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     redirect('/auth/login')
   }
 
-  // Fetch the client data, but ONLY if they are assigned to this practitioner
-  const clientData = await prisma.user.findFirst({
-    where: { 
-        id: clientId,
-        clientAppointments: {
-            some: { practitionerId: session.user.id }
+  // Fetch the client data
+  const [clientData, assessments] = await Promise.all([
+    prisma.user.findFirst({
+        where: { 
+            id: clientId,
+            clientAppointments: {
+                some: { practitionerId: session.user.id }
+            }
+        },
+        include: {
+            clientProfile: true,
+            intakeForm: true,
+            clientAppointments: {
+                where: { practitionerId: session.user.id },
+                include: { soapNote: true, service: true },
+                orderBy: { startTime: 'desc' }
+            },
+            clientTreatmentPlans: {
+                where: { practitionerId: session.user.id },
+                orderBy: { createdAt: 'desc' }
+            },
+            assessmentAnswers: {
+                include: { assessment: true },
+                orderBy: { completedAt: 'desc' }
+            },
+            moodEntries: {
+                orderBy: { createdAt: 'desc' },
+                take: 14 // Last 2 weeks
+            }
         }
-    },
-    include: {
-        clientProfile: true,
-        intakeForm: true,
-        clientAppointments: {
-            where: { practitionerId: session.user.id },
-            include: { soapNote: true, service: true },
-            orderBy: { startTime: 'desc' }
-        },
-        clientTreatmentPlans: {
-            where: { practitionerId: session.user.id },
-            orderBy: { createdAt: 'desc' }
-        },
-        assessmentAnswers: {
-            include: { assessment: true },
-            orderBy: { completedAt: 'desc' }
-        },
-        moodEntries: {
-            orderBy: { createdAt: 'desc' },
-            take: 14 // Last 2 weeks
-        }
-    }
-  })
+    }),
+    prisma.assessment.findMany({
+        where: { isActive: true },
+        orderBy: { title: 'asc' }
+    })
+  ])
 
   if (!clientData) {
     redirect('/practitioner/clients')
   }
 
   return (
-    <div className="min-h-screen bg-oku-cream py-12 px-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-12">
-          <Link href="/practitioner/clients" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark flex items-center gap-2 mb-4">
-            <ArrowLeft size={12} /> Patient Roster
-          </Link>
-          <div className="flex items-center gap-6">
-             <div className="w-20 h-20 bg-oku-purple/10 text-oku-purple rounded-full flex items-center justify-center text-3xl font-display font-bold">
-                {clientData.name?.substring(0, 1)}
-             </div>
-             <div>
-                <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
-                  {clientData.name}
-                </h1>
-                <p className="text-oku-taupe mt-2 font-display italic">Clinical File & History</p>
-             </div>
-          </div>
-        </div>
-
+    <PractitionerShell
+        title="Patient File"
+        badge="Clinical"
+        currentPath="/practitioner/clients"
+        description={`Full clinical record and history for ${clientData.name}.`}
+        heroActions={
+            <div className="flex gap-4">
+                <Link href={`/practitioner/messages?c=${clientData.id}`} className="bg-white text-oku-dark border border-oku-taupe/10 py-3.5 px-6 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-md transition-all">Secure Message</Link>
+                <Link href="/practitioner/appointments" className="btn-primary py-3.5 px-6 text-[10px] shadow-xl">Manage Schedule</Link>
+            </div>
+        }
+    >
         <div className="grid lg:grid-cols-3 gap-12">
             {/* Left Col: Overview & Demographics */}
             <div className="space-y-8">
-                <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-oku-dark mb-6 flex items-center gap-2">
-                        <User size={16} className="text-oku-purple" /> Patient Details
-                    </h3>
-                    <div className="space-y-4">
-                        <div>
-                            <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Email</p>
-                            <p className="text-sm font-medium">{clientData.email}</p>
+                {/* Core Bio */}
+                <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm relative overflow-hidden">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-6 mb-8 pb-8 border-b border-oku-taupe/5">
+                            <div className="w-20 h-20 rounded-2xl bg-oku-purple/10 flex items-center justify-center text-oku-purple text-3xl font-display font-bold shadow-inner">
+                                {clientData.name?.substring(0, 1)}
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-display font-bold text-oku-dark tracking-tighter">{clientData.name}</h3>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-1 opacity-60">ID: {clientData.id.slice(-8)}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Phone</p>
-                            <p className="text-sm font-medium">{clientData.phone || 'Not provided'}</p>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 text-oku-taupe">
+                                <Mail size={14} />
+                                <span className="text-xs font-medium">{clientData.email}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-oku-taupe">
+                                <Phone size={14} />
+                                <span className="text-xs font-medium">{clientData.phone || 'No phone recorded'}</span>
+                            </div>
+                            <div className="pt-4 mt-4 border-t border-oku-taupe/5">
+                                <p className="text-[9px] uppercase tracking-widest font-black text-oku-taupe mb-2 opacity-40">Practitioner Bio Notes</p>
+                                <p className="text-sm italic text-oku-dark/70 leading-relaxed">
+                                    {clientData.bio || "No initial clinical bio provided."}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Total Sessions</p>
-                            <p className="text-sm font-medium">{clientData.clientAppointments.length}</p>
+                    </div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+                </div>
+
+                {/* Assign Section */}
+                <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                    <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                                <Activity size={16} className="text-oku-purple" /> Clinical Tasks
+                            </h3>
                         </div>
-                        <div className="pt-4 border-t border-oku-taupe/10">
-                            <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Patient Bio / Notes</p>
-                            <p className="text-sm italic text-oku-taupe">{clientData.bio || 'No bio provided.'}</p>
+                        <p className="text-xs text-white/60 mb-8 italic">Assign clinical screenings to be completed by the patient before their next session.</p>
+                        
+                        <div className="space-y-4">
+                            {assessments.slice(0, 3).map(a => (
+                                <AssignAssessmentModal key={a.id} assessment={a} clients={[{id: clientData.id, name: clientData.name}]} />
+                            ))}
+                            <Link href="/practitioner/assessments" className="block text-center text-[9px] font-black uppercase tracking-widest text-oku-purple hover:underline pt-2">View Full Tool Catalog →</Link>
                         </div>
                     </div>
                 </div>
@@ -99,7 +127,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 {/* Intake Form Data */}
                 <div className="bg-oku-cream-warm/30 p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
                     <h3 className="text-sm font-black uppercase tracking-widest text-oku-dark mb-6 flex items-center gap-2">
-                        <Shield size={16} className="text-oku-purple" /> Intake & Safety
+                        <Shield size={16} className="text-oku-purple" /> Safety & Intake
                     </h3>
                     {clientData.intakeForm ? (
                         <div className="space-y-6">
@@ -108,27 +136,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                                 <p className="text-sm font-bold text-oku-dark">{clientData.intakeForm.legalName || clientData.name}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Primary Emergency Contact</p>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Emergency Contact</p>
                                 <p className="text-sm font-medium">{clientData.intakeForm.emergencyContact1}</p>
                             </div>
-                            {clientData.intakeForm.emergencyContact2 && (
-                                <div>
-                                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Secondary Emergency Contact</p>
-                                    <p className="text-sm font-medium">{clientData.intakeForm.emergencyContact2}</p>
-                                </div>
-                            )}
                             <div>
-                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Current Address</p>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Current Residence</p>
                                 <p className="text-xs text-oku-dark leading-relaxed">{clientData.intakeForm.currentAddress}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Medical History</p>
-                                <p className="text-sm text-oku-dark leading-relaxed">{clientData.intakeForm.medicalHistory || 'None reported.'}</p>
                             </div>
                             <div className="pt-4 border-t border-oku-taupe/5 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-oku-success"></div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-green-700">Consent Signed</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-oku-success">Consent Signed</span>
                                 </div>
                                 <span className="text-[9px] font-black text-oku-taupe opacity-40">{new Date(clientData.intakeForm.signedAt!).toLocaleDateString()}</span>
                             </div>
@@ -136,33 +154,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                     ) : (
                         <p className="text-xs italic text-oku-taupe opacity-60">Intake form not yet submitted.</p>
                     )}
-                </div>
-
-                <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                                <Activity size={16} className="text-oku-purple" /> Clinical Screenings
-                            </h3>
-                            <Link href="/practitioner/assessments/new" className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">
-                                Assign New
-                            </Link>
-                        </div>
-                        <div className="space-y-4">
-                            {clientData.assessmentAnswers.length === 0 ? (
-                                <p className="text-xs italic opacity-60">No assessments taken.</p>
-                            ) : (
-                                clientData.assessmentAnswers.map(ans => (
-                                    <div key={ans.id} className="bg-white/5 p-4 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] uppercase tracking-widest text-oku-purple font-black mb-1">{ans.assessment.title}</p>
-                                        <p className="font-bold">{String(ans.result)}</p>
-                                        <p className="text-[10px] uppercase tracking-widest opacity-40 mt-2">{new Date(ans.completedAt).toLocaleDateString()}</p>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                    <div className="absolute top-0 right-0 w-48 h-48 bg-oku-purple/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 </div>
             </div>
 
@@ -172,11 +163,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 {/* Mood Trend */}
                 <section>
                     <h2 className="text-2xl font-display font-bold text-oku-dark mb-6 flex items-center gap-3">
-                        <Heart className="text-oku-purple" size={24} /> Recent Mood Trend
+                        <Heart className="text-oku-purple" size={24} /> Progress Markers
                     </h2>
                     <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
                         {clientData.moodEntries.length === 0 ? (
-                            <p className="text-sm text-oku-taupe italic">No mood data recorded by patient.</p>
+                            <p className="text-sm text-oku-taupe italic py-10 text-center">No self-reported mood data recorded.</p>
                         ) : (
                             <div className="flex items-end gap-2 h-32">
                                 {clientData.moodEntries.slice().reverse().map(mood => (
@@ -194,16 +185,43 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                                 ))}
                             </div>
                         )}
-                        <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-4 opacity-60 text-center">Last 14 Entries (1=Low, 5=High)</p>
+                        <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-4 opacity-60 text-center">Mood Fluctuations (Last 14 Days)</p>
                     </div>
                 </section>
 
                 <TreatmentPlanManager clientId={clientData.id} existingPlans={clientData.clientTreatmentPlans || []} />
 
+                {/* Assessment History */}
+                <section>
+                    <h2 className="text-2xl font-display font-bold text-oku-dark mb-6 flex items-center gap-3">
+                        <Activity className="text-oku-purple" size={24} /> Diagnostic History
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {clientData.assessmentAnswers.length === 0 ? (
+                            <div className="col-span-full bg-oku-cream/30 border border-dashed border-oku-taupe/20 rounded-3xl p-10 text-center italic text-oku-taupe text-sm">
+                                No completed screenings on record.
+                            </div>
+                        ) : (
+                            clientData.assessmentAnswers.map(ans => (
+                                <div key={ans.id} className="bg-white p-6 rounded-3xl border border-oku-taupe/10 shadow-sm flex justify-between items-start">
+                                    <div>
+                                        <p className="text-[10px] uppercase tracking-widest text-oku-purple font-black mb-1">{ans.assessment.title}</p>
+                                        <p className="text-lg font-bold text-oku-dark">{ans.result}</p>
+                                        <p className="text-[10px] uppercase tracking-widest opacity-40 mt-2">{new Date(ans.completedAt).toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-xl bg-oku-purple/5 flex items-center justify-center text-oku-purple font-bold">
+                                        {ans.score}
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </section>
+
                 {/* Session History & Notes */}
                 <section>
                     <h2 className="text-2xl font-display font-bold text-oku-dark mb-6 flex items-center gap-3">
-                        <FileText className="text-oku-purple" size={24} /> Session History & Clinical Notes
+                        <FileText className="text-oku-purple" size={24} /> Clinical Progress Notes
                     </h2>
                     <div className="space-y-6">
                         {clientData.clientAppointments.map(appt => (
@@ -230,21 +248,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
                                 {appt.soapNote ? (
                                     <div className="grid grid-cols-2 gap-6 bg-oku-cream-warm/30 p-6 rounded-3xl">
-                                        <div>
+                                        <div className="col-span-2 md:col-span-1">
                                             <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple mb-2">Subjective</p>
-                                            <p className="text-sm text-oku-dark leading-relaxed">{appt.soapNote.subjective || '-'}</p>
+                                            <p className="text-xs text-oku-dark leading-relaxed italic">"{appt.soapNote.subjective || '-'}"</p>
                                         </div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple mb-2">Objective</p>
-                                            <p className="text-sm text-oku-dark leading-relaxed">{appt.soapNote.objective || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple mb-2">Assessment</p>
-                                            <p className="text-sm text-oku-dark leading-relaxed">{appt.soapNote.assessment || '-'}</p>
-                                        </div>
-                                        <div>
+                                        <div className="col-span-2 md:col-span-1">
                                             <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple mb-2">Plan</p>
-                                            <p className="text-sm text-oku-dark leading-relaxed">{appt.soapNote.plan || '-'}</p>
+                                            <p className="text-xs text-oku-dark leading-relaxed">{appt.soapNote.plan || '-'}</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -263,8 +273,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 </section>
             </div>
         </div>
-
-      </div>
-    </div>
+    </PractitionerShell>
   )
 }

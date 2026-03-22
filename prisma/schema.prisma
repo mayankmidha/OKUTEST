@@ -70,6 +70,22 @@ model User {
   clientTreatmentPlans     TreatmentPlan[] @relation("ClientTreatmentPlans")
   practitionerTreatmentPlans TreatmentPlan[] @relation("PractitionerTreatmentPlans")
   activities     UserActivity[]
+  assignedTasks  AssignedAssessment[] @relation("ClientAssignments")
+  managedTasks   AssignedAssessment[] @relation("PractitionerAssignments")
+}
+
+model AssignedAssessment {
+  id             String   @id @default(cuid())
+  clientId       String
+  practitionerId String
+  assessmentId   String
+  status         String   @default("PENDING") // PENDING, COMPLETED
+  createdAt      DateTime @default(now())
+  completedAt    DateTime?
+
+  client         User       @relation("ClientAssignments", fields: [clientId], references: [id], onDelete: Cascade)
+  practitioner   User       @relation("PractitionerAssignments", fields: [practitionerId], references: [id], onDelete: Cascade)
+  assessment     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 }
 
 model UserActivity {
@@ -278,6 +294,7 @@ model Assessment {
   updatedAt   DateTime @updatedAt
 
   answers     AssessmentAnswer[]
+  assignedTasks AssignedAssessment[]
 }
 
 model Service {

@@ -1,14 +1,17 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState, use, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ASSESSMENTS } from '@/lib/assessments'
 import Link from 'next/link'
-import { ArrowRight, ChevronLeft, CheckCircle2, Calendar } from 'lucide-react'
+import { ArrowRight, ChevronLeft, CheckCircle2, Calendar, Loader2, Sparkles } from 'lucide-react'
 
-export default function SingleAssessmentPage({ params }: { params: Promise<{ slug: string }> }) {
+function AssessmentContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
+  const searchParams = useSearchParams()
+  const assignmentId = searchParams.get('assignmentId')
+  
   const assessment = ASSESSMENTS.find(a => a.slug === slug)
   const [currentStep, setCurrentStep] = useState(-1)
   const [answers, setAnswers] = useState<number[]>([])
@@ -19,7 +22,14 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
   const router = useRouter()
 
   if (!assessment) {
-    return <div>Assessment not found</div>
+    return (
+        <div className="min-h-screen bg-oku-cream flex items-center justify-center">
+            <div className="text-center">
+                <h1 className="text-2xl font-display font-bold text-oku-dark mb-4">Assessment not found</h1>
+                <Link href="/assessments" className="text-oku-purple hover:underline">Return to Hub</Link>
+            </div>
+        </div>
+    )
   }
 
   const handleStart = () => setCurrentStep(0)
@@ -72,7 +82,8 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
           type: assessment.title,
           responses: finalAnswers,
           score,
-          result: scoringRange.result
+          result: scoringRange.result,
+          assignmentId: assignmentId
         })
       })
     } catch (error) {
@@ -103,7 +114,7 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
                 <div className="w-24 h-24 bg-oku-purple/10 text-oku-purple rounded-full flex items-center justify-center mx-auto mb-8 relative">
                   <svg className="absolute inset-0 w-full h-full -rotate-90">
                     <circle cx="48" cy="48" r="46" stroke="currentColor" strokeWidth="4" fill="none" className="text-oku-taupe/10" />
-                    <circle cx="48" cy="48" r="46" stroke="currentColor" strokeWidth="4" fill="none" strokeDasharray="289" strokeDashoffset={289 - (289 * resultData!.score / 27)} className="text-oku-purple transition-all duration-1000 ease-out" />
+                    <circle cx="48" cy="48" r="46" stroke="currentColor" strokeWidth="4" fill="none" strokeDasharray="289" strokeDashoffset={289 - (289 * resultData!.score / (assessment.questionCount * 4))} className="text-oku-purple transition-all duration-1000 ease-out" />
                   </svg>
                   <span className="text-3xl font-display font-bold text-oku-dark">{resultData?.score}</span>
                 </div>
@@ -166,9 +177,9 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-white/80 backdrop-blur-md p-12 rounded-[3.5rem] border border-white shadow-2xl text-center max-w-2xl mx-auto"
+              className="bg-white/80 backdrop-blur-md p-12 rounded-[3rem] border border-white shadow-2xl text-center max-w-2xl mx-auto"
             >
-              <Link href="/dashboard/client/assessments" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-oku-dark mb-10 transition-colors">
+              <Link href={assignmentId ? "/dashboard/client/clinical" : "/assessments"} className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-oku-dark mb-10 transition-colors">
                 <ChevronLeft size={14} /> Back
               </Link>
               <div className="inline-block px-4 py-2 bg-oku-purple/10 rounded-full mb-6">
@@ -198,7 +209,7 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-white/80 backdrop-blur-md p-12 rounded-[3.5rem] border border-white shadow-2xl"
+              className="bg-white/80 backdrop-blur-md p-12 rounded-[3rem] border border-white shadow-2xl"
             >
               <div className="mb-16">
                 <div className="flex justify-between items-end mb-6">
@@ -240,5 +251,13 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
         </AnimatePresence>
       </div>
     </div>
+  )
+}
+
+export default function SingleAssessmentPage({ params }: { params: Promise<{ slug: string }> }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-oku-cream flex items-center justify-center italic text-oku-taupe">Loading Clinical Module...</div>}>
+      <AssessmentContent params={params} />
+    </Suspense>
   )
 }
