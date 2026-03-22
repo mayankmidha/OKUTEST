@@ -7,6 +7,7 @@ import { UserRole, AppointmentStatus } from '@prisma/client'
 import { TreatmentPlanManager } from '@/components/TreatmentPlanManager'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
+import { DocumentVault } from '@/components/DocumentVault'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -190,6 +191,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 </section>
 
                 <TreatmentPlanManager clientId={clientData.id} existingPlans={clientData.clientTreatmentPlans || []} />
+
+                {/* Secure File Vault */}
+                <section>
+                    <DocumentVault clientId={clientData.id} />
+                </section>
 
                 {/* Assessment History */}
                 <section>

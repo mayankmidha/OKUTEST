@@ -63,7 +63,8 @@ model User {
   auditLogs      AuditLog[]
   notifications  Notification[]
   intakeForm     IntakeForm?
-  documents      Document[]
+  clientDocuments      Document[] @relation("ClientDocuments")
+  practitionerDocuments Document[] @relation("PractitionerDocuments")
   sentMessages   Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
   tasks          Task[]
@@ -72,6 +73,7 @@ model User {
   activities     UserActivity[]
   assignedTasks  AssignedAssessment[] @relation("ClientAssignments")
   managedTasks   AssignedAssessment[] @relation("PractitionerAssignments")
+  posts          Post[]
 }
 
 model AssignedAssessment {
@@ -386,17 +388,37 @@ model IntakeForm {
   updatedAt           DateTime @updatedAt
 }
 
+model Post {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  content     String   @db.Text
+  excerpt     String?  @db.Text
+  image       String?
+  category    String?
+  authorId    String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
 model Document {
   id             String   @id @default(cuid())
-  userId         String
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId       String
+  practitionerId String
   
   name           String
   url            String   
   type           String   // "ID", "MEDICAL", "WORKSHEET"
   uploadedBy     String   // "CLIENT", "THERAPIST"
+  isPrivate      Boolean  @default(false) // If true, only the uploader sees it
   
   createdAt      DateTime @default(now())
+
+  client         User     @relation("ClientDocuments", fields: [clientId], references: [id], onDelete: Cascade)
+  practitioner   User     @relation("PractitionerDocuments", fields: [practitionerId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {

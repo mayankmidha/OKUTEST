@@ -11,8 +11,8 @@ export async function GET() {
   }
 
   try {
-    // 1. Collect Platform Vitals with individual catch handlers
-    const [totalUsers, activePatients, verifiedTherapists, appointments, financialPulse, recentActivities] = await Promise.all([
+    // 1. Collect Platform Vitals
+    const [totalUsers, activePatients, verifiedTherapists, appointments, financialPulse, recentActivities, blogPosts] = await Promise.all([
         prisma.user.count().catch(() => 0),
         prisma.user.count({ where: { role: UserRole.CLIENT } }).catch(() => 0),
         prisma.practitionerProfile.count({ where: { isVerified: true } }).catch(() => 0),
@@ -29,6 +29,10 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
             take: 30,
             include: { user: { select: { name: true, role: true } } }
+        }).catch(() => []),
+        prisma.post.findMany({
+            where: { published: true },
+            select: { title: true, category: true, slug: true }
         }).catch(() => [])
     ])
 
@@ -40,6 +44,7 @@ export async function GET() {
         verifiedTherapists,
         totalRevenue: financialPulse._sum?.amount || 0
       },
+      availableResources: blogPosts.map(p => ({ title: p.title, category: p.category })),
       behavioralSignals: recentActivities.map(a => ({
         user: a.user?.name,
         role: a.user?.role,
@@ -68,17 +73,18 @@ export async function GET() {
     const fullPrompt = `
       Analyze this system data: ${JSON.stringify(systemPulse)}
 
-      Provide your analysis in exactly 4 sections:
+      Provide your analysis in exactly 5 sections:
       1. STATUS: (Healthy, Stressed, or Critical)
-      2. ANOMALY DETECTION: (Identify any suspicious patterns or bottlenecks)
-      3. CLINICAL RISK: (e.g., sessions with no notes, high no-shows)
-      4. PROACTIVE FIX: (One specific action the admin should take now)
+      2. ANOMALY DETECTION: (Identify any suspicious patterns)
+      3. CLINICAL RISK: (e.g., missing notes, high cancellations)
+      4. RESOURCE OPTIMIZATION: (Suggest which blog posts/resources should be featured based on current user trends)
+      5. PROACTIVE FIX: (One specific action for the admin)
 
-      Keep it clinical, professional, and ultra-concise.
+      Keep it clinical and ultra-concise.
     `
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash', // Using current stable high-speed model
+      model: 'gemini-2.0-flash',
       contents: fullPrompt,
       config: {
         systemInstruction: systemPrompt,
