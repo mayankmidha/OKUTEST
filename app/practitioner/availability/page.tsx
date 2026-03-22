@@ -79,7 +79,7 @@ export default function PractitionerAvailabilityPage() {
       description="Keep a polished weekly schedule of your working hours with quick edits for every day of the week."
       headerActions={
         <button
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+          className="rounded-full border border-oku-taupe/20 bg-white px-4 py-2 text-sm font-medium text-oku-taupe shadow-sm transition hover:border-oku-taupe/40 hover:text-oku-dark"
           onClick={() => {
             logoutUser()
             router.push('/auth/login')
@@ -91,7 +91,7 @@ export default function PractitionerAvailabilityPage() {
       }
       heroActions={
         <Link
-          className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+          className="inline-flex items-center rounded-full bg-oku-dark px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
           href="/practitioner/dashboard"
         >
           Back to dashboard

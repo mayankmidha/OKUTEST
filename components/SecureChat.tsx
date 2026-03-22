@@ -93,14 +93,14 @@ export function SecureChat({
     <div className="flex flex-col h-[600px] bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
       
       {/* Chat Header */}
-      <div className="bg-oku-dark text-white p-6 px-8 flex items-center justify-between z-10 shadow-md">
+      <div className="bg-oku-purple p-6 px-8 flex items-center justify-between z-10 shadow-sm border-b border-oku-purple-dark/10">
         <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-oku-purple/20 border-2 border-white/10 flex items-center justify-center">
-                {contactAvatar ? <img src={contactAvatar} alt={contactName} className="w-full h-full object-cover" /> : <User size={20} className="text-oku-purple" />}
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-white/50 border-2 border-white/20 flex items-center justify-center shadow-inner">
+                {contactAvatar ? <img src={contactAvatar} alt={contactName} className="w-full h-full object-cover" /> : <User size={20} className="text-oku-purple-dark" />}
             </div>
             <div>
-                <h3 className="font-display font-bold text-lg">{contactName}</h3>
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-oku-green mt-0.5">
+                <h3 className="font-display font-bold text-lg text-oku-dark">{contactName}</h3>
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-oku-green-dark mt-0.5">
                     <Lock size={10} /> Secure Connection
                 </div>
             </div>

@@ -63,7 +63,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
                     <form action="/api/checkout" method="POST">
                         <input type="hidden" name="sessionId" value={booking.id} />
                         <input type="hidden" name="method" value="razorpay" />
-                        <button className="w-full py-4 bg-blue-100 text-blue-800 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
+                        <button className="w-full py-4 bg-oku-blue text-blue-800 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
                             Pay with UPI (Razorpay)
                         </button>
                     </form>

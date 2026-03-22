@@ -107,7 +107,7 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex items-center gap-2 bg-slate-950 text-white px-10 py-4 rounded-full text-sm font-bold hover:bg-slate-800 transition-all disabled:opacity-50 shadow-lg"
+        className="flex items-center gap-2 bg-oku-dark text-white px-10 py-4 rounded-full text-sm font-bold hover:opacity-90 transition-all disabled:opacity-50 shadow-lg"
       >
         {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
         Save Professional Profile

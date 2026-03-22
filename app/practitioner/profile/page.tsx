@@ -32,12 +32,11 @@ export default async function PractitionerProfilePage() {
       heroActions={
         <>
           <Link
-            className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+            className="inline-flex items-center rounded-full bg-oku-dark px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
             href="/practitioner/dashboard"
           >
             Dashboard
-          </Link>
-        </>
+          </Link>        </>
       }
       title="Your Profile"
     >

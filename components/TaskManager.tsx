@@ -73,9 +73,9 @@ export function TaskManager() {
   }
 
   return (
-    <div className="bg-oku-purple/5 p-8 rounded-[2.5rem] border border-oku-purple/10 flex flex-col h-full">
+    <div className="bg-oku-cream-warm p-8 rounded-[2.5rem] border border-oku-taupe/10 flex flex-col h-full shadow-inner">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-white rounded-2xl text-oku-purple shadow-sm">
+        <div className="p-3 bg-white rounded-2xl text-oku-purple-dark shadow-sm border border-oku-taupe/5">
           <CheckSquare size={20} />
         </div>
         <div>

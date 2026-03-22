@@ -48,19 +48,20 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
             exit={{ opacity: 0, y: 50, scale: 0.9, filter: 'blur(10px)' }}
             className="fixed bottom-24 right-8 z-50 w-96 bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border border-white overflow-hidden flex flex-col"
           >
-            <div className="bg-oku-dark text-white p-6 flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-oku-purple/20 flex items-center justify-center">
+            <div className="bg-oku-dark text-white p-6 flex justify-between items-center relative overflow-hidden">
+              <div className="relative z-10 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-oku-purple/20 flex items-center justify-center border border-white/10 shadow-inner">
                   <Sparkles size={16} className="text-oku-purple animate-pulse" />
                 </div>
                 <div>
-                   <span className="font-bold text-sm block">OKU CORE</span>
+                   <span className="font-bold text-sm block tracking-tight">OKU CORE</span>
                    <span className="text-[10px] text-oku-purple font-black uppercase tracking-widest opacity-60">System Integrated</span>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="opacity-40 hover:opacity-100 transition-opacity">
+              <button onClick={() => setIsOpen(false)} className="relative z-10 opacity-40 hover:opacity-100 transition-opacity">
                 <X size={20} />
               </button>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
             </div>
             
             <div className="p-8 flex-1 min-h-[300px] flex flex-col">
@@ -75,7 +76,7 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
                   </p>
                   <button 
                     onClick={() => { setResponse(null); setQuery(''); }}
-                    className="w-full py-4 rounded-2xl bg-oku-dark text-white text-[10px] font-black uppercase tracking-widest hover:bg-oku-purple transition-all"
+                    className="w-full py-4 rounded-2xl bg-oku-purple/20 text-oku-purple-dark text-[10px] font-black uppercase tracking-widest hover:bg-oku-purple/40 transition-all border border-oku-purple/10"
                   >
                     Reset Connection
                   </button>

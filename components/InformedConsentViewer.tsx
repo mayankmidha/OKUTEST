@@ -5,13 +5,13 @@ import { ShieldCheck, Info } from 'lucide-react'
 
 export function InformedConsentViewer() {
   return (
-    <div className="bg-white/50 border border-oku-taupe/10 rounded-[2.5rem] overflow-hidden">
-      <div className="bg-oku-dark text-white p-6 flex items-center gap-3">
-        <ShieldCheck size={20} className="text-oku-purple" />
+    <div className="bg-white/50 border border-oku-taupe/10 rounded-[2.5rem] overflow-hidden shadow-inner">
+      <div className="bg-oku-purple/30 text-oku-purple-dark p-6 flex items-center gap-3 border-b border-oku-purple/10">
+        <ShieldCheck size={20} className="text-oku-purple-dark" />
         <span className="text-[10px] font-black uppercase tracking-widest">Official Informed Consent Document</span>
       </div>
       
-      <div className="p-8 max-h-[400px] overflow-y-auto custom-scrollbar text-sm leading-relaxed text-oku-taupe space-y-6">
+      <div className="p-8 max-h-[400px] overflow-y-auto custom-scrollbar text-sm leading-relaxed text-oku-taupe space-y-6 bg-oku-cream/10">
         <div className="text-center mb-10">
             <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Oku Therapy</h2>
             <p className="text-[10px] uppercase tracking-widest font-black text-oku-purple mt-1">(Psychotherapeutic & Psychiatric Clinic)</p>

@@ -31,7 +31,7 @@ export default function CheckoutSuccessPage({ params, searchParams }: { params: 
     <div className="min-h-screen bg-oku-cream flex flex-col">
         <div className="flex-1 flex items-center justify-center p-6">
             <div className="max-w-md w-full bg-white p-12 rounded-[3rem] border border-oku-taupe/10 shadow-2xl text-center">
-                <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
+                <div className="w-24 h-24 bg-oku-green text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
                     <CheckCircle className="w-12 h-12" />
                 </div>
                 <h1 className="text-4xl font-display font-bold text-oku-dark mb-4 tracking-tighter">Booking Confirmed</h1>

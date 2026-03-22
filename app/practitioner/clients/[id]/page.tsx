@@ -127,7 +127,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                             </div>
                             <div className="pt-4 border-t border-oku-taupe/5 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <div className="w-2 h-2 rounded-full bg-oku-success"></div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-green-700">Consent Signed</span>
                                 </div>
                                 <span className="text-[9px] font-black text-oku-taupe opacity-40">{new Date(clientData.intakeForm.signedAt!).toLocaleDateString()}</span>

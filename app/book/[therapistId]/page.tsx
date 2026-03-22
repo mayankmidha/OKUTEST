@@ -38,40 +38,47 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
   const slots = []
   const today = new Date()
   
-  for(let i=1; i<=7; i++) {
+  for(let i=0; i<=14; i++) { // Start from 0 (today) and go for 14 days
     const date = new Date(today)
     date.setDate(today.getDate() + i)
     date.setHours(0,0,0,0)
     
     const dayOfWeek = date.getDay()
-    const availability = practitioner.availability.find(a => a.dayOfWeek === dayOfWeek)
+    // For testing: If no specific availability is set, provide a default 9-5 schedule
+    let availability = practitioner.availability.find(a => a.dayOfWeek === dayOfWeek)
     
-    if (availability) {
-        const daySlots = []
-        const [startH, startM] = availability.startTime.split(':').map(Number)
-        const [endH, endM] = availability.endTime.split(':').map(Number)
-        
-        let current = new Date(date)
-        current.setHours(startH, startM, 0, 0)
-        
-        const endTime = new Date(date)
-        endTime.setHours(endH, endM, 0, 0)
+    // Default testing availability for weekends or unset days
+    const effectiveAvailability = availability || { startTime: '09:00', endTime: '18:00' }
+    
+    const daySlots = []
+    const [startH, startM] = effectiveAvailability.startTime.split(':').map(Number)
+    const [endH, endM] = effectiveAvailability.endTime.split(':').map(Number)
+    
+    let current = new Date(date)
+    current.setHours(startH, startM, 0, 0)
+    
+    const endTime = new Date(date)
+    endTime.setHours(endH, endM, 0, 0)
 
-        while (current < endTime) {
-            const isBooked = practitioner.appointments.some(s => 
-                s.startTime.getTime() === current.getTime()
-            )
-            
-            if (!isBooked) {
-                daySlots.push(new Date(current).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }))
-            }
-            
-            current.setMinutes(current.getMinutes() + practitioner.sessionDuration + practitioner.bufferDuration)
-        }
+    // Don't show past times if the date is today
+    const now = new Date()
 
-        if (daySlots.length > 0) {
-            slots.push({ date: new Date(date), times: daySlots })
+    while (current < endTime) {
+        const isBooked = practitioner.appointments.some(s => 
+            s.startTime.getTime() === current.getTime()
+        )
+        
+        const isPast = current < now
+        
+        if (!isBooked && !isPast) {
+            daySlots.push(new Date(current).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }))
         }
+        
+        current.setMinutes(current.getMinutes() + (practitioner.sessionDuration || 50) + (practitioner.bufferDuration || 10))
+    }
+
+    if (daySlots.length > 0) {
+        slots.push({ date: new Date(date), times: daySlots })
     }
   }
 

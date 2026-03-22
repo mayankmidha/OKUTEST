@@ -82,7 +82,7 @@ function AdminDashboardContent({
         description="Administrative oversight and site-wide configuration."
         actions={
            <div className={`px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm ${settings.maintenanceMode ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-green-50 text-green-700 border-green-100'}`}>
-              <div className={`w-2 h-2 rounded-full animate-pulse ${settings.maintenanceMode ? 'bg-amber-500' : 'bg-green-500'}`} />
+              <div className={`w-2 h-2 rounded-full animate-pulse ${settings.maintenanceMode ? 'bg-oku-pending' : 'bg-oku-success'}`} />
               {settings.maintenanceMode ? 'Maintenance Mode' : 'Live System'}
            </div>
         }
