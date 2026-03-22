@@ -56,6 +56,7 @@ export type PopupEntry = {
   id: string;
 };
 
+// Use relative path from this file's location to handle Vercel environments better
 const GENERATED_DIR = path.join(process.cwd(), "content", "generated");
 const GENERATED_STYLES_DIR = path.join(
   process.cwd(),
@@ -63,6 +64,7 @@ const GENERATED_STYLES_DIR = path.join(
   "styles",
   "generated",
 );
+
 const SITE_ORIGINS = [
   "https://okutherapy.com",
   "http://okutherapy.com",
@@ -83,10 +85,16 @@ function readGeneratedFile(fileName: string): string {
     return cached;
   }
 
-  const content = readFileSync(path.join(GENERATED_DIR, fileName), "utf8");
-  const normalized = normalizeExtractedHtml(content);
-  htmlCache.set(fileName, normalized);
-  return normalized;
+  try {
+    const filePath = path.join(GENERATED_DIR, fileName);
+    const content = readFileSync(filePath, "utf8");
+    const normalized = normalizeExtractedHtml(content);
+    htmlCache.set(fileName, normalized);
+    return normalized;
+  } catch (error) {
+    console.error(`Error reading generated file ${fileName}:`, error);
+    return ""; // Return empty string instead of crashing
+  }
 }
 
 function readGeneratedStyleFile(fileName: string): string {
@@ -95,9 +103,15 @@ function readGeneratedStyleFile(fileName: string): string {
     return cached;
   }
 
-  const content = readFileSync(path.join(GENERATED_STYLES_DIR, fileName), "utf8");
-  styleCache.set(fileName, content);
-  return content;
+  try {
+    const filePath = path.join(GENERATED_STYLES_DIR, fileName);
+    const content = readFileSync(filePath, "utf8");
+    styleCache.set(fileName, content);
+    return content;
+  } catch (error) {
+    console.error(`Error reading generated style file ${fileName}:`, error);
+    return "";
+  }
 }
 
 function normalizeExtractedHtml(rawHtml: string): string {
@@ -154,7 +168,8 @@ export function getWpRoute(slug: RouteSlug): WpRouteRecord {
 
 export function getBodyClassForPathname(pathname: string): string {
   const slug = getSlugForPathname(pathname);
-  return ROUTES[slug].bodyClass;
+  const route = ROUTES[slug];
+  return route ? route.bodyClass : "home";
 }
 
 export function getHeaderHtml(slug: RouteSlug): string {
@@ -174,7 +189,10 @@ export function getPopupEntries(): PopupEntry[] {
     return popupEntriesCache;
   }
 
-  const $ = load(readGeneratedFile("popups.html"));
+  const html = readGeneratedFile("popups.html");
+  if (!html) return [];
+
+  const $ = load(html);
   const entries: PopupEntry[] = [];
 
   $("div[data-elementor-type='popup']").each((_, node) => {
@@ -198,7 +216,8 @@ export function getPopupEntries(): PopupEntry[] {
 }
 
 export function getSchemaJson(slug: RouteSlug): string | null {
-  const schema = ROUTES[slug].yoast?.schema;
+  const route = ROUTES[slug];
+  const schema = route?.yoast?.schema;
   if (!schema) {
     return null;
   }
@@ -251,6 +270,8 @@ export function getPostStylesheetInlineStyles(): InlineStyleBlock[] {
 
 export function buildRouteMetadata(slug: RouteSlug): Metadata {
   const route = ROUTES[slug];
+  if (!route) return { title: "OKU Therapy" };
+
   const yoast = route.yoast;
 
   const description = yoast?.og_description;
