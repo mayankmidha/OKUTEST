@@ -3,8 +3,9 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Clock } from "lucide-react"
 import CalendarScheduler from "./CalendarScheduler"
+import { DashboardHeader } from "@/components/DashboardHeader"
 
 export default async function PractitionerSchedulePage() {
   const session = await auth()
@@ -31,22 +32,22 @@ export default async function PractitionerSchedulePage() {
   if (!practitioner) redirect('/practitioner/dashboard')
 
   return (
-    <div className="min-h-screen bg-oku-cream py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-12">
-          <Link href="/practitioner/dashboard" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark flex items-center gap-2 mb-4">
-            <ArrowLeft size={12} /> Dashboard
-          </Link>
-          <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">Clinical Schedule</h1>
-          <p className="text-oku-taupe mt-2 font-display italic">Manage your recurring availability and specific date overrides.</p>
-        </div>
+    <div className="py-12 px-10">
+      <DashboardHeader 
+        title="Clinical Schedule" 
+        description="Manage your recurring availability, specific date exceptions, and time-off requests."
+        actions={
+          <div className="px-4 py-2 bg-oku-purple/10 text-oku-purple rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-oku-purple/20">
+             <Clock size={14} /> Timezone: IST (UTC+5:30)
+          </div>
+        }
+      />
 
-        <CalendarScheduler 
-            initialAvailability={practitioner.availability} 
-            overrides={practitioner.overrides}
-            blockedDates={practitioner.blockedDates}
-        />
-      </div>
+      <CalendarScheduler 
+          initialAvailability={practitioner.availability} 
+          overrides={practitioner.overrides}
+          blockedDates={practitioner.blockedDates}
+      />
     </div>
   )
 }

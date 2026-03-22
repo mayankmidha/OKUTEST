@@ -7,11 +7,11 @@ import {
   Clock, Shield, Plus, Edit2, Check, X, 
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
-  Calendar, FileText, Briefcase, Mail, Zap,
-  AlertTriangle
+  Calendar, FileText, Zap, AlertTriangle
 } from 'lucide-react'
 import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus } from '../actions'
 import { DashboardHeader } from '@/components/DashboardHeader'
+import { DashboardCard } from '@/components/DashboardCard'
 
 function AdminDashboardContent({ 
   stats, 
@@ -70,11 +70,9 @@ function AdminDashboardContent({
         title="Platform Hub" 
         description="Administrative oversight and system configuration."
         actions={
-           <div className="flex items-center gap-4">
-              <div className={`px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm ${settings.maintenanceMode ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-green-50 text-green-700 border-green-100'}`}>
-                 <div className={`w-2 h-2 rounded-full animate-pulse ${settings.maintenanceMode ? 'bg-amber-500' : 'bg-green-500'}`} />
-                 {settings.maintenanceMode ? 'Maintenance Mode' : 'Live System'}
-              </div>
+           <div className={`px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm ${settings.maintenanceMode ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-green-50 text-green-700 border-green-100'}`}>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${settings.maintenanceMode ? 'bg-amber-500' : 'bg-green-500'}`} />
+              {settings.maintenanceMode ? 'Maintenance Mode' : 'Live System'}
            </div>
         }
       />
@@ -104,176 +102,69 @@ function AdminDashboardContent({
         ))}
       </div>
 
-      {/* Content */}
       <div className="space-y-10">
-        
-        {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
           <div className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm group hover:shadow-xl transition-all">
-                <div className="flex items-center justify-between mb-6">
-                   <div className="p-3 rounded-2xl bg-green-50 text-green-600">
-                      <DollarSign size={20} />
-                   </div>
-                   <TrendingUp size={16} className="text-green-500" />
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-1">Total Revenue</p>
+              <DashboardCard subtitle="Total Revenue" icon={DollarSign}>
                 <p className="text-4xl font-display font-bold text-oku-dark">${stats.totalRevenue.toLocaleString()}</p>
-              </div>
-              <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm group hover:shadow-xl transition-all">
-                <div className="flex items-center justify-between mb-6">
-                   <div className="p-3 rounded-2xl bg-oku-purple/10 text-oku-purple">
-                      <Calendar size={20} />
-                   </div>
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-1">Bookings</p>
+              </DashboardCard>
+              <DashboardCard subtitle="Bookings" icon={Calendar}>
                 <p className="text-4xl font-display font-bold text-oku-dark">{stats.totalAppointments}</p>
-              </div>
-              <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm group hover:shadow-xl transition-all">
-                <div className="flex items-center justify-between mb-6">
-                   <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
-                      <Shield size={20} />
-                   </div>
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-1">Providers</p>
+              </DashboardCard>
+              <DashboardCard subtitle="Providers" icon={Shield}>
                 <p className="text-4xl font-display font-bold text-oku-dark">{therapists.filter(t => t.practitionerProfile?.isVerified).length}</p>
-              </div>
-              <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm group hover:shadow-xl transition-all">
-                <div className="flex items-center justify-between mb-6">
-                   <div className="p-3 rounded-2xl bg-orange-50 text-orange-600">
-                      <Users size={20} />
-                   </div>
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-1">Clients</p>
+              </DashboardCard>
+              <DashboardCard subtitle="Clients" icon={Users}>
                 <p className="text-4xl font-display font-bold text-oku-dark">{clients.length}</p>
-              </div>
+              </DashboardCard>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-               <div className="bg-oku-dark text-white p-12 rounded-[3.5rem] shadow-2xl relative overflow-hidden group">
-                  <div className="relative z-10">
-                    <h3 className="text-3xl font-display font-bold mb-8 tracking-tighter flex items-center gap-3">
-                       <BarChart3 className="text-oku-purple" /> System Metrics
-                    </h3>
-                    <div className="space-y-8">
-                       <div className="space-y-3">
-                          <div className="flex justify-between text-[10px] uppercase tracking-widest font-black opacity-40">
-                             <span>Therapist Onboarding Progress</span>
-                             <span>{Math.round((therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100)}%</span>
-                          </div>
-                          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                             <div className="h-full bg-oku-purple transition-all duration-1000" style={{ width: `${(therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100}%` }} />
-                          </div>
-                       </div>
-                       <div className="grid grid-cols-2 gap-8">
-                          <div className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:bg-white/10 transition-all">
-                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Pending Verify</p>
-                             <p className="text-2xl font-bold">{therapists.filter(t => !t.practitionerProfile?.isVerified).length}</p>
-                          </div>
-                          <div className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:bg-white/10 transition-all">
-                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Active Services</p>
-                             <p className="text-2xl font-bold">{services.filter(s => s.isActive).length}</p>
-                          </div>
-                       </div>
-                    </div>
+               <DashboardCard title="System Metrics" icon={BarChart3} dark className="relative overflow-hidden group">
+                  <div className="space-y-8 relative z-10 mt-4">
+                     <div className="space-y-3">
+                        <div className="flex justify-between text-[10px] uppercase tracking-widest font-black opacity-40">
+                           <span>Therapist Onboarding</span>
+                           <span>{Math.round((therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100)}%</span>
+                        </div>
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                           <div className="h-full bg-oku-purple transition-all duration-1000" style={{ width: `${(therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100}%` }} />
+                        </div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-8">
+                        <div className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:bg-white/10 transition-all">
+                           <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Pending</p>
+                           <p className="text-2xl font-bold">{therapists.filter(t => !t.practitionerProfile?.isVerified).length}</p>
+                        </div>
+                        <div className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:bg-white/10 transition-all">
+                           <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Active Services</p>
+                           <p className="text-2xl font-bold">{services.filter(s => s.isActive).length}</p>
+                        </div>
+                     </div>
                   </div>
                   <div className="absolute bottom-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
-               </div>
+               </DashboardCard>
 
-               <div className="bg-white p-12 rounded-[3.5rem] border border-oku-taupe/10 shadow-sm relative overflow-hidden">
-                  <h3 className="text-3xl font-display font-bold text-oku-dark mb-10 tracking-tighter flex items-center gap-3">
-                     <TrendingUp className="text-oku-purple" /> Booking Velocity
-                  </h3>
-                  <div className="flex items-end gap-3 h-48">
+               <DashboardCard title="Booking Velocity" icon={TrendingUp} className="relative overflow-hidden">
+                  <div className="flex items-end gap-3 h-48 mt-4">
                      {[30, 60, 40, 85, 55, 75, 100].map((h, i) => (
                         <div key={i} className="flex-1 bg-oku-purple/10 rounded-2xl relative group cursor-pointer">
                            <div 
                              className="absolute bottom-0 left-0 right-0 bg-oku-purple rounded-2xl transition-all duration-700 group-hover:bg-oku-dark" 
                              style={{ height: `${h}%` }}
                            />
-                           <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-oku-dark text-white text-[8px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-tighter whitespace-nowrap">
-                              {Math.round(h * 1.2)} Sessions
-                           </div>
                         </div>
                      ))}
                   </div>
                   <div className="flex justify-between mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-oku-taupe opacity-40">
-                     <span>Mon</span>
-                     <span>Tue</span>
-                     <span>Wed</span>
-                     <span>Thu</span>
-                     <span>Fri</span>
-                     <span>Sat</span>
-                     <span>Sun</span>
+                     <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                   </div>
-               </div>
+               </DashboardCard>
             </div>
           </div>
         )}
 
-        {/* SETTINGS TAB */}
-        {activeTab === 'settings' && (
-          <div className="space-y-8">
-             <div className="bg-white p-12 rounded-[3.5rem] border border-oku-taupe/10 shadow-sm">
-                <h3 className="text-3xl font-display font-bold text-oku-dark mb-10 tracking-tighter">Global Configuration</h3>
-                
-                <div className="space-y-10 max-w-2xl">
-                   <div className="flex items-center justify-between p-8 bg-oku-cream/30 rounded-3xl border border-oku-taupe/5">
-                      <div>
-                         <p className="font-bold text-oku-dark text-lg">Maintenance Mode</p>
-                         <p className="text-sm text-oku-taupe italic">Put the entire platform into read-only mode for maintenance.</p>
-                      </div>
-                      <button 
-                        className={`w-16 h-8 rounded-full transition-all relative ${settings.maintenanceMode ? 'bg-oku-purple' : 'bg-oku-taupe/20'}`}
-                        onClick={() => setSettings({...settings, maintenanceMode: !settings.maintenanceMode})}
-                      >
-                         <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${settings.maintenanceMode ? 'left-9 shadow-lg' : 'left-1'}`} />
-                      </button>
-                   </div>
-
-                   <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-2">
-                         <Zap size={14} className="text-oku-purple" /> Platform Take Rate (%)
-                      </label>
-                      <div className="flex items-center gap-4">
-                         <input 
-                           type="range" 
-                           min="0" max="50" 
-                           value={settings.platformFeePercent} 
-                           onChange={(e) => setSettings({...settings, platformFeePercent: parseInt(e.target.value)})}
-                           className="flex-1 accent-oku-purple"
-                         />
-                         <span className="text-2xl font-display font-bold text-oku-dark min-w-[60px] text-right">{settings.platformFeePercent}%</span>
-                      </div>
-                   </div>
-
-                   <div className="space-y-4 pt-6 border-t border-oku-taupe/5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Support Notification Email</label>
-                      <div className="flex gap-4">
-                         <input 
-                           type="email" 
-                           value={settings.supportEmail || 'support@okutherapy.com'} 
-                           className="flex-1 bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple"
-                         />
-                         <button className="btn-primary py-4 px-8 text-xs shadow-xl">Update</button>
-                      </div>
-                   </div>
-
-                   <div className="bg-oku-dark p-8 rounded-[2.5rem] border border-white/5 flex items-start gap-6">
-                      <AlertTriangle className="text-oku-purple shrink-0" size={24} />
-                      <div>
-                         <p className="text-white font-bold mb-1">Global Payout Mode</p>
-                         <p className="text-white/40 text-xs leading-relaxed mb-6">Current: Standard T+7 Days. This controls how quickly therapists receive their 80% split after session completion.</p>
-                         <button className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Adjust Payout Frequency →</button>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </div>
-        )}
-
-        {/* THERAPISTS TAB */}
         {activeTab === 'therapists' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
             <div className="p-10 border-b border-oku-taupe/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -283,7 +174,6 @@ function AdminDashboardContent({
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe" size={14} />
                     <input type="text" placeholder="Search team..." className="pl-10 pr-4 py-3 bg-oku-cream/50 border border-oku-taupe/10 rounded-full text-xs focus:outline-none focus:border-oku-purple transition-all w-64" />
                  </div>
-                 <button className="p-3 rounded-full border border-oku-taupe/10 hover:bg-oku-cream transition-all"><Filter size={16} /></button>
               </div>
             </div>
             <div className="overflow-x-auto">
@@ -359,7 +249,6 @@ function AdminDashboardContent({
           </div>
         )}
 
-        {/* SERVICES TAB */}
         {activeTab === 'services' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
             <div className="p-12 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-dark text-white relative overflow-hidden">
@@ -427,7 +316,6 @@ function AdminDashboardContent({
           </div>
         )}
 
-        {/* CLIENTS TAB */}
         {activeTab === 'clients' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
             <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center">
@@ -437,7 +325,7 @@ function AdminDashboardContent({
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left">
                 <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
                   <tr>
                     <th className="p-8 border-b border-oku-taupe/5">Client Name</th>
@@ -480,58 +368,83 @@ function AdminDashboardContent({
           </div>
         )}
 
+        {/* SETTINGS TAB */}
+        {activeTab === 'settings' && (
+          <DashboardCard title="Global Configuration" icon={Settings}>
+             <div className="space-y-10 max-w-2xl mt-4">
+                <div className="flex items-center justify-between p-8 bg-oku-cream/30 rounded-3xl border border-oku-taupe/5">
+                   <div>
+                      <p className="font-bold text-oku-dark text-lg">Maintenance Mode</p>
+                      <p className="text-sm text-oku-taupe italic">Put the entire platform into read-only mode.</p>
+                   </div>
+                   <button 
+                     className={`w-16 h-8 rounded-full transition-all relative ${settings.maintenanceMode ? 'bg-oku-purple' : 'bg-oku-taupe/20'}`}
+                     onClick={() => setSettings({...settings, maintenanceMode: !settings.maintenanceMode})}
+                   >
+                      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${settings.maintenanceMode ? 'left-9 shadow-lg' : 'left-1'}`} />
+                   </button>
+                </div>
+
+                <div className="space-y-4">
+                   <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-2">
+                      <Zap size={14} className="text-oku-purple" /> Platform Take Rate (%)
+                   </label>
+                   <div className="flex items-center gap-4">
+                      <input 
+                        type="range" 
+                        min="0" max="50" 
+                        value={settings.platformFeePercent} 
+                        onChange={(e) => setSettings({...settings, platformFeePercent: parseInt(e.target.value)})}
+                        className="flex-1 accent-oku-purple"
+                      />
+                      <span className="text-2xl font-display font-bold text-oku-dark min-w-[60px] text-right">{settings.platformFeePercent}%</span>
+                   </div>
+                </div>
+             </div>
+          </DashboardCard>
+        )}
+
         {/* AUDIT LOGS TAB */}
         {activeTab === 'audit' && (
-          <div className="space-y-10">
-            <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
-              <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-dark text-white">
-                <h2 className="text-3xl font-display font-bold tracking-tight">System Audit Logs</h2>
-                <div className="text-[10px] font-black uppercase tracking-widest text-oku-cream/40">Critical Activity & Compliance</div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
-                    <tr>
-                      <th className="p-8">Timestamp</th>
-                      <th className="p-8">User</th>
-                      <th className="p-8">Action</th>
-                      <th className="p-8">Resource</th>
-                      <th className="p-8">Data Changes</th>
+          <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
+            <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-dark text-white">
+              <h2 className="text-3xl font-display font-bold tracking-tight">System Audit Logs</h2>
+              <div className="text-[10px] font-black uppercase tracking-widest text-oku-cream/40 font-bold">Critical Activity</div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
+                  <tr><th className="p-8">Timestamp</th><th className="p-8">User</th><th className="p-8">Action</th><th className="p-8">Data Changes</th></tr>
+                </thead>
+                <tbody className="divide-y divide-oku-taupe/5">
+                  {(stats.auditLogs || []).map((log: any) => (
+                    <tr key={log.id} className="hover:bg-oku-cream/20 transition-all text-xs">
+                      <td className="p-8 font-mono opacity-60">{new Date(log.createdAt).toLocaleString()}</td>
+                      <td className="p-8 font-bold text-oku-dark">{log.user?.name || 'System'}</td>
+                      <td className="p-8">
+                         <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest ${log.action.includes('CREATED') ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>
+                           {log.action}
+                         </span>
+                      </td>
+                      <td className="p-8 max-w-xs truncate font-mono opacity-40">{log.changes || '-'}</td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-oku-taupe/5">
-                    {(stats.auditLogs || []).map((log: any) => (
-                      <tr key={log.id} className="hover:bg-oku-cream/20 transition-all text-xs">
-                        <td className="p-8 font-mono opacity-60">{new Date(log.createdAt).toLocaleString()}</td>
-                        <td className="p-8 font-bold text-oku-dark">{log.user?.name || 'System'}</td>
-                        <td className="p-8">
-                           <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest ${
-                             log.action.includes('CREATED') ? 'bg-green-50 text-green-600' : 
-                             log.action.includes('DELETED') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
-                           }`}>
-                             {log.action}
-                           </span>
-                        </td>
-                        <td className="p-8 opacity-60 uppercase font-black tracking-tighter text-[10px]">{log.resourceType}</td>
-                        <td className="p-8 max-w-xs truncate font-mono opacity-40">{log.changes || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
-
       </div>
     </div>
   )
 }
 
-export default function AdminDashboardClient(props: any) {
+function AdminDashboardClient(props: any) {
   return (
     <Suspense fallback={<div className="p-20 text-center font-display italic text-oku-taupe">Loading Platform Hub...</div>}>
       <AdminDashboardContent {...props} />
     </Suspense>
   )
 }
+
+export default AdminDashboardClient

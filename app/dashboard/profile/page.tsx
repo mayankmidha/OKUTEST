@@ -1,8 +1,11 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { UserRole } from '@prisma/client'
+import { UserRole, ArrowLeft } from 'lucide-react'
 import ClientProfileForm from './ClientProfileForm'
+import { DashboardHeader } from '@/components/DashboardHeader'
+import { DashboardCard } from '@/components/DashboardCard'
+import Link from 'next/link'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -23,16 +26,16 @@ export default async function ProfilePage() {
   if (!user) redirect('/auth/login')
 
   return (
-    <div className="min-h-screen bg-oku-cream py-12 px-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-12">
-          <h1 className="text-4xl font-display font-bold text-oku-dark tracking-tighter">Your Profile</h1>
-          <p className="text-oku-taupe mt-2 font-display italic">"Manage your personal space and preferences."</p>
-        </div>
+    <div className="py-12 px-10">
+      <DashboardHeader 
+        title="Your Profile" 
+        description="Manage your personal space, clinical preferences, and contact identity."
+      />
 
-        <div className="bg-white p-10 rounded-[3rem] border border-oku-taupe/10 shadow-xl">
+      <div className="max-w-4xl">
+        <DashboardCard>
           <ClientProfileForm initialData={user} />
-        </div>
+        </DashboardCard>
       </div>
     </div>
   )
