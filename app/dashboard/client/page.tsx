@@ -75,7 +75,7 @@ export default async function ClientDashboardPage() {
         title={`Welcome, ${user.name?.split(' ')[0] || 'Seeker'}`}
         description="Your sanctuary for healing, reflection, and growth."
         actions={
-          <Link href="/dashboard/client/therapists" className="btn-pastel py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
+          <Link href="/therapists" className="btn-pastel py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
             <Search size={18} /> Browse Specialists
           </Link>
         }
@@ -113,7 +113,7 @@ export default async function ClientDashboardPage() {
               {upcomingAppointments.length === 0 ? (
                 <DashboardCard className="border-dashed py-20 text-center">
                   <p className="text-oku-taupe font-display italic text-xl opacity-60">The schedule is open.</p>
-                  <Link href="/dashboard/client/therapists" className="text-oku-purple font-bold text-sm hover:underline mt-4 inline-block">Find your therapist →</Link>
+                  <Link href="/therapists" className="text-oku-purple font-bold text-sm hover:underline mt-4 inline-block">Find your therapist →</Link>
                 </DashboardCard>
               ) : (
                 upcomingAppointments.map((appt) => (
@@ -184,7 +184,7 @@ export default async function ClientDashboardPage() {
           <DashboardCard title="Suggested for You" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="sage">
             <div className="space-y-6 mt-4">
               {practitioners.map(p => (
-                <Link key={p.id} href={`/book/${p.id}/trial`} className="flex items-center gap-4 group">
+                <Link key={p.id} href={`/dashboard/client/book/new/${p.id}/trial`} className="flex items-center gap-4 group">
                   <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
                     {p.user?.avatar ? <img src={p.user.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl text-oku-purple bg-oku-purple/10">🧘</div>}
                   </div>

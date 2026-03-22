@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { 
   Calendar, Users, Clock, Settings, 
   ChevronRight, LogOut, Bell, Search,
-  LayoutDashboard, UserCircle, Briefcase, MessageSquare
+  LayoutDashboard, UserCircle, Briefcase, MessageSquare, HelpCircle
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
@@ -33,6 +33,7 @@ const NAV_LINKS: PractitionerNavLink[] = [
   { href: '/practitioner/clients', label: 'Patients', icon: <Users size={18} strokeWidth={1.5} /> },
   { href: '/practitioner/schedule', label: 'Hours', icon: <Clock size={18} strokeWidth={1.5} /> },
   { href: '/practitioner/profile', label: 'Profile', icon: <UserCircle size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/support', label: 'Support', icon: <HelpCircle size={18} strokeWidth={1.5} /> },
 ]
 
 function isActiveLink(currentPath: string, href: string) {

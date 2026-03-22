@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { ASSESSMENTS } from '@/lib/assessments'
+import { WellnessVisualizer } from '@/components/WellnessVisualizer'
 
 export default async function ClientClinicalHub() {
   const session = await auth()
@@ -85,6 +86,10 @@ export default async function ClientClinicalHub() {
            </div>
         </section>
       )}
+
+      <div className="mb-12">
+         <WellnessVisualizer />
+      </div>
 
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-12">

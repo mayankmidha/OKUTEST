@@ -8,6 +8,7 @@ import { TreatmentPlanManager } from '@/components/TreatmentPlanManager'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
 import { DocumentVault } from '@/components/DocumentVault'
+import { WellnessVisualizer } from '@/components/WellnessVisualizer'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -161,6 +162,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             {/* Right Col: Timeline & Notes */}
             <div className="lg:col-span-2 space-y-12">
                 
+                {/* Outcome Analytics */}
+                <WellnessVisualizer clientId={clientData.id} />
+
                 {/* Mood Trend */}
                 <section>
                     <h2 className="text-2xl font-display font-bold text-oku-dark mb-6 flex items-center gap-3">

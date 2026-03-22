@@ -25,6 +25,7 @@ export function DashboardSidebar() {
     { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Clinical', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Therapists', href: '/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
+    { label: 'Support', href: '/dashboard/client/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
   ]
 
@@ -36,7 +37,7 @@ export function DashboardSidebar() {
     { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Clinical', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
-    { label: 'Support', href: '/contact', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
+    { label: 'Support', href: '/practitioner/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
   ]
 
   const adminLinks = [
