@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
+import { GoogleGenAI } from '@google/genai';
 
 export async function POST(req: Request) {
   try {
@@ -10,82 +11,76 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'dummy_key_to_prevent_crash' });
+
     const { prompt, context } = await req.json();
     const userId = session.user.id;
     const userRole = session.user.role as UserRole;
 
-    // "God Mode" Data Fetching: Retrieve everything relevant based on role
+    // Secure Data Fetching based on Role
     let platformData: any = {};
+    let systemPrompt = "You are Oku Core, an advanced, trauma-informed clinical AI assistant for Oku Therapy. Respond professionally, calmly, and concisely using the provided platform data context. Start your response with a brief, helpful insight.";
 
     if (userRole === UserRole.ADMIN) {
-      // Admin sees everything
       const [appointments, users, services] = await Promise.all([
         prisma.appointment.findMany({
           include: { client: true, practitioner: true, service: true },
           orderBy: { startTime: 'desc' },
-          take: 50
+          take: 10
         }),
-        prisma.user.findMany({ take: 20 }),
+        prisma.user.findMany({ take: 10 }),
         prisma.service.findMany()
       ]);
-      platformData = { appointments, users, services };
+      platformData = { role: 'Admin', activeAppointments: appointments, systemUsers: users, activeServices: services };
+      systemPrompt += " You are advising the CTO/Admin. Provide high-level system analysis and operational status based on the data.";
     } else if (userRole === UserRole.THERAPIST) {
-      // Therapist sees their appointments and client names
       const myAppointments = await prisma.appointment.findMany({
         where: { practitionerId: userId },
         include: { client: true, service: true },
-        orderBy: { startTime: 'desc' }
+        orderBy: { startTime: 'asc' },
+        take: 5
       });
-      platformData = { myAppointments };
+      platformData = { role: 'Therapist', upcomingAppointments: myAppointments };
+      systemPrompt += " You are advising a clinical practitioner. Help them prepare for upcoming sessions and manage their schedule. Maintain strict clinical professionalism.";
     } else {
-      // Client sees their own appointments
       const myAppointments = await prisma.appointment.findMany({
         where: { clientId: userId },
         include: { practitioner: true, service: true },
-        orderBy: { startTime: 'desc' }
+        orderBy: { startTime: 'asc' },
+        take: 5
       });
-      platformData = { myAppointments };
+      platformData = { role: 'Client/Patient', upcomingAppointments: myAppointments };
+      systemPrompt += " You are assisting a patient navigating their therapy journey. Be deeply empathetic, trauma-informed, and highly supportive. Help them understand their upcoming schedule.";
     }
 
-    // Intelligence Logic: Construct a response that "knows" the data
-    let aiResponse = "";
+    const fullPrompt = `
+      User Prompt: ${prompt}
+      Current Platform Context (JSON): ${JSON.stringify(platformData, null, 2)}
+      
+      Based strictly on the data above, answer the user's prompt.
+    `;
 
-    if (userRole === UserRole.ADMIN) {
-        const totalAppts = platformData.appointments.length;
-        const latest = platformData.appointments[0];
-        aiResponse = `System analysis complete. I am monitoring all ${totalAppts} active engagements. The most recent session is between ${latest?.client?.name} and ${latest?.practitioner?.name} (${latest?.service?.name}) scheduled for ${new Date(latest?.startTime).toLocaleString()}. Platform operations are nominal and fully optimized.`;
-    } else if (userRole === UserRole.THERAPIST) {
-        const appts = platformData.myAppointments;
-        if (appts.length > 0) {
-            const next = appts.find((a: any) => new Date(a.startTime) > new Date());
-            aiResponse = next 
-                ? `I have reviewed your clinical schedule. Your next engagement is with ${next.client?.name} at ${new Date(next.startTime).toLocaleTimeString()}. I have the session environment prepared and all relevant records synchronized for your review.`
-                : "Your current clinical queue is clear. I have completed a background synchronization of your practice data and am standing by to assist with new intakes or administrative optimization.";
-        } else {
-            aiResponse = "I have initialized your clinical command center. There are no active appointments currently scheduled. I am ready to help you optimize your profile to increase visibility within the Oku network.";
-        }
-    } else {
-        const appts = platformData.myAppointments;
-        if (appts.length > 0) {
-            const next = appts.find((a: any) => new Date(a.startTime) > new Date());
-            aiResponse = next 
-                ? `Welcome back to your sanctuary. I have confirmed your upcoming session with ${next.practitioner?.name} for ${new Date(next.startTime).toLocaleString()}. I am holding this space for you and have your previous reflections ready if you'd like to review them.`
-                : "I have analyzed your healing journey. You have no upcoming sessions scheduled, but your progress data is securely maintained. I can assist you in finding a new specialist whenever you are ready to continue.";
-        } else {
-            aiResponse = "Welcome to Oku. I am the integrated intelligence designed to manage your care journey. I have scanned our specialist network and can help you find the perfect match based on your unique needs.";
-        }
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn("GEMINI_API_KEY is missing. Falling back to static mock.");
+      return NextResponse.json({ 
+        result: `[OKU CORE - OFFLINE] I have analyzed the database. You are logged in as a ${userRole}. I see ${platformData.upcomingAppointments?.length || platformData.activeAppointments?.length || 0} recent/upcoming engagements. Please configure the GEMINI_API_KEY to fully activate my neural pathways.`,
+        data: platformData 
+      });
     }
 
-    // Add a professional, high-end "Core Intelligence" prefix
-    aiResponse = `[OKU CORE] ${aiResponse}`;
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: fullPrompt,
+      config: {
+        systemInstruction: systemPrompt,
+        temperature: 0.4,
+      }
+    });
 
-    // Simulate AI thinking time
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    return NextResponse.json({ result: aiResponse, data: platformData });
+    return NextResponse.json({ result: response.text, data: platformData });
 
   } catch (error) {
-    console.error("AI God Mode Error:", error);
-    return NextResponse.json({ error: 'The platform mind is currently recalibrating.' }, { status: 500 });
+    console.error("AI Core Integration Error:", error);
+    return NextResponse.json({ error: 'The platform mind encountered a localized disruption.' }, { status: 500 });
   }
 }
