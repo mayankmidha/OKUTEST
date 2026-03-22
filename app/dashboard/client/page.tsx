@@ -178,7 +178,7 @@ export default async function ClientDashboardPage() {
                 ))
               )}
             </div>
-            <Link href="/dashboard/client/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
+            <Link href="/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
           </DashboardCard>
 
           <DashboardCard title="Suggested for You" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="sage">

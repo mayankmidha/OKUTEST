@@ -89,7 +89,7 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
   }
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-oku-cream">
       <div className="max-w-4xl mx-auto px-6 py-20">
         <AnimatePresence mode="wait">
           {showResult ? (
@@ -115,12 +115,18 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
               </div>
 
               <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-oku-purple/5 p-10 rounded-[2.5rem] border border-oku-purple/10">
-                  <h3 className="text-xl font-display font-bold text-oku-dark mb-4">Your Next Step</h3>
-                  <p className="text-oku-taupe leading-relaxed mb-8">
-                    These results indicate you might benefit from professional support. We recommend a brief, free consultation to discuss these feelings in a safe space.
-                  </p>
-                  <Link href="/dashboard/client/therapists" className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl">
+                <div className="bg-oku-purple/5 p-10 rounded-[2.5rem] border border-oku-purple/10 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xl font-display font-bold text-oku-dark mb-4">Your Next Step</h3>
+                    <p className="text-oku-taupe leading-relaxed mb-6">
+                      These results indicate you might benefit from professional support. We recommend a brief, free consultation to discuss these feelings in a safe space.
+                    </p>
+                    <div className="bg-white/50 p-4 rounded-xl border border-oku-taupe/10 mb-8">
+                      <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1 flex items-center gap-1"><CheckCircle2 size={12} className="text-oku-purple"/> Clinical Disclaimer</p>
+                      <p className="text-xs text-oku-taupe/80 italic leading-snug">This screening is an informational tool and does not serve as a medical or psychological diagnosis.</p>
+                    </div>
+                  </div>
+                  <Link href="/dashboard/client/therapists" className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl mt-auto">
                     <Calendar size={18} /> View All Therapists
                   </Link>
                 </div>
@@ -170,20 +176,20 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
               </div>
               <h1 className="text-5xl font-display font-bold text-oku-dark mb-6 tracking-tighter">{assessment.title}</h1>
               <p className="text-xl text-oku-taupe mb-12 font-display italic leading-relaxed">
-                "{assessment.description}"
+                "{assessment.longDescription || assessment.description}"
               </p>
               <div className="grid grid-cols-2 gap-4 mb-12 text-left">
                 <div className="bg-oku-cream-warm/30 p-6 rounded-3xl border border-oku-taupe/5">
-                   <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Time</p>
-                   <p className="text-lg font-bold text-oku-dark">~3 mins</p>
+                   <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Estimated Time</p>
+                   <p className="text-lg font-bold text-oku-dark">{assessment.timeEstimate || '~3 mins'}</p>
                 </div>
                 <div className="bg-oku-cream-warm/30 p-6 rounded-3xl border border-oku-taupe/5">
-                   <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Questions</p>
+                   <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Clinical Items</p>
                    <p className="text-lg font-bold text-oku-dark">{assessment.questions.length}</p>
                 </div>
               </div>
               <button onClick={handleStart} className="btn-primary w-full py-5 text-lg shadow-xl">
-                Begin Assessment
+                Begin Clinical Screening
               </button>
             </motion.div>
           ) : (

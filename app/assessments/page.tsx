@@ -32,7 +32,8 @@ export default function ClientAssessmentsPage() {
   })
 
   return (
-    <div className="py-12 px-10">
+    <div className="min-h-screen bg-oku-cream py-12 px-6 md:px-10">
+      <div className="max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="mb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -156,6 +157,7 @@ export default function ClientAssessmentsPage() {
            </button>
         </div>
       )}
+      </div>
     </div>
   )
 }
