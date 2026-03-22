@@ -33,7 +33,7 @@ export function DashboardSidebar() {
 
   const adminLinks = [
     { label: 'Platform Hub', href: '/admin/dashboard', icon: Shield },
-    { label: 'Services', href: '/admin/services', icon: DollarSign },
+    { label: 'Financials', href: '/admin/financials', icon: DollarSign },
     { label: 'Therapists', href: '/admin/therapists', icon: Users },
     { label: 'Audit Logs', href: '/admin/logs', icon: FileText },
     { label: 'Settings', href: '/admin/settings', icon: Settings },

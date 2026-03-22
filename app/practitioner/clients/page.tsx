@@ -1,246 +1,171 @@
-'use client'
-
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import {
-  PractitionerLoadingState,
-  PractitionerPill,
-  PractitionerSectionCard,
-  PractitionerShell,
-  PractitionerStatCard,
-} from '@/components/practitioner-shell/practitioner-shell'
-import { getCurrentUser, logoutUser } from '@/lib/auth'
+import { Search, User, Calendar, FileText, ArrowRight, Activity, Mail } from 'lucide-react'
+import { AppointmentStatus, UserRole } from '@prisma/client'
 
-type PractitionerClient = {
-  client: {
-    clientProfile: {
-      dateOfBirth: string | null
-      gender: string | null
-      medicalHistory: string | null
-    } | null
-    email: string
-    name: string | null
+export default async function PractitionerClientsPage() {
+  const session = await auth()
+  
+  if (!session?.user || session.user.role !== UserRole.THERAPIST) {
+    redirect('/auth/login')
   }
-  id: string
-  startTime: string
-}
 
-export default function PractitionerClientsPage() {
-  const user = getCurrentUser()
-  const router = useRouter()
-  const [clients, setClients] = useState<PractitionerClient[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [query, setQuery] = useState('')
-
-  useEffect(() => {
-    if (!user || user.role !== 'THERAPIST') {
-      router.replace('/auth/login')
-      return
-    }
-
-    const fetchClients = async () => {
-      try {
-        // Mock data for now
-        setClients([
-          {
-            id: '1',
-            startTime: '2024-01-15T10:00:00Z',
-            client: {
-              name: 'Sarah Johnson',
-              email: 'sarah@example.com',
-              clientProfile: {
-                dateOfBirth: '1990-05-15',
-                gender: 'Female',
-                medicalHistory: 'Anxiety, depression'
-              }
-            }
-          },
-          {
-            id: '2',
-            startTime: '2024-01-16T14:00:00Z',
-            client: {
-              name: 'Michael Chen',
-              email: 'michael@example.com',
-              clientProfile: {
-                dateOfBirth: '1985-08-22',
-                gender: 'Male',
-                medicalHistory: 'Work stress, insomnia'
-              }
-            }
+  // Fetch unique clients for this practitioner
+  const appointments = await prisma.appointment.findMany({
+    where: { practitionerId: session.user.id },
+    include: {
+      client: {
+        include: {
+          clientProfile: true,
+          moodEntries: {
+            orderBy: { createdAt: 'desc' },
+            take: 1
           }
-        ])
-      } catch (error) {
-        console.error('Error fetching clients:', error)
-      } finally {
-        setIsLoading(false)
+        }
+      },
+      soapNote: true
+    },
+    orderBy: { startTime: 'desc' }
+  })
+
+  // Group by client
+  const clientMap = new Map()
+  appointments.forEach(appt => {
+    if (!clientMap.has(appt.clientId)) {
+      clientMap.set(appt.clientId, {
+        client: appt.client,
+        totalSessions: 1,
+        lastSession: appt.startTime,
+        nextSession: null,
+        notesCount: appt.soapNote ? 1 : 0
+      })
+    } else {
+      const existing = clientMap.get(appt.clientId)
+      existing.totalSessions += 1
+      if (appt.soapNote) existing.notesCount += 1
+      // Check if it's a future session
+      if (new Date(appt.startTime) > new Date()) {
+          existing.nextSession = appt.startTime
       }
     }
+  })
 
-    void fetchClients()
-  }, [router, user])
-
-  if (isLoading) {
-    return <PractitionerLoadingState message="Loading clients..." />
-  }
-
-  if (!user || user.role !== 'THERAPIST') {
-    return null
-  }
-
-  const filteredClients = useMemo(() => {
-    const normalized = query.trim().toLowerCase()
-    if (!normalized) {
-      return clients
-    }
-
-    return clients.filter((entry) => {
-      const name = entry.client.name?.toLowerCase() ?? ''
-      const email = entry.client.email.toLowerCase()
-      return name.includes(normalized) || email.includes(normalized)
-    })
-  }, [clients, query])
-
-  const recentSessionDate = clients[0]?.startTime ? new Date(clients[0].startTime).toLocaleDateString() : 'Not yet'
+  const clients = Array.from(clientMap.values())
 
   return (
-    <PractitionerShell
-      badge="Caseload"
-      currentPath="/practitioner/clients"
-      description="A polished view of the people already in your care, with fast search and at-a-glance context."
-      headerActions={
-        <button
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-          onClick={() => {
-            logoutUser()
-            router.push('/auth/login')
-          }}
-          type="button"
-        >
-          Sign out
-        </button>
-      }
-      heroActions={
-        <>
-          <Link
-            className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
-            href="/practitioner/dashboard"
-          >
-            Back to dashboard
-          </Link>
-          <Link
-            className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-            href="/practitioner/appointments"
-          >
-            Review appointments
-          </Link>
-        </>
-      }
-      title="Clients"
-    >
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <PractitionerStatCard
-          accent="from-sky-500 to-cyan-500"
-          detail="Clients currently in your caseload."
-          label="Total clients"
-          value={clients.length}
-        />
-        <PractitionerStatCard
-          accent="from-emerald-500 to-teal-500"
-          detail="Clients matching the current search."
-          label="Search results"
-          value={filteredClients.length}
-        />
-        <PractitionerStatCard
-          accent="from-violet-500 to-indigo-500"
-          detail="Most recently surfaced client visit."
-          label="Latest session"
-          value={recentSessionDate}
-        />
-      </div>
-
-      <div className="mt-6">
-        <PractitionerSectionCard
-          action={
-            <PractitionerPill tone="sky">Caseload</PractitionerPill>
-          }
-          description="Search by client name or email. The list stays tied to your current practice data."
-          title="Client directory"
-        >
-          <div className="mb-5">
-            <input
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 sm:w-96"
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search clients"
-              value={query}
+    <div className="min-h-screen bg-oku-cream py-12 px-6">
+      <div className="max-w-7xl mx-auto">
+        
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
+              Patient Roster
+            </h1>
+            <p className="text-oku-taupe mt-2 font-display italic">Manage your active caseload and clinical files.</p>
+          </div>
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe" size={16} />
+            <input 
+              type="text" 
+              placeholder="Search patients..." 
+              className="w-full bg-white border border-oku-taupe/20 pl-12 pr-4 py-4 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-oku-purple/20 focus:border-oku-purple transition-all shadow-sm"
             />
           </div>
+        </div>
 
-          {filteredClients.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2">
-              {filteredClients.map((entry) => {
-                const initials = (entry.client.name ?? entry.client.email)
-                  .split(' ')
-                  .map((part) => part.charAt(0))
-                  .join('')
-                  .slice(0, 2)
-                  .toUpperCase()
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+           <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+              <div className="relative z-10">
+                 <p className="text-[10px] uppercase tracking-widest font-black opacity-60 mb-2">Total Patients</p>
+                 <p className="text-5xl font-display font-bold">{clients.length}</p>
+              </div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+           </div>
+           <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
+              <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2">Average Retention</p>
+              <p className="text-5xl font-display font-bold text-oku-dark">
+                {clients.length > 0 ? Math.round(clients.reduce((acc, c) => acc + c.totalSessions, 0) / clients.length) : 0} <span className="text-lg text-oku-taupe">sessions</span>
+              </p>
+           </div>
+           <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
+              <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2">Missing Notes</p>
+              <p className="text-5xl font-display font-bold text-red-500">
+                 {appointments.filter(a => a.status === 'COMPLETED' && !a.soapNote).length}
+              </p>
+           </div>
+        </div>
 
-                return (
-                  <article
-                    className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-5 transition hover:border-slate-300 hover:bg-white"
-                    key={entry.id}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 text-sm font-semibold text-white shadow-lg shadow-sky-500/20">
-                        {initials || 'C'}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                          <div>
-                            <h3 className="text-base font-semibold text-slate-950">{entry.client.name ?? 'Client'}</h3>
-                            <p className="mt-1 text-sm text-slate-500">{entry.client.email}</p>
-                          </div>
-                          <PractitionerPill tone="emerald">Active</PractitionerPill>
-                        </div>
-
-                        <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-600">
-                          <span className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-                            Last session: {new Date(entry.startTime).toLocaleDateString()}
-                          </span>
-                          <span className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-                            Gender: {entry.client.clientProfile?.gender ?? 'Not provided'}
-                          </span>
-                          <span className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-                            DOB:{' '}
-                            {entry.client.clientProfile?.dateOfBirth
-                              ? new Date(entry.client.clientProfile.dateOfBirth).toLocaleDateString()
-                              : 'Not provided'}
-                          </span>
-                        </div>
-
-                        {entry.client.clientProfile?.medicalHistory ? (
-                          <p className="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-600">
-                            {entry.client.clientProfile.medicalHistory}
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-                  </article>
-                )
-              })}
+        <div className="grid gap-6">
+          {clients.length === 0 ? (
+            <div className="bg-white/50 border border-dashed border-oku-taupe/20 rounded-[3rem] p-20 text-center">
+              <User size={48} className="mx-auto text-oku-taupe/30 mb-6" />
+              <h3 className="text-2xl font-display font-bold text-oku-dark mb-2">Your roster is empty</h3>
+              <p className="text-oku-taupe">When clients book sessions, they will appear here automatically.</p>
             </div>
           ) : (
-            <div className="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
-              <p className="text-base font-medium text-slate-900">No clients match this search.</p>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Try a different name or email, or clear the search to see the full caseload.
-              </p>
-            </div>
+            clients.map((c, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                <div className="grid md:grid-cols-12 gap-8 items-center">
+                  
+                  {/* Patient Identity */}
+                  <div className="md:col-span-4 flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-full bg-oku-cream-warm flex items-center justify-center text-oku-dark font-display font-bold text-2xl border-2 border-oku-cream shadow-inner">
+                      {c.client.name?.substring(0, 1)}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-oku-dark group-hover:text-oku-purple transition-colors">{c.client.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Mail size={12} className="text-oku-taupe" />
+                        <span className="text-xs text-oku-taupe">{c.client.email}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Clinical Stats */}
+                  <div className="md:col-span-5 grid grid-cols-3 gap-4 border-x border-oku-taupe/10 px-8">
+                     <div>
+                        <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Sessions</p>
+                        <p className="text-lg font-bold text-oku-dark">{c.totalSessions}</p>
+                     </div>
+                     <div>
+                        <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Last Mood</p>
+                        <p className="text-lg font-bold text-oku-dark">
+                           {c.client.moodEntries[0] ? (
+                              c.client.moodEntries[0].mood >= 4 ? '🟢 Good' : c.client.moodEntries[0].mood === 3 ? '🟡 Neutral' : '🔴 Low'
+                           ) : '-'}
+                        </p>
+                     </div>
+                     <div>
+                        <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">No Shows</p>
+                        <p className={`text-lg font-bold ${c.client.clientProfile?.noShowCount > 0 ? 'text-red-500' : 'text-oku-dark'}`}>
+                           {c.client.clientProfile?.noShowCount || 0}
+                        </p>
+                     </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="md:col-span-3 flex items-center justify-end gap-4">
+                     {c.nextSession ? (
+                        <div className="text-right mr-4">
+                           <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Next Session</p>
+                           <p className="text-xs font-bold text-oku-purple">{new Date(c.nextSession).toLocaleDateString()}</p>
+                        </div>
+                     ) : (
+                        <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mr-4">No upcoming</p>
+                     )}
+                     <Link href={`/practitioner/clients/${c.client.id}`} className="w-12 h-12 rounded-full bg-oku-cream-warm/50 flex items-center justify-center text-oku-dark group-hover:bg-oku-dark group-hover:text-white transition-all shadow-sm">
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                     </Link>
+                  </div>
+
+                </div>
+              </div>
+            ))
           )}
-        </PractitionerSectionCard>
+        </div>
       </div>
-    </PractitionerShell>
+    </div>
   )
 }
