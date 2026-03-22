@@ -1,9 +1,5 @@
-import { WpContentOnly } from "@/components/wp-content-only";
-import { buildRouteMetadata } from "@/lib/wp-content";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = buildRouteMetadata("people");
+import OriginalV1People from '@/components/OriginalV1People'
 
 export default function PeoplePage() {
-  return <WpContentOnly slug="people" />;
+  return <OriginalV1People />
 }
