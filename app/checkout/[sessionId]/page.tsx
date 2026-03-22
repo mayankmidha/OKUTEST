@@ -2,7 +2,6 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Header from '@/components/Header'
 
 export default async function CheckoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const session = await auth()

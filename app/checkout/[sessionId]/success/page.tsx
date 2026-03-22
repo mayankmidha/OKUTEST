@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Header from '@/components/Header'
 import { CheckCircle } from 'lucide-react'
 
 export default function CheckoutSuccessPage({ params, searchParams }: { params: { sessionId: string }, searchParams: { method: string } }) {

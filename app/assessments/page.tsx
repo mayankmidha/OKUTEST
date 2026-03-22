@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Header from '@/components/Header'
 import Link from 'next/link'
 import { ASSESSMENTS } from '@/lib/assessments'
 import { ArrowRight, ClipboardCheck, Brain, Wind, Activity } from 'lucide-react'

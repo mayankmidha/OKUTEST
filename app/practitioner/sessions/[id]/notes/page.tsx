@@ -1,7 +1,6 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import Header from "@/components/Header"
 import { prisma } from "@/lib/prisma"
 import { Save, AlertCircle } from "lucide-react"
 

@@ -1,8 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import { DashboardSidebar } from '@/components/DashboardSidebar'
 
 export default function DashboardLayout({

@@ -2,7 +2,6 @@
 
 import { useState, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Header from '@/components/Header'
 import { useRouter } from 'next/navigation'
 import { ASSESSMENTS } from '@/lib/assessments'
 import Link from 'next/link'

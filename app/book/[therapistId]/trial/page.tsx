@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import Link from 'next/link'
-import Header from '@/components/Header'
 import { AppointmentStatus } from '@prisma/client'
 import TrialBookingForm from './TrialBookingForm'
 
