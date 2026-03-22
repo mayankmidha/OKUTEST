@@ -59,9 +59,13 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-12">
             {['Services', 'Assessments', 'Therapists', 'About Us'].map((item) => {
-              const href = item === 'Therapists' && status === 'authenticated' && session?.user?.role === 'CLIENT'
-                ? '/dashboard/client/therapists'
-                : `/${item.toLowerCase().replace(' ', '-')}`
+              let href = `/${item.toLowerCase().replace(' ', '-')}`
+              
+              if (status === 'authenticated' && session?.user?.role === 'CLIENT') {
+                if (item === 'Therapists') href = '/dashboard/client/therapists'
+                if (item === 'Assessments') href = '/dashboard/client/clinical'
+              }
+
               return (
                 <Link 
                   key={item}

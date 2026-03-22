@@ -7,11 +7,12 @@ import {
   Clock, Shield, Plus, Edit2, Check, X, 
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
-  Calendar, FileText, Zap, AlertTriangle, Megaphone
+  Calendar, FileText, Zap, AlertTriangle, Megaphone, Sparkles, Brain
 } from 'lucide-react'
 import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus, updatePlatformSettings } from '../actions'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
+import { OCIDiagnostic } from '@/components/OCIDiagnostic'
 
 function AdminDashboardContent({ 
   stats, 
@@ -101,6 +102,7 @@ function AdminDashboardContent({
           { id: 'services', label: 'Service Catalog', icon: DollarSign },
           { id: 'clients', label: 'Patient Records', icon: Users },
           { id: 'activity', label: 'Activity Pulse', icon: Zap },
+          { id: 'oci', label: 'OCI Intelligence', icon: Sparkles },
           { id: 'audit', label: 'Security & Logs', icon: FileText },
           { id: 'settings', label: 'Global Settings', icon: Settings }
         ].map((tab) => (
@@ -481,6 +483,50 @@ function AdminDashboardContent({
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* OCI INTELLIGENCE TAB */}
+        {activeTab === 'oci' && (
+          <div className="space-y-10">
+            <div className="bg-oku-dark text-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+               <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-8">
+                     <div className="w-16 h-16 rounded-2xl bg-oku-purple/20 flex items-center justify-center border border-white/10 shadow-inner">
+                        <Sparkles size={32} className="text-oku-purple animate-pulse" />
+                     </div>
+                     <div>
+                        <h2 className="text-4xl font-display font-bold tracking-tighter">OKU CORE INTELLIGENCE</h2>
+                        <p className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-purple opacity-60">Autonomous Platform Monitoring</p>
+                     </div>
+                  </div>
+
+                  <OCIDiagnostic />
+               </div>
+               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-oku-purple/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:bg-oku-purple/10 transition-colors duration-1000" />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-10">
+               <DashboardCard title="Cognitive Scope" icon={<Brain size={20} strokeWidth={1.5} />} variant="purple">
+                  <div className="space-y-4 text-sm italic text-oku-taupe opacity-80 leading-relaxed mt-4">
+                     <p>• OCI monitors 100% of clickstream activity for pattern anomalies.</p>
+                     <p>• Clinical gap detection ensures SOAP notes match scheduled appointments.</p>
+                     <p>• Automated risk profiling for high cancellation rate practitioners.</p>
+                  </div>
+               </DashboardCard>
+               <DashboardCard title="Brain Sync" icon={<Activity size={20} strokeWidth={1.5} />} variant="sage">
+                  <div className="space-y-6 mt-4">
+                     <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-oku-taupe/5 shadow-sm">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Model</span>
+                        <span className="text-xs font-bold text-oku-dark">Gemini 1.5 Flash</span>
+                     </div>
+                     <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-oku-taupe/5 shadow-sm">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Neural Latency</span>
+                        <span className="text-xs font-bold text-oku-success">Optimal (840ms)</span>
+                     </div>
+                  </div>
+               </DashboardCard>
             </div>
           </div>
         )}
