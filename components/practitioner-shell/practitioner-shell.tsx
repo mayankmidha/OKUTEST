@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { 
   Calendar, Users, Clock, Settings, 
   ChevronRight, LogOut, Bell, Search,
-  LayoutDashboard, UserCircle, Briefcase
+  LayoutDashboard, UserCircle, Briefcase, MessageSquare
 } from 'lucide-react'
 
 type PractitionerNavLink = {
@@ -27,10 +27,11 @@ type PractitionerShellProps = {
 
 const NAV_LINKS: PractitionerNavLink[] = [
   { href: '/practitioner/dashboard', label: 'Overview', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/messages', label: 'Messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
   { href: '/practitioner/appointments', label: 'Schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
   { href: '/practitioner/clients', label: 'Patients', icon: <Users size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/availability', label: 'Hours', icon: <Clock size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/profile', label: 'Clinical Profile', icon: <UserCircle size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/schedule', label: 'Hours', icon: <Clock size={18} strokeWidth={1.5} /> },
+  { href: '/practitioner/profile', label: 'Profile', icon: <UserCircle size={18} strokeWidth={1.5} /> },
 ]
 
 function isActiveLink(currentPath: string, href: string) {

@@ -1,9 +1,11 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import { Suspense } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AuthProvider from '@/components/auth-provider'
+import { ActivityTracker } from '@/components/ActivityTracker'
 
 export default function RootLayoutClient({
   children,
@@ -20,6 +22,9 @@ export default function RootLayoutClient({
 
   return (
     <AuthProvider>
+      <Suspense fallback={null}>
+        <ActivityTracker />
+      </Suspense>
       {!isDashboard && <Header />}
       <main>
         {children}

@@ -69,6 +69,20 @@ model User {
   tasks          Task[]
   clientTreatmentPlans     TreatmentPlan[] @relation("ClientTreatmentPlans")
   practitionerTreatmentPlans TreatmentPlan[] @relation("PractitionerTreatmentPlans")
+  activities     UserActivity[]
+}
+
+model UserActivity {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String   // LOGIN, CLICK, VIEW, LOGOUT
+  category    String?  // NAVIGATION, CLINICAL, BILLING
+  metadata    Json?    // { url: '/dashboard', duration: 120, button: 'Join' }
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TreatmentPlan {

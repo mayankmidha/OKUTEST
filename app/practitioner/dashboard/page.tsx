@@ -8,10 +8,10 @@ import {
   FileText, ArrowRight, Sparkles, Heart
 } from 'lucide-react'
 import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
-import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 import { TaskManager } from '@/components/TaskManager'
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 export default async function PractitionerDashboardPage() {
   const session = await auth()
@@ -76,9 +76,9 @@ export default async function PractitionerDashboardPage() {
   } catch (error) {
     console.error("Practitioner Dashboard Error:", error)
     return (
-      <div className="py-12 px-10">
-        <DashboardHeader title="Clinical Command" description="Connecting to secure database..." />
-        <div className="p-20 text-center bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl">
+      <div className="py-12 px-10 bg-oku-cream min-h-screen">
+        <h1 className="text-2xl font-display font-bold">Clinical Command</h1>
+        <div className="p-20 mt-10 text-center bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl">
            <p className="text-oku-taupe italic">We are finalizing your secure profile. Please refresh in a moment.</p>
         </div>
       </div>
@@ -99,25 +99,25 @@ export default async function PractitionerDashboardPage() {
   })
 
   return (
-    <div className="py-12 px-10">
-      <DashboardHeader 
-        title="Clinical Command" 
-        description="Your dedicated space for practice management."
-        actions={
-          <>
-            <Link href="/practitioner/schedule" className="bg-white text-oku-dark border border-oku-taupe/10 py-4 px-8 rounded-full font-bold shadow-sm hover:shadow-md transition-all">
-              Manage Hours
-            </Link>
-            <Link href="/practitioner/assessments" className="bg-oku-purple/10 text-oku-purple py-4 px-8 rounded-full font-bold shadow-sm hover:shadow-md transition-all">
-              Clinical Tools
-            </Link>
-            <Link href="/practitioner/profile" className="btn-primary py-4 px-8 shadow-xl">
-              Profile
-            </Link>
-          </>
-        }
-      />
-
+    <PractitionerShell
+      title="Clinical Command"
+      description="Your dedicated space for practice management."
+      badge="Overview"
+      currentPath="/practitioner/dashboard"
+      heroActions={
+        <>
+          <Link href="/practitioner/schedule" className="bg-white text-oku-dark border border-oku-taupe/10 py-4 px-8 rounded-full font-bold shadow-sm hover:shadow-md transition-all">
+            Manage Hours
+          </Link>
+          <Link href="/practitioner/assessments" className="bg-oku-purple/10 text-oku-purple py-4 px-8 rounded-full font-bold shadow-sm hover:shadow-md transition-all">
+            Clinical Tools
+          </Link>
+          <Link href="/practitioner/profile" className="btn-primary py-4 px-8 shadow-xl">
+            Profile
+          </Link>
+        </>
+      }
+    >
       {/* Stats Grid - Pastel Themed */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
         <DashboardCard subtitle="Today" icon={<Video size={20} strokeWidth={1.5} />} variant="purple">
@@ -212,6 +212,6 @@ export default async function PractitionerDashboardPage() {
         </div>
       </div>
       <AIAssistantWidget contextType="practitioner_summary" title="Clinical AI Assistant" />
-    </div>
+    </PractitionerShell>
   )
 }

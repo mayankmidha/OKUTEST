@@ -8,6 +8,7 @@ import {
   Settings, Layout, PlusCircle, ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 interface Question {
   id: string
@@ -79,17 +80,12 @@ export default function NewAssessmentPage() {
   }
 
   return (
-    <div className="py-12 px-10 max-w-5xl mx-auto">
-      <div className="mb-12 flex items-center justify-between">
-        <div>
-          <Link href="/practitioner/dashboard" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark flex items-center gap-2 mb-4">
-            <ArrowLeft size={12} /> Dashboard
-          </Link>
-          <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
-            Build Assessment
-          </h1>
-          <p className="text-oku-taupe mt-2 font-display italic">Create custom clinical screenings for your patients.</p>
-        </div>
+    <PractitionerShell
+      title="Build Assessment"
+      description="Create custom clinical screenings for your patients."
+      badge="Architect"
+      currentPath="/practitioner/assessments"
+      heroActions={
         <button 
           onClick={handleSave}
           disabled={isSaving}
@@ -97,8 +93,8 @@ export default function NewAssessmentPage() {
         >
           <Save size={18} /> {isSaving ? 'Architecting...' : 'Deploy Assessment'}
         </button>
-      </div>
-
+      }
+    >
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
@@ -142,7 +138,7 @@ export default function NewAssessmentPage() {
                     </span>
                     <button 
                       onClick={() => removeQuestion(q.id)}
-                      className="p-2 text-oku-taupe hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                      className="p-2 text-oku-taupe hover:text-oku-danger transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -152,7 +148,7 @@ export default function NewAssessmentPage() {
                     value={q.text}
                     onChange={(e) => updateQuestionText(q.id, e.target.value)}
                     placeholder="Enter your clinical question here..."
-                    className="w-full bg-transparent border-none p-0 text-xl font-display font-bold placeholder:opacity-20 focus:ring-0 mb-6"
+                    className="w-full bg-transparent border-none p-0 text-xl font-display font-bold placeholder:opacity-20 focus:ring-0 mb-6 text-oku-dark"
                   />
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {q.options.map((opt) => (
@@ -201,6 +197,6 @@ export default function NewAssessmentPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PractitionerShell>
   )
 }

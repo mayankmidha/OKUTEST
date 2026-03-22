@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Search, User, Calendar, FileText, ArrowRight, Activity, Mail } from 'lucide-react'
 import { AppointmentStatus, UserRole } from '@prisma/client'
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 export default async function PractitionerClientsPage() {
   const session = await auth()
@@ -55,26 +56,22 @@ export default async function PractitionerClientsPage() {
   const clients = Array.from(clientMap.values())
 
   return (
-    <div className="min-h-screen bg-oku-cream py-12 px-6">
-      <div className="max-w-7xl mx-auto">
-        
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
-              Patient Roster
-            </h1>
-            <p className="text-oku-taupe mt-2 font-display italic">Manage your active caseload and clinical files.</p>
-          </div>
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search patients..." 
-              className="w-full bg-white border border-oku-taupe/20 pl-12 pr-4 py-4 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-oku-purple/20 focus:border-oku-purple transition-all shadow-sm"
-            />
-          </div>
+    <PractitionerShell
+      title="Patient Roster"
+      description="Manage your active caseload and clinical files."
+      badge="Patients"
+      currentPath="/practitioner/clients"
+      heroActions={
+        <div className="relative w-full md:w-72">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe" size={16} />
+          <input 
+            type="text" 
+            placeholder="Search patients..." 
+            className="w-full bg-white border border-oku-taupe/20 pl-12 pr-4 py-4 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-oku-purple/20 focus:border-oku-purple transition-all shadow-sm"
+          />
         </div>
-
+      }
+    >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
            <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
               <div className="relative z-10">
@@ -91,7 +88,7 @@ export default async function PractitionerClientsPage() {
            </div>
            <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
               <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2">Missing Notes</p>
-              <p className="text-5xl font-display font-bold text-red-500">
+              <p className="text-5xl font-display font-bold text-oku-danger">
                  {appointments.filter(a => a.status === 'COMPLETED' && !a.soapNote).length}
               </p>
            </div>
@@ -139,7 +136,7 @@ export default async function PractitionerClientsPage() {
                      </div>
                      <div>
                         <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">No Shows</p>
-                        <p className={`text-lg font-bold ${c.client.clientProfile?.noShowCount > 0 ? 'text-red-500' : 'text-oku-dark'}`}>
+                        <p className={`text-lg font-bold ${c.client.clientProfile?.noShowCount > 0 ? 'text-oku-danger' : 'text-oku-dark'}`}>
                            {c.client.clientProfile?.noShowCount || 0}
                         </p>
                      </div>
@@ -150,12 +147,12 @@ export default async function PractitionerClientsPage() {
                      {c.nextSession ? (
                         <div className="text-right mr-4">
                            <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Next Session</p>
-                           <p className="text-xs font-bold text-oku-purple">{new Date(c.nextSession).toLocaleDateString()}</p>
+                           <p className="text-xs font-bold text-oku-purple-dark">{new Date(c.nextSession).toLocaleDateString()}</p>
                         </div>
                      ) : (
                         <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mr-4">No upcoming</p>
                      )}
-                     <Link href={`/practitioner/clients/${c.client.id}`} className="w-12 h-12 rounded-full bg-oku-cream-warm/50 flex items-center justify-center text-oku-dark group-hover:bg-oku-dark group-hover:text-white transition-all shadow-sm">
+                     <Link href={`/practitioner/clients/${c.client.id}`} className="w-12 h-12 rounded-full bg-oku-cream-warm flex items-center justify-center text-oku-dark group-hover:bg-oku-dark group-hover:text-white transition-all shadow-sm">
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                      </Link>
                   </div>
@@ -165,7 +162,6 @@ export default async function PractitionerClientsPage() {
             ))
           )}
         </div>
-      </div>
-    </div>
+    </PractitionerShell>
   )
 }

@@ -7,6 +7,7 @@ import {
   ChevronRight, Activity, Clock
 } from 'lucide-react'
 import { UserRole } from '@prisma/client'
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 export default async function PractitionerAssessmentsPage() {
   const session = await auth()
@@ -20,22 +21,17 @@ export default async function PractitionerAssessmentsPage() {
   })
 
   return (
-    <div className="py-12 px-10">
-      <div className="mb-12 flex items-center justify-between">
-        <div>
-          <Link href="/practitioner/dashboard" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark flex items-center gap-2 mb-4">
-            <ArrowLeft size={12} /> Dashboard
-          </Link>
-          <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
-            Clinical Assessments
-          </h1>
-          <p className="text-oku-taupe mt-2 font-display italic">Manage your custom screenings and clinical tools.</p>
-        </div>
+    <PractitionerShell
+      title="Clinical Assessments"
+      description="Manage your custom screenings and clinical tools."
+      badge="Clinical"
+      currentPath="/practitioner/assessments"
+      heroActions={
         <Link href="/practitioner/assessments/new" className="btn-primary py-4 px-10 flex items-center gap-3 shadow-xl">
           <Plus size={18} /> Create New Tool
         </Link>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {assessments.length === 0 ? (
           <div className="col-span-full py-24 text-center bg-white rounded-[3rem] border-2 border-dashed border-oku-taupe/10">
@@ -50,7 +46,7 @@ export default async function PractitionerAssessmentsPage() {
                   <ClipboardCheck size={24} />
                 </div>
                 {a.isActive ? (
-                  <span className="bg-green-50 text-green-700 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Active</span>
+                  <span className="bg-oku-success/10 text-oku-success text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Active</span>
                 ) : (
                   <span className="bg-oku-taupe/10 text-oku-taupe text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Draft</span>
                 )}
@@ -72,6 +68,6 @@ export default async function PractitionerAssessmentsPage() {
           ))
         )}
       </div>
-    </div>
+    </PractitionerShell>
   )
 }

@@ -30,8 +30,8 @@ export function DashboardSidebar() {
   const therapistLinks = [
     { label: 'Center', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Sessions', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Schedule', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
+    { label: 'Schedule', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
+    { label: 'Hours', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Clinical', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },

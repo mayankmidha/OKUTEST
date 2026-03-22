@@ -20,7 +20,12 @@ function AdminDashboardContent({
   clients,
   settings: initialSettings
 }: { 
-  stats: any, 
+  stats: {
+    totalRevenue: number,
+    totalAppointments: number,
+    auditLogs: any[],
+    recentActivities: any[]
+  }, 
   therapists: any[], 
   services: any[],
   clients: any[],
@@ -95,6 +100,7 @@ function AdminDashboardContent({
           { id: 'therapists', label: 'Therapist Management', icon: Shield },
           { id: 'services', label: 'Service Catalog', icon: DollarSign },
           { id: 'clients', label: 'Patient Records', icon: Users },
+          { id: 'activity', label: 'Activity Pulse', icon: Zap },
           { id: 'audit', label: 'Security & Logs', icon: FileText },
           { id: 'settings', label: 'Global Settings', icon: Settings }
         ].map((tab) => (
@@ -414,6 +420,71 @@ function AdminDashboardContent({
           </DashboardCard>
         )}
 
+        {/* ACTIVITY PULSE TAB */}
+        {activeTab === 'activity' && (
+          <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
+            <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-purple/10">
+              <div>
+                <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Real-time Behavior</h2>
+                <p className="text-xs text-oku-taupe font-black uppercase tracking-widest mt-1 opacity-60">Session tracking and clickstream data</p>
+              </div>
+              <div className="bg-white px-4 py-2 rounded-full border border-oku-taupe/10 text-[10px] font-black uppercase tracking-widest text-oku-purple-dark flex items-center gap-2">
+                 <div className="w-2 h-2 rounded-full bg-oku-purple animate-ping" />
+                 Monitoring Active Channels
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
+                  <tr>
+                    <th className="p-8">User</th>
+                    <th className="p-8">Action</th>
+                    <th className="p-8">Context / Metadata</th>
+                    <th className="p-8">Environment</th>
+                    <th className="p-8 text-right">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-oku-taupe/5">
+                  {(stats.recentActivities || []).length === 0 ? (
+                    <tr><td colSpan={5} className="p-20 text-center text-oku-taupe italic opacity-60">No activity data captured in current buffer.</td></tr>
+                  ) : (
+                    stats.recentActivities.map((act: any) => (
+                      <tr key={act.id} className="hover:bg-oku-cream/20 transition-all text-xs">
+                        <td className="p-8">
+                           <p className="font-bold text-oku-dark">{act.user?.name}</p>
+                           <p className="opacity-40 text-[10px]">{act.user?.email}</p>
+                        </td>
+                        <td className="p-8">
+                           <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                             act.action === 'LOGIN' ? 'bg-green-50 text-green-600' : 
+                             act.action === 'CLICK' ? 'bg-oku-purple/20 text-oku-purple-dark' : 
+                             'bg-blue-50 text-blue-600'
+                           }`}>
+                             {act.action}
+                           </span>
+                        </td>
+                        <td className="p-8">
+                           <div className="max-w-xs space-y-1">
+                              <p className="font-medium truncate">{(act.metadata as any)?.url || (act.metadata as any)?.text}</p>
+                              <p className="opacity-40 text-[9px] font-mono truncate">{JSON.stringify(act.metadata)}</p>
+                           </div>
+                        </td>
+                        <td className="p-8">
+                           <p className="opacity-60 text-[10px] truncate max-w-[120px]">{act.userAgent}</p>
+                           <p className="opacity-40 text-[9px] font-mono">{act.ipAddress}</p>
+                        </td>
+                        <td className="p-8 text-right font-mono opacity-60">
+                           {new Date(act.createdAt).toLocaleTimeString()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* AUDIT LOGS TAB */}
         {activeTab === 'audit' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
@@ -451,7 +522,14 @@ function AdminDashboardContent({
 
 function AdminDashboardClient(props: any) {
   return (
-    <Suspense fallback={<div className="p-20 text-center font-display italic text-oku-taupe">Loading Platform Hub...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-oku-cream flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="w-16 h-16 border-4 border-oku-purple/20 border-t-oku-purple rounded-full animate-spin mx-auto" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe animate-pulse">Loading Platform Hub...</p>
+        </div>
+      </div>
+    }>
       <AdminDashboardContent {...props} />
     </Suspense>
   )

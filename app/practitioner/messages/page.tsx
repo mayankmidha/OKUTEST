@@ -5,6 +5,7 @@ import { SecureChat } from '@/components/SecureChat'
 import { MessageSquare, ShieldCheck, User } from 'lucide-react'
 import Link from 'next/link'
 import { UserRole } from '@prisma/client'
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 export default async function PractitionerMessagesPage({ searchParams }: { searchParams: { c?: string } }) {
   const session = await auth()
@@ -25,14 +26,12 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
   const activeClient = clients.find(c => c.id === activeClientId)
 
   return (
-    <div className="py-12 px-10">
-      <div className="mb-12">
-        <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
-          Client Portal Messages
-        </h1>
-        <p className="text-oku-taupe mt-2 font-display italic">Manage secure, asynchronous communications with your patient roster.</p>
-      </div>
-
+    <PractitionerShell
+      title="Client Portal Messages"
+      description="Manage secure, asynchronous communications with your patient roster."
+      badge="Messages"
+      currentPath="/practitioner/messages"
+    >
       {clients.length === 0 ? (
         <div className="bg-white p-12 rounded-[3rem] border border-oku-taupe/10 shadow-xl text-center">
             <MessageSquare size={48} className="text-oku-taupe/20 mx-auto mb-6" strokeWidth={1} />
@@ -88,6 +87,6 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
             </div>
         </div>
       )}
-    </div>
+    </PractitionerShell>
   )
 }

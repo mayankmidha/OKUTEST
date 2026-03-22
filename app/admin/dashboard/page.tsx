@@ -50,10 +50,17 @@ export default async function AdminDashboardPage() {
     where: { id: 'global' }
   }) || { maintenanceMode: false, platformFeePercent: 20 }
 
+  const recentActivities = await prisma.userActivity.findMany({
+    include: { user: { select: { name: true, email: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 100
+  })
+
   const stats = {
     totalRevenue: completedPayments._sum.amount || 0,
     totalAppointments: totalAppointments,
-    auditLogs: auditLogs || []
+    auditLogs: auditLogs || [],
+    recentActivities: recentActivities || []
   }
 
   return (
