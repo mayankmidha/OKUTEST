@@ -118,7 +118,10 @@ function normalizeExtractedHtml(rawHtml: string): string {
   let normalized = rawHtml;
 
   for (const origin of SITE_ORIGINS) {
-    normalized = normalized.replaceAll(`href="${origin}"`, 'href="/"');
+    normalized = normalized.replaceAll(`href="${origin}/about-us/"`, 'href="/about-us"');
+    normalized = normalized.replaceAll(`href="${origin}/people/"`, 'href="/people"');
+    normalized = normalized.replaceAll(`href="${origin}/therapists/"`, 'href="/therapists"');
+    normalized = normalized.replaceAll(`href="${origin}/"`, 'href="/"');
     normalized = normalized.replaceAll(`href='${origin}'`, "href='/'");
   }
 

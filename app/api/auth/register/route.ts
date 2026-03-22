@@ -5,11 +5,11 @@ import { UserRole } from '@prisma/client'
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json()
+    const { name, email, password, role } = await req.json()
 
-    if (!email || !password || !name) {
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { message: 'Missing required fields' },
+        { error: 'Missing required fields' },
         { status: 400 }
       )
     }
@@ -20,22 +20,26 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: 'User already exists' },
-        { status: 409 }
+        { error: 'Email already exists' },
+        { status: 400 }
       )
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
+    // Determine initial role
+    const userRole = role === 'THERAPIST' ? UserRole.THERAPIST : UserRole.CLIENT
+
+    // Create User and Profile in a transaction
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role: UserRole.CLIENT,
-        clientProfile: {
-          create: {}
-        }
+        role: userRole,
+        // Auto-create profile based on role
+        clientProfile: userRole === UserRole.CLIENT ? { create: {} } : undefined,
+        practitionerProfile: userRole === UserRole.THERAPIST ? { create: { bio: '', specialization: [] } } : undefined
       },
     })
 
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
         action: 'USER_REGISTERED',
         resourceType: 'USER',
         resourceId: user.id,
-        changes: JSON.stringify({ name: user.name, email: user.email }),
+        changes: JSON.stringify({ name: user.name, email: user.email, role: user.role }),
       }
     })
 
@@ -57,7 +61,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

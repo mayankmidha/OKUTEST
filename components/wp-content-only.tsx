@@ -29,7 +29,7 @@ export function WpContentOnly({ slug }: WpContentOnlyProps) {
                 <div id="content" className="site-content clr">
                   <article className="single-page-article clr">
                     <div className="entry clr" itemProp="text">
-                      <div dangerouslySetInnerHTML={{ __html: pageHtml }} />
+                      <div className="elementor-content" dangerouslySetInnerHTML={{ __html: pageHtml }} />
                     </div>
                   </article>
                 </div>

@@ -145,7 +145,7 @@ export default function CalendarScheduler({
         </DashboardCard>
 
         {/* Blocked Dates / Vacation */}
-        <DashboardCard title="Away Mode" subtitle="Time Off & Vacation" icon={AlertTriangle} dark className="relative overflow-hidden group shadow-oku-purple/10">
+        <DashboardCard title="Away Mode" subtitle="Time Off & Vacation" icon={AlertTriangle} variant="dark" className="relative overflow-hidden group shadow-oku-purple/10">
           <div className="relative z-10 mt-4 space-y-4">
             <button 
               onClick={async () => {

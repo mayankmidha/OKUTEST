@@ -7,7 +7,7 @@ import {
   Clock, Shield, Plus, Edit2, Check, X, 
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
-  Calendar, FileText, Zap, AlertTriangle
+  Calendar, FileText, Zap, AlertTriangle, Megaphone
 } from 'lucide-react'
 import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus } from '../actions'
 import { DashboardHeader } from '@/components/DashboardHeader'
@@ -68,7 +68,7 @@ function AdminDashboardContent({
     <div className="py-12 px-10">
       <DashboardHeader 
         title="Platform Hub" 
-        description="Administrative oversight and system configuration."
+        description="Administrative oversight and site-wide configuration."
         actions={
            <div className={`px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm ${settings.maintenanceMode ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-green-50 text-green-700 border-green-100'}`}>
               <div className={`w-2 h-2 rounded-full animate-pulse ${settings.maintenanceMode ? 'bg-amber-500' : 'bg-green-500'}`} />
@@ -77,7 +77,7 @@ function AdminDashboardContent({
         }
       />
 
-      {/* Tabs */}
+      {/* Tabs - Pastel Inspired */}
       <div className="flex flex-wrap gap-4 mb-12 border-b border-oku-taupe/10 pb-6">
         {[
           { id: 'overview', label: 'Platform Pulse', icon: Activity },
@@ -106,26 +106,26 @@ function AdminDashboardContent({
         {activeTab === 'overview' && (
           <div className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <DashboardCard subtitle="Total Revenue" icon={DollarSign}>
-                <p className="text-4xl font-display font-bold text-oku-dark">${stats.totalRevenue.toLocaleString()}</p>
+              <DashboardCard subtitle="Gross Revenue" icon={DollarSign} variant="pastel-green">
+                <p className="text-4xl font-display font-bold">${stats.totalRevenue.toLocaleString()}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Bookings" icon={Calendar}>
-                <p className="text-4xl font-display font-bold text-oku-dark">{stats.totalAppointments}</p>
+              <DashboardCard subtitle="Total Bookings" icon={Calendar} variant="pastel-purple">
+                <p className="text-4xl font-display font-bold">{stats.totalAppointments}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Providers" icon={Shield}>
-                <p className="text-4xl font-display font-bold text-oku-dark">{therapists.filter(t => t.practitionerProfile?.isVerified).length}</p>
+              <DashboardCard subtitle="Verified Team" icon={Shield} variant="pastel-peach">
+                <p className="text-4xl font-display font-bold">{therapists.filter(t => t.practitionerProfile?.isVerified).length}</p>
               </DashboardCard>
-              <DashboardCard subtitle="Clients" icon={Users}>
+              <DashboardCard subtitle="Registered Seekers" icon={Users}>
                 <p className="text-4xl font-display font-bold text-oku-dark">{clients.length}</p>
               </DashboardCard>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-               <DashboardCard title="System Metrics" icon={BarChart3} dark className="relative overflow-hidden group">
+               <DashboardCard title="System Metrics" icon={BarChart3} variant="dark" className="relative overflow-hidden group">
                   <div className="space-y-8 relative z-10 mt-4">
                      <div className="space-y-3">
                         <div className="flex justify-between text-[10px] uppercase tracking-widest font-black opacity-40">
-                           <span>Therapist Onboarding</span>
+                           <span>Therapist Onboarding Progress</span>
                            <span>{Math.round((therapists.filter(t => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100)}%</span>
                         </div>
                         <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
@@ -146,25 +146,22 @@ function AdminDashboardContent({
                   <div className="absolute bottom-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
                </DashboardCard>
 
-               <DashboardCard title="Booking Velocity" icon={TrendingUp} className="relative overflow-hidden">
-                  <div className="flex items-end gap-3 h-48 mt-4">
-                     {[30, 60, 40, 85, 55, 75, 100].map((h, i) => (
-                        <div key={i} className="flex-1 bg-oku-purple/10 rounded-2xl relative group cursor-pointer">
-                           <div 
-                             className="absolute bottom-0 left-0 right-0 bg-oku-purple rounded-2xl transition-all duration-700 group-hover:bg-oku-dark" 
-                             style={{ height: `${h}%` }}
-                           />
-                        </div>
-                     ))}
-                  </div>
-                  <div className="flex justify-between mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-oku-taupe opacity-40">
-                     <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+               <DashboardCard title="Broadcast Hub" icon={Megaphone} className="bg-oku-purple/5 border-oku-purple/10">
+                  <div className="space-y-6 mt-4">
+                     <p className="text-sm text-oku-taupe italic leading-relaxed">Push system-wide announcements to all logged-in users (therapists & clients).</p>
+                     <textarea 
+                        className="w-full bg-white border border-oku-taupe/10 rounded-3xl p-6 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                        placeholder="Type an announcement..."
+                        rows={3}
+                     />
+                     <button className="btn-primary py-4 px-10 text-[10px] uppercase tracking-widest font-black shadow-xl active:scale-95 transition-all">Broadcast Message</button>
                   </div>
                </DashboardCard>
             </div>
           </div>
         )}
 
+        {/* THERAPISTS TAB */}
         {activeTab === 'therapists' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
             <div className="p-10 border-b border-oku-taupe/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -181,7 +178,7 @@ function AdminDashboardContent({
                 <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
                   <tr>
                     <th className="p-8 border-b border-oku-taupe/5">Practitioner</th>
-                    <th className="p-8 border-b border-oku-taupe/5">Internal Status</th>
+                    <th className="p-8 border-b border-oku-taupe/5">Status</th>
                     <th className="p-8 border-b border-oku-taupe/5">Market Rate ($)</th>
                     <th className="p-8 border-b border-oku-taupe/5 text-right">Administrative</th>
                   </tr>
@@ -249,6 +246,7 @@ function AdminDashboardContent({
           </div>
         )}
 
+        {/* SERVICES TAB */}
         {activeTab === 'services' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
             <div className="p-12 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-dark text-white relative overflow-hidden">
@@ -316,6 +314,7 @@ function AdminDashboardContent({
           </div>
         )}
 
+        {/* CLIENTS TAB */}
         {activeTab === 'clients' && (
           <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
             <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center">

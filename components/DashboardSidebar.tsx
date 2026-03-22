@@ -45,8 +45,8 @@ export function DashboardSidebar() {
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
 
   return (
-    <aside className="w-72 bg-white border-r border-oku-taupe/10 min-h-screen flex flex-col sticky top-0 z-40">
-      <div className="p-8 border-b border-oku-taupe/10">
+    <aside className="w-72 bg-[#F8F9FA] border-r border-oku-taupe/10 min-h-screen flex flex-col sticky top-0 z-40">
+      <div className="p-8 border-b border-oku-taupe/10 bg-white">
         <Link href="/">
           <img 
             src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
@@ -67,15 +67,15 @@ export function DashboardSidebar() {
               href={link.href}
               className={`flex items-center justify-between group p-4 rounded-2xl transition-all duration-300 ${
                 active 
-                ? 'bg-oku-dark text-white shadow-2xl translate-x-2' 
-                : 'text-oku-taupe hover:bg-oku-cream hover:text-oku-dark'
+                ? 'bg-white text-oku-dark shadow-md scale-[1.02] border border-oku-purple/20' 
+                : 'text-oku-taupe hover:bg-white/50 hover:text-oku-dark'
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-xl transition-colors ${active ? 'bg-white/10 text-oku-purple' : 'bg-oku-cream-warm/30 text-oku-taupe group-hover:bg-white group-hover:text-oku-dark'}`}>
+                <div className={`p-2 rounded-xl transition-colors ${active ? 'bg-oku-purple/10 text-oku-purple' : 'bg-oku-cream-warm/30 text-oku-taupe group-hover:bg-white group-hover:text-oku-dark'}`}>
                    <Icon size={16} />
                 </div>
-                <span className="text-[10px] uppercase tracking-widest font-black">{link.label}</span>
+                <span className={`text-[10px] uppercase tracking-widest font-black ${active ? 'text-oku-dark' : ''}`}>{link.label}</span>
               </div>
               <ChevronRight size={14} className={`transition-transform duration-500 ${active ? 'opacity-100 rotate-90' : 'opacity-0'}`} />
             </Link>
@@ -83,9 +83,9 @@ export function DashboardSidebar() {
         })}
       </nav>
 
-      <div className="p-6 border-t border-oku-taupe/10 space-y-4 bg-oku-cream/20">
+      <div className="p-6 border-t border-oku-taupe/10 space-y-4 bg-white/50">
         <div className="bg-white p-4 rounded-2xl border border-oku-taupe/10 flex items-center gap-4 shadow-sm">
-           <div className="w-10 h-10 rounded-full bg-oku-purple/20 flex items-center justify-center text-oku-purple font-display font-bold border-2 border-white shadow-inner">
+           <div className="w-10 h-10 rounded-full bg-[#E0E7FF] flex items-center justify-center text-[#4338CA] font-display font-bold border-2 border-white shadow-inner">
               {session?.user?.name?.substring(0, 1)}
            </div>
            <div className="flex-1 min-w-0">

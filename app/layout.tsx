@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import './globals.wp.css' // Real WordPress Runtime CSS
+import './globals.target.css' // Original App Global CSS
 import RootLayoutClient from '@/components/RootLayoutClient'
 import { 
   getLocalStylesheetPaths, 
