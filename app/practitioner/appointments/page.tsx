@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
+import { VisualCalendar } from '@/components/VisualCalendar'
 import { Calendar, Video, Clock, CheckCircle2, FileText, AlertCircle, Search } from 'lucide-react'
 import { AppointmentStatus, UserRole } from '@prisma/client'
 
@@ -42,6 +43,8 @@ export default async function PractitionerAppointmentsPage() {
           </div>
         }
       />
+
+      <VisualCalendar appointments={appointments} />
 
       <div className="space-y-12">
         {/* Upcoming Queue */}

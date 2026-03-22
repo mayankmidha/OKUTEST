@@ -11,6 +11,7 @@ import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
+import { TaskManager } from '@/components/TaskManager'
 
 export default async function PractitionerDashboardPage() {
   const session = await auth()
@@ -183,6 +184,9 @@ export default async function PractitionerDashboardPage() {
         </div>
 
         <div className="space-y-8">
+          <div className="h-[400px]">
+             <TaskManager />
+          </div>
           <DashboardCard title="Clinical Reflections" icon={<FileText size={20} strokeWidth={1.5} />}>
               <div className="space-y-8 mt-4">
                   {(!recentNotes || recentNotes.length === 0) ? (

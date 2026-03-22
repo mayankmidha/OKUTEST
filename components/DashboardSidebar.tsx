@@ -7,7 +7,7 @@ import {
   Settings, Heart, ClipboardCheck, 
   Shield, FileText, Bell, LogOut,
   ChevronRight, Activity, DollarSign,
-  Briefcase, History, Clock, HelpCircle, Sparkles
+  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,6 +19,7 @@ export function DashboardSidebar() {
 
   const clientLinks = [
     { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
+    { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
     { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Clinical', href: '/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
@@ -28,6 +29,7 @@ export function DashboardSidebar() {
 
   const therapistLinks = [
     { label: 'Center', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
+    { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
     { label: 'Sessions', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
     { label: 'Schedule', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
