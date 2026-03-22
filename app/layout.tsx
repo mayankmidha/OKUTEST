@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import './globals.wp.css' // Real WordPress Runtime CSS
-import './globals.target.css' // Original App Global CSS
+import './globals.wp.css'
+import './globals.target.css'
 import RootLayoutClient from '@/components/RootLayoutClient'
 import { 
   getLocalStylesheetPaths, 
@@ -56,7 +56,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet" />
         
-        {/* WordPress Extracted Styles */}
+        {/* WordPress Extracted Inline Styles - HIGHEST PRIORITY */}
         {preStylesheetInlineStyles.map((styleBlock, index) => (
           <style
             dangerouslySetInnerHTML={{ __html: styleBlock.cssText }}
@@ -66,10 +66,12 @@ export default function RootLayout({
           />
         ))}
 
+        {/* Local Stylesheet Paths */}
         {stylesheetPaths.map((href) => (
           <link href={href} key={href} media="all" rel="stylesheet" />
         ))}
 
+        {/* Post-Stylesheets */}
         {postStylesheetInlineStyles.map((styleBlock, index) => (
           <style
             dangerouslySetInnerHTML={{ __html: styleBlock.cssText }}
@@ -79,7 +81,7 @@ export default function RootLayout({
           />
         ))}
       </head>
-      <body className="bg-oku-cream font-body text-oku-dark antialiased">
+      <body className="bg-white font-body text-oku-dark antialiased">
         <RootLayoutClient>
           {children}
         </RootLayoutClient>
