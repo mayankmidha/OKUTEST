@@ -173,13 +173,13 @@ export default function TherapistFilters({ therapists, specialties }: { therapis
 
                   <div className="grid grid-cols-2 gap-4">
                     <Link 
-                        href={`/book/${practitioner.id}`} 
+                        href={`/dashboard/client/book/new/${practitioner.id}`} 
                         className="bg-oku-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-purple-dark transition-all text-center shadow-2xl shadow-oku-dark/10 active:scale-95"
                     >
                       Book Care
                     </Link>
                     <Link 
-                        href={`/book/${practitioner.id}/trial`} 
+                        href={`/dashboard/client/book/new/${practitioner.id}/trial`} 
                         className="bg-white text-oku-dark border border-oku-taupe/10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
                     >
                       Trial

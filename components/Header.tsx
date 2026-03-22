@@ -62,7 +62,7 @@ export default function Header() {
               let href = `/${item.toLowerCase().replace(' ', '-')}`
               
               if (status === 'authenticated' && session?.user?.role === 'CLIENT') {
-                if (item === 'Therapists') href = '/dashboard/client/therapists'
+                if (item === 'Therapists') href = '/therapists'
                 if (item === 'Assessments') href = '/dashboard/client/clinical'
               }
 
@@ -163,22 +163,29 @@ export default function Header() {
               className="fixed inset-0 z-40 bg-oku-page-bg md:hidden pt-32 px-12"
             >
               <nav className="flex flex-col space-y-8">
-                {['Services', 'Assessments', 'Therapists', 'About Us'].map((item, i) => (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    key={item}
-                  >
-                    <Link 
-                      href={`/${item.toLowerCase().replace(' ', '-')}`} 
-                      className="text-4xl font-display text-oku-dark hover:text-oku-purple transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                {['Services', 'Assessments', 'Therapists', 'About Us'].map((item, i) => {
+                  let href = `/${item.toLowerCase().replace(' ', '-')}`
+                  if (status === 'authenticated' && session?.user?.role === 'CLIENT') {
+                    if (item === 'Therapists') href = '/therapists'
+                    if (item === 'Assessments') href = '/dashboard/client/clinical'
+                  }
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      key={item}
                     >
-                      {item}
-                    </Link>
-                  </motion.div>
-                ))}
+                      <Link 
+                        href={href} 
+                        className="text-4xl font-display text-oku-dark hover:text-oku-purple transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item}
+                      </Link>
+                    </motion.div>
+                  )
+                })}
                 
                 <motion.div 
                   initial={{ opacity: 0 }}

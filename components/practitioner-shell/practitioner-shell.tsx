@@ -8,6 +8,7 @@ import {
   ChevronRight, LogOut, Bell, Search,
   LayoutDashboard, UserCircle, Briefcase, MessageSquare
 } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 
 type PractitionerNavLink = {
   href: string
@@ -128,7 +129,10 @@ export function PractitionerShell({
                   <Bell size={18} strokeWidth={1.5} />
                   <span className="absolute top-3 right-3 w-2 h-2 bg-oku-purple rounded-full border-2 border-white" />
               </button>
-              <button className="w-12 h-12 rounded-2xl bg-oku-dark text-white flex items-center justify-center hover:bg-oku-purple-dark transition-all">
+              <button 
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="w-12 h-12 rounded-2xl bg-oku-dark text-white flex items-center justify-center hover:bg-oku-purple-dark transition-all"
+              >
                   <LogOut size={18} strokeWidth={1.5} />
               </button>
             </div>
