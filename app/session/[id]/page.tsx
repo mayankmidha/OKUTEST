@@ -30,12 +30,12 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
       return <div className="min-h-screen bg-oku-cream flex items-center justify-center font-display text-xl text-oku-taupe">Unauthorized access to this secure clinical space.</div>
   }
 
-  // Time Check (Allow joining 10 mins before)
+  // Time Check (Allow joining anytime for testing/confirmed sessions)
   const now = new Date()
   const scheduledTime = new Date(sessionDetails.startTime)
-  const tenMinutesBefore = new Date(scheduledTime.getTime() - 10 * 60000)
   
-  const isTooEarly = now < tenMinutesBefore
+  // BYPASS: Allowing instant join for testing
+  const isTooEarly = false 
 
   if (isTooEarly && isClient) {
       return (

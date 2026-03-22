@@ -31,6 +31,12 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
     }
   }
 
+  const getSmartHint = () => {
+    if (contextType === 'practitioner_summary') return "Draft summary of today's schedule"
+    if (contextType === 'client_insight') return "Reflect on my recent mood trends"
+    return "Check platform status"
+  }
+
   return (
     <>
       <button 
@@ -85,12 +91,23 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
                 <form onSubmit={handleGenerate} className="flex-1 flex flex-col space-y-6">
                   <div className="flex-1 space-y-4">
                     <p className="text-xs text-oku-taupe font-medium leading-relaxed">
-                      I am the Oku Core intelligence. I maintain real-time synchronization with all platform systems to manage your schedule and sessions.
+                      I am the Oku Core intelligence. I maintain real-time synchronization with all platform systems.
                     </p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        <button 
+                          type="button"
+                          onClick={() => { setQuery(getSmartHint()); }}
+                          className="px-3 py-1.5 rounded-full bg-oku-cream text-[9px] font-black uppercase tracking-widest text-oku-taupe border border-oku-taupe/10 hover:border-oku-purple transition-all"
+                        >
+                          Suggest Insight
+                        </button>
+                    </div>
+
                     <textarea
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Check upcoming appointments or system status..."
+                      placeholder="Ask about schedule, wellness, or platform status..."
                       className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all resize-none h-32"
                     />
                   </div>
