@@ -109,8 +109,13 @@ export default async function ClientSessionsPage() {
                           {appt.status}
                         </span>
                       </td>
-                      <td className="p-8 text-right">
-                        <Link href="/therapists" className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Rebook</Link>
+                      <td className="p-8 text-right space-y-2">
+                        <Link href="/therapists" className="block text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline transition-opacity">Rebook</Link>
+                        {appt.status === 'COMPLETED' && (
+                            <Link href={`/dashboard/client/book/${appt.id}/superbill`} className="block text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-oku-dark hover:underline transition-opacity">
+                                Superbill
+                            </Link>
+                        )}
                       </td>
                     </tr>
                   ))}

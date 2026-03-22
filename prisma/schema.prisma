@@ -67,6 +67,28 @@ model User {
   sentMessages   Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
   tasks          Task[]
+  clientTreatmentPlans     TreatmentPlan[] @relation("ClientTreatmentPlans")
+  practitionerTreatmentPlans TreatmentPlan[] @relation("PractitionerTreatmentPlans")
+}
+
+model TreatmentPlan {
+  id              String   @id @default(cuid())
+  clientId        String
+  practitionerId  String
+  
+  presentingProblem String @db.Text
+  goals           String @db.Text
+  objectives      String @db.Text
+  interventions   String @db.Text
+  
+  status          String @default("ACTIVE") // ACTIVE, COMPLETED, REVISED
+  nextReviewDate  DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  client          User     @relation("ClientTreatmentPlans", fields: [clientId], references: [id], onDelete: Cascade)
+  practitioner    User     @relation("PractitionerTreatmentPlans", fields: [practitionerId], references: [id], onDelete: Cascade)
 }
 
 model Task {
@@ -119,6 +141,7 @@ model PractitionerProfile {
   id              String   @id @default(cuid())
   userId          String   @unique
   licenseNumber   String?
+  npiNumber       String?  // Required for superbills
   specialization String[]
   bio             String?  @db.Text
   hourlyRate      Float?

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, User, Activity, FileText, Heart, Shield, Calendar } from 'lucide-react'
 import { UserRole } from '@prisma/client'
+import { TreatmentPlanManager } from '@/components/TreatmentPlanManager'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -28,6 +29,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             where: { practitionerId: session.user.id },
             include: { soapNote: true, service: true },
             orderBy: { startTime: 'desc' }
+        },
+        clientTreatmentPlans: {
+            where: { practitionerId: session.user.id },
+            orderBy: { createdAt: 'desc' }
         },
         assessmentAnswers: {
             include: { assessment: true },
@@ -192,6 +197,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                         <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-4 opacity-60 text-center">Last 14 Entries (1=Low, 5=High)</p>
                     </div>
                 </section>
+
+                <TreatmentPlanManager clientId={clientData.id} existingPlans={clientData.clientTreatmentPlans || []} />
 
                 {/* Session History & Notes */}
                 <section>
