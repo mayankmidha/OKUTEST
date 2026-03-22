@@ -1,11 +1,21 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-
 import { load } from "cheerio";
 import type { Metadata } from "next";
 
 import routesJson from "@/content/generated/routes.json";
 import stylesheetsJson from "@/content/generated/stylesheets.json";
+
+// Import compiled static assets directly to avoid Vercel fs.readFileSync crashes
+import { content as homeHtml } from "./compiled-wp/home.page.html";
+import { content as aboutHtml } from "./compiled-wp/about-us.page.html";
+import { content as peopleHtml } from "./compiled-wp/people.page.html";
+import { content as footerHtml } from "./compiled-wp/footer.html";
+import { content as popupsHtml } from "./compiled-wp/popups.html";
+
+import { content as wpEmojiStyles } from "./compiled-wp/wp-emoji-styles.css";
+import { content as classicThemeStyles } from "./compiled-wp/classic-theme-styles.css";
+import { content as globalStyles } from "./compiled-wp/global-styles.css";
+import { content as wpCustomStyles } from "./compiled-wp/wp-custom.css";
+import { content as oceanInlineStyles } from "./compiled-wp/ocean-inline.css";
 
 export type RouteSlug = "home" | "about-us" | "people";
 
@@ -56,15 +66,6 @@ export type PopupEntry = {
   id: string;
 };
 
-// Use relative path from this file's location to handle Vercel environments better
-const GENERATED_DIR = path.join(process.cwd(), "content", "generated");
-const GENERATED_STYLES_DIR = path.join(
-  process.cwd(),
-  "app",
-  "styles",
-  "generated",
-);
-
 const SITE_ORIGINS = [
   "https://okutherapy.com",
   "http://okutherapy.com",
@@ -74,45 +75,8 @@ const SITE_ORIGINS = [
 
 const ROUTES = routesJson as Record<RouteSlug, WpRouteRecord>;
 const STYLESHEETS = stylesheetsJson as string[];
-const htmlCache = new Map<string, string>();
-const styleCache = new Map<string, string>();
 
 let popupEntriesCache: PopupEntry[] | null = null;
-
-function readGeneratedFile(fileName: string): string {
-  const cached = htmlCache.get(fileName);
-  if (cached) {
-    return cached;
-  }
-
-  try {
-    const filePath = path.join(GENERATED_DIR, fileName);
-    const content = readFileSync(filePath, "utf8");
-    const normalized = normalizeExtractedHtml(content);
-    htmlCache.set(fileName, normalized);
-    return normalized;
-  } catch (error) {
-    console.error(`Error reading generated file ${fileName}:`, error);
-    return ""; // Return empty string instead of crashing
-  }
-}
-
-function readGeneratedStyleFile(fileName: string): string {
-  const cached = styleCache.get(fileName);
-  if (typeof cached === "string") {
-    return cached;
-  }
-
-  try {
-    const filePath = path.join(GENERATED_STYLES_DIR, fileName);
-    const content = readFileSync(filePath, "utf8");
-    styleCache.set(fileName, content);
-    return content;
-  } catch (error) {
-    console.error(`Error reading generated style file ${fileName}:`, error);
-    return "";
-  }
-}
 
 function normalizeExtractedHtml(rawHtml: string): string {
   let normalized = rawHtml;
@@ -157,14 +121,6 @@ function getSlugForPathname(pathname: string): RouteSlug {
   return "home";
 }
 
-function getGeneratedPageFile(slug: RouteSlug): string {
-  return readGeneratedFile(`${slug}.page.html`);
-}
-
-function getGeneratedHeaderFile(slug: RouteSlug): string {
-  return readGeneratedFile(`${slug}.header.html`);
-}
-
 export function getWpRoute(slug: RouteSlug): WpRouteRecord {
   return ROUTES[slug];
 }
@@ -175,16 +131,21 @@ export function getBodyClassForPathname(pathname: string): string {
   return route ? route.bodyClass : "home";
 }
 
-export function getHeaderHtml(slug: RouteSlug): string {
-  return getGeneratedHeaderFile(slug);
+export function getPageHtml(slug: RouteSlug): string {
+  let rawHtml = "";
+  if (slug === "home") rawHtml = homeHtml;
+  if (slug === "about-us") rawHtml = aboutHtml;
+  if (slug === "people") rawHtml = peopleHtml;
+  return normalizeExtractedHtml(rawHtml);
 }
 
-export function getPageHtml(slug: RouteSlug): string {
-  return getGeneratedPageFile(slug);
+export function getHeaderHtml(slug: RouteSlug): string {
+  // Placeholder as header.html.ts is missing
+  return "";
 }
 
 export function getFooterHtml(): string {
-  return readGeneratedFile("footer.html");
+  return normalizeExtractedHtml(footerHtml);
 }
 
 export function getPopupEntries(): PopupEntry[] {
@@ -192,7 +153,7 @@ export function getPopupEntries(): PopupEntry[] {
     return popupEntriesCache;
   }
 
-  const html = readGeneratedFile("popups.html");
+  const html = popupsHtml;
   if (!html) return [];
 
   const $ = load(html);
@@ -245,15 +206,15 @@ export type InlineStyleBlock = {
 export function getPreStylesheetInlineStyles(): InlineStyleBlock[] {
   return [
     {
-      cssText: readGeneratedStyleFile("wp-emoji-styles.css"),
+      cssText: wpEmojiStyles,
       id: "wp-emoji-styles-inline-css",
     },
     {
-      cssText: readGeneratedStyleFile("classic-theme-styles.css"),
+      cssText: classicThemeStyles,
       id: "classic-theme-styles-inline-css",
     },
     {
-      cssText: readGeneratedStyleFile("global-styles.css"),
+      cssText: globalStyles,
       id: "global-styles-inline-css",
     },
   ].filter((entry) => entry.cssText.trim().length > 0);
@@ -262,11 +223,11 @@ export function getPreStylesheetInlineStyles(): InlineStyleBlock[] {
 export function getPostStylesheetInlineStyles(): InlineStyleBlock[] {
   return [
     {
-      cssText: readGeneratedStyleFile("wp-custom.css"),
+      cssText: wpCustomStyles,
       id: "wp-custom-css",
     },
     {
-      cssText: readGeneratedStyleFile("ocean-inline.css"),
+      cssText: oceanInlineStyles,
     },
   ].filter((entry) => entry.cssText.trim().length > 0);
 }

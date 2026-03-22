@@ -7,9 +7,10 @@ import {
   Video, Activity, TrendingUp, 
   FileText, ArrowRight, Sparkles, Heart
 } from 'lucide-react'
-import { AppointmentStatus, UserRole } from '@prisma/client'
+import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
+import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 
 export default async function PractitionerDashboardPage() {
   const session = await auth()
@@ -18,62 +19,82 @@ export default async function PractitionerDashboardPage() {
     redirect('/auth/login')
   }
 
-  // Fetch REAL practitioner data with full safety
-  const practitioner = await prisma.practitionerProfile.findUnique({
-    where: { userId: session.user.id },
-    include: {
-      user: true,
-      appointments: {
-        where: {
-          startTime: { gte: new Date(new Date().setHours(0,0,0,0)) },
-          status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
-        },
-        include: {
-          client: true,
-          service: true
-        },
-        orderBy: { startTime: 'asc' }
-      }
-    }
-  })
+  let practitioner: any = null
+  let totalCompleted = 0
+  let totalEarnings: any = { _sum: { amount: 0 } }
+  let recentNotes: any[] = []
+  let needsRedirect = false
 
-  if (!practitioner) {
-    // Attempt to auto-repair if profile is missing
-    await prisma.practitionerProfile.create({
-        data: { userId: session.user.id, bio: '', specialization: [] }
+  try {
+    practitioner = await prisma.practitionerProfile.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        user: true,
+        appointments: {
+          where: {
+            startTime: { gte: new Date(new Date().setHours(0,0,0,0)) },
+            status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
+          },
+          include: {
+            client: true,
+            service: true
+          },
+          orderBy: { startTime: 'asc' }
+        }
+      }
     })
+
+    if (!practitioner) {
+      await prisma.practitionerProfile.create({
+          data: { userId: session.user.id, bio: '', specialization: [] }
+      })
+      needsRedirect = true
+    } else {
+      totalCompleted = await prisma.appointment.count({
+          where: { 
+              practitionerId: session.user.id,
+              status: AppointmentStatus.COMPLETED
+          }
+      })
+
+      totalEarnings = await prisma.payment.aggregate({
+          where: {
+              appointment: { practitionerId: session.user.id },
+              status: 'COMPLETED'
+          },
+          _sum: { amount: true }
+      })
+
+      recentNotes = await prisma.soapNote.findMany({
+          where: { appointment: { practitionerId: session.user.id } },
+          include: { appointment: { include: { client: true } } },
+          orderBy: { createdAt: 'desc' },
+          take: 3
+      })
+    }
+  } catch (error) {
+    console.error("Practitioner Dashboard Error:", error)
+    return (
+      <div className="py-12 px-10">
+        <DashboardHeader title="Clinical Command" description="Connecting to secure database..." />
+        <div className="p-20 text-center bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl">
+           <p className="text-oku-taupe italic">We are finalizing your secure profile. Please refresh in a moment.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (needsRedirect) {
     redirect('/practitioner/dashboard')
   }
 
-  const todaySessions = (practitioner.appointments || []).filter(a => {
+  const todaySessions = (practitioner?.appointments || []).filter((a: any) => {
       const today = new Date().setHours(0,0,0,0)
       return new Date(a.startTime).setHours(0,0,0,0) === today
   })
 
-  const upcomingSessions = (practitioner.appointments || []).filter(a => {
+  const upcomingSessions = (practitioner?.appointments || []).filter((a: any) => {
       return new Date(a.startTime) > new Date()
-  })
-
-  const totalCompleted = await prisma.appointment.count({
-      where: { 
-          practitionerId: session.user.id,
-          status: AppointmentStatus.COMPLETED
-      }
-  })
-
-  const totalEarnings = await prisma.payment.aggregate({
-      where: {
-          appointment: { practitionerId: session.user.id },
-          status: 'COMPLETED'
-      },
-      _sum: { amount: true }
-  })
-
-  const recentNotes = await prisma.soapNote.findMany({
-      where: { appointment: { practitionerId: session.user.id } },
-      include: { appointment: { include: { client: true } } },
-      orderBy: { createdAt: 'desc' },
-      take: 3
   })
 
   return (
@@ -121,23 +142,23 @@ export default async function PractitionerDashboardPage() {
                   <p className="text-oku-taupe font-display italic text-xl opacity-60">The space is quiet today.</p>
                 </DashboardCard>
               ) : (
-                todaySessions.map((session) => (
-                  <DashboardCard key={session.id} className="group">
+                todaySessions.map((appt: any) => (
+                  <DashboardCard key={appt.id} className="group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex items-center gap-8">
                         <div className="text-center min-w-[80px]">
                            <p className="text-2xl font-display font-bold text-oku-dark">
-                             {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                             {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                            </p>
                            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Start</p>
                         </div>
                         <div className="h-12 w-px bg-oku-taupe/10" />
                         <div>
-                          <p className="font-bold text-oku-dark text-xl">{session.client?.name || 'Patient'}</p>
-                          <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{session.service?.name || 'Session'}</p>
+                          <p className="font-bold text-oku-dark text-xl">{appt.client?.name || 'Patient'}</p>
+                          <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service?.name || 'Session'}</p>
                         </div>
                       </div>
-                      <Link href={`/session/${session.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-all shadow-lg active:scale-95">
+                      <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-all shadow-lg active:scale-95">
                         Launch Room
                       </Link>
                     </div>
@@ -182,6 +203,7 @@ export default async function PractitionerDashboardPage() {
           </DashboardCard>
         </div>
       </div>
+      <AIAssistantWidget contextType="practitioner_summary" title="Clinical AI Assistant" />
     </div>
   )
 }

@@ -9,6 +9,7 @@ import {
 import { AppointmentStatus } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
+import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 
 export default async function ClientDashboardPage() {
   const session = await auth()
@@ -197,6 +198,7 @@ export default async function ClientDashboardPage() {
           </DashboardCard>
         </div>
       </div>
+      <AIAssistantWidget contextType="client_insight" title="Wellness Insights" />
     </div>
   )
 }

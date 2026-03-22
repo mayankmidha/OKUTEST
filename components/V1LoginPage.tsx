@@ -97,7 +97,6 @@ export default function V1LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-2">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe">Password</label>
-                <Link href="/auth/forgot-password" className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-purple hover:underline">Forgot?</Link>
               </div>
               <input
                 type="password"
