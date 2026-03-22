@@ -10,23 +10,40 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { hasSignedConsent, hasAcceptedPrivacy, medicalHistory, emergencyContact } = await req.json()
+    const { 
+        hasSignedConsent, 
+        hasAcceptedPrivacy, 
+        medicalHistory, 
+        legalName,
+        currentAddress,
+        permanentAddress,
+        emergencyContact1,
+        emergencyContact2
+    } = await req.json()
 
     const intake = await prisma.intakeForm.upsert({
       where: { userId: session.user.id },
       update: {
+        legalName,
+        currentAddress,
+        permanentAddress,
+        emergencyContact1,
+        emergencyContact2,
         hasSignedConsent,
         hasAcceptedPrivacy,
         medicalHistory,
-        emergencyContact,
         signedAt: new Date()
       },
       create: {
         userId: session.user.id,
+        legalName,
+        currentAddress,
+        permanentAddress,
+        emergencyContact1,
+        emergencyContact2,
         hasSignedConsent,
         hasAcceptedPrivacy,
         medicalHistory,
-        emergencyContact,
         signedAt: new Date()
       }
     })

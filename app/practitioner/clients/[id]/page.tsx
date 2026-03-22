@@ -99,16 +99,33 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                     {clientData.intakeForm ? (
                         <div className="space-y-6">
                             <div>
-                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Emergency Contact</p>
-                                <p className="text-sm font-medium">{clientData.intakeForm.emergencyContact}</p>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Legal Name</p>
+                                <p className="text-sm font-bold text-oku-dark">{clientData.intakeForm.legalName || clientData.name}</p>
+                            </div>
+                            <div>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Primary Emergency Contact</p>
+                                <p className="text-sm font-medium">{clientData.intakeForm.emergencyContact1}</p>
+                            </div>
+                            {clientData.intakeForm.emergencyContact2 && (
+                                <div>
+                                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Secondary Emergency Contact</p>
+                                    <p className="text-sm font-medium">{clientData.intakeForm.emergencyContact2}</p>
+                                </div>
+                            )}
+                            <div>
+                                <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Current Address</p>
+                                <p className="text-xs text-oku-dark leading-relaxed">{clientData.intakeForm.currentAddress}</p>
                             </div>
                             <div>
                                 <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Medical History</p>
                                 <p className="text-sm text-oku-dark leading-relaxed">{clientData.intakeForm.medicalHistory || 'None reported.'}</p>
                             </div>
-                            <div className="pt-4 border-t border-oku-taupe/5 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-green-700">Consent Signed</span>
+                            <div className="pt-4 border-t border-oku-taupe/5 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-green-700">Consent Signed</span>
+                                </div>
+                                <span className="text-[9px] font-black text-oku-taupe opacity-40">{new Date(clientData.intakeForm.signedAt!).toLocaleDateString()}</span>
                             </div>
                         </div>
                     ) : (
