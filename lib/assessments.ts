@@ -163,6 +163,32 @@ export const ASSESSMENTS: AssessmentDefinition[] = [
       { min: 0, max: 10, result: "Low probability of PTSD", description: "Your symptoms do not currently suggest a high likelihood of PTSD." },
       { min: 11, max: 24, result: "Possible PTSD", description: "Your score suggests some symptoms of trauma. A clinical interview is recommended." }
     ]
+  },
+  {
+    id: "iq-cognitive",
+    slug: "cognitive-profile",
+    title: "Intelligence & Cognitive Profile",
+    description: "An advanced evaluation of reasoning, pattern recognition, and cognitive processing.",
+    category: "IQ & Cognitive",
+    questions: [
+      { id: "1", text: "Which number comes next in the series: 2, 4, 8, 16, ...?" },
+      { id: "2", text: "Choose the word that is most opposite to 'Equanimity'." },
+      { id: "3", text: "If all Zags are Zogs, and some Zogs are Zugs, are all Zags necessarily Zugs?" },
+      { id: "4", text: "Identify the pattern: A1, B2, C3, ... what is the 5th item?" },
+      { id: "5", text: "How often do you find yourself mentally rotating objects to understand their structure?" },
+      { id: "6", text: "A cube has 6 faces. If you paint all faces and cut it into 27 small cubes, how many have 0 faces painted?" }
+    ],
+    options: [
+      { label: "Option A / Low Frequency", value: 5 },
+      { label: "Option B / Medium Frequency", value: 10 },
+      { label: "Option C / High Frequency", value: 15 },
+      { label: "Option D / Exceptional", value: 20 }
+    ],
+    scoring: [
+      { min: 0, max: 40, result: "Standard Processing", description: "Your cognitive profile is within the standard clinical range." },
+      { min: 41, max: 80, result: "High Cognitive Velocity", description: "Your profile indicates rapid pattern recognition and abstract reasoning." },
+      { min: 81, max: 120, result: "Exceptional Cognitive Profile", description: "Your results suggest superior capabilities in fluid intelligence and complex logic." }
+    ]
   }
 ];
 

@@ -1,199 +1,143 @@
-'use client'
-
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import {
-  PractitionerLoadingState,
-  PractitionerPill,
-  PractitionerSectionCard,
-  PractitionerShell,
-  PractitionerStatCard,
-} from '@/components/practitioner-shell/practitioner-shell'
-import { getCurrentUser, logoutUser } from '@/lib/auth'
+import { DashboardHeader } from '@/components/DashboardHeader'
+import { DashboardCard } from '@/components/DashboardCard'
+import { Calendar, Video, Clock, CheckCircle2, FileText, AlertCircle, Search } from 'lucide-react'
+import { AppointmentStatus, UserRole } from '@prisma/client'
 
-type AppointmentSummary = {
-  endTime: string
-  id: string
-  notes: string | null
-  startTime: string
-  client: {
-    email: string
-    name: string | null
-    clientProfile: {
-      dateOfBirth: string | null
-      gender: string | null
-    } | null
+export default async function PractitionerAppointmentsPage() {
+  const session = await auth()
+  
+  if (!session?.user || session.user.role !== UserRole.THERAPIST) {
+    redirect('/auth/login')
   }
-}
 
-type AppointmentStats = {
-  appointments: number
-  clients: number
-  completed: number
-}
-
-type AppointmentsResponse = {
-  stats: AppointmentStats
-  todays: AppointmentSummary[]
-}
-
-export default function PractitionerAppointmentsPage() {
-  const user = getCurrentUser()
-  const router = useRouter()
-  const [appointments, setAppointments] = useState<AppointmentSummary[]>([])
-  const [stats, setStats] = useState<AppointmentStats>({
-    appointments: 0,
-    clients: 0,
-    completed: 0,
+  const appointments = await prisma.appointment.findMany({
+    where: { practitionerId: session.user.id },
+    include: {
+      client: true,
+      service: true,
+      soapNote: true
+    },
+    orderBy: { startTime: 'desc' }
   })
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    if (!user || user.role !== 'THERAPIST') {
-      router.replace('/auth/login')
-      return
-    }
-
-    const fetchAppointments = async () => {
-      try {
-        const response = await fetch('/api/practitioner/appointments')
-        if (response.ok) {
-          const data = (await response.json()) as AppointmentsResponse
-          setAppointments(data.todays)
-          setStats(data.stats)
-        }
-      } catch (error) {
-        console.error('Error fetching practitioner appointments:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    void fetchAppointments()
-  }, [router, user])
-
-  if (isLoading) {
-    return <PractitionerLoadingState message="Loading appointments..." />
-  }
-
-  if (!user || user.role !== 'THERAPIST') {
-    return null
-  }
+  const upcoming = appointments.filter(a => new Date(a.startTime) > new Date() && a.status !== 'CANCELLED')
+  const completed = appointments.filter(a => a.status === 'COMPLETED' || a.status === 'NO_SHOW')
 
   return (
-    <PractitionerShell
-      badge="Schedule"
-      currentPath="/practitioner/appointments"
-      description="Review today's calendar, weekly flow, and client context in one calm workspace."
-      headerActions={
-        <button
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-          onClick={() => {
-            logoutUser()
-            router.push('/auth/login')
-          }}
-          type="button"
-        >
-          Sign out
-        </button>
-      }
-      heroActions={
-        <>
-          <Link
-            className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
-            href="/practitioner/dashboard"
-          >
-            Back to dashboard
-          </Link>
-          <Link
-            className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-            href="/practitioner/clients"
-          >
-            View clients
-          </Link>
-        </>
-      }
-      title="Appointments"
-    >
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <PractitionerStatCard
-          accent="from-sky-500 to-cyan-500"
-          detail="Appointments scheduled for today."
-          label="Today's appointments"
-          value={appointments.length}
-        />
-        <PractitionerStatCard
-          accent="from-emerald-500 to-teal-500"
-          detail="Total appointments captured this week."
-          label="This week"
-          value={stats.appointments}
-        />
-        <PractitionerStatCard
-          accent="from-amber-500 to-orange-500"
-          detail="Completed appointments this week."
-          label="Completed"
-          value={stats.completed}
-        />
-      </div>
+    <div className="py-12 px-10">
+      <DashboardHeader 
+        title="Session Ledger" 
+        description="Clinical appointment schedule and session record management."
+        actions={
+          <div className="flex items-center gap-4">
+             <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe" size={14} />
+                <input type="text" placeholder="Search sessions..." className="pl-10 pr-4 py-3 bg-white border border-oku-taupe/10 rounded-full text-xs focus:outline-none focus:border-oku-purple shadow-sm transition-all" />
+             </div>
+             <Link href="/practitioner/schedule" className="btn-primary py-3.5 px-6 text-[10px]">Manage Hours</Link>
+          </div>
+        }
+      />
 
-      <div className="mt-6">
-        <PractitionerSectionCard
-          action={
-            <PractitionerPill tone="sky">Today</PractitionerPill>
-          }
-          actions={
-            <Link className="text-sm font-medium text-sky-700 transition hover:text-sky-900" href="/practitioner/clients">
-              View clients
-            </Link>
-          }
-          description="Today's sessions are shown here with time, client context, and note summaries."
-          title="Today's calendar"
-        >
-          {appointments.length > 0 ? (
-            <div className="space-y-4">
-              {appointments.map((appointment) => (
-                <article
-                  className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-4 transition hover:border-slate-300 hover:bg-white"
-                  key={appointment.id}
-                >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="text-base font-semibold text-slate-950">{appointment.client.name ?? 'Client'}</div>
-                      <div className="mt-1 text-sm text-slate-500">{appointment.client.email}</div>
-                      <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-600">
-                        <span className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-                          {new Date(appointment.startTime).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                          {' - '}
-                          {new Date(appointment.endTime).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                        <span className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-                          {new Date(appointment.startTime).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                    <PractitionerPill tone="emerald">Scheduled</PractitionerPill>
-                  </div>
-                  {appointment.notes ? <p className="mt-3 text-sm leading-6 text-slate-600">{appointment.notes}</p> : null}
-                </article>
-              ))}
+      <div className="space-y-12">
+        {/* Upcoming Queue */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe ml-2">Upcoming Queue</h2>
+             <div className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[8px] font-black uppercase tracking-widest border border-green-100">Live Schedule</div>
+          </div>
+          
+          {upcoming.length === 0 ? (
+            <div className="bg-white/50 border border-dashed border-oku-taupe/20 rounded-[2.5rem] p-16 text-center">
+               <p className="text-oku-taupe font-display italic">Your upcoming queue is currently empty.</p>
             </div>
           ) : (
-            <div className="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
-              <p className="text-base font-medium text-slate-900">No appointments scheduled for today.</p>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                The day is open, which makes it a good time to review availability or client notes.
-              </p>
+            <div className="grid gap-4">
+              {upcoming.map((appt) => (
+                <DashboardCard key={appt.id} className="group border-l-4 border-l-oku-purple">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-8">
+                      <div className="text-center min-w-[80px]">
+                         <p className="text-2xl font-display font-bold text-oku-dark">
+                           {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                         </p>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple">Start</p>
+                      </div>
+                      <div className="h-12 w-px bg-oku-taupe/10" />
+                      <div>
+                        <Link href={`/practitioner/clients/${appt.clientId}`} className="font-bold text-oku-dark text-xl hover:text-oku-purple transition-colors">{appt.client.name}</Link>
+                        <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service.name}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-10">
+                      <div className="text-right border-r border-oku-taupe/10 pr-10">
+                        <p className="font-bold text-oku-dark">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                        <p className="text-[10px] text-oku-taupe font-black uppercase tracking-widest mt-1 opacity-60">Confirmed</p>
+                      </div>
+                      <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-all shadow-lg">
+                        Launch Room
+                      </Link>
+                    </div>
+                  </div>
+                </DashboardCard>
+              ))}
             </div>
           )}
-        </PractitionerSectionCard>
+        </section>
+
+        {/* Clinical History */}
+        <section>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-2">Clinical History</h2>
+          <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-sm overflow-hidden">
+            {completed.length === 0 ? (
+              <p className="p-20 text-center text-oku-taupe italic opacity-60">No past sessions found.</p>
+            ) : (
+              <table className="w-full text-left">
+                <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
+                  <tr>
+                    <th className="p-8">Patient</th>
+                    <th className="p-8">Service</th>
+                    <th className="p-8">Date</th>
+                    <th className="p-8">Notes Status</th>
+                    <th className="p-8 text-right">Records</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-oku-taupe/5">
+                  {completed.map((appt) => (
+                    <tr key={appt.id} className="hover:bg-oku-cream/20 transition-all group">
+                      <td className="p-8">
+                        <p className="font-bold text-oku-dark">{appt.client.name}</p>
+                      </td>
+                      <td className="p-8 text-sm text-oku-taupe">{appt.service.name}</td>
+                      <td className="p-8 text-sm text-oku-taupe">{new Date(appt.startTime).toLocaleDateString()}</td>
+                      <td className="p-8">
+                        {appt.soapNote ? (
+                           <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-green-600">
+                              <CheckCircle2 size={12} /> Filed
+                           </span>
+                        ) : (
+                           <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-600">
+                              <AlertCircle size={12} /> Pending Note
+                           </span>
+                        )}
+                      </td>
+                      <td className="p-8 text-right">
+                        <Link href={`/practitioner/sessions/${appt.id}/notes`} className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">
+                           {appt.soapNote ? 'View Note' : 'Add Note'}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </section>
       </div>
-    </PractitionerShell>
+    </div>
   )
 }

@@ -1,206 +1,124 @@
-'use client'
-
-import { useState, useEffect } from 'react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import { DashboardHeader } from '@/components/DashboardHeader'
+import { DashboardCard } from '@/components/DashboardCard'
+import { Calendar, Video, Clock, ArrowRight, CheckCircle2, History } from 'lucide-react'
+import { AppointmentStatus } from '@prisma/client'
 
-export default function ClientBookPage() {
-  const [user, setUser] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedTherapist, setSelectedTherapist] = useState('')
-  const [selectedDate, setSelectedDate] = useState('')
-  const [selectedTime, setSelectedTime] = useState('')
-
-  useEffect(() => {
-    const userData = localStorage.getItem('user')
-    if (userData) {
-      setUser(JSON.parse(userData))
-    }
-    setLoading(false)
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+export default async function ClientSessionsPage() {
+  const session = await auth()
+  
+  if (!session?.user) {
+    redirect('/auth/login')
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Login</h1>
-          <p className="text-gray-600 mb-8">You need to be logged in to book appointments.</p>
-          <Link 
-            href="/auth/login"
-            className="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  const appointments = await prisma.appointment.findMany({
+    where: { clientId: session.user.id },
+    include: {
+      practitioner: true,
+      service: true
+    },
+    orderBy: { startTime: 'desc' }
+  })
 
-  const therapists = [
-    { id: '1', name: 'Dr. Suraj Singh', specialty: 'Consultant Psychiatrist', available: true },
-    { id: '2', name: 'Tanisha Singh', specialty: 'Clinical Psychologist', available: true },
-    { id: '3', name: 'Rananjay Singh', specialty: 'Queer Affirmative Therapist', available: false },
-    { id: '4', name: 'Amna Ansari', specialty: 'Clinical Psychologist', available: true },
-    { id: '5', name: 'Mohit Dudeja', specialty: 'Queer Affirmative Therapist', available: true },
-    { id: '6', name: 'Gursheel Kaur', specialty: 'Psychodynamic Psychotherapist', available: true },
-  ]
-
-  const timeSlots = [
-    '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-    '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'
-  ]
+  const upcoming = appointments.filter(a => new Date(a.startTime) > new Date() && a.status !== 'CANCELLED')
+  const past = appointments.filter(a => new Date(a.startTime) <= new Date() || a.status === 'COMPLETED')
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Book Appointment</h1>
-              <p className="mt-2 text-gray-600">Schedule your therapy session</p>
-            </div>
-            <Link 
-              href="/dashboard/client"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              ← Back to Dashboard
-            </Link>
-          </div>
-        </div>
+    <div className="py-12 px-10">
+      <DashboardHeader 
+        title="My Sessions" 
+        description="View your upcoming appointments and full clinical history."
+        actions={
+          <Link href="/therapists" className="btn-primary py-4 px-8 flex items-center gap-2 shadow-xl">
+            <Calendar size={18} /> Book New Session
+          </Link>
+        }
+      />
 
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Select Therapist</h2>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {therapists.map((therapist) => (
-                  <div
-                    key={therapist.id}
-                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedTherapist === therapist.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : therapist.available
-                        ? 'border-gray-200 hover:border-gray-300'
-                        : 'border-gray-200 bg-gray-50 opacity-50'
-                    }`}
-                    onClick={() => therapist.available && setSelectedTherapist(therapist.id)}
-                  >
-                    <div className="flex items-center mb-2">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
+      <div className="space-y-12">
+        {/* Upcoming */}
+        <section>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-2">Confirmed Appointments</h2>
+          {upcoming.length === 0 ? (
+            <DashboardCard className="border-dashed py-16 text-center">
+               <p className="text-oku-taupe font-display italic text-lg mb-6">No upcoming sessions found.</p>
+               <Link href="/therapists" className="text-oku-purple font-bold hover:underline">Find a therapist to begin →</Link>
+            </DashboardCard>
+          ) : (
+            <div className="grid gap-4">
+              {upcoming.map((appt) => (
+                <DashboardCard key={appt.id} className="group">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-16 rounded-full bg-oku-purple/10 flex items-center justify-center text-oku-purple group-hover:bg-oku-purple group-hover:text-white transition-all duration-500 shadow-inner">
+                        <Video size={28} />
+                      </div>
                       <div>
-                        <h3 className="font-medium text-gray-900">{therapist.name}</h3>
-                        <p className="text-sm text-gray-500">{therapist.specialty}</p>
+                        <p className="font-bold text-oku-dark text-xl">{appt.practitioner.name}</p>
+                        <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service.name}</p>
                       </div>
                     </div>
-                    <div className="mt-2">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        therapist.available
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {therapist.available ? 'Available' : 'Not Available'}
-                      </span>
+                    <div className="flex items-center gap-10">
+                      <div className="text-right border-r border-oku-taupe/10 pr-10">
+                        <p className="font-bold text-oku-dark">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                        <p className="text-xs text-oku-taupe font-black uppercase tracking-widest mt-1">{new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
+                      <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-all shadow-lg active:scale-95">
+                        Join Session
+                      </Link>
                     </div>
                   </div>
-                ))}
-              </div>
+                </DashboardCard>
+              ))}
             </div>
-          </div>
+          )}
+        </section>
 
-          <div className="mt-6 bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Select Date & Time</h2>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Date
-                  </label>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Time
-                  </label>
-                  <select
-                    value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select a time</option>
-                    {timeSlots.map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
+        {/* History */}
+        <section>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-2">Session History</h2>
+          <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-sm overflow-hidden">
+            {past.length === 0 ? (
+              <p className="p-20 text-center text-oku-taupe italic">Your history will appear here once you complete your first session.</p>
+            ) : (
+              <table className="w-full text-left">
+                <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
+                  <tr>
+                    <th className="p-8">Therapist</th>
+                    <th className="p-8">Service</th>
+                    <th className="p-8">Date</th>
+                    <th className="p-8">Status</th>
+                    <th className="p-8 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-oku-taupe/5">
+                  {past.map((appt) => (
+                    <tr key={appt.id} className="hover:bg-oku-cream/20 transition-all group">
+                      <td className="p-8">
+                        <p className="font-bold text-oku-dark">{appt.practitioner.name}</p>
+                      </td>
+                      <td className="p-8 text-sm text-oku-taupe">{appt.service.name}</td>
+                      <td className="p-8 text-sm text-oku-taupe">{new Date(appt.startTime).toLocaleDateString()}</td>
+                      <td className="p-8">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                          appt.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+                        }`}>
+                          {appt.status}
+                        </span>
+                      </td>
+                      <td className="p-8 text-right">
+                        <Link href="/therapists" className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Rebook</Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
-
-          <div className="mt-6 bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Session Details</h2>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Therapist:</span>
-                  <span className="font-medium text-gray-900">
-                    {therapists.find(t => t.id === selectedTherapist)?.name || 'Not selected'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Date:</span>
-                  <span className="font-medium text-gray-900">
-                    {selectedDate ? new Date(selectedDate).toLocaleDateString() : 'Not selected'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Time:</span>
-                  <span className="font-medium text-gray-900">{selectedTime || 'Not selected'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Session Type:</span>
-                  <span className="font-medium text-gray-900">Individual Therapy (60 mins)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Cost:</span>
-                  <span className="font-medium text-gray-900">₹1,500</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <button
-              disabled={!selectedTherapist || !selectedDate || !selectedTime}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              Book Appointment
-            </button>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
   )

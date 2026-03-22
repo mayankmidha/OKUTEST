@@ -1,27 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { 
   Users, DollarSign, Settings, Activity, CheckCircle, 
   Clock, Shield, Plus, Edit2, Check, X, 
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
-  Calendar, FileText
+  Calendar, FileText, Briefcase, Mail, Zap,
+  AlertTriangle
 } from 'lucide-react'
 import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus } from '../actions'
+import { DashboardHeader } from '@/components/DashboardHeader'
 
-export default function AdminDashboardClient({ 
+function AdminDashboardContent({ 
   stats, 
   therapists, 
   services,
-  clients 
+  clients,
+  settings: initialSettings
 }: { 
   stats: any, 
   therapists: any[], 
   services: any[],
-  clients: any[]
+  clients: any[],
+  settings: any
 }) {
-  const [activeTab, setActiveTab] = useState('overview')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const currentTab = searchParams.get('tab') || 'overview'
+  const [activeTab, setActiveTab] = useState(currentTab)
+  const [settings, setSettings] = useState(initialSettings || { maintenanceMode: false, platformFeePercent: 20 })
+  
+  useEffect(() => {
+    setActiveTab(currentTab)
+  }, [currentTab])
+
+  const setTab = (tab: string) => {
+    router.push(`/admin/dashboard?tab=${tab}`)
+  }
+
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [newRate, setNewRate] = useState<string>('')
   
@@ -47,21 +65,19 @@ export default function AdminDashboardClient({
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div>
-          <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
-            Platform Hub
-          </h1>
-          <p className="text-oku-taupe mt-2 font-display italic">Administrative oversight and system configuration.</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <div className="px-4 py-2 bg-green-50 text-green-700 rounded-full border border-green-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Live System
+    <div className="py-12 px-10">
+      <DashboardHeader 
+        title="Platform Hub" 
+        description="Administrative oversight and system configuration."
+        actions={
+           <div className="flex items-center gap-4">
+              <div className={`px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm ${settings.maintenanceMode ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-green-50 text-green-700 border-green-100'}`}>
+                 <div className={`w-2 h-2 rounded-full animate-pulse ${settings.maintenanceMode ? 'bg-amber-500' : 'bg-green-500'}`} />
+                 {settings.maintenanceMode ? 'Maintenance Mode' : 'Live System'}
+              </div>
            </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Tabs */}
       <div className="flex flex-wrap gap-4 mb-12 border-b border-oku-taupe/10 pb-6">
@@ -70,11 +86,12 @@ export default function AdminDashboardClient({
           { id: 'therapists', label: 'Therapist Management', icon: Shield },
           { id: 'services', label: 'Service Catalog', icon: DollarSign },
           { id: 'clients', label: 'Patient Records', icon: Users },
-          { id: 'audit', label: 'Security & Logs', icon: FileText }
+          { id: 'audit', label: 'Security & Logs', icon: FileText },
+          { id: 'settings', label: 'Global Settings', icon: Settings }
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => setTab(tab.id)}
             className={`flex items-center gap-2 px-8 py-4 rounded-full text-[10px] uppercase tracking-widest font-black transition-all ${
               activeTab === tab.id 
                 ? 'bg-oku-dark text-white shadow-2xl scale-105' 
@@ -192,6 +209,67 @@ export default function AdminDashboardClient({
                   </div>
                </div>
             </div>
+          </div>
+        )}
+
+        {/* SETTINGS TAB */}
+        {activeTab === 'settings' && (
+          <div className="space-y-8">
+             <div className="bg-white p-12 rounded-[3.5rem] border border-oku-taupe/10 shadow-sm">
+                <h3 className="text-3xl font-display font-bold text-oku-dark mb-10 tracking-tighter">Global Configuration</h3>
+                
+                <div className="space-y-10 max-w-2xl">
+                   <div className="flex items-center justify-between p-8 bg-oku-cream/30 rounded-3xl border border-oku-taupe/5">
+                      <div>
+                         <p className="font-bold text-oku-dark text-lg">Maintenance Mode</p>
+                         <p className="text-sm text-oku-taupe italic">Put the entire platform into read-only mode for maintenance.</p>
+                      </div>
+                      <button 
+                        className={`w-16 h-8 rounded-full transition-all relative ${settings.maintenanceMode ? 'bg-oku-purple' : 'bg-oku-taupe/20'}`}
+                        onClick={() => setSettings({...settings, maintenanceMode: !settings.maintenanceMode})}
+                      >
+                         <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${settings.maintenanceMode ? 'left-9 shadow-lg' : 'left-1'}`} />
+                      </button>
+                   </div>
+
+                   <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-2">
+                         <Zap size={14} className="text-oku-purple" /> Platform Take Rate (%)
+                      </label>
+                      <div className="flex items-center gap-4">
+                         <input 
+                           type="range" 
+                           min="0" max="50" 
+                           value={settings.platformFeePercent} 
+                           onChange={(e) => setSettings({...settings, platformFeePercent: parseInt(e.target.value)})}
+                           className="flex-1 accent-oku-purple"
+                         />
+                         <span className="text-2xl font-display font-bold text-oku-dark min-w-[60px] text-right">{settings.platformFeePercent}%</span>
+                      </div>
+                   </div>
+
+                   <div className="space-y-4 pt-6 border-t border-oku-taupe/5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Support Notification Email</label>
+                      <div className="flex gap-4">
+                         <input 
+                           type="email" 
+                           value={settings.supportEmail || 'support@okutherapy.com'} 
+                           className="flex-1 bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple"
+                         />
+                         <button className="btn-primary py-4 px-8 text-xs shadow-xl">Update</button>
+                      </div>
+                   </div>
+
+                   <div className="bg-oku-dark p-8 rounded-[2.5rem] border border-white/5 flex items-start gap-6">
+                      <AlertTriangle className="text-oku-purple shrink-0" size={24} />
+                      <div>
+                         <p className="text-white font-bold mb-1">Global Payout Mode</p>
+                         <p className="text-white/40 text-xs leading-relaxed mb-6">Current: Standard T+7 Days. This controls how quickly therapists receive their 80% split after session completion.</p>
+                         <button className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Adjust Payout Frequency →</button>
+                      </div>
+                   </div>
+                </div>
+             </div>
           </div>
         )}
 
@@ -359,7 +437,7 @@ export default function AdminDashboardClient({
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-left border-collapse">
                 <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
                   <tr>
                     <th className="p-8 border-b border-oku-taupe/5">Client Name</th>
@@ -447,5 +525,13 @@ export default function AdminDashboardClient({
 
       </div>
     </div>
+  )
+}
+
+export default function AdminDashboardClient(props: any) {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-display italic text-oku-taupe">Loading Platform Hub...</div>}>
+      <AdminDashboardContent {...props} />
+    </Suspense>
   )
 }
