@@ -61,6 +61,7 @@ model User {
   assessmentAnswers AssessmentAnswer[]
   moodEntries    MoodEntry[]
   auditLogs      AuditLog[]
+  notifications  Notification[]
 }
 
 model VerificationToken {
@@ -103,6 +104,8 @@ model PractitionerProfile {
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments     Appointment[]
   availability     Availability[]
+  overrides       AvailabilityOverride[]
+  blockedDates    BlockedDate[]
 }
 
 model Availability {
@@ -113,6 +116,38 @@ model Availability {
   endTime             String              // "17:00"
   
   practitionerProfile PractitionerProfile @relation(fields: [practitionerProfileId], references: [id], onDelete: Cascade)
+}
+
+model AvailabilityOverride {
+  id                  String              @id @default(cuid())
+  practitionerProfileId String
+  date                DateTime            // Specific date for override
+  startTime           String              // "09:00"
+  endTime             String              // "17:00"
+  isAvailable         Boolean             @default(true)
+  
+  practitionerProfile PractitionerProfile @relation(fields: [practitionerProfileId], references: [id], onDelete: Cascade)
+}
+
+model BlockedDate {
+  id                  String              @id @default(cuid())
+  practitionerProfileId String
+  date                DateTime            // Date to block completely
+  reason              String?
+  
+  practitionerProfile PractitionerProfile @relation(fields: [practitionerProfileId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  message     String   @db.Text
+  type        String   // "info", "appointment", "payment"
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Appointment {

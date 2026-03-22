@@ -41,9 +41,17 @@ export default async function AdminDashboardPage() {
     _sum: { amount: true }
   })
 
+  // Fetch critical audit logs
+  const auditLogs = await prisma.auditLog.findMany({
+    include: { user: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 50
+  })
+
   const stats = {
     totalRevenue: completedPayments._sum.amount || 0,
-    totalAppointments: totalAppointments
+    totalAppointments: totalAppointments,
+    auditLogs: auditLogs
   }
 
   return (

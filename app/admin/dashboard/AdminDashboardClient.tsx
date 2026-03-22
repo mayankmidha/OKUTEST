@@ -6,7 +6,7 @@ import {
   Clock, Shield, Plus, Edit2, Check, X, 
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
-  Calendar
+  Calendar, FileText
 } from 'lucide-react'
 import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus } from '../actions'
 
@@ -69,7 +69,8 @@ export default function AdminDashboardClient({
           { id: 'overview', label: 'Platform Pulse', icon: Activity },
           { id: 'therapists', label: 'Therapist Management', icon: Shield },
           { id: 'services', label: 'Service Catalog', icon: DollarSign },
-          { id: 'clients', label: 'Patient Records', icon: Users }
+          { id: 'clients', label: 'Patient Records', icon: Users },
+          { id: 'audit', label: 'Security & Logs', icon: FileText }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -397,6 +398,49 @@ export default function AdminDashboardClient({
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* AUDIT LOGS TAB */}
+        {activeTab === 'audit' && (
+          <div className="space-y-10">
+            <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
+              <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-dark text-white">
+                <h2 className="text-3xl font-display font-bold tracking-tight">System Audit Logs</h2>
+                <div className="text-[10px] font-black uppercase tracking-widest text-oku-cream/40">Critical Activity & Compliance</div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
+                    <tr>
+                      <th className="p-8">Timestamp</th>
+                      <th className="p-8">User</th>
+                      <th className="p-8">Action</th>
+                      <th className="p-8">Resource</th>
+                      <th className="p-8">Data Changes</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-oku-taupe/5">
+                    {(stats.auditLogs || []).map((log: any) => (
+                      <tr key={log.id} className="hover:bg-oku-cream/20 transition-all text-xs">
+                        <td className="p-8 font-mono opacity-60">{new Date(log.createdAt).toLocaleString()}</td>
+                        <td className="p-8 font-bold text-oku-dark">{log.user?.name || 'System'}</td>
+                        <td className="p-8">
+                           <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest ${
+                             log.action.includes('CREATED') ? 'bg-green-50 text-green-600' : 
+                             log.action.includes('DELETED') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
+                           }`}>
+                             {log.action}
+                           </span>
+                        </td>
+                        <td className="p-8 opacity-60 uppercase font-black tracking-tighter text-[10px]">{log.resourceType}</td>
+                        <td className="p-8 max-w-xs truncate font-mono opacity-40">{log.changes || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
