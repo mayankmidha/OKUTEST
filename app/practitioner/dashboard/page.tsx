@@ -107,6 +107,9 @@ export default async function PractitionerDashboardPage() {
             <Link href="/practitioner/schedule" className="bg-white text-oku-dark border border-oku-taupe/10 py-4 px-8 rounded-full font-bold shadow-sm hover:shadow-md transition-all">
               Manage Hours
             </Link>
+            <Link href="/practitioner/assessments" className="bg-oku-purple/10 text-oku-purple py-4 px-8 rounded-full font-bold shadow-sm hover:shadow-md transition-all">
+              Clinical Tools
+            </Link>
             <Link href="/practitioner/profile" className="btn-primary py-4 px-8 shadow-xl">
               Profile
             </Link>

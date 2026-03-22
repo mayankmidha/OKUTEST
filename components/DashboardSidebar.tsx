@@ -21,8 +21,8 @@ export function DashboardSidebar() {
     { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
     { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
-    { label: 'Clinical', href: '/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
-    { label: 'Therapists', href: '/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
+    { label: 'Clinical', href: '/dashboard/client/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
+    { label: 'Therapists', href: '/dashboard/client/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
     { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
   ]
 
@@ -31,6 +31,7 @@ export function DashboardSidebar() {
     { label: 'Sessions', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
     { label: 'Schedule', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
+    { label: 'Clinical', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
     { label: 'Support', href: '/contact', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
   ]

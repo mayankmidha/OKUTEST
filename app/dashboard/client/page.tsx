@@ -75,7 +75,7 @@ export default async function ClientDashboardPage() {
         title={`Welcome, ${user.name?.split(' ')[0] || 'Seeker'}`}
         description="Your sanctuary for healing, reflection, and growth."
         actions={
-          <Link href="/therapists" className="btn-pastel py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
+          <Link href="/dashboard/client/therapists" className="btn-pastel py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
             <Search size={18} /> Browse Specialists
           </Link>
         }
@@ -113,7 +113,7 @@ export default async function ClientDashboardPage() {
               {upcomingAppointments.length === 0 ? (
                 <DashboardCard className="border-dashed py-20 text-center">
                   <p className="text-oku-taupe font-display italic text-xl opacity-60">The schedule is open.</p>
-                  <Link href="/therapists" className="text-oku-purple font-bold text-sm hover:underline mt-4 inline-block">Find your therapist →</Link>
+                  <Link href="/dashboard/client/therapists" className="text-oku-purple font-bold text-sm hover:underline mt-4 inline-block">Find your therapist →</Link>
                 </DashboardCard>
               ) : (
                 upcomingAppointments.map((appt) => (
@@ -178,7 +178,7 @@ export default async function ClientDashboardPage() {
                 ))
               )}
             </div>
-            <Link href="/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
+            <Link href="/dashboard/client/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
           </DashboardCard>
 
           <DashboardCard title="Suggested for You" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="sage">

@@ -120,7 +120,7 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
                   <p className="text-oku-taupe leading-relaxed mb-8">
                     These results indicate you might benefit from professional support. We recommend a brief, free consultation to discuss these feelings in a safe space.
                   </p>
-                  <Link href="/therapists" className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl">
+                  <Link href="/dashboard/client/therapists" className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl">
                     <Calendar size={18} /> View All Therapists
                   </Link>
                 </div>
@@ -162,7 +162,7 @@ export default function SingleAssessmentPage({ params }: { params: Promise<{ slu
               exit={{ opacity: 0, y: -20 }}
               className="bg-white/80 backdrop-blur-md p-12 rounded-[3.5rem] border border-white shadow-2xl text-center max-w-2xl mx-auto"
             >
-              <Link href="/assessments" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-oku-dark mb-10 transition-colors">
+              <Link href="/dashboard/client/assessments" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-oku-dark mb-10 transition-colors">
                 <ChevronLeft size={14} /> Back
               </Link>
               <div className="inline-block px-4 py-2 bg-oku-purple/10 rounded-full mb-6">

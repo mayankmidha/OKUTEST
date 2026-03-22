@@ -92,9 +92,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
                 <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                     <div className="relative z-10">
-                        <h3 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <Activity size={16} className="text-oku-purple" /> Clinical Screenings
-                        </h3>
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                                <Activity size={16} className="text-oku-purple" /> Clinical Screenings
+                            </h3>
+                            <Link href="/practitioner/assessments/new" className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">
+                                Assign New
+                            </Link>
+                        </div>
                         <div className="space-y-4">
                             {clientData.assessmentAnswers.length === 0 ? (
                                 <p className="text-xs italic opacity-60">No assessments taken.</p>
