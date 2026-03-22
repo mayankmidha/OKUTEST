@@ -19,7 +19,7 @@ export default function HomeHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider uppercase text-[#8C7B6E] bg-[#F5F1EE] rounded-full"
+              className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider uppercase text-oku-taupe bg-oku-cream-warm rounded-full"
             >
               Welcome to Oku Therapy
             </motion.span>
@@ -28,7 +28,7 @@ export default function HomeHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-serif font-light text-[#2D2926] leading-tight mb-8"
+              className="text-5xl md:text-7xl lg:text-8xl font-serif font-light text-oku-dark leading-tight mb-8"
             >
               Come as <span className="italic">you are</span>
             </motion.h1>
@@ -37,7 +37,7 @@ export default function HomeHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl md:text-2xl text-[#6B635D] font-light leading-relaxed mb-12 max-w-2xl mx-auto"
+              className="text-xl md:text-2xl text-oku-taupe font-light leading-relaxed mb-12 max-w-2xl mx-auto"
             >
               We hold space for your healing. Discover a trauma-informed, 
               inclusive approach to mental wellness designed for all parts of you.
@@ -50,14 +50,14 @@ export default function HomeHero() {
               className="flex flex-col sm:flex-row items-center justify-center gap-6"
             >
               <Link
-                href="/book"
-                className="px-8 py-4 bg-[#2D2926] text-white rounded-full text-lg font-medium hover:bg-[#4A443F] transition-colors duration-300 shadow-lg shadow-black/5"
+                href="/auth/signup"
+                className="px-8 py-4 bg-oku-dark text-white rounded-full text-lg font-medium hover:bg-oku-purple-dark transition-colors duration-300 shadow-lg shadow-black/5"
               >
                 Book a free 1:1 consultation
               </Link>
               <Link
                 href="/about-us"
-                className="px-8 py-4 border border-[#D1C7C0] text-[#2D2926] rounded-full text-lg font-medium hover:bg-[#F5F1EE] transition-all duration-300"
+                className="px-8 py-4 border border-oku-taupe/20 text-oku-dark rounded-full text-lg font-medium hover:bg-oku-cream-warm transition-all duration-300"
               >
                 Learn our approach
               </Link>
@@ -73,15 +73,18 @@ export default function HomeHero() {
             {[
               {
                 title: "Inclusive Care",
-                description: "We provide queer-affirmative, culturally responsive therapy for diverse identities."
+                description: "We provide queer-affirmative, culturally responsive therapy for diverse identities.",
+                color: "bg-oku-purple"
               },
               {
                 title: "Trauma Informed",
-                description: "Our approach prioritizes safety, choice, and empowerment in every session."
+                description: "Our approach prioritizes safety, choice, and empowerment in every session.",
+                color: "bg-oku-blue"
               },
               {
                 title: "Expert Clinicians",
-                description: "Connect with licensed therapists who bring deep expertise and lived experience."
+                description: "Connect with licensed therapists who bring deep expertise and lived experience.",
+                color: "bg-oku-green"
               }
             ].map((feature, i) => (
               <motion.div
@@ -90,10 +93,10 @@ export default function HomeHero() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-8 rounded-3xl bg-[#FDFCFB] border border-[#F5F1EE] hover:border-[#D1C7C0] transition-colors duration-300"
+                className={`p-8 rounded-3xl border border-oku-taupe/5 hover:border-oku-taupe/20 transition-colors duration-300 ${feature.color}`}
               >
-                <h3 className="text-2xl font-serif text-[#2D2926] mb-4">{feature.title}</h3>
-                <p className="text-[#6B635D] leading-relaxed">{feature.description}</p>
+                <h3 className="text-2xl font-serif text-oku-dark mb-4">{feature.title}</h3>
+                <p className="text-oku-taupe leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>

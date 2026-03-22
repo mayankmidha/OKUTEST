@@ -158,7 +158,7 @@ export default async function PractitionerDashboardPage() {
                           <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service?.name || 'Session'}</p>
                         </div>
                       </div>
-                      <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-all shadow-lg active:scale-95">
+                      <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple-dark transition-all shadow-lg active:scale-95">
                         Launch Room
                       </Link>
                     </div>
@@ -168,9 +168,9 @@ export default async function PractitionerDashboardPage() {
             </div>
           </section>
 
-          <DashboardCard title="Practitioner Support" icon={Heart} variant="dark" className="relative overflow-hidden bg-oku-purple shadow-oku-purple/20">
+          <DashboardCard title="Practitioner Support" icon={Heart} variant="dark" className="relative overflow-hidden bg-oku-purple-dark shadow-oku-purple-dark/20">
              <div className="relative z-10">
-                <p className="text-white/80 leading-relaxed italic mb-8 font-display text-lg">
+                <p className="text-white leading-relaxed italic mb-8 font-display text-lg opacity-90">
                    "Your capacity to hold space for others begins with your own gentle returning."
                 </p>
              </div>
@@ -186,11 +186,11 @@ export default async function PractitionerDashboardPage() {
                   ) : (
                       recentNotes.map((note) => (
                           <div key={note.id} className="flex gap-5 border-b border-oku-taupe/5 pb-6 last:border-0 group cursor-pointer">
-                              <div className="w-10 h-10 rounded-2xl bg-[#F3E8FF] flex items-center justify-center text-oku-purple shadow-inner">
+                              <div className="w-10 h-10 rounded-2xl bg-oku-purple/30 flex items-center justify-center text-oku-purple-dark shadow-inner">
                                   <FileText size={18} />
                               </div>
                               <div>
-                                  <p className="text-sm font-bold text-oku-dark group-hover:text-oku-purple transition-colors truncate max-w-[140px]">{note.appointment.client?.name}</p>
+                                  <p className="text-sm font-bold text-oku-dark group-hover:text-oku-purple-dark transition-colors truncate max-w-[140px]">{note.appointment.client?.name}</p>
                                   <p className="text-[10px] uppercase tracking-widest text-oku-taupe opacity-60 font-black">
                                       {new Date(note.createdAt).toLocaleDateString()}
                                   </p>
@@ -199,7 +199,7 @@ export default async function PractitionerDashboardPage() {
                       ))
                   )}
               </div>
-              <Link href="/practitioner/clients" className="mt-10 block text-center py-4 rounded-2xl bg-oku-cream-warm/20 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all">View All Patients</Link>
+              <Link href="/practitioner/clients" className="mt-10 block text-center py-4 rounded-2xl bg-oku-cream-warm/50 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all">View All Patients</Link>
           </DashboardCard>
         </div>
       </div>

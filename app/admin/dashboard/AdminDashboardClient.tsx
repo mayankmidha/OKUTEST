@@ -113,7 +113,7 @@ function AdminDashboardContent({
                 <p className="text-4xl font-display font-bold">{stats.totalAppointments}</p>
               </DashboardCard>
               <DashboardCard subtitle="Verified Team" icon={Shield} variant="pastel-peach">
-                <p className="text-4xl font-display font-bold">{therapists.filter(t => t.practitionerProfile?.isVerified).length}</p>
+                <p className="text-4xl font-display font-bold">{therapists.filter((t: any) => t.practitionerProfile?.isVerified).length}</p>
               </DashboardCard>
               <DashboardCard subtitle="Registered Seekers" icon={Users}>
                 <p className="text-4xl font-display font-bold text-oku-dark">{clients.length}</p>

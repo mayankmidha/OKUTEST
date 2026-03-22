@@ -18,42 +18,59 @@ async function main() {
     },
   })
 
-  // 2. Create THERAPISTS (from your official team)
+  // 2. Create THERAPISTS (Official Team)
   const therapists = [
     {
       name: 'Dr. Suraj Singh',
-      email: 'suraj.therapist@okutherapy.com',
+      email: 'suraj@okutherapy.com',
       title: 'Consultant Psychiatrist',
-      specialization: ['Mood Disorders', 'Depression', 'Anxiety'],
+      specialization: ['Psychiatry', 'Medication Management', 'Mood Disorders'],
       avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg'
     },
     {
       name: 'Tanisha Singh',
-      email: 'tanisha.therapist@okutherapy.com',
-      title: 'Clinical Psychologist (A.) & Psychodynamic Psychotherapist',
-      specialization: ['Trauma', 'PTSD', 'Depression'],
+      email: 'tanisha@okutherapy.com',
+      title: 'Clinical Psychologist & Psychodynamic Psychotherapist',
+      specialization: ['Psychodynamic', 'Trauma-Informed', 'Depression'],
       avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg'
     },
     {
       name: 'Rananjay Singh',
-      email: 'rananjay.therapist@okutherapy.com',
+      email: 'rananjay@okutherapy.com',
       title: 'Queer Affirmative & Family Therapist',
-      specialization: ['Queer-Affirmative', 'Family Therapy', 'Anxiety'],
+      specialization: ['Queer-Affirmative', 'Family Therapy', 'Relationships'],
       avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Rananjay--579x1024.jpg'
     },
     {
       name: 'Amna Ansari',
-      email: 'amna.therapist@okutherapy.com',
+      email: 'amna@okutherapy.com',
       title: 'Clinical Psychologist (A.)',
-      specialization: ['OCD', 'Intrusive Thoughts', 'Anxiety'],
+      specialization: ['Clinical Psychology', 'Anxiety', 'OCD'],
       avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Amna-670x1024.jpg'
+    },
+    {
+      name: 'Mohit Dudeja',
+      email: 'mohit@okutherapy.com',
+      title: 'Queer Affirmative Therapist',
+      specialization: ['Queer-Affirmative', 'Individual Therapy', 'Grief'],
+      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Mohit-911x1024.jpg'
+    },
+    {
+      name: 'Gursheel Kaur',
+      email: 'gursheel@okutherapy.com',
+      title: 'Psychodynamic Psychotherapist',
+      specialization: ['Psychodynamic', 'Relational Therapy', 'Self-Esteem'],
+      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg'
     }
   ]
 
   for (const t of therapists) {
-    const user = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: t.email },
-      update: {},
+      update: {
+        name: t.name,
+        avatar: t.avatar,
+      },
       create: {
         email: t.email,
         name: t.name,
@@ -64,6 +81,7 @@ async function main() {
           create: {
             bio: `${t.name} is a ${t.title} at Oku Therapy.`,
             specialization: t.specialization,
+            isVerified: true,
             availability: {
               create: [
                 { dayOfWeek: 1, startTime: '09:00', endTime: '17:00' },
@@ -79,16 +97,17 @@ async function main() {
     })
   }
 
-  // 3. Create CLIENTS / PATIENTS
+  // 3. Create CLIENTS
   const clients = [
-    { name: 'Sarah Miller', email: 'sarah.client@gmail.com' },
-    { name: 'Michael Ross', email: 'michael.client@gmail.com' }
+    { name: 'Sarah Miller', email: 'sarah@client.com' },
+    { name: 'Michael Ross', email: 'michael@client.com' },
+    { name: 'Elena Gilbert', email: 'elena@client.com' }
   ]
 
   for (const c of clients) {
     await prisma.user.upsert({
       where: { email: c.email },
-      update: {},
+      update: { name: c.name },
       create: {
         email: c.email,
         name: c.name,
@@ -103,7 +122,7 @@ async function main() {
     })
   }
 
-  console.log('Database seeded successfully!')
+  console.log('Database seeded with official team successfully!')
 }
 
 main()

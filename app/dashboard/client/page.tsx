@@ -75,7 +75,7 @@ export default async function ClientDashboardPage() {
         title={`Welcome, ${user.name?.split(' ')[0] || 'Seeker'}`}
         description="Your sanctuary for healing, reflection, and growth."
         actions={
-          <Link href="/therapists" className="btn-primary py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
+          <Link href="/therapists" className="btn-pastel py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
             <Search size={18} /> Browse Specialists
           </Link>
         }
@@ -120,7 +120,7 @@ export default async function ClientDashboardPage() {
                   <DashboardCard key={appt.id} className="group overflow-hidden">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-full bg-[#F3E8FF] flex items-center justify-center text-oku-purple group-hover:bg-oku-purple group-hover:text-white transition-all duration-500 shadow-inner">
+                        <div className="w-16 h-16 rounded-full bg-oku-purple/30 flex items-center justify-center text-oku-purple-dark group-hover:bg-oku-purple-dark group-hover:text-white transition-all duration-500 shadow-inner">
                           <Video size={28} />
                         </div>
                         <div>
@@ -133,7 +133,7 @@ export default async function ClientDashboardPage() {
                           <p className="font-bold text-oku-dark">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                           <p className="text-[10px] text-oku-taupe font-black uppercase tracking-widest mt-1 opacity-60">Confirmed</p>
                         </div>
-                        <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple transition-all shadow-lg active:scale-95">
+                        <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple-dark transition-all shadow-lg active:scale-95">
                           Enter Room
                         </Link>
                       </div>

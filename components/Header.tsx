@@ -51,7 +51,7 @@ export default function Header() {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-oku-taupe/10 hover:shadow-md transition-all"
                 >
-                  <div className="w-6 h-6 rounded-full bg-oku-purple/20 flex items-center justify-center text-oku-purple">
+                  <div className="w-6 h-6 rounded-full bg-oku-purple/40 flex items-center justify-center text-oku-purple-dark">
                     <User size={14} />
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-oku-dark truncate max-w-[100px]">
@@ -64,21 +64,21 @@ export default function Header() {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-oku-taupe/10 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     <Link 
                       href="/dashboard"
-                      className="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-cream hover:text-oku-dark transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-cream-warm hover:text-oku-dark transition-colors"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       <LayoutDashboard size={14} /> Dashboard
                     </Link>
                     <Link 
                       href="/dashboard/profile"
-                      className="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-cream hover:text-oku-dark transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-cream-warm hover:text-oku-dark transition-colors"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       <User size={14} /> Profile
                     </Link>
                     <button 
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-red hover:bg-oku-red/5 transition-colors border-t border-oku-taupe/5"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-colors border-t border-oku-taupe/5"
                     >
                       <LogOut size={14} /> Logout
                     </button>
@@ -90,7 +90,7 @@ export default function Header() {
                 <Link href="/auth/login" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark transition-colors">
                   Login
                 </Link>
-                <Link href="/auth/signup" className="bg-oku-dark text-white px-6 py-3 rounded-full text-[10px] uppercase tracking-[0.4em] font-black hover:bg-oku-purple transition-all shadow-lg">
+                <Link href="/auth/signup" className="bg-oku-dark text-white px-6 py-3 rounded-full text-[10px] uppercase tracking-[0.4em] font-black hover:bg-oku-purple-dark transition-all shadow-lg">
                   Sign Up
                 </Link>
               </>

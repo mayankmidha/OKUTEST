@@ -16,9 +16,9 @@ export function DashboardCard({ title, subtitle, icon: Icon, children, className
   const variants = {
     white: 'bg-white text-oku-dark border-oku-taupe/10',
     dark: 'bg-oku-dark text-white border-white/5',
-    'pastel-purple': 'bg-[#F3E8FF] text-[#581C87] border-[#E9D5FF]',
-    'pastel-green': 'bg-[#F0FDF4] text-[#166534] border-[#DCFCE7]',
-    'pastel-peach': 'bg-[#FFF7ED] text-[#9A3412] border-[#FFEDD5]'
+    'pastel-purple': 'bg-oku-purple text-oku-purple-dark border-oku-purple-dark/10',
+    'pastel-green': 'bg-oku-green text-oku-green-dark border-oku-green-dark/10',
+    'pastel-peach': 'bg-oku-peach text-oku-peach-dark border-oku-peach-dark/10'
   }
 
   const isDark = variant === 'dark'
