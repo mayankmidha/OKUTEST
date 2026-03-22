@@ -11,25 +11,25 @@ export async function GET() {
   }
 
   try {
-    // 1. Collect Platform Vitals
+    // 1. Collect Platform Vitals with individual catch handlers
     const [totalUsers, activePatients, verifiedTherapists, appointments, financialPulse, recentActivities] = await Promise.all([
-        prisma.user.count(),
-        prisma.user.count({ where: { role: UserRole.CLIENT } }),
-        prisma.practitionerProfile.count({ where: { isVerified: true } }),
+        prisma.user.count().catch(() => 0),
+        prisma.user.count({ where: { role: UserRole.CLIENT } }).catch(() => 0),
+        prisma.practitionerProfile.count({ where: { isVerified: true } }).catch(() => 0),
         prisma.appointment.findMany({
             orderBy: { createdAt: 'desc' },
             take: 20,
             include: { service: true }
-        }),
+        }).catch(() => []),
         prisma.payment.aggregate({
             where: { status: 'COMPLETED' },
             _sum: { amount: true }
-        }),
+        }).catch(() => ({ _sum: { amount: 0 } })),
         prisma.userActivity.findMany({
             orderBy: { createdAt: 'desc' },
             take: 30,
             include: { user: { select: { name: true, role: true } } }
-        })
+        }).catch(() => [])
     ])
 
     // 2. Format Data for the LLM Brain
@@ -38,7 +38,7 @@ export async function GET() {
         totalUsers,
         activePatients,
         verifiedTherapists,
-        totalRevenue: financialPulse._sum.amount || 0
+        totalRevenue: financialPulse._sum?.amount || 0
       },
       behavioralSignals: recentActivities.map(a => ({
         user: a.user?.name,

@@ -11,12 +11,12 @@ export default async function AdminDashboardPage() {
     redirect('/auth/login')
   }
 
-  // Fetch data with fallbacks
+  // 1. Core Platform Data
   const therapists = await prisma.user.findMany({
     where: { role: UserRole.THERAPIST },
     include: { practitionerProfile: true },
     orderBy: { createdAt: 'desc' }
-  })
+  }).catch(() => [])
 
   const clients = await prisma.user.findMany({
     where: { role: UserRole.CLIENT },
@@ -27,37 +27,50 @@ export default async function AdminDashboardPage() {
       }
     },
     orderBy: { createdAt: 'desc' }
-  })
+  }).catch(() => [])
 
   const services = await prisma.service.findMany({
     orderBy: { createdAt: 'asc' }
-  })
+  }).catch(() => [])
 
-  const totalAppointments = await prisma.appointment.count()
+  const totalAppointments = await prisma.appointment.count().catch(() => 0)
   
   const completedPayments = await prisma.payment.aggregate({
     where: { status: 'COMPLETED' },
     _sum: { amount: true }
-  })
+  }).catch(() => ({ _sum: { amount: 0 } }))
 
   const auditLogs = await prisma.auditLog.findMany({
     include: { user: { select: { name: true } } },
     orderBy: { createdAt: 'desc' },
     take: 50
-  })
+  }).catch(() => [])
 
-  const settings = await prisma.platformSettings.findUnique({
-    where: { id: 'global' }
-  }) || { maintenanceMode: false, platformFeePercent: 20 }
+  // 2. Settings with Graceful Fallback
+  let settings = { maintenanceMode: false, platformFeePercent: 20 }
+  try {
+    const dbSettings = await prisma.platformSettings.findUnique({
+        where: { id: 'global' }
+    })
+    if (dbSettings) settings = dbSettings as any
+  } catch (e) {
+    console.warn("PlatformSettings table may not exist yet.")
+  }
 
-  const recentActivities = await prisma.userActivity.findMany({
-    include: { user: { select: { name: true, email: true } } },
-    orderBy: { createdAt: 'desc' },
-    take: 100
-  })
+  // 3. Activity Tracking with Graceful Fallback
+  let recentActivities: any[] = []
+  try {
+    recentActivities = await prisma.userActivity.findMany({
+        include: { user: { select: { name: true, email: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 100
+    })
+  } catch (e) {
+    console.warn("UserActivity table may not exist yet.")
+  }
 
   const stats = {
-    totalRevenue: completedPayments._sum.amount || 0,
+    totalRevenue: completedPayments._sum?.amount || 0,
     totalAppointments: totalAppointments,
     auditLogs: auditLogs || [],
     recentActivities: recentActivities || []
