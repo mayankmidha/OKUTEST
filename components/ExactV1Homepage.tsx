@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, ClipboardCheck, Video, Heart, Shield, MessageCircle } from 'lucide-react'
+import { ArrowRight, ClipboardCheck, MessageCircle, Heart, Shield, Sparkles, Star } from 'lucide-react'
+import { motion } from 'framer-motion'
 
-export default function ExactV1Homepage() {
+export default function RebuiltHomepage() {
   const [currentText, setCurrentText] = useState('grief')
   const textArray = ['grief', 'longing', 'quiet', 'becoming', 'anger', 'story']
 
@@ -19,207 +20,166 @@ export default function ExactV1Homepage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white overflow-hidden">
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-6 py-32">
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="inline-block px-4 py-2 bg-oku-purple/10 rounded-full mb-8">
+      <section className="relative pt-32 pb-24 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-block px-4 py-2 bg-oku-purple/10 rounded-full mb-8"
+          >
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple">Therapy that feels like home</span>
-          </div>
-          <h1 className="text-6xl md:text-8xl font-display font-bold text-gray-900 mb-6 tracking-tighter">
-            Come as you are.
-          </h1>
-          <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-8">
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-7xl md:text-9xl font-display font-bold text-gray-900 mb-8 tracking-tighter leading-[0.85]"
+          >
+            Come as <br />
+            you are.
+          </motion.h1>
+
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-12"
+          >
             We hold space for your <br />
-            <span className="italic font-script text-oku-purple lowercase text-5xl md:text-7xl">
+            <span className="italic font-script text-oku-purple lowercase text-5xl md:text-8xl">
               {currentText}
             </span>
-          </h2>
-          <p className="text-xl text-gray-600 mt-8 mb-12 max-w-2xl mx-auto font-display italic leading-relaxed">
-            Oku is a psychotherapy collective offering <strong>inclusive, trauma-informed care</strong> for all parts of who you are. Begin your journey with a free consultation.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link 
-              href="/therapists"
-              className="inline-block bg-gray-900 text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-oku-purple transition-all shadow-xl"
-            >
+          </motion.h2>
+
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-xl text-gray-600 max-w-2xl mx-auto mb-16 font-display italic leading-relaxed"
+          >
+            Oku is a psychotherapy collective offering inclusive, trauma-informed care for all parts of who you are. Begin your journey gently.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center"
+          >
+            <Link href="/therapists" className="btn-primary py-6 px-12 text-lg shadow-2xl hover:shadow-oku-purple/20 transition-all active:scale-95">
               Book a free 15-min trial
             </Link>
-            <Link 
-              href="/assessments"
-              className="inline-block bg-white text-gray-900 border border-gray-200 px-10 py-5 rounded-full text-lg font-bold hover:bg-gray-50 transition-all"
-            >
+            <Link href="/assessments" className="bg-white text-gray-900 border border-gray-200 py-6 px-12 rounded-full text-lg font-bold hover:bg-gray-50 transition-all active:scale-95">
               Take an assessment
             </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Featured Section */}
+      <section className="py-32 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-20">
+             <h2 className="text-4xl font-display font-bold text-gray-900 tracking-tight">A place to explore, not perform.</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            {[
+              { img: '2-2', title: 'Slow Healing', desc: 'We move at the pace your story asks for—never rushed.' },
+              { img: '', title: 'Depth Work', desc: "We meet what's beneath, not just what's visible." },
+              { img: '-3', title: 'Whole Self', desc: 'Your culture, identity, body—all of you is held here.' },
+              { img: '-1', title: 'Welcoming Space', desc: 'A calm, non-clinical space designed for ease.' }
+            ].map((item, i) => (
+              <div key={i} className="text-center group">
+                <div className="w-32 h-32 mx-auto mb-8 relative">
+                   <div className="absolute inset-0 bg-oku-purple/5 rounded-full scale-0 group-hover:scale-110 transition-transform duration-500" />
+                   <img 
+                    src={`https://okutherapy.com/wp-content/uploads/2025/06/Frame-23${item.img}.png`} 
+                    alt={item.title} 
+                    className="w-full h-full object-contain relative z-10"
+                   />
+                </div>
+                <h3 className="text-xl font-display font-bold text-gray-900 mb-4">{item.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Entry Points Section - SaaS Focus */}
-      <section className="py-24 bg-gray-50">
+      {/* SaaS Entry Points */}
+      <section className="py-32 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white p-12 rounded-[3rem] border border-gray-100 shadow-xl group hover:-translate-y-2 transition-all duration-500">
-              <div className="w-16 h-16 bg-oku-purple/10 rounded-2xl flex items-center justify-center text-oku-purple mb-8 group-hover:bg-oku-purple group-hover:text-white transition-colors">
-                <ClipboardCheck size={32} />
-              </div>
-              <h2 className="text-3xl font-display font-bold text-gray-900 mb-4">Self-Assessments</h2>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Understand your patterns through our clinically-validated screenings for ADHD, Anxiety, OCD, and Trauma.
-              </p>
-              <Link href="/assessments" className="flex items-center gap-2 text-oku-purple font-black uppercase tracking-widest text-xs">
-                View Screenings <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
-              </Link>
+            <div className="bg-oku-cream/30 p-12 rounded-[3.5rem] border border-oku-taupe/10 group hover:-translate-y-2 transition-all duration-500">
+               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-oku-purple shadow-sm mb-8 group-hover:bg-oku-purple group-hover:text-white transition-colors">
+                  <ClipboardCheck size={32} />
+               </div>
+               <h3 className="text-3xl font-display font-bold text-gray-900 mb-4 tracking-tight">Clinical Assessments</h3>
+               <p className="text-lg text-gray-600 mb-10 leading-relaxed italic font-display">Understand your patterns through our clinically-validated screenings for ADHD, Anxiety, and Trauma.</p>
+               <Link href="/assessments" className="flex items-center gap-2 text-oku-purple font-black uppercase tracking-widest text-xs">
+                  Begin Screening <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+               </Link>
             </div>
 
-            <div className="bg-white p-12 rounded-[3rem] border border-gray-100 shadow-xl group hover:-translate-y-2 transition-all duration-500">
-              <div className="w-16 h-16 bg-gray-900/5 rounded-2xl flex items-center justify-center text-gray-900 mb-8 group-hover:bg-gray-900 group-hover:text-white transition-colors">
-                <MessageCircle size={32} />
-              </div>
-              <h2 className="text-3xl font-display font-bold text-gray-900 mb-4">Direct Matching</h2>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Connect directly with therapists who specialize in your specific needs. Start with a brief, no-pressure conversation.
-              </p>
-              <Link href="/therapists" className="flex items-center gap-2 text-gray-900 font-black uppercase tracking-widest text-xs">
-                Meet our People <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
-              </Link>
+            <div className="bg-oku-dark p-12 rounded-[3.5rem] text-white shadow-2xl group hover:-translate-y-2 transition-all duration-500 relative overflow-hidden">
+               <div className="relative z-10">
+                  <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-white mb-8 group-hover:bg-oku-purple transition-colors">
+                     <MessageCircle size={32} />
+                  </div>
+                  <h3 className="text-3xl font-display font-bold mb-4 tracking-tight">15-Min Trial Calls</h3>
+                  <p className="text-lg text-white/60 mb-10 leading-relaxed italic font-display">Connect directly with therapists who specialize in your specific needs. No pressure, just conversation.</p>
+                  <Link href="/therapists" className="flex items-center gap-2 text-oku-purple font-black uppercase tracking-widest text-xs">
+                     Find Your Match <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                  </Link>
+               </div>
+               <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Approach Section - with images */}
-      <div className="bg-gray-50 py-32">
+      {/* Ethical Standard */}
+      <section className="py-32 bg-gray-50 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-4xl font-display font-bold text-gray-900 mb-16 text-center">A place to <b>explore</b></h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div className="text-center group">
-              <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png" 
-                alt="Slow Healing" 
-                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
-              />
-              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Slow Healing</h3>
-              <p className="text-gray-600">We move at the pace your story asks for—never rushed.</p>
-            </div>
-            <div className="text-center group">
-              <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23.png" 
-                alt="Depth Work" 
-                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
-              />
-              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Depth Work</h3>
-              <p className="text-gray-600">We meet what's beneath, not just what's visible.</p>
-            </div>
-            <div className="text-center group">
-              <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-3.png" 
-                alt="Whole Self" 
-                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
-              />
-              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Whole Self</h3>
-              <p className="text-gray-600">Your culture, identity, body—all of you is held here.</p>
-            </div>
-            <div className="text-center group">
-              <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-1.png" 
-                alt="Welcoming Space" 
-                className="w-32 h-32 mx-auto mb-6 group-hover:scale-110 transition-transform"
-              />
-              <h3 className="text-xl font-display font-bold text-gray-900 mb-4">Welcoming Space</h3>
-              <p className="text-gray-600">A calm, non-clinical space designed for ease and safety.</p>
-            </div>
-          </div>
-
-          <p className="mt-20 text-xl text-gray-600 max-w-4xl mx-auto text-center font-display italic leading-relaxed">
-            Oku was created as a gentle refuge for those <strong>who feel unseen</strong> in traditional therapy spaces. Whether you're unpacking generational pain, navigating identity, or simply seeking to <strong>reconnect with yourself</strong>, we invite you to explore—<strong>without pressure or performance.</strong>
-          </p>
-        </div>
-      </div>
-
-      {/* Services List */}
-      <div id="services" className="py-32 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-sm uppercase tracking-[0.4em] font-black text-oku-purple mb-16 text-center">Our Offerings</h2>
-          <div className="grid md:grid-cols-2 gap-x-20 gap-y-16">
-            {[
-              { title: "Individual Therapy", tags: ["Depth-Oriented", "Trauma-Informed", "Queer-Affirmative"] },
-              { title: "Trauma & EMDR", tags: ["EMDR Certified", "Somatic-Aware", "Gentle Pace"] },
-              { title: "Movement Therapy", tags: ["Body-Led", "Somatic Integration", "Accessible"] },
-              { title: "Psychometric Assessments", tags: ["RCI Certified", "Insight-Led", "Evidence-Based"] },
-              { title: "Couples & Group Work", tags: ["Relational", "Inclusive", "Safer Spaces"] },
-              { title: "Queer-Affirmative Care", tags: ["Affirming", "Lived Understanding", "Aware"] }
-            ].map((service, i) => (
-              <div key={i} className="border-l-4 border-gray-900 pl-8 group">
-                <h3 className="text-2xl font-display font-bold text-gray-900 mb-4 group-hover:text-oku-purple transition-colors">{i+1}. {service.title}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {service.tags.map(tag => (
-                    <span key={tag} className="bg-gray-50 text-gray-500 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black border border-gray-100">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Qualified Section */}
-      <div className="py-32 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mb-4 block">Our Standard</span>
-              <h2 className="text-5xl font-display font-bold text-gray-900 mb-8 tracking-tighter">
+              <h2 className="text-6xl font-display font-bold text-gray-900 mb-8 tracking-tighter leading-[0.9]">
                 Qualified, ethical, and <br />
                 <span className="underline decoration-wavy decoration-oku-purple/30">deeply human.</span>
               </h2>
-              <div className="space-y-6 text-lg text-gray-600 font-display italic">
-                <p>
-                  Every therapist at Oku is professionally trained including RCI Licensed Clinical Psychologists and psychodynamic therapists.
-                </p>
-                <p>
-                  We combine clinical precision with cultural humility, ensuring your mental health is in grounded, ethical hands.
-                </p>
+              <div className="space-y-6 text-xl text-gray-600 font-display italic leading-relaxed">
+                <p>Every therapist at Oku is professionally trained, including RCI Licensed Clinical Psychologists.</p>
+                <p>We combine clinical precision with cultural humility, ensuring your mental health is in grounded, ethical hands.</p>
               </div>
             </div>
             <div className="relative">
-              <div className="absolute inset-0 bg-oku-purple/10 rounded-[3rem] rotate-3 -z-10" />
-              <img 
+               <div className="absolute inset-0 bg-oku-purple/10 rounded-[4rem] rotate-3 -z-10" />
+               <img 
                 src="https://okutherapy.com/wp-content/uploads/2025/06/Vector-1.png" 
-                alt="Qualified and Ethical" 
-                className="w-full h-auto rounded-[3rem] shadow-2xl"
-              />
+                alt="Ethical care" 
+                className="w-full h-auto rounded-[4rem] shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-700"
+               />
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Final CTA */}
-      <div className="bg-gray-900 text-white py-32 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-oku-purple/10 rounded-full blur-3xl" />
-        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <h2 className="text-5xl font-display font-bold mb-8 tracking-tighter">Ready to begin?</h2>
-          <p className="text-2xl mb-12 text-gray-400 font-script italic">"It's okay to take your time."</p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link 
-              href="/therapists"
-              className="bg-white text-gray-900 px-10 py-5 rounded-full text-lg font-bold hover:bg-oku-purple hover:text-white transition-all shadow-xl"
-            >
-              Book a trial session
-            </Link>
-            <Link 
-              href="/auth/signup"
-              className="bg-transparent border border-white/20 text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-white/5 transition-all"
-            >
-              Create an account
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+      {/* Footer CTA */}
+      <section className="bg-white py-32 text-center">
+         <div className="max-w-4xl mx-auto px-6">
+            <h2 className="text-5xl font-display font-bold text-gray-900 mb-8 tracking-tighter">Ready to return to yourself?</h2>
+            <p className="text-2xl text-oku-taupe font-script italic mb-12">"You don't have to carry the story alone."</p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+               <Link href="/therapists" className="btn-primary py-6 px-12 shadow-2xl">Start your journey</Link>
+               <Link href="/auth/signup" className="bg-gray-100 text-gray-900 py-6 px-12 rounded-full font-bold hover:bg-gray-200 transition-all">Create Account</Link>
+            </div>
+         </div>
+      </section>
+    </main>
   )
 }

@@ -1,17 +1,17 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { UserRole, AppointmentStatus } from '@prisma/client'
+import { UserRole } from '@prisma/client'
 import AdminDashboardClient from './AdminDashboardClient'
 
 export default async function AdminDashboardPage() {
   const session = await auth()
 
-  if (!session?.user || session.user.role !== UserRole.ADMIN) {
+  if (!session?.user?.id || session.user.role !== UserRole.ADMIN) {
     redirect('/auth/login')
   }
 
-  // Fetch all necessary data for the admin
+  // Fetch data with fallbacks
   const therapists = await prisma.user.findMany({
     where: { role: UserRole.THERAPIST },
     include: { practitionerProfile: true },
@@ -33,7 +33,6 @@ export default async function AdminDashboardPage() {
     orderBy: { createdAt: 'asc' }
   })
 
-  // Calculate platform stats
   const totalAppointments = await prisma.appointment.count()
   
   const completedPayments = await prisma.payment.aggregate({
@@ -41,7 +40,6 @@ export default async function AdminDashboardPage() {
     _sum: { amount: true }
   })
 
-  // Fetch critical audit logs
   const auditLogs = await prisma.auditLog.findMany({
     include: { user: { select: { name: true } } },
     orderBy: { createdAt: 'desc' },
@@ -51,16 +49,16 @@ export default async function AdminDashboardPage() {
   const stats = {
     totalRevenue: completedPayments._sum.amount || 0,
     totalAppointments: totalAppointments,
-    auditLogs: auditLogs
+    auditLogs: auditLogs || []
   }
 
   return (
-    <div className="min-h-screen bg-oku-cream">
+    <div className="bg-oku-cream min-h-screen">
       <AdminDashboardClient 
         stats={stats} 
-        therapists={therapists} 
-        services={services} 
-        clients={clients} 
+        therapists={therapists || []} 
+        services={services || []} 
+        clients={clients || []} 
       />
     </div>
   )
