@@ -54,7 +54,7 @@ export default function V1LoginPage() {
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         className="max-w-md w-full relative z-10"
       >
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 px-4">
           <Link href="/" className="inline-block mb-10">
             <img 
               src="/uploads/2025/07/Logoo.png" 
@@ -62,13 +62,13 @@ export default function V1LoginPage() {
               className="h-10 w-auto mx-auto opacity-80" 
             />
           </Link>
-          <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter mb-4">Welcome Home.</h1>
-          <p className="text-oku-taupe font-display italic text-lg opacity-60">Your sanctuary is waiting for you.</p>
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-oku-dark tracking-tighter mb-4">Welcome Home.</h1>
+          <p className="text-oku-taupe font-display italic text-base md:text-lg opacity-60 px-4">Your sanctuary is waiting for you.</p>
         </div>
 
-        <div className="bg-white/40 backdrop-blur-3xl p-12 rounded-[4rem] border border-white/60 shadow-[0_32px_80px_rgba(0,0,0,0.03)]">
+        <div className="bg-white/40 backdrop-blur-3xl p-8 md:p-12 rounded-[2.5rem] md:rounded-[4rem] border border-white/60 shadow-[0_32px_80px_rgba(0,0,0,0.03)] mx-auto">
           {message && (
-            <div className="mb-8 p-5 bg-green-50/50 backdrop-blur-sm border border-green-100/50 rounded-3xl text-green-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
+            <div className="mb-8 p-5 bg-green-50/50 backdrop-blur-sm border border-green-100/50 rounded-2xl md:rounded-3xl text-green-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
               <ShieldCheck size={18} strokeWidth={1.5} /> {message}
             </div>
           )}
@@ -77,13 +77,13 @@ export default function V1LoginPage() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-8 p-5 bg-red-50/50 backdrop-blur-sm border border-red-100/50 rounded-3xl text-red-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3"
+              className="mb-8 p-5 bg-red-50/50 backdrop-blur-sm border border-red-100/50 rounded-2xl md:rounded-3xl text-red-700 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3"
             >
               <Lock size={18} strokeWidth={1.5} /> {error}
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
             <div className="space-y-3">
               <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Identity</label>
               <input
@@ -91,7 +91,7 @@ export default function V1LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                className="w-full bg-white/60 border border-white rounded-[1.5rem] md:rounded-[2rem] px-6 md:px-8 py-4 md:py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
                 placeholder="email@example.com"
               />
             </div>
@@ -103,7 +103,7 @@ export default function V1LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                className="w-full bg-white/60 border border-white rounded-[1.5rem] md:rounded-[2rem] px-6 md:px-8 py-4 md:py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
                 placeholder="••••••••"
               />
             </div>
@@ -111,7 +111,7 @@ export default function V1LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-oku-dark text-white py-6 rounded-full flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-oku-dark/10 hover:bg-oku-purple-dark hover:-translate-y-1 transition-all duration-500 disabled:opacity-50 group"
+              className="w-full bg-oku-dark text-white py-5 md:py-6 rounded-full flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-oku-dark/10 hover:bg-oku-purple-dark hover:-translate-y-1 transition-all duration-500 disabled:opacity-50 group"
             >
               {isLoading ? (
                 <Loader2 size={20} className="animate-spin" />
