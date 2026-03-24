@@ -57,16 +57,14 @@ export function VideoRoom({
       try {
         const response = await fetch('/api/video/token', { method: 'POST' })
         
+        const data = await response.json()
+
         if (!response.ok) {
-            throw new Error("Failed to fetch token")
+            setError(data.error || "Failed to establish a secure video token.")
+            return
         }
         
-        const { token, apiKey } = await response.json()
-
-        if (apiKey === 'placeholder_key') {
-            setError("Stream API keys are not configured. Please add NEXT_PUBLIC_STREAM_API_KEY and STREAM_SECRET_KEY to your .env file.")
-            return;
-        }
+        const { token, apiKey } = data
 
         const user: User = {
           id: userId,
