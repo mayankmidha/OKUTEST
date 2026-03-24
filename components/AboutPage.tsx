@@ -79,11 +79,13 @@ export default function AboutPage() {
                 alt="Oku Philosophy" 
                 className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-oku-navy/40 via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-oku-navy/60 via-transparent to-transparent opacity-60" />
               <div className="absolute inset-0 flex items-center justify-center p-12 text-center">
-                 <p className="text-white font-display italic text-3xl leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
-                    "Healing is not a destination, but a returning."
-                 </p>
+                 <div className="bg-white/90 backdrop-blur-xl p-8 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000 shadow-2xl border border-white">
+                    <p className="text-oku-dark font-display italic text-2xl leading-relaxed">
+                        "Healing is not a destination, but a returning."
+                    </p>
+                 </div>
               </div>
             </div>
           </SectionReveal>

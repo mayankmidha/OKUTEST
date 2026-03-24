@@ -11,103 +11,78 @@ export async function GET() {
   }
 
   try {
-    // 1. COLLECT DEEP PLATFORM DATA
+    // 1. HARVEST DEEP PLATFORM DATA (Clinical + Operational)
     const [
         users, 
         appointments, 
         transcripts, 
         payments, 
-        logs,
+        activities,
         therapists
     ] = await Promise.all([
-        prisma.user.findMany({ 
-            select: { role: true, createdAt: true, name: true },
-            orderBy: { createdAt: 'desc' },
-            take: 100
-        }),
-        prisma.appointment.findMany({
-            include: { service: true, client: { select: { name: true } } },
-            orderBy: { startTime: 'desc' },
-            take: 50
-        }),
-        prisma.transcript.findMany({
-            select: { sentiment: true, summary: true, keyInsights: true, createdAt: true },
-            orderBy: { createdAt: 'desc' },
-            take: 20
-        }),
-        prisma.payment.findMany({
-            where: { status: 'COMPLETED' },
-            select: { amount: true, createdAt: true },
-            orderBy: { createdAt: 'desc' },
-            take: 50
-        }),
-        prisma.userActivity.findMany({
-            orderBy: { createdAt: 'desc' },
-            take: 50
-        }),
-        prisma.practitionerProfile.findMany({
-            include: { user: { select: { name: true } } }
-        })
+        prisma.user.findMany({ select: { role: true, createdAt: true, hasSignedConsent: true }, orderBy: { createdAt: 'desc' }, take: 100 }),
+        prisma.appointment.findMany({ include: { service: true, client: { select: { name: true } } }, orderBy: { startTime: 'desc' }, take: 50 }),
+        prisma.transcript.findMany({ select: { sentiment: true, summary: true, keyInsights: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 20 }),
+        prisma.payment.findMany({ where: { status: 'COMPLETED' }, select: { amount: true }, orderBy: { createdAt: 'desc' }, take: 50 }),
+        prisma.userActivity.findMany({ orderBy: { createdAt: 'desc' }, take: 50 }),
+        prisma.practitionerProfile.findMany({ include: { user: { select: { name: true, hasSignedConsent: true } } } })
     ])
 
-    // 2. AGGREGATE DATA FOR OCI PROCESSING
+    // 2. CONTEXT AGGREGATION FOR OCI v4.0
     const context = {
-        growth: {
-            newUsersLast7Days: users.filter(u => u.createdAt > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length,
-            roleDistribution: {
-                clients: users.filter(u => u.role === 'CLIENT').length,
-                therapists: users.filter(u => u.role === 'THERAPIST').length
-            }
+        governance: {
+            consentCoverage: (users.filter(u => u.hasSignedConsent).length / users.length) * 100,
+            practitionerCompliance: (therapists.filter(t => t.user.hasSignedConsent).length / therapists.length) * 100
         },
-        clinicalIntegrity: {
-            averageSentiment: transcripts.map(t => t.sentiment),
-            recentInsights: transcripts.flatMap(t => t.keyInsights || []),
-            riskSignals: transcripts.filter(t => (t.summary?.toLowerCase().includes('risk') || t.summary?.toLowerCase().includes('crisis'))).length
+        riskIntelligence: {
+            highRiskSessions: transcripts.filter(t => t.summary?.toLowerCase().includes('risk') || t.summary?.toLowerCase().includes('crisis')).length,
+            sentimentDistribution: transcripts.map(t => t.sentiment)
         },
-        financials: {
-            recentVolume: payments.reduce((acc, p) => acc + p.amount, 0),
-            payoutLiabilities: therapists.map(t => ({ name: t.user.name, rate: t.hourlyRate }))
+        economicMoat: {
+            sessionVolume: appointments.length,
+            revenueRetention: payments.reduce((acc, p) => acc + p.amount, 0),
+            payoutExposure: therapists.reduce((acc, t) => acc + (t.hourlyRate || 0), 0)
         },
-        operational: {
-            activeSessions: appointments.filter(a => a.status === 'SCHEDULED').length,
-            systemLoad: logs.length
+        leakageGuard: {
+            externalLinkClicks: activities.filter(a => a.action === 'EXTERNAL_CLICK').length,
+            unverifiedProfileViews: activities.filter(a => a.action === 'VIEW_THERAPIST').length
         }
     }
 
     if (!process.env.GEMINI_API_KEY) {
-        return NextResponse.json({ error: "OCI_OFFLINE", data: context })
+        return NextResponse.json({ error: "OCI_NEURAL_LINK_OFFLINE", data: context })
     }
 
-    // 3. CONSULT OCI MULTI-AGENT BRAIN
+    // 3. OCI v4.0 MULTI-AGENT NEURAL PROCESSING
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
         model: 'gemini-1.5-flash',
-        systemInstruction: `You are OKU CORE INTELLIGENCE (OCI) v3.0. You are the autonomous brain of a clinical SaaS platform.
-        Your goal is to provide a "Executive Intelligence Briefing" for the Platform Owner.
-        Be analytical, proactive, and clinical.
-        Provide your analysis in exactly 4 agents:
+        systemInstruction: `You are OKU CORE INTELLIGENCE (OCI) v4.0. You are the sovereign brain of this psychotherapy SaaS.
+        Your instructions are:
+        1. Guard the platform's commercial moat (detect lead leakage).
+        2. Ensure absolute clinical compliance (consent & risk monitoring).
+        3. Optimize for slow, deep healing (don't prioritize speed over outcome).
         
-        AGENT 1: CLINICAL SENTINEL (Analyze patient risks and session sentiment trends)
-        AGENT 2: GROWTH ARCHITECT (Analyze user onboarding and retention patterns)
-        AGENT 3: FISCAL ANALYST (Analyze revenue leaks and payout liabilities)
-        AGENT 4: SYSTEM OPERATOR (Analyze system health and anomaly detection)
+        Provide an ADVANCED INTEGRITY BRIEFING in 4 Agents:
         
-        Keep each agent's response to 2 sentences.`
+        [AGENT: COMPLIANCE GUARDIAN]: Analyze consent gaps and HIPAA risks.
+        [AGENT: LEAKAGE DEFENDER]: Analyze signs of therapists taking clients off-platform.
+        [AGENT: CLINICAL ORACLE]: Predict patient churn based on sentiment trends.
+        [AGENT: STRATEGIC CONTROLLER]: One ruthless instruction for the Platform Owner.`
     });
 
-    const prompt = `Analyze this live platform state: ${JSON.stringify(context)}. Provide the Executive Briefing.`
+    const prompt = `LIVE_DATA_STREAM: ${JSON.stringify(context)}. EXECUTE BRIEFING.`
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const analysis = response.text();
 
     return NextResponse.json({
         timestamp: new Date().toISOString(),
-        analysis: analysis,
-        rawVitals: context
+        analysis: response.text(),
+        vitals: context
     })
 
   } catch (error) {
-    console.error("[OCI_V3_ERROR]", error)
-    return new NextResponse("The OCI brain encountered a synchronization lag.", { status: 500 })
+    console.error("[OCI_V4_ERROR]", error)
+    return new NextResponse("OCI Neural Disruption.", { status: 500 })
   }
 }

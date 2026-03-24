@@ -15,6 +15,7 @@ import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { OCIDiagnostic } from '@/components/OCIDiagnostic'
 import { AdminUserManagement } from '@/components/AdminUserManagement'
+import { AdminBlogManager } from '@/components/AdminBlogManager'
 import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
 
 function AdminDashboardContent({ 
@@ -29,7 +30,8 @@ function AdminDashboardContent({
     totalAppointments: number,
     auditLogs: any[],
     recentActivities: any[],
-    allTranscripts: any[]
+    allTranscripts: any[],
+    allPosts: any[]
   }, 
   therapists: any[], 
   services: any[],
@@ -115,6 +117,7 @@ function AdminDashboardContent({
           { id: 'overview', label: 'Pulse', icon: Activity },
           { id: 'management', label: 'Management', icon: UserPlus },
           { id: 'therapists', label: 'Therapists', icon: Shield },
+          { id: 'blogs', label: 'Blogs', icon: FileText },
           { id: 'services', label: 'Catalog', icon: DollarSign },
           { id: 'clients', label: 'Patients', icon: Users },
           { id: 'transcripts', label: 'Integrity', icon: Brain },
@@ -279,6 +282,7 @@ function AdminDashboardContent({
                 <thead>
                   <tr className="bg-oku-cream/50 text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe/60">
                     <th className="p-8">Practitioner Identity</th>
+                    <th className="p-8 text-center">Consent</th>
                     <th className="p-8">Credential Status</th>
                     <th className="p-8">Market Rate ($)</th>
                     <th className="p-8 text-right">Actions</th>
@@ -297,6 +301,11 @@ function AdminDashboardContent({
                             <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40 mt-1">{t.email}</p>
                           </div>
                         </div>
+                      </td>
+                      <td className="p-8 text-center">
+                        <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${t.hasSignedConsent ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                            {t.hasSignedConsent ? 'SIGNED' : 'PENDING'}
+                        </span>
                       </td>
                       <td className="p-8">
                         <button 
@@ -344,6 +353,12 @@ function AdminDashboardContent({
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'blogs' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <AdminBlogManager initialPosts={stats.allPosts} />
           </div>
         )}
 

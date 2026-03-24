@@ -162,7 +162,7 @@ export default function PeoplePage() {
 
                   <div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 flex justify-between items-center">
                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-lg ring-1 ring-white/20">
+                         <div className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-oku-navy shadow-lg ring-1 ring-white/20">
                             <ShieldCheck size={18}/>
                          </div>
                       </div>

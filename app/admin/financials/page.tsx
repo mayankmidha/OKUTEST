@@ -5,6 +5,7 @@ import { DollarSign, ArrowUpRight, Wallet, CheckCircle, TrendingUp } from 'lucid
 import { UserRole } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
+import { AdminPayoutButton } from './AdminPayoutButton'
 
 import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
 
@@ -58,6 +59,7 @@ export default async function AdminFinancialsPage() {
     
     if (!therapistPayouts.has(therapist.id)) {
         therapistPayouts.set(therapist.id, {
+            id: therapist.id,
             name: therapist.name || 'Unknown Therapist',
             email: therapist.email,
             avatar: therapist.avatar,
@@ -147,9 +149,7 @@ export default async function AdminFinancialsPage() {
                                                 })()}
                                             </p>
                                         </div>
-                                        <button className="bg-oku-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-oku-purple transition-all shadow-lg active:scale-95">
-                                            Mark Paid
-                                        </button>
+                                        <AdminPayoutButton practitionerId={p.id} amount={p.owed} />
                                     </div>
                                 </div>
                             ))

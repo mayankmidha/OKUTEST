@@ -89,12 +89,23 @@ export default async function AdminDashboardPage() {
     console.warn("Transcript table may not exist yet.")
   }
 
+  // 5. Blog Content
+  let allPosts: any[] = []
+  try {
+    allPosts = await prisma.post.findMany({
+        orderBy: { createdAt: 'desc' }
+    })
+  } catch (e) {
+    console.warn("Post table may not exist yet.")
+  }
+
   const stats = {
     totalRevenue: completedPayments._sum?.amount || 0,
     totalAppointments: totalAppointments,
     auditLogs: auditLogs || [],
     recentActivities: recentActivities || [],
-    allTranscripts: allTranscripts || []
+    allTranscripts: allTranscripts || [],
+    allPosts: allPosts || []
   }
 
   return (

@@ -11,6 +11,7 @@ async function checkAdmin() {
   if (!session?.user || session.user.role !== UserRole.ADMIN) {
     throw new Error('Unauthorized')
   }
+  return session
 }
 
 export async function toggleTherapistVerification(practitionerId: string, isVerified: boolean) {
@@ -75,4 +76,59 @@ export async function updatePlatformSettings(data: { maintenanceMode?: boolean, 
     }
   })
   revalidatePath('/admin/dashboard')
+}
+
+// ─── BLOG ACTIONS ────────────────────────────────────────────────────────────
+
+export async function createPost(data: { title: string, content: string, excerpt?: string, category?: string, image?: string, published?: boolean }) {
+  const session = await checkAdmin()
+  const slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+  
+  await prisma.post.create({
+    data: {
+      ...data,
+      slug,
+      authorId: session.user.id
+    }
+  })
+  revalidatePath('/admin/dashboard')
+  revalidatePath('/blog')
+}
+
+export async function updatePost(id: string, data: { title?: string, content?: string, excerpt?: string, category?: string, image?: string, published?: boolean }) {
+  await checkAdmin()
+  await prisma.post.update({
+    where: { id },
+    data
+  })
+  revalidatePath('/admin/dashboard')
+  revalidatePath('/blog')
+}
+
+export async function deletePost(id: string) {
+  await checkAdmin()
+  await prisma.post.delete({
+    where: { id }
+  })
+  revalidatePath('/admin/dashboard')
+  revalidatePath('/blog')
+}
+
+// ─── PAYOUT ACTIONS ──────────────────────────────────────────────────────────
+
+export async function markAsPaid(practitionerId: string, amount: number) {
+  await checkAdmin()
+  
+  await prisma.payout.create({
+    data: {
+      practitionerId,
+      amount,
+      status: 'COMPLETED',
+      periodStart: new Date(new Date().setDate(1)), // Start of month
+      periodEnd: new Date(),
+      referenceId: 'MANUAL-' + Date.now()
+    }
+  })
+  
+  revalidatePath('/admin/financials')
 }

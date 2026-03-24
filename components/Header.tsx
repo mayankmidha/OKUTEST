@@ -28,8 +28,14 @@ export default function Header() {
     { name: 'Blog', href: '/blog' },
   ];
 
-  // Don't show public header on dashboard routes
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/practitioner') || pathname.startsWith('/admin')) {
+  // Don't show public header on dashboard or auth routes
+  if (
+    pathname.startsWith('/dashboard') || 
+    pathname.startsWith('/practitioner') || 
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/auth') ||
+    pathname === '/consent'
+  ) {
     return null;
   }
 

@@ -393,18 +393,30 @@ export default function OkuHomepage() {
         }
         .team-card:hover img { transform: scale(1.04); }
         .team-card-overlay {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          padding: 32px 20px 20px;
-          background: linear-gradient(to top, rgba(45,45,45,0.9) 0%, transparent 100%);
-          color: white;
+          position: absolute; bottom: 12px; left: 12px; right: 12px;
+          padding: 16px;
+          background: rgba(247,244,239,0.95);
+          backdrop-filter: blur(8px);
+          border-radius: 12px;
+          color: var(--ink);
+          border: 1px solid rgba(45,45,45,0.05);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .team-card-overlay h3 {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 1.3rem;
-          font-weight: 400;
-          margin-bottom: 4px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 2px;
+          letter-spacing: -0.01em;
         }
-        .team-card-overlay p { font-size: 0.78rem; opacity: 0.8; line-height: 1.4; }
+        .team-card-overlay p { 
+          font-size: 0.7rem; 
+          opacity: 0.6; 
+          line-height: 1.2; 
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
 
         /* ── Service card ── */
         .service-block {
