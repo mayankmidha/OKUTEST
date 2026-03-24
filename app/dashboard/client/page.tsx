@@ -4,12 +4,14 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { 
   Calendar, Clock, Users, FileText, Heart, 
-  Video, Search, Sparkles, ClipboardCheck, BookOpen
+  Video, Search, Sparkles, ClipboardCheck, BookOpen,
+  ArrowUpRight, Wind, ShieldCheck
 } from 'lucide-react'
 import { AppointmentStatus } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
+import { WellnessVisualizer } from '@/components/WellnessVisualizer'
 
 export default async function ClientDashboardPage() {
   const session = await auth()
@@ -50,12 +52,12 @@ export default async function ClientDashboardPage() {
   }
 
   if (!user) {
-    // If user record doesn't exist yet or DB error, try to show minimal dashboard
     return (
-      <div className="py-12 px-10">
-        <DashboardHeader title="Welcome to Oku" description="Setting up your sanctuary..." />
-        <div className="p-20 text-center bg-white rounded-[3rem] border border-oku-taupe/10">
-           <p className="text-oku-taupe italic">We are finalizing your profile. Please refresh in a moment.</p>
+      <div className="py-20 px-10 bg-oku-cream min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Wind className="animate-float mx-auto text-oku-purple-dark mb-6" size={48} />
+          <h1 className="text-3xl font-display font-bold">Setting up your sanctuary...</h1>
+          <p className="text-oku-taupe italic mt-2">Finalizing your secure profile. Please refresh in a moment.</p>
         </div>
       </div>
     )
@@ -70,135 +72,208 @@ export default async function ClientDashboardPage() {
   })
 
   return (
-    <div className="py-12 px-10">
-      <DashboardHeader 
-        title={`Welcome, ${user.name?.split(' ')[0] || 'Seeker'}`}
-        description="Your sanctuary for healing, reflection, and growth."
-        actions={
-          <Link href="/therapists" className="btn-pastel py-4 px-10 flex items-center gap-2 shadow-xl active:scale-95">
-            <Search size={18} /> Browse Specialists
-          </Link>
-        }
-      />
-
-      {/* Stats Grid - Pastel Themed */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-        <DashboardCard subtitle="Upcoming" icon={<Calendar size={20} strokeWidth={1.5} />} variant="purple">
-          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{upcomingAppointments.length}</p>
-        </DashboardCard>
-        <DashboardCard subtitle="Clinical" icon={<ClipboardCheck size={20} strokeWidth={1.5} />} variant="green">
-          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{recentAssessments.length}</p>
-        </DashboardCard>
-        <DashboardCard subtitle="Wellness" icon={<Heart size={20} strokeWidth={1.5} />} variant="pink">
-          <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">{user.clientProfile?.noShowCount === 0 ? 'Optimal' : 'Standard'}</p>
-        </DashboardCard>
-        <DashboardCard subtitle="Today's Mood" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="dark">
-          <p className="text-lg font-bold opacity-90 mb-2">
-            {user.moodEntries?.[0] ? `Feeling Better` : 'Start Tracking'}
+    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 mb-4">
+             <span className="bg-oku-navy text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-lg">Secure Space</span>
+             <span className="text-oku-taupe/40 text-[10px] font-black uppercase tracking-[0.3em]">Client Dashboard</span>
+          </div>
+          <h1 className="text-5xl lg:text-7xl font-display font-bold tracking-tight text-oku-dark">
+            Peace, {user.name?.split(' ')[0] || 'Seeker'}.
+          </h1>
+          <p className="text-xl text-oku-taupe font-display italic opacity-80 max-w-xl">
+            A sanctuary for healing, reflection, and quiet growth.
           </p>
-          <Link href="/dashboard/client/mood" className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple hover:text-white transition-colors">Update Journey →</Link>
-        </DashboardCard>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <Link href="/therapists" className="btn-navy group flex items-center gap-3">
+             <Search size={18} className="group-hover:rotate-12 transition-transform" /> Browse Specialists
+          </Link>
+          <Link href="/dashboard/client/book" className="btn-sky hidden md:flex items-center gap-2">
+             <Calendar size={18} /> Schedule
+          </Link>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-12">
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        {/* Left Column: Core Activities */}
+        <div className="lg:col-span-8 space-y-10">
           
-          <section>
-            <div className="flex items-center justify-between mb-8 px-2">
-              <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Your Care Journey</h2>
-              <Link href="/dashboard/client/book" className="text-[10px] uppercase tracking-widest font-black text-oku-purple hover:underline">Full History</Link>
+          {/* Stats Bar */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="card-glass p-8 flex items-center justify-between group">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Upcoming</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">{upcomingAppointments.length}</p>
+                <p className="text-xs text-oku-taupe font-medium mt-1">Scheduled Sessions</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-oku-purple/20 text-oku-purple-dark flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Calendar size={24} />
+              </div>
+            </div>
+
+            <div className="card-glass p-8 flex items-center justify-between group">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Recordings</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">{recentAssessments.length}</p>
+                <p className="text-xs text-oku-taupe font-medium mt-1">Clinical Screenings</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-oku-ocean text-oku-navy-light flex items-center justify-center group-hover:scale-110 transition-transform">
+                <ClipboardCheck size={24} />
+              </div>
+            </div>
+
+            <div className="card-glass p-8 flex items-center justify-between group">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Wellbeing</p>
+                <p className="text-4xl font-display font-bold text-oku-dark">{user.moodEntries?.[0] ? `Level ${user.moodEntries[0].mood}` : '---'}</p>
+                <p className="text-xs text-oku-taupe font-medium mt-1">Latest Mood Pulse</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-oku-pink/20 text-oku-pink-dark flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Sparkles size={24} />
+              </div>
+            </div>
+          </div>
+
+          {/* Primary Action: Active Sessions */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <h2 className="text-2xl font-display font-bold text-oku-dark">Session Windows</h2>
+              <Link href="/dashboard/client/book" className="text-[10px] font-black uppercase tracking-widest text-oku-navy hover:text-oku-purple-dark transition-colors flex items-center gap-1">Full Calendar <ArrowUpRight size={14} /></Link>
             </div>
             
             <div className="space-y-4">
               {upcomingAppointments.length === 0 ? (
-                <DashboardCard className="border-dashed py-20 text-center">
-                  <p className="text-oku-taupe font-display italic text-xl opacity-60">The schedule is open.</p>
-                  <Link href="/therapists" className="text-oku-purple font-bold text-sm hover:underline mt-4 inline-block">Find your therapist →</Link>
-                </DashboardCard>
+                <div className="card-glass py-24 text-center border-dashed">
+                  <p className="text-oku-taupe font-display italic text-2xl opacity-40">The schedule is open.</p>
+                  <Link href="/therapists" className="text-oku-navy font-bold text-sm hover:underline mt-6 inline-block">Find a dedicated therapist →</Link>
+                </div>
               ) : (
                 upcomingAppointments.map((appt) => (
-                  <DashboardCard key={appt.id} className="group overflow-hidden">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                  <div key={appt.id} className="card-glass p-1 group hover:border-oku-navy/20 transition-all">
+                    <div className="p-7 flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-full bg-oku-purple/30 flex items-center justify-center text-oku-purple-dark group-hover:bg-oku-purple-dark group-hover:text-white transition-all duration-500 shadow-inner">
-                          <Video size={28} />
+                        <div className="relative">
+                          <div className="w-20 h-20 rounded-3xl bg-oku-ocean overflow-hidden border-4 border-white shadow-inner">
+                            {appt.practitioner?.avatar ? (
+                              <img src={appt.practitioner.avatar} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-3xl">🧘</div>
+                            )}
+                          </div>
+                          <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-oku-navy text-white flex items-center justify-center border-4 border-oku-cream animate-pulse">
+                            <Video size={14} />
+                          </div>
                         </div>
                         <div>
-                          <p className="font-bold text-oku-dark text-xl">{appt.practitioner?.name || 'Practitioner'}</p>
-                          <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service?.name || 'Therapy Session'}</p>
+                          <p className="text-2xl font-display font-bold text-oku-dark leading-tight">{appt.practitioner?.name || 'Practitioner'}</p>
+                          <div className="flex items-center gap-3 mt-1.5">
+                             <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-oku-navy/5 text-oku-navy-light rounded-full border border-oku-navy/5">{appt.service?.name || 'Session'}</span>
+                             <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-1"><ShieldCheck size={10} /> Secure Video</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-10">
-                        <div className="text-right border-r border-oku-taupe/10 pr-10">
-                          <p className="font-bold text-oku-dark">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-                          <p className="text-[10px] text-oku-taupe font-black uppercase tracking-widest mt-1 opacity-60">Confirmed</p>
+                      
+                      <div className="flex items-center gap-8 pl-8 md:pl-0 border-t md:border-t-0 md:border-l border-oku-taupe/10 pt-8 md:pt-0">
+                        <div className="text-right">
+                          <p className="text-xl font-display font-bold text-oku-dark">
+                             {new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                          <p className="text-[10px] text-oku-taupe font-black uppercase tracking-widest mt-0.5">
+                             at {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
                         </div>
-                        <Link href={`/session/${appt.id}`} className="bg-oku-dark text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-oku-purple-dark transition-all shadow-lg active:scale-95">
-                          Enter Room
+                        <Link href={`/session/${appt.id}`} className="btn-navy min-w-[160px] text-center">
+                          Join Room
                         </Link>
                       </div>
                     </div>
-                  </DashboardCard>
+                  </div>
                 ))
               )}
             </div>
           </section>
 
-          <DashboardCard title="Clinical Resource Library" icon={<BookOpen size={20} strokeWidth={1.5} />} variant="dark" className="relative overflow-hidden group">
-             <div className="relative z-10">
-                <p className="text-white/60 mb-10 max-w-md italic font-display">Worksheets and tools curated specifically for your profile.</p>
-                <div className="grid md:grid-cols-2 gap-4">
-                   <div className="bg-white/5 p-6 rounded-3xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
-                      <p className="font-bold text-sm mb-1">Trauma Response Guide</p>
-                      <p className="text-[10px] uppercase tracking-widest opacity-40">Article • 8 min</p>
-                   </div>
-                   <div className="bg-white/5 p-6 rounded-3xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
-                      <p className="font-bold text-sm mb-1">Somatic Grounding Worksheet</p>
-                      <p className="text-[10px] uppercase tracking-widest opacity-40">PDF • 2 pages</p>
-                   </div>
-                </div>
-             </div>
-             <div className="absolute bottom-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
-          </DashboardCard>
+          {/* New Insight Section */}
+          <WellnessVisualizer />
+
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-8">
-          <DashboardCard title="Care Records" icon={<FileText size={20} strokeWidth={1.5} />}>
-            <div className="space-y-8 mt-4">
+        {/* Right Column: Insights & Recommendations */}
+        <div className="lg:col-span-4 space-y-10">
+          
+          <div className="card-navy group">
+             <div className="relative z-10">
+                <Sparkles className="text-oku-purple mb-6 animate-pulse" size={32} />
+                <h3 className="text-3xl font-display font-bold mb-4">Journey Reflection</h3>
+                <p className="text-white/70 italic font-display text-lg leading-relaxed mb-8">
+                  "The curve of healing is not a circle, but a spiral. Every return is a deeper understanding."
+                </p>
+                <Link href="/dashboard/client/mood" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple hover:text-white transition-all group-hover:translate-x-2">
+                   Log Today's Pulse <ArrowUpRight size={14} />
+                </Link>
+             </div>
+             {/* Decorative Elements */}
+             <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
+             <div className="absolute bottom-0 left-0 w-48 h-48 bg-oku-blue-dark/20 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />
+          </div>
+
+          <section className="card-glass p-10">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-display font-bold text-oku-dark">Clinical Vault</h2>
+              <BookOpen size={20} className="text-oku-taupe/30" />
+            </div>
+            <div className="space-y-8">
               {recentAssessments.length === 0 ? (
                 <p className="text-sm text-oku-taupe italic opacity-60">No screenings recorded yet.</p>
               ) : (
                 recentAssessments.map((ans) => (
-                  <div key={ans.id} className="border-b border-oku-taupe/5 pb-6 last:border-0 group cursor-pointer">
-                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe group-hover:text-oku-purple transition-colors mb-1">{ans.assessment?.title}</p>
-                    <p className="font-bold text-oku-dark leading-tight">{ans.result}</p>
-                    <p className="text-[10px] opacity-40 mt-1 uppercase tracking-widest font-black">{new Date(ans.completedAt).toLocaleDateString()}</p>
+                  <div key={ans.id} className="group cursor-pointer">
+                    <p className="text-[9px] uppercase tracking-widest font-black text-oku-taupe/40 group-hover:text-oku-navy-light transition-colors mb-1.5">{ans.assessment?.title}</p>
+                    <p className="font-bold text-lg text-oku-dark group-hover:text-oku-navy transition-colors">{ans.result}</p>
+                    <div className="flex items-center justify-between mt-2">
+                       <p className="text-[10px] opacity-40 uppercase tracking-widest font-black">{new Date(ans.completedAt).toLocaleDateString()}</p>
+                       <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-oku-ocean text-oku-navy-light rounded opacity-0 group-hover:opacity-100 transition-opacity">View Detail</span>
+                    </div>
                   </div>
                 ))
               )}
             </div>
-            <Link href="/assessments" className="mt-8 block text-center py-4 rounded-2xl bg-oku-cream-warm/30 text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:bg-oku-dark hover:text-white transition-all active:scale-95">New Screening</Link>
-          </DashboardCard>
+            <Link href="/assessments" className="mt-10 btn-sky w-full block text-center py-4">New Screening</Link>
+          </section>
 
-          <DashboardCard title="Suggested for You" icon={<Sparkles size={20} strokeWidth={1.5} />} variant="sage">
-            <div className="space-y-6 mt-4">
+          <section className="card-glass p-10 bg-oku-sage/20 border-oku-sage-dark/10">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-display font-bold text-oku-dark">Aligned Care</h2>
+              <Heart size={20} className="text-oku-pink-dark" />
+            </div>
+            <div className="space-y-6">
               {practitioners.map(p => (
                 <Link key={p.id} href={`/dashboard/client/book/new/${p.id}/trial`} className="flex items-center gap-4 group">
-                  <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <div className="w-16 h-16 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
                     {p.user?.avatar ? <img src={p.user.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl text-oku-purple bg-oku-purple/10">🧘</div>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-oku-dark group-hover:text-oku-purple transition-colors truncate">{p.user?.name || 'Specialist'}</p>
-                    <p className="text-[10px] uppercase tracking-widest font-black opacity-40 mt-1">Trauma-Informed</p>
+                    <p className="text-base font-bold text-oku-dark group-hover:text-oku-navy transition-colors truncate">{p.user?.name || 'Specialist'}</p>
+                    <p className="text-[10px] uppercase tracking-widest font-black opacity-30 mt-1">Matched Specialization</p>
                   </div>
+                  <ArrowUpRight size={18} className="text-oku-taupe opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                 </Link>
               ))}
             </div>
-          </DashboardCard>
+          </section>
+
         </div>
       </div>
-      <AIAssistantWidget contextType="client_insight" title="Wellness Insights" />
+      
+      {/* Footer Space AI */}
+      <div className="mt-20">
+         <AIAssistantWidget contextType="client_insight" title="Wellness Insights" />
+      </div>
     </div>
   )
 }

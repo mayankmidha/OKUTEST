@@ -69,11 +69,32 @@ export default async function AdminDashboardPage() {
     console.warn("UserActivity table may not exist yet.")
   }
 
+  // 4. Clinical Integrity (Transcripts)
+  let allTranscripts: any[] = []
+  try {
+    allTranscripts = await prisma.transcript.findMany({
+        include: { 
+            appointment: { 
+                include: { 
+                    client: { select: { name: true } }, 
+                    practitioner: { select: { name: true } },
+                    service: { select: { name: true } }
+                } 
+            } 
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 50
+    })
+  } catch (e) {
+    console.warn("Transcript table may not exist yet.")
+  }
+
   const stats = {
     totalRevenue: completedPayments._sum?.amount || 0,
     totalAppointments: totalAppointments,
     auditLogs: auditLogs || [],
-    recentActivities: recentActivities || []
+    recentActivities: recentActivities || [],
+    allTranscripts: allTranscripts || []
   }
 
   return (

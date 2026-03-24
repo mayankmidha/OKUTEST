@@ -74,6 +74,7 @@ model User {
   assignedTasks  AssignedAssessment[] @relation("ClientAssignments")
   managedTasks   AssignedAssessment[] @relation("PractitionerAssignments")
   posts          Post[]
+  createdAssessments Assessment[] @relation("CreatedAssessments")
 }
 
 model AssignedAssessment {
@@ -265,12 +266,26 @@ model Appointment {
   practitionerProfile PractitionerProfile? @relation(fields: [practitionerId], references: [userId], map: "Appointment_practitionerProfile_fkey")
   payments       Payment[]
   soapNote       SoapNote?
+  transcript     Transcript?
 
   @@index([clientId])
   @@index([practitionerId])
   @@index([serviceId])
   @@index([status])
   @@index([startTime])
+}
+
+model Transcript {
+  id              String      @id @default(cuid())
+  appointmentId   String      @unique
+  content         String      @db.Text
+  summary         String?     @db.Text
+  sentiment       String?     // POSITIVE, NEUTRAL, NEGATIVE
+  keyInsights     Json?       // AI-extracted insights
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  appointment     Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 }
 
 model SoapNote {
@@ -288,15 +303,18 @@ model SoapNote {
 
 model Assessment {
   id          String   @id @default(cuid())
-  title       String   @unique
+  title       String
   description String?  @db.Text
   questions   Json     // Store assessment questions
   isActive    Boolean  @default(true)
+  isCustom    Boolean  @default(false)
+  creatorId   String?  // If null, it's a platform-level assessment
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   answers     AssessmentAnswer[]
   assignedTasks AssignedAssessment[]
+  creator     User?    @relation("CreatedAssessments", fields: [creatorId], references: [id])
 }
 
 model Service {

@@ -1,9 +1,10 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { Clock, ShieldCheck, UserMinus, AlertTriangle, LogOut } from "lucide-react"
+import { Clock, ShieldCheck, AlertTriangle, LogOut } from "lucide-react"
 import Link from 'next/link'
 import NoShowButton from "./NoShowButton"
+import { VideoRoom } from "./VideoRoom"
 
 export default async function TelehealthSessionPage({ params }: { params: { id: string } }) {
   const session = await auth()
@@ -31,10 +32,6 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
   }
 
   // Time Check (Allow joining anytime for testing/confirmed sessions)
-  const now = new Date()
-  const scheduledTime = new Date(sessionDetails.startTime)
-  
-  // BYPASS: Allowing instant join for testing
   const isTooEarly = false 
 
   if (isTooEarly && isClient) {
@@ -51,7 +48,7 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
                   <div className="bg-oku-cream-warm/30 p-6 rounded-[2rem] mb-10 border border-oku-taupe/5">
                       <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe/60 mb-2">Scheduled Time</p>
                       <p className="text-3xl font-display font-bold text-oku-dark tracking-tighter">
-                        {scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        {new Date(sessionDetails.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                       </p>
                   </div>
 
@@ -62,9 +59,6 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
           </div>
       )
   }
-
-  // Generate a unique room name based on session ID to ensure privacy
-  const roomName = `OKU-Therapy-Secure-${sessionDetails.id}`
 
   return (
     <div className="h-screen bg-[#1A1817] flex flex-col overflow-hidden font-sans">
@@ -95,18 +89,17 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
         </header>
 
         <div className="flex-1 flex overflow-hidden">
-            {/* Video Frame */}
-            <div className="flex-1 relative bg-black">
-                <iframe
-                    src={`https://meet.jit.si/${roomName}?config.prejoinPageEnabled=false`}
-                    allow="camera; microphone; fullscreen; display-capture; autoplay"
-                    className="w-full h-full border-0"
-                ></iframe>
-            </div>
+            {/* Stream Video React Integration */}
+            <VideoRoom 
+              sessionId={sessionDetails.id}
+              userId={session.user.id}
+              userName={session.user.name || 'User'}
+              role={session.user.role as string}
+            />
 
             {/* Therapist Sidebar Controls */}
             {isTherapist && (
-                <div className="w-80 bg-[#141312] border-l border-white/5 p-8 flex flex-col gap-8 overflow-y-auto custom-scrollbar">
+                <div className="w-80 bg-[#141312] border-l border-white/5 p-8 flex flex-col gap-8 overflow-y-auto custom-scrollbar relative z-10">
                     <div>
                         <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-white/40 mb-4">Clinical Context</h4>
                         <div className="bg-white/5 p-6 rounded-[2rem] border border-white/5">

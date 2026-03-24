@@ -9,6 +9,7 @@ import { PractitionerShell } from '@/components/practitioner-shell/practitioner-
 import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
 import { DocumentVault } from '@/components/DocumentVault'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
+import { ClinicalAITranscriptViewer } from '@/components/ClinicalAITranscriptViewer'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -19,7 +20,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   }
 
   // Fetch the client data
-  const [clientData, assessments] = await Promise.all([
+  const [clientData, assessments, transcripts] = await Promise.all([
     prisma.user.findFirst({
         where: { 
             id: clientId,
@@ -52,6 +53,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     prisma.assessment.findMany({
         where: { isActive: true },
         orderBy: { title: 'asc' }
+    }),
+    prisma.transcript.findMany({
+        where: { appointment: { clientId: clientId, practitionerId: session.user.id } },
+        include: { appointment: { include: { service: true } } },
+        orderBy: { createdAt: 'desc' }
     })
   ])
 
@@ -195,6 +201,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 </section>
 
                 <TreatmentPlanManager clientId={clientData.id} existingPlans={clientData.clientTreatmentPlans || []} />
+
+                {/* Session Intelligence - Transcripts */}
+                <section>
+                    <h2 className="text-2xl font-display font-bold text-oku-dark mb-6 flex items-center gap-3">
+                        <Brain className="text-oku-navy" size={24} /> Session Intelligence
+                    </h2>
+                    <ClinicalAITranscriptViewer transcripts={transcripts as any} />
+                </section>
 
                 {/* Secure File Vault */}
                 <section>
