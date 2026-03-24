@@ -15,13 +15,17 @@ export default async function ClientTherapistsDashboardPage() {
     redirect('/auth/login')
   }
 
-  const [practitioners, userAppointmentCount] = await Promise.all([
+  const [practitioners, userAppointmentCount, user] = await Promise.all([
     prisma.practitionerProfile.findMany({
         where: { isVerified: true },
         include: { user: true }
     }),
     prisma.appointment.count({
         where: { clientId: session.user.id }
+    }),
+    prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { location: true }
     })
   ])
 
@@ -44,7 +48,7 @@ export default async function ClientTherapistsDashboardPage() {
       />
 
       <div className="mt-10">
-        <TherapistFilters therapists={practitioners} specialties={uniqueSpecialties} isFirstTime={isFirstTime} />
+        <TherapistFilters therapists={practitioners} specialties={uniqueSpecialties} isFirstTime={isFirstTime} userLocation={user?.location || undefined} />
       </div>
     </div>
   )

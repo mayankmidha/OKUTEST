@@ -29,6 +29,7 @@ export default function SignupPage() {
     password: '',
     phone: '',
     role: 'CLIENT',
+    location: 'India',
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -191,17 +192,34 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Security</label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={formData.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
-                  placeholder="Min. 6 characters"
-                />
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Security</label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={formData.password}
+                    onChange={(e) => handleChange('password', e.target.value)}
+                    className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                    placeholder="Min. 6 characters"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Location</label>
+                  <select
+                    value={formData.location}
+                    onChange={(e) => handleChange('location', e.target.value)}
+                    className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm appearance-none"
+                  >
+                    <option value="India">India</option>
+                    <option value="USA">United States</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
 
               <button

@@ -13,7 +13,7 @@ import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 import { TaskManager } from '@/components/TaskManager'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
-import { formatCurrency, convertToINR } from '@/lib/currency'
+import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
 
 export default async function PractitionerDashboardPage() {
   const session = await auth()
@@ -21,6 +21,11 @@ export default async function PractitionerDashboardPage() {
   if (!session?.user?.id || session.user.role !== UserRole.THERAPIST) {
     redirect('/auth/login')
   }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { location: true }
+  })
 
   let practitioner: any = null
   let totalCompleted = 0
@@ -150,8 +155,17 @@ export default async function PractitionerDashboardPage() {
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Practice Revenue</p>
             <div className="flex flex-col">
-                <p className="text-4xl font-display font-bold text-oku-dark">${totalEarnings._sum.amount || 0}</p>
-                <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40 mt-1">≈ ₹{convertToINR(totalEarnings._sum.amount || 0).toLocaleString()}</p>
+                {(() => {
+                    const conv = autoConvert(totalEarnings._sum.amount || 0, user?.location || undefined);
+                    return (
+                        <>
+                            <p className="text-4xl font-display font-bold text-oku-dark">{formatCurrency(conv.amount, conv.currency)}</p>
+                            {conv.currency !== 'INR' && (
+                                <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40 mt-1">≈ ₹{convertToINR(totalEarnings._sum.amount || 0).toLocaleString()}</p>
+                            )}
+                        </>
+                    )
+                })()}
             </div>
             <p className="text-xs text-oku-taupe font-medium mt-1">Settled Payments</p>
           </div>

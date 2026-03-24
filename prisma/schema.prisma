@@ -61,6 +61,7 @@ model User {
   phone                      String?
   bio                        String?
   avatar                     String?
+  location                   String?
   createdAt                  DateTime             @default(now())
   updatedAt                  DateTime             @updatedAt
   hasSignedConsent           Boolean              @default(false)

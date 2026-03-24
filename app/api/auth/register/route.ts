@@ -5,7 +5,7 @@ import { UserRole } from '@prisma/client'
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password, role } = await req.json()
+    const { name, email, password, role, location } = await req.json()
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -37,6 +37,7 @@ export async function POST(req: Request) {
         email,
         password: hashedPassword,
         role: userRole,
+        location: location || null,
         // Auto-create profile based on role
         clientProfile: userRole === UserRole.CLIENT ? { create: {} } : undefined,
         practitionerProfile: userRole === UserRole.THERAPIST ? { create: { bio: '', specialization: [] } } : undefined
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
         action: 'USER_REGISTERED',
         resourceType: 'USER',
         resourceId: user.id,
-        changes: JSON.stringify({ name: user.name, email: user.email, role: user.role }),
+        changes: JSON.stringify({ name: user.name, email: user.email, role: user.role, location: user.location }),
       }
     })
 

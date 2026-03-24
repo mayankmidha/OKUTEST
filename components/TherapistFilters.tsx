@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatCurrency, autoConvert } from '@/lib/currency'
 
-export default function TherapistFilters({ therapists, specialties, isFirstTime = false }: { therapists: any[], specialties: string[], isFirstTime?: boolean }) {
+export default function TherapistFilters({ therapists, specialties, isFirstTime = false, userLocation }: { therapists: any[], specialties: string[], isFirstTime?: boolean, userLocation?: string }) {
   const [search, setSearch] = useState('')
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
   const [maxPrice, setMaxPrice] = useState<number>(300)
@@ -155,7 +155,7 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
                       </div>
                       <span className="bg-white text-oku-dark px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">
                           {(() => {
-                              const conv = autoConvert(practitioner.hourlyRate || 150);
+                              const conv = autoConvert(practitioner.hourlyRate || 150, userLocation);
                               return formatCurrency(conv.amount, conv.currency);
                           })()} / HR
                       </span>
