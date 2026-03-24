@@ -3,9 +3,8 @@ import { NextResponse } from "next/server"
 import { StreamClient } from "@stream-io/node-sdk"
 
 // Stream API Key and Secret should be in .env
-// For demo/setup purposes, we check if they exist, otherwise we return an error.
-const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY || "placeholder_key"
-const apiSecret = process.env.STREAM_SECRET_KEY || "placeholder_secret"
+const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY
+const apiSecret = process.env.STREAM_SECRET_KEY
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -14,8 +13,11 @@ export async function POST(req: Request) {
     return new NextResponse("Unauthorized", { status: 401 })
   }
 
-  if (apiKey === "placeholder_key" || apiSecret === "placeholder_secret") {
-    console.warn("STREAM_API_KEY or STREAM_SECRET_KEY is missing. Video tokens will fail in production.")
+  if (!apiKey || !apiSecret) {
+    return NextResponse.json({ 
+        error: "Stream API keys are not configured in the environment.",
+        apiKey: "missing" 
+    }, { status: 500 })
   }
 
   try {
