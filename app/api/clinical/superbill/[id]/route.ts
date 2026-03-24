@@ -4,13 +4,14 @@ import { NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
 
   try {
+    const { id } = await params;
     const appointment = await prisma.appointment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         client: { include: { clientProfile: true } },
         practitioner: { include: { practitionerProfile: true } },
