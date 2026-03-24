@@ -6,7 +6,8 @@ import {
   Calendar, Users, Clock, DollarSign, 
   Video, Activity, TrendingUp, 
   FileText, ArrowRight, Sparkles, Heart,
-  ShieldCheck, Zap, Brain, MessageSquare, ArrowUpRight
+  ShieldCheck, Zap, Brain, MessageSquare, ArrowUpRight,
+  User as UserIcon
 } from 'lucide-react'
 import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
 import { DashboardCard } from '@/components/DashboardCard'
@@ -122,7 +123,7 @@ export default async function PractitionerDashboardPage() {
             <Clock size={18} /> Manage Hours
           </Link>
           <Link href="/practitioner/profile" className="btn-navy group flex items-center gap-2 shadow-2xl">
-            <UserCircle size={18} className="group-hover:rotate-12 transition-transform" /> Professional Profile
+            <UserIcon size={18} className="group-hover:rotate-12 transition-transform" /> Professional Profile
           </Link>
         </div>
       }

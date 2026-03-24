@@ -47,8 +47,8 @@ export default async function ClientClinicalHub() {
         title="Clinical Record" 
         description="A secure overview of your therapeutic journey, assessments, and clinical documentation."
         actions={
-          <Link href="/assessments" className="btn-primary py-4 px-8 flex items-center gap-2 shadow-xl">
-            <ClipboardCheck size={18} /> Take New Screening
+          <Link href="/dashboard/client/therapists" className="btn-primary py-4 px-8 flex items-center gap-2 shadow-xl">
+            <ClipboardCheck size={18} /> New Clinical Assessment
           </Link>
         }
       />

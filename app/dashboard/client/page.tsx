@@ -271,18 +271,18 @@ export default async function ClientDashboardPage() {
                 <p className="text-sm text-oku-taupe italic opacity-60">No screenings recorded yet.</p>
               ) : (
                 recentAssessments.map((ans) => (
-                  <div key={ans.id} className="group cursor-pointer">
+                  <Link key={ans.id} href="/dashboard/client/clinical" className="group cursor-pointer block">
                     <p className="text-[9px] uppercase tracking-widest font-black text-oku-taupe/40 group-hover:text-oku-navy-light transition-colors mb-1.5">{ans.assessment?.title}</p>
                     <p className="font-bold text-lg text-oku-dark group-hover:text-oku-navy transition-colors">{ans.result}</p>
                     <div className="flex items-center justify-between mt-2">
                        <p className="text-[10px] opacity-40 uppercase tracking-widest font-black">{new Date(ans.completedAt).toLocaleDateString()}</p>
                        <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-oku-ocean text-oku-navy-light rounded opacity-0 group-hover:opacity-100 transition-opacity">View Detail</span>
                     </div>
-                  </div>
+                  </Link>
                 ))
               )}
             </div>
-            <Link href="/assessments" className="mt-10 btn-sky w-full block text-center py-4">New Screening</Link>
+            <Link href="/dashboard/client/clinical" className="mt-10 btn-sky w-full block text-center py-4">New Screening</Link>
           </section>
 
           <section className="card-glass p-10 bg-oku-sage/20 border-oku-sage-dark/10">
