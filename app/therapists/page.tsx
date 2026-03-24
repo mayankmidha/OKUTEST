@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import TherapistFilters from './TherapistFilters'
+import TherapistFilters from '@/components/TherapistFilters'
 
 export const dynamic = 'force-dynamic'
 

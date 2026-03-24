@@ -88,7 +88,7 @@ export default async function ClientDashboardPage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <Link href="/therapists" className="btn-navy group flex items-center gap-3">
+          <Link href="/dashboard/client/therapists" className="btn-navy group flex items-center gap-3">
              <Search size={18} className="group-hover:rotate-12 transition-transform" /> Browse Specialists
           </Link>
           <Link href="/dashboard/client/book" className="btn-sky hidden md:flex items-center gap-2">
@@ -150,7 +150,7 @@ export default async function ClientDashboardPage() {
               {upcomingAppointments.length === 0 ? (
                 <div className="card-glass py-24 text-center border-dashed">
                   <p className="text-oku-taupe font-display italic text-2xl opacity-40">The schedule is open.</p>
-                  <Link href="/therapists" className="text-oku-navy font-bold text-sm hover:underline mt-6 inline-block">Find a dedicated therapist →</Link>
+                  <Link href="/dashboard/client/therapists" className="text-oku-navy font-bold text-sm hover:underline mt-6 inline-block">Find a dedicated therapist →</Link>
                 </div>
               ) : (
                 upcomingAppointments.map((appt) => (
