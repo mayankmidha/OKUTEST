@@ -64,7 +64,7 @@ export function PractitionerShell({
         <aside className="w-80 border-r border-oku-taupe/5 bg-white/40 backdrop-blur-3xl hidden xl:flex flex-col sticky top-0 h-screen">
           <div className="p-10">
             <Link href="/" className="block mb-12">
-               <img src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 w-auto grayscale brightness-0 opacity-80" />
+               <img src="/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 w-auto grayscale brightness-0 opacity-80" />
             </Link>
 
             <nav className="space-y-2">

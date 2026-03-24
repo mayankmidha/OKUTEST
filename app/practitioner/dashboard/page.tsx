@@ -32,17 +32,20 @@ export default async function PractitionerDashboardPage() {
     practitioner = await prisma.practitionerProfile.findUnique({
       where: { userId: session.user.id },
       include: {
-        user: true,
-        appointments: {
-          where: {
-            startTime: { gte: new Date(new Date().setHours(0,0,0,0)) },
-            status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
-          },
-          include: {
-            client: true,
-            service: true
-          },
-          orderBy: { startTime: 'asc' }
+        user: {
+            include: {
+                practitionerAppointments: {
+                    where: {
+                        startTime: { gte: new Date(new Date().setHours(0,0,0,0)) },
+                        status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
+                    },
+                    include: {
+                        client: true,
+                        service: true
+                    },
+                    orderBy: { startTime: 'asc' }
+                }
+            }
         }
       }
     })
@@ -92,12 +95,12 @@ export default async function PractitionerDashboardPage() {
     redirect('/practitioner/dashboard')
   }
 
-  const todaySessions = (practitioner?.appointments || []).filter((a: any) => {
+  const todaySessions = (practitioner?.user?.practitionerAppointments || []).filter((a: any) => {
       const today = new Date().setHours(0,0,0,0)
       return new Date(a.startTime).setHours(0,0,0,0) === today
   })
 
-  const upcomingSessions = (practitioner?.appointments || []).filter((a: any) => {
+  const upcomingSessions = (practitioner?.user?.practitionerAppointments || []).filter((a: any) => {
       return new Date(a.startTime) > new Date()
   })
 

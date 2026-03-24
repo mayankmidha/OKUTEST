@@ -1,9 +1,10 @@
 import V1LoginPage from '@/components/V1LoginPage'
+import { LoginSkeleton } from '@/components/LoginSkeleton'
 import { Suspense } from 'react'
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-oku-cream flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<LoginSkeleton />}>
       <V1LoginPage />
     </Suspense>
   )

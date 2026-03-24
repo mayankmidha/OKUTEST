@@ -56,7 +56,7 @@ export function DashboardSidebar() {
         <Link href="/" className="block group">
           <motion.img 
             whileHover={{ scale: 1.05 }}
-            src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
+            src="/uploads/2025/07/Logoo.png" 
             alt="OKU" 
             className="h-10 w-auto" 
           />

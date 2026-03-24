@@ -14,13 +14,12 @@ export async function POST(req: Request) {
   const appointment = await prisma.appointment.findUnique({
     where: { id: sessionId },
     include: { 
-      practitionerProfile: true, 
-      clientProfile: true,
+      practitioner: true, 
       service: true
     }
   })
 
-  if (!appointment || appointment.practitionerProfile?.userId !== session.user.id) {
+  if (!appointment || appointment.practitionerId !== session.user.id) {
     return new NextResponse('Appointment not found', { status: 404 })
   }
 

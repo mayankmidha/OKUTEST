@@ -13,7 +13,7 @@ export default function Footer() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
+              src="/uploads/2025/07/Logoo.png" 
               alt="OKU Therapy" 
               className="h-16 w-auto mb-10" 
             />

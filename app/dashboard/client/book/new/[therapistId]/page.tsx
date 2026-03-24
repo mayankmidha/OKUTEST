@@ -16,14 +16,17 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
   const practitioner = await prisma.practitionerProfile.findUnique({
     where: { id: therapistId },
     include: { 
-        user: true,
-        availability: true,
-        appointments: {
-            where: {
-                startTime: { gte: new Date() },
-                status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
+        user: {
+            include: {
+                practitionerAppointments: {
+                    where: {
+                        startTime: { gte: new Date() },
+                        status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
+                    }
+                }
             }
-        }
+        },
+        availability: true
     }
   })
 
@@ -64,7 +67,7 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
     const now = new Date()
 
     while (current < endTime) {
-        const isBooked = practitioner.appointments.some(s => 
+        const isBooked = practitioner.user.practitionerAppointments.some(s => 
             s.startTime.getTime() === current.getTime()
         )
         
@@ -86,7 +89,7 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
     <div className="min-h-screen bg-oku-cream">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-12">
             <div className="mb-8">
-                <Link href="/therapists" className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe hover:text-oku-dark transition-colors">← Back to Directory</Link>
+                <Link href="/dashboard/client/therapists" className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe hover:text-oku-dark transition-colors">← Back to Directory</Link>
             </div>
             <h1 className="text-5xl font-display font-bold text-oku-dark mb-12 tracking-tighter">Book Session</h1>
             

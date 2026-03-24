@@ -9,42 +9,42 @@ export default function PeoplePage() {
       name: 'Dr. Suraj Singh',
       title: 'Consultant Psychiatrist',
       specialization: 'Psychiatry & Medication Management',
-      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg',
+      avatar: '/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg',
       color: 'bg-oku-purple/20'
     },
     {
       name: 'Tanisha Singh',
       title: 'Clinical Psychologist',
       specialization: 'Psychodynamic Psychotherapy & Trauma',
-      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg',
+      avatar: '/uploads/2025/07/Tanisha_-821x1024.jpg',
       color: 'bg-oku-blue/20'
     },
     {
       name: 'Rananjay Singh',
       title: 'Family Therapist',
       specialization: 'Queer Affirmative & Family Therapy',
-      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Rananjay--579x1024.jpg',
+      avatar: '/uploads/2025/07/Rananjay--579x1024.jpg',
       color: 'bg-oku-green/20'
     },
     {
       name: 'Amna Ansari',
       title: 'Clinical Psychologist',
       specialization: 'Anxiety, OCD & Clinical Psychology',
-      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Amna-670x1024.jpg',
+      avatar: '/uploads/2025/07/Amna-670x1024.jpg',
       color: 'bg-oku-pink/20'
     },
     {
       name: 'Mohit Dudeja',
       title: 'Queer Affirmative Therapist',
       specialization: 'Grief & Individual Therapy',
-      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/Mohit-911x1024.jpg',
+      avatar: '/uploads/2025/07/Mohit-911x1024.jpg',
       color: 'bg-oku-sage/20'
     },
     {
       name: 'Gursheel Kaur',
       title: 'Psychodynamic Psychotherapist',
       specialization: 'Relational Therapy & Self-Esteem',
-      avatar: 'https://okutherapy.com/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg',
+      avatar: '/uploads/2025/07/gursheel_pfp-1024x980.jpg',
       color: 'bg-oku-peach/20'
     }
   ];

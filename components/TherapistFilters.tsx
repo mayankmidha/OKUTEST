@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { formatCurrency } from '@/lib/currency'
+import { formatCurrency, autoConvert } from '@/lib/currency'
 
 export default function TherapistFilters({ therapists, specialties, isFirstTime = false }: { therapists: any[], specialties: string[], isFirstTime?: boolean }) {
   const [search, setSearch] = useState('')
@@ -153,7 +153,10 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
                          {practitioner.websiteUrl && <a href={practitioner.websiteUrl} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-oku-navy transition-all shadow-lg"><Globe size={14}/></a>}
                       </div>
                       <span className="bg-white text-oku-dark px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">
-                          {formatCurrency(practitioner.hourlyRate || 150, practitioner.baseCurrency || 'USD')} / HR
+                          {(() => {
+                              const conv = autoConvert(practitioner.hourlyRate || 150);
+                              return formatCurrency(conv.amount, conv.currency);
+                          })()} / HR
                       </span>
                   </div>
                 </div>

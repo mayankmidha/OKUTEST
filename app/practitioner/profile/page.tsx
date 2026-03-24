@@ -10,6 +10,7 @@ import {
 import { UserRole } from '@prisma/client'
 import EditProfileForm from './EditProfileForm'
 import { PasswordChangeForm } from '@/components/PasswordChangeForm'
+import { formatCurrency, autoConvert } from '@/lib/currency'
 
 export default async function PractitionerProfilePage() {
   const session = await auth()
@@ -79,7 +80,12 @@ export default async function PractitionerProfilePage() {
               <div className="space-y-4">
                  <div className="bg-white/5 p-4 rounded-2xl">
                     <p className="text-[10px] uppercase tracking-widest opacity-40 mb-1">Hourly Rate</p>
-                    <p className="text-xl font-bold">${practitioner.hourlyRate || 0}/hr</p>
+                    <p className="text-xl font-bold">
+                        {(() => {
+                            const conv = autoConvert(practitioner.hourlyRate || 0);
+                            return formatCurrency(conv.amount, conv.currency);
+                        })()} / Session
+                    </p>
                  </div>
                  <div className="bg-white/5 p-4 rounded-2xl">
                     <p className="text-[10px] uppercase tracking-widest opacity-40 mb-1">Specialties</p>

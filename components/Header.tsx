@@ -50,7 +50,7 @@ export default function Header() {
             <motion.img 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
+              src="/uploads/2025/07/Logoo.png" 
               alt="OKU Therapy" 
               className="h-12 w-auto transition-transform duration-500 group-hover:scale-105" 
             />

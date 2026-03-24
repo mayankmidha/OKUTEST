@@ -94,7 +94,7 @@ export default function SignupPage() {
           >
             <Link href="/" className="inline-block">
               <img 
-                src="https://okutherapy.com/wp-content/uploads/2025/07/Logoo.png" 
+                src="/uploads/2025/07/Logoo.png" 
                 alt="OKU Therapy" 
                 className="h-10 w-auto opacity-80" 
               />

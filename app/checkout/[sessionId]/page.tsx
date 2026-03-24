@@ -14,7 +14,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
   const booking = await prisma.appointment.findUnique({
     where: { id: sessionId },
     include: { 
-      practitionerProfile: { include: { user: true } },
+      practitioner: { include: { practitionerProfile: true } },
       service: true
     }
   })
@@ -32,14 +32,14 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
             <div className="bg-white p-8 rounded-card border border-oku-taupe/10 shadow-lg mb-8">
                 <div className="flex items-center gap-6 mb-8 pb-8 border-b border-oku-taupe/10">
                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-oku-cream">
-                        {booking.practitionerProfile?.user.avatar ? (
-                            <img src={booking.practitionerProfile.user.avatar} alt="" className="w-full h-full object-cover" />
+                        {booking.practitioner.avatar ? (
+                            <img src={booking.practitioner.avatar} alt="" className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full bg-oku-purple/10 flex items-center justify-center text-2xl">🧘</div>
                         )}
                     </div>
                     <div>
-                        <h2 className="text-xl font-display font-bold text-oku-dark">Session with {booking.practitionerProfile?.user.name}</h2>
+                        <h2 className="text-xl font-display font-bold text-oku-dark">Session with {booking.practitioner.name}</h2>
                         <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe">
                             {new Date(booking.startTime).toLocaleString()}
                         </p>

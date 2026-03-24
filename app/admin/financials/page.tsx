@@ -6,7 +6,7 @@ import { UserRole } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 
-import { formatCurrency, convertToINR } from '@/lib/currency'
+import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
 
 export default async function AdminFinancialsPage() {
   const session = await auth()
@@ -88,24 +88,34 @@ export default async function AdminFinancialsPage() {
       />
 
       <div className="space-y-12">
-        {/* Global Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <DashboardCard subtitle="Gross Volume (GMV)" icon={<DollarSign size={20} strokeWidth={1.5} />} variant="dark">
-               <p className="text-5xl font-display font-bold text-white tracking-tighter">${totalGrossRevenue.toLocaleString()}</p>
-               <p className="text-[10px] mt-2 font-black uppercase tracking-widest text-white/40">≈ ₹{convertToINR(totalGrossRevenue).toLocaleString()}</p>
+               <p className="text-5xl font-display font-bold text-white tracking-tighter">
+                  {(() => {
+                      const conv = autoConvert(totalGrossRevenue);
+                      return formatCurrency(conv.amount, conv.currency);
+                  })()}
+               </p>
             </DashboardCard>
             <DashboardCard subtitle={`Platform Net (${settings?.platformFeePercent || 20}%)`} icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="green">
-               <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalPlatformCut.toLocaleString()}</p>
-               <p className="text-[10px] mt-2 font-black uppercase tracking-widest text-oku-taupe/40">≈ ₹{convertToINR(totalPlatformCut).toLocaleString()}</p>
+               <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
+                  {(() => {
+                      const conv = autoConvert(totalPlatformCut);
+                      return formatCurrency(conv.amount, conv.currency);
+                  })()}
+               </p>
             </DashboardCard>
             <DashboardCard subtitle="Provider Liabilities" icon={<Wallet size={20} strokeWidth={1.5} />} variant="purple">
-               <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalTherapistPayouts.toLocaleString()}</p>
-               <p className="text-[10px] mt-2 font-black uppercase tracking-widest text-oku-taupe/40">≈ ₹{convertToINR(totalTherapistPayouts).toLocaleString()}</p>
+               <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
+                  {(() => {
+                      const conv = autoConvert(totalTherapistPayouts);
+                      return formatCurrency(conv.amount, conv.currency);
+                  })()}
+               </p>
             </DashboardCard>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-12">
-            {/* Payouts */}
             <div className="lg:col-span-2 space-y-8">
                 <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
                     <div className="p-10 border-b border-oku-taupe/10 flex justify-between items-center bg-oku-cream/30">
@@ -130,7 +140,12 @@ export default async function AdminFinancialsPage() {
                                     <div className="mt-6 md:mt-0 flex items-center gap-8">
                                         <div className="text-right border-r border-oku-taupe/10 pr-8">
                                             <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1 opacity-60">Total Owed</p>
-                                            <p className="text-3xl font-display font-bold text-oku-dark">${p.owed.toLocaleString()}</p>
+                                            <p className="text-3xl font-display font-bold text-oku-dark">
+                                                {(() => {
+                                                    const conv = autoConvert(p.owed);
+                                                    return formatCurrency(conv.amount, conv.currency);
+                                                })()}
+                                            </p>
                                         </div>
                                         <button className="bg-oku-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-oku-purple transition-all shadow-lg active:scale-95">
                                             Mark Paid
@@ -143,13 +158,17 @@ export default async function AdminFinancialsPage() {
                 </div>
             </div>
 
-            {/* Transactions */}
             <DashboardCard title="Recent Volume" icon={<TrendingUp size={20} strokeWidth={1.5} />}>
                 <div className="space-y-8 mt-4">
                     {payments.slice(0, 8).map(p => (
                         <div key={p.id} className="flex justify-between items-center border-b border-oku-taupe/5 pb-6 last:border-0 group cursor-pointer">
                             <div>
-                                <p className="text-lg font-display font-bold text-oku-dark group-hover:text-oku-purple transition-colors">${p.amount.toFixed(2)}</p>
+                                <p className="text-lg font-display font-bold text-oku-dark group-hover:text-oku-purple transition-colors">
+                                    {(() => {
+                                        const conv = autoConvert(p.amount);
+                                        return formatCurrency(conv.amount, conv.currency);
+                                    })()}
+                                </p>
                                 <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-1 truncate max-w-[120px]">
                                     {p.appointment?.service?.name || 'Standard Session'}
                                 </p>
