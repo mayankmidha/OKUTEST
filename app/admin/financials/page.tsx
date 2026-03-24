@@ -6,6 +6,8 @@ import { UserRole } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 
+import { formatCurrency, convertToINR } from '@/lib/currency'
+
 export default async function AdminFinancialsPage() {
   const session = await auth()
 
@@ -90,12 +92,15 @@ export default async function AdminFinancialsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <DashboardCard subtitle="Gross Volume (GMV)" icon={<DollarSign size={20} strokeWidth={1.5} />} variant="dark">
                <p className="text-5xl font-display font-bold text-white tracking-tighter">${totalGrossRevenue.toLocaleString()}</p>
+               <p className="text-[10px] mt-2 font-black uppercase tracking-widest text-white/40">≈ ₹{convertToINR(totalGrossRevenue).toLocaleString()}</p>
             </DashboardCard>
             <DashboardCard subtitle={`Platform Net (${settings?.platformFeePercent || 20}%)`} icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="green">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalPlatformCut.toLocaleString()}</p>
+               <p className="text-[10px] mt-2 font-black uppercase tracking-widest text-oku-taupe/40">≈ ₹{convertToINR(totalPlatformCut).toLocaleString()}</p>
             </DashboardCard>
             <DashboardCard subtitle="Provider Liabilities" icon={<Wallet size={20} strokeWidth={1.5} />} variant="purple">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">${totalTherapistPayouts.toLocaleString()}</p>
+               <p className="text-[10px] mt-2 font-black uppercase tracking-widest text-oku-taupe/40">≈ ₹{convertToINR(totalTherapistPayouts).toLocaleString()}</p>
             </DashboardCard>
         </div>
 

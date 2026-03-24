@@ -186,6 +186,7 @@ model PractitionerProfile {
   linkedinUrl     String?
   websiteUrl      String?
   hourlyRate      Float?
+  baseCurrency    String   @default("USD") // USD or INR
   sessionDuration Int      @default(50) // mins
   bufferDuration  Int      @default(10) // mins
   isVerified      Boolean  @default(false)
@@ -259,6 +260,8 @@ model Appointment {
   startTime     DateTime
   endTime       DateTime
   status        AppointmentStatus @default(SCHEDULED)
+  isTrial       Boolean           @default(false)
+  trialDuration Int?              @default(10) // Fixed 10 mins for trials
   attendanceStatus String?         // "present", "no_show"
   noShowFeeCharged Float?
   notes         String?           @db.Text

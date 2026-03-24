@@ -12,22 +12,43 @@ import {
   User
 } from '@stream-io/video-react-sdk'
 import '@stream-io/video-react-sdk/dist/css/styles.css'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Clock } from 'lucide-react'
 
 export function VideoRoom({ 
     sessionId, 
     userId, 
     userName,
-    role
+    role,
+    isTrial = false
 }: { 
     sessionId: string, 
     userId: string, 
     userName: string,
-    role: string 
+    role: string,
+    isTrial?: boolean
 }) {
   const [client, setClient] = useState<StreamVideoClient | null>(null)
   const [call, setCall] = useState<Call | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [timeLeft, setTimeLeft] = useState<number | null>(isTrial ? 600 : null) // 10 mins
+
+  useEffect(() => {
+    if (isTrial && timeLeft !== null) {
+        if (timeLeft <= 0) {
+            alert("Trial session has ended. Thank you for connecting.")
+            window.location.href = '/dashboard'
+            return
+        }
+        const timer = setInterval(() => setTimeLeft(prev => (prev !== null ? prev - 1 : null)), 1000)
+        return () => clearInterval(timer)
+    }
+  }, [isTrial, timeLeft])
+
+  const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60)
+      const secs = seconds % 60
+      return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
 
   useEffect(() => {
     let activeClient: StreamVideoClient | null = null;
@@ -105,7 +126,13 @@ export function VideoRoom({
         <StreamCall call={call}>
           <StreamTheme>
              <div className="flex-1 flex flex-col h-full w-full">
-                <div className="flex-1 overflow-hidden p-4">
+                <div className="flex-1 overflow-hidden p-4 relative">
+                  {isTrial && timeLeft !== null && (
+                      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 bg-oku-danger/90 backdrop-blur-xl text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/20 shadow-2xl flex items-center gap-3">
+                          <Clock size={14} className="animate-pulse" />
+                          Trial Ends in: {formatTime(timeLeft)}
+                      </div>
+                  )}
                   <SpeakerLayout participantsBarPosition="bottom" />
                 </div>
                 <div className="p-4 flex justify-center bg-gradient-to-t from-black/80 to-transparent">

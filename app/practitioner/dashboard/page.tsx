@@ -13,6 +13,7 @@ import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 import { TaskManager } from '@/components/TaskManager'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
+import { formatCurrency, convertToINR } from '@/lib/currency'
 
 export default async function PractitionerDashboardPage() {
   const session = await auth()
@@ -144,7 +145,10 @@ export default async function PractitionerDashboardPage() {
         <div className="card-glass p-8 flex items-center justify-between group">
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Practice Revenue</p>
-            <p className="text-4xl font-display font-bold text-oku-dark">${totalEarnings._sum.amount || 0}</p>
+            <div className="flex flex-col">
+                <p className="text-4xl font-display font-bold text-oku-dark">${totalEarnings._sum.amount || 0}</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40 mt-1">≈ ₹{convertToINR(totalEarnings._sum.amount || 0).toLocaleString()}</p>
+            </div>
             <p className="text-xs text-oku-taupe font-medium mt-1">Settled Payments</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-oku-green/20 text-oku-green-dark flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">

@@ -13,7 +13,7 @@ export async function PATCH(req: Request) {
   try {
     const { 
         name, bio, hourlyRate, licenseNumber, specialization,
-        education, experienceYears, linkedinUrl, websiteUrl
+        education, experienceYears, linkedinUrl, websiteUrl, baseCurrency
     } = await req.json()
 
     // Update User and PractitionerProfile in a transaction
@@ -32,7 +32,8 @@ export async function PATCH(req: Request) {
           education,
           experienceYears: parseInt(experienceYears) || 0,
           linkedinUrl,
-          websiteUrl
+          websiteUrl,
+          baseCurrency
         }
       })
     ])

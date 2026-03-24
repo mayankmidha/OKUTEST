@@ -15,6 +15,7 @@ import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { OCIDiagnostic } from '@/components/OCIDiagnostic'
 import { AdminUserManagement } from '@/components/AdminUserManagement'
+import { formatCurrency, convertToINR } from '@/lib/currency'
 
 function AdminDashboardContent({ 
   stats, 
@@ -149,7 +150,10 @@ function AdminDashboardContent({
                    <TrendingUp size={16} className="text-oku-success" />
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-1">Gross Revenue</p>
-                <p className="text-4xl font-display font-bold text-oku-dark">${stats.totalRevenue.toLocaleString()}</p>
+                <div className="flex flex-col">
+                    <p className="text-4xl font-display font-bold text-oku-dark">${stats.totalRevenue.toLocaleString()}</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40 mt-1">≈ ₹{convertToINR(stats.totalRevenue).toLocaleString()}</p>
+                </div>
               </div>
 
               <div className="card-glass p-8 group">

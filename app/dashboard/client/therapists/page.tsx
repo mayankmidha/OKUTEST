@@ -15,10 +15,17 @@ export default async function ClientTherapistsDashboardPage() {
     redirect('/auth/login')
   }
 
-  const practitioners = await prisma.practitionerProfile.findMany({
-    where: { isVerified: true },
-    include: { user: true }
-  })
+  const [practitioners, userAppointmentCount] = await Promise.all([
+    prisma.practitionerProfile.findMany({
+        where: { isVerified: true },
+        include: { user: true }
+    }),
+    prisma.appointment.count({
+        where: { clientId: session.user.id }
+    })
+  ])
+
+  const isFirstTime = userAppointmentCount === 0
 
   // Get unique specialties for filters
   const allSpecialties = practitioners.flatMap(p => p.specialization)
@@ -37,7 +44,7 @@ export default async function ClientTherapistsDashboardPage() {
       />
 
       <div className="mt-10">
-        <TherapistFilters therapists={practitioners} specialties={uniqueSpecialties} />
+        <TherapistFilters therapists={practitioners} specialties={uniqueSpecialties} isFirstTime={isFirstTime} />
       </div>
     </div>
   )

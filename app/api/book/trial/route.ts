@@ -11,20 +11,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
   }
 
-  // Ensure "15-Min Trial" service exists
+  // Ensure "10-Min Meet" service exists
   const service = await prisma.service.upsert({
-    where: { name: "15-Min Free Consultation" },
-    update: {},
+    where: { name: "10-Min Free Consultation" },
+    update: { duration: 10 },
     create: {
-      name: "15-Min Free Consultation",
-      description: "Initial consultation to discuss therapy goals and fit.",
-      duration: 15,
+      name: "10-Min Free Consultation",
+      description: "Initial 10-minute meet to discuss therapy fit.",
+      duration: 10,
       price: 0,
     },
   })
 
   const start = new Date(startTime)
-  const end = new Date(start.getTime() + 15 * 60000)
+  const end = new Date(start.getTime() + 10 * 60000)
 
   // Correctly resolve practitionerId (it might be a profile ID)
   let finalPractitionerId = practitionerId
@@ -46,17 +46,16 @@ export async function POST(req: Request) {
         startTime: start,
         endTime: end,
         status: AppointmentStatus.SCHEDULED,
-        notes: "Trial Consultation Call",
+        notes: "Trial Meet Call (10 Min)",
+        isTrial: true,
+        trialDuration: 10
       }
     })
     return NextResponse.json(appointment)
   }
 
   // If guest, we just acknowledge. Frontend handles redirection and storage.
-  // We log the lead for nurturing
   if (!session?.user?.id && guestEmail) {
-    // In a real app, we'd use a Guest/Lead table or send to CRM
-    // For now, we'll log it in AuditLog with a special system ID or just acknowledge
     console.log(`[LEAD CAPTURED] Name: ${guestName}, Email: ${guestEmail}`)
   }
 

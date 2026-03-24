@@ -65,9 +65,11 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
         {/* Premium Header for Session Mode */}
         <header className="h-20 bg-[#141312]/80 backdrop-blur-xl border-b border-white/5 px-8 flex justify-between items-center z-10">
             <div className="flex items-center gap-6">
-                <div className="flex items-center gap-3 bg-white/5 pl-2 pr-4 py-2 rounded-full border border-white/5">
-                  <div className="w-2.5 h-2.5 bg-oku-danger rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]"></div>
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-black text-white/80">Live Session</span>
+                <div className={`flex items-center gap-3 bg-white/5 pl-2 pr-4 py-2 rounded-full border border-white/5 ${sessionDetails.isTrial ? 'border-oku-purple/30' : ''}`}>
+                  <div className={`w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)] ${sessionDetails.isTrial ? 'bg-oku-purple' : 'bg-oku-danger'}`}></div>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-black text-white/80">
+                    {sessionDetails.isTrial ? '10-Min Trial Session' : 'Live Session'}
+                  </span>
                 </div>
                 <h1 className="text-white/90 font-display font-bold text-lg tracking-wide hidden sm:block">
                     {isClient ? `With ${sessionDetails.practitioner.name}` : `Patient: ${sessionDetails.client.name}`}
@@ -95,6 +97,7 @@ export default async function TelehealthSessionPage({ params }: { params: { id: 
               userId={session.user.id}
               userName={session.user.name || 'User'}
               role={session.user.role as string}
+              isTrial={sessionDetails.isTrial}
             />
 
             {/* Therapist Sidebar Controls */}

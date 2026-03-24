@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, X, Check, ArrowRight, ShieldCheck, Star } from 'lucide-react'
+import { Search, Filter, X, Check, ArrowRight, ShieldCheck, Star, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { formatCurrency } from '@/lib/currency'
 
-export default function TherapistFilters({ therapists, specialties }: { therapists: any[], specialties: string[] }) {
+export default function TherapistFilters({ therapists, specialties, isFirstTime = false }: { therapists: any[], specialties: string[], isFirstTime?: boolean }) {
   const [search, setSearch] = useState('')
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
   const [maxPrice, setMaxPrice] = useState<number>(300)
@@ -109,7 +110,7 @@ export default function TherapistFilters({ therapists, specialties }: { therapis
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {filtered.map((practitioner) => (
               <motion.div 
                 layout
@@ -132,18 +133,24 @@ export default function TherapistFilters({ therapists, specialties }: { therapis
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-oku-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-                  <div className="absolute top-8 left-8">
+                  <div className="absolute top-8 left-8 flex flex-col gap-2">
                      {practitioner.isVerified && (
-                        <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2.5 shadow-2xl border border-white">
+                        <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2.5 shadow-2xl border border-white w-fit">
                            <ShieldCheck size={14} className="text-oku-purple" strokeWidth={2} />
                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-oku-dark">Verified Provider</span>
+                        </div>
+                     )}
+                     {isFirstTime && (
+                        <div className="bg-oku-navy/90 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2.5 shadow-2xl border border-white/10 w-fit">
+                           <Clock size={14} className="text-oku-purple" strokeWidth={2} />
+                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">10-Min Trial Available</span>
                         </div>
                      )}
                   </div>
                   
                   <div className="absolute bottom-8 right-8 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
                      <span className="bg-white text-oku-dark px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl border border-white">
-                          ${practitioner.hourlyRate || 150} / Session
+                          {formatCurrency(practitioner.hourlyRate || 150, practitioner.baseCurrency || 'USD')} / Session
                       </span>
                   </div>
                 </div>
@@ -171,19 +178,21 @@ export default function TherapistFilters({ therapists, specialties }: { therapis
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <Link 
                         href={`/dashboard/client/book/new/${practitioner.id}`} 
                         className="bg-oku-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-purple-dark transition-all text-center shadow-2xl shadow-oku-dark/10 active:scale-95"
                     >
-                      Book Care
+                      Book Care Session
                     </Link>
-                    <Link 
-                        href={`/dashboard/client/book/new/${practitioner.id}/trial`} 
-                        className="bg-white text-oku-dark border border-oku-taupe/10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
-                    >
-                      Trial
-                    </Link>
+                    {isFirstTime && (
+                        <Link 
+                            href={`/dashboard/client/book/new/${practitioner.id}?type=trial`} 
+                            className="bg-oku-purple/20 text-oku-purple-dark py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-purple/30 transition-all text-center border border-oku-purple/10 active:scale-95 flex items-center justify-center gap-2"
+                        >
+                            <Clock size={14} /> Claim 10-Min Meet
+                        </Link>
+                    )}
                   </div>
                 </div>
               </motion.div>

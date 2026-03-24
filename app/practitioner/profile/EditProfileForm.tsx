@@ -15,6 +15,7 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
     experienceYears: initialData.experienceYears || 0,
     linkedinUrl: initialData.linkedinUrl || '',
     websiteUrl: initialData.websiteUrl || '',
+    baseCurrency: initialData.baseCurrency || 'USD',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -93,6 +94,17 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
                         className="pl-12 w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
                     />
                 </div>
+            </div>
+            <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe">Base Currency</label>
+                <select
+                    value={formData.baseCurrency}
+                    onChange={(e) => setFormData({ ...formData, baseCurrency: e.target.value })}
+                    className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all appearance-none"
+                >
+                    <option value="USD">USD (US Dollar)</option>
+                    <option value="INR">INR (Indian Rupee)</option>
+                </select>
             </div>
         </div>
       </div>
