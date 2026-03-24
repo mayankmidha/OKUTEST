@@ -8,11 +8,13 @@ declare module "next-auth" {
     user: {
       id: string
       role: string
+      hasSignedConsent: boolean
     } & DefaultSession["user"]
   }
   
   interface User {
     role: string
+    hasSignedConsent: boolean
   }
 }
 
@@ -51,7 +53,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role
+            role: user.role,
+            hasSignedConsent: user.hasSignedConsent
           }
         } catch (error) {
           console.error("Auth error:", error)
@@ -76,11 +79,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (token.role && session.user) {
           session.user.role = token.role;
         }
+        if (typeof token.hasSignedConsent === 'boolean' && session.user) {
+          session.user.hasSignedConsent = token.hasSignedConsent;
+        }
         return session;
     },
     async jwt({ token, user }: { token: any, user?: any }) {
       if (user) {
         token.role = user.role;
+        token.hasSignedConsent = user.hasSignedConsent;
       }
       return token;
     }

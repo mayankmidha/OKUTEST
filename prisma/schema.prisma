@@ -75,6 +75,22 @@ model User {
   managedTasks   AssignedAssessment[] @relation("PractitionerAssignments")
   posts          Post[]
   createdAssessments Assessment[] @relation("CreatedAssessments")
+  informedConsents InformedConsent[]
+  hasSignedConsent    Boolean  @default(false)
+}
+
+model InformedConsent {
+  id              String   @id @default(cuid())
+  userId          String
+  version         String   @default("1.0")
+  signedAt        DateTime @default(now())
+  ipAddress       String?
+  userAgent       String?
+  agreementContent String   @db.Text
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model AssignedAssessment {

@@ -403,6 +403,7 @@ function AdminDashboardContent({
                   <tr>
                     <th className="p-8">Client Name</th>
                     <th className="p-8">Contact Identity</th>
+                    <th className="p-8 text-center">Consent Status</th>
                     <th className="p-8 text-center">Sessions</th>
                     <th className="p-8 text-center">Attendance Note</th>
                     <th className="p-8 text-right">Operations</th>
@@ -420,6 +421,11 @@ function AdminDashboardContent({
                          </div>
                       </td>
                       <td className="p-8 text-sm text-oku-taupe italic">{c.email}</td>
+                      <td className="p-8 text-center">
+                        <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${c.hasSignedConsent ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                            {c.hasSignedConsent ? 'SIGNED' : 'PENDING'}
+                        </span>
+                      </td>
                       <td className="p-8 text-center font-bold">{c._count.clientAppointments}</td>
                       <td className="p-8 text-center">
                         <span className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${c.clientProfile?.noShowCount > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>

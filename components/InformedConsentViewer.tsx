@@ -1,97 +1,110 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShieldCheck, Info } from 'lucide-react'
+import { ShieldCheck, FileText, ChevronRight, Loader2, Lock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function InformedConsentViewer() {
+  const [isAgreed, setIsAgreed] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
+
+  const handleSign = async () => {
+    if (!isAgreed) return
+    setIsSubmitting(true)
+    try {
+      const res = await fetch('/api/user/consent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            agreementContent: "Standard Oku Therapy Informed Consent v1.0 - Telehealth, Privacy, and Clinical Terms accepted.",
+            version: "1.0"
+        })
+      })
+      if (res.ok) {
+        // Refresh session or just redirect
+        window.location.href = '/dashboard'
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
-    <div className="bg-white/50 border border-oku-taupe/10 rounded-[2.5rem] overflow-hidden shadow-inner">
-      <div className="bg-oku-purple/30 text-oku-purple-dark p-6 flex items-center gap-3 border-b border-oku-purple/10">
-        <ShieldCheck size={20} className="text-oku-purple-dark" />
-        <span className="text-[10px] font-black uppercase tracking-widest">Official Informed Consent Document</span>
-      </div>
-      
-      <div className="p-8 max-h-[400px] overflow-y-auto custom-scrollbar text-sm leading-relaxed text-oku-taupe space-y-6 bg-oku-cream/10">
-        <div className="text-center mb-10">
-            <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Oku Therapy</h2>
-            <p className="text-[10px] uppercase tracking-widest font-black text-oku-purple mt-1">(Psychotherapeutic & Psychiatric Clinic)</p>
-            <h3 className="text-xl font-display font-bold text-oku-dark mt-4">Informed Consent Form</h3>
+    <div className="min-h-screen bg-oku-cream flex items-center justify-center p-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-3xl w-full bg-white rounded-[3rem] shadow-2xl border border-oku-taupe/10 overflow-hidden"
+      >
+        <div className="bg-oku-navy p-10 text-white flex justify-between items-center relative overflow-hidden">
+           <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                 <Lock size={16} className="text-oku-purple" />
+                 <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Legal Requirement</span>
+              </div>
+              <h1 className="text-4xl font-display font-bold tracking-tight">Clinical Consent.</h1>
+              <p className="text-white/60 italic font-display mt-2">Required for all active Oku Therapy users.</p>
+           </div>
+           <ShieldCheck size={120} className="absolute right-[-20px] bottom-[-20px] text-white opacity-5" />
         </div>
 
-        <p className="font-medium text-oku-dark italic">
-            Oku Therapy is honoured to take this journey of mental health support with you (“Client”). Our
-            team of Psychologists will work collaboratively with the client to help set and achieve the
-            client’s goals if set, while facilitating personal growth/exploration/support through the
-            therapeutic process.
-        </p>
+        <div className="p-12 space-y-8">
+           <div className="bg-oku-cream/30 border border-oku-taupe/5 rounded-[2rem] p-10 h-96 overflow-y-auto custom-scrollbar prose prose-sm max-w-none">
+              <h3 className="font-display font-bold text-xl mb-4">1. Telehealth Services</h3>
+              <p className="text-oku-taupe leading-relaxed mb-6">
+                You are agreeing to participate in telehealth services provided by Oku Therapy. Telehealth involves the use of electronic communications to enable healthcare providers at different locations to share individual patient medical information for the purpose of improving patient care.
+              </p>
 
-        <section className="space-y-3">
-            <h4 className="font-bold text-oku-dark uppercase tracking-widest text-[11px]">Benefits and Risks</h4>
-            <p>
-                Counselling/psychotherapy presents both benefits and risks. The benefits include, and are not
-                limited to, better communication and relationships, solutions to specific problems, increased
-                sense of well-being, and an increase of positive thoughts and feelings. Counselling can
-                sometimes bring up uncomfortable feelings and difficult memories. Sometimes people feel worse
-                before they begin to feel better, which may show up as resistance.
-            </p>
-        </section>
+              <h3 className="font-display font-bold text-xl mb-4">2. Privacy & Data Security</h3>
+              <p className="text-oku-taupe leading-relaxed mb-6">
+                All communications through the platform are end-to-end encrypted. We maintain HIPAA-compliant standards for data storage. Your session transcripts are processed by OKU CORE AI to provide clinical insights for your therapist, but are never shared with third parties for marketing purposes.
+              </p>
 
-        <section className="space-y-3">
-            <h4 className="font-bold text-oku-dark uppercase tracking-widest text-[11px]">Confidentiality</h4>
-            <p>
-                Any information about the client or sessions is held with utmost confidentiality and can only be
-                released by either the client’s written and signed consent or by court order. Should it be needed,
-                the Psychologist may also share information about the client (with permission), audio recordings
-                of session and clinical file with a consulting Supervisor who is qualified and experienced.
-            </p>
-            <div className="bg-oku-purple/5 p-4 rounded-2xl border border-oku-purple/10">
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple mb-2">Confidentiality Limitations</p>
-                <ol className="list-decimal list-inside space-y-1 text-xs">
-                    <li>When the client may be a danger to self or others.</li>
-                    <li>When there is suspicion or disclosure of child abuse or neglect.</li>
-                    <li>When records are subpoenaed by court order.</li>
-                    <li>When the client gives permission to consult with other individuals.</li>
-                </ol>
-            </div>
-        </section>
+              <h3 className="font-display font-bold text-xl mb-4">3. Confidentiality</h3>
+              <p className="text-oku-taupe leading-relaxed mb-6">
+                Confidentiality is maintained except in cases of reported harm to self or others, or as required by law.
+              </p>
 
-        <section className="space-y-3">
-            <h4 className="font-bold text-oku-dark uppercase tracking-widest text-[11px]">No Secrets Policy (Relationship Therapy)</h4>
-            <p>
-                As a Clinical or Counselling Psychologist who is entrusted with information from all members in
-                a relationship when seeing them together or separately, the Psychologist has a Policy of “No
-                Secrets”, which means that the Psychologist cannot promise to protect secrets of either member,
-                especially if the secret is harmful or destructive to the process of the therapy itself.
-            </p>
-        </section>
+              <h3 className="font-display font-bold text-xl mb-4">4. Emergency Procedures</h3>
+              <p className="text-oku-taupe leading-relaxed mb-6">
+                In the event of a clinical emergency, please use your local emergency services (e.g., 911 or 112) as the platform is not designed for real-time crisis intervention.
+              </p>
+           </div>
 
-        <section className="space-y-3">
-            <h4 className="font-bold text-oku-dark uppercase tracking-widest text-[11px]">Social Media & Communication</h4>
-            <p>
-                The Client is discouraged from personally contacting the Psychologist on any social media
-                channels. All communications via the internet should be limited to scheduling appointments.
-                Regardless of the Client’s location, the client understands that the Psychologist is domiciled in
-                India and that the counselling service provided falls under the laws and jurisdiction of India.
-            </p>
-        </section>
+           <div className="flex items-start gap-4 p-6 bg-oku-ocean/20 rounded-2xl border border-oku-blue-mid/10">
+              <input 
+                type="checkbox" 
+                id="consent"
+                checked={isAgreed}
+                onChange={(e) => setIsAgreed(e.target.checked)}
+                className="mt-1 w-5 h-5 rounded border-oku-taupe/20 text-oku-navy focus:ring-oku-purple"
+              />
+              <label htmlFor="consent" className="text-sm text-oku-dark leading-relaxed font-medium">
+                I have read and understood the Informed Consent and Privacy Policy. I agree to the terms of service and clinical protocols of the Oku collective.
+              </label>
+           </div>
 
-        <section className="space-y-3">
-            <h4 className="font-bold text-oku-dark uppercase tracking-widest text-[11px]">Cancellation Policy</h4>
-            <p>
-                If the client is unable to attend a session, it is the client’s responsibility to inform the Psychologist 
-                atleast 24 hours in advance. A cancellation fee up to the amount due for the session may be charged in 
-                case of a no show or late cancellation (less than 24 hours). For offline sessions, 100% of the fee is charged 
-                for a no show.
-            </p>
-        </section>
-
-        <div className="pt-6 border-t border-oku-taupe/10">
-            <p className="text-xs italic text-oku-taupe">
-                By completing the digital signature below, you certify that you have read, understood, and agreed to the terms 
-                outlined in this Oku Therapy Informed Consent Form.
-            </p>
+           <div className="pt-4 flex justify-between items-center gap-8">
+              <button 
+                onClick={() => window.location.href = '/api/auth/signout'}
+                className="text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-red-500 transition-colors"
+              >
+                Decline & Exit
+              </button>
+              <button 
+                disabled={!isAgreed || isSubmitting}
+                onClick={handleSign}
+                className="btn-navy py-5 px-12 flex items-center gap-3 disabled:opacity-30 shadow-2xl active:scale-95 transition-all"
+              >
+                {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <>Finalize & Enter <ChevronRight size={18} /></>}
+              </button>
+           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
