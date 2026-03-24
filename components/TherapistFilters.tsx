@@ -149,8 +149,9 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
 
                   <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center">
                       <div className="flex gap-2">
-                         {practitioner.linkedinUrl && <a href={practitioner.linkedinUrl} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-oku-navy transition-all shadow-lg"><Linkedin size={14}/></a>}
-                         {practitioner.websiteUrl && <a href={practitioner.websiteUrl} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-oku-navy transition-all shadow-lg"><Globe size={14}/></a>}
+                         <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white cursor-default shadow-lg ring-1 ring-white/20">
+                            <ShieldCheck size={14}/>
+                         </div>
                       </div>
                       <span className="bg-white text-oku-dark px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">
                           {(() => {

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { 
   Calendar, Clock, Users, FileText, Heart, 
   Video, Search, Sparkles, ClipboardCheck, BookOpen,
-  ArrowUpRight, Wind, ShieldCheck
+  ArrowUpRight, Wind, ShieldCheck, AlertCircle
 } from 'lucide-react'
 import { AppointmentStatus } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
@@ -27,6 +27,7 @@ export default async function ClientDashboardPage() {
       where: { id: session.user.id },
       include: {
         clientProfile: true,
+        intakeForm: true,
         clientAppointments: {
           where: {
             startTime: { gte: new Date() },
@@ -65,6 +66,9 @@ export default async function ClientDashboardPage() {
 
   const upcomingAppointments = user.clientAppointments || []
   const recentAssessments = user.assessmentAnswers || []
+  const hasIncompleteIntake = !user.intakeForm
+  const hasIncompleteConsent = !user.hasSignedConsent
+
   const practitioners = await prisma.practitionerProfile.findMany({
     include: { user: true },
     where: { isVerified: true },
@@ -103,6 +107,41 @@ export default async function ClientDashboardPage() {
         {/* Left Column: Core Activities */}
         <div className="lg:col-span-8 space-y-10">
           
+          {(hasIncompleteIntake || hasIncompleteConsent) && (
+            <div className="bg-oku-navy p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+               <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-6">
+                     <AlertCircle size={20} className="text-oku-purple animate-pulse" />
+                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Action Required</span>
+                  </div>
+                  <h2 className="text-3xl font-display font-bold text-white mb-4 tracking-tight">Onboarding Incomplete</h2>
+                  <p className="text-white/60 italic font-display text-lg mb-8">Please finalize your secure credentials to unlock full clinical features.</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                     {hasIncompleteConsent && (
+                        <Link href="/consent" className="bg-oku-purple text-oku-dark p-6 rounded-3xl flex items-center justify-between group/btn hover:bg-white transition-all">
+                           <div>
+                              <p className="font-bold text-sm">Clinical Consent</p>
+                              <p className="text-[10px] uppercase tracking-widest opacity-60">Needs Signature</p>
+                           </div>
+                           <ArrowUpRight size={20} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                        </Link>
+                     )}
+                     {hasIncompleteIntake && (
+                        <Link href="/dashboard/client/intake" className="bg-white/10 backdrop-blur-md text-white p-6 rounded-3xl flex items-center justify-between group/btn hover:bg-white/20 transition-all border border-white/5">
+                           <div>
+                              <p className="font-bold text-sm text-white">Medical Intake</p>
+                              <p className="text-[10px] uppercase tracking-widest opacity-40">Incomplete</p>
+                           </div>
+                           <ArrowUpRight size={20} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                        </Link>
+                     )}
+                  </div>
+               </div>
+               <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+            </div>
+          )}
+
           {/* Stats Bar */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="card-glass p-8 flex items-center justify-between group">

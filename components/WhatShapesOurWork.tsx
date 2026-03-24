@@ -104,7 +104,7 @@ export default function WhatShapesOurWork() {
           </p>
           
           <Link
-            href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
+            href="/dashboard/client/therapists"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-4 bg-oku-dark text-white rounded-full hover:bg-oku-taupe transition-colors duration-300"

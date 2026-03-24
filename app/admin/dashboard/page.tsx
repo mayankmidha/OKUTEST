@@ -7,44 +7,44 @@ import AdminDashboardClient from './AdminDashboardClient'
 export default async function AdminDashboardPage() {
   const session = await auth()
 
-  if (!session?.user?.id || session.user.role !== UserRole.ADMIN) {
+  if (!session?.user || session.user.role !== UserRole.ADMIN) {
     redirect('/auth/login')
   }
 
   // 1. Core Platform Data
-  const therapists = await prisma.user.findMany({
-    where: { role: UserRole.THERAPIST },
-    include: { practitionerProfile: true },
-    orderBy: { createdAt: 'desc' }
-  }).catch(() => [])
+  const [therapists, clients, services, totalAppointments, completedPayments, auditLogs] = await Promise.all([
+    prisma.user.findMany({
+        where: { role: UserRole.THERAPIST },
+        include: { practitionerProfile: true },
+        orderBy: { createdAt: 'desc' }
+    }).catch(() => []),
+    
+    prisma.user.findMany({
+        where: { role: UserRole.CLIENT },
+        include: {
+            clientProfile: true,
+            intakeForm: { select: { id: true } },
+            _count: { select: { clientAppointments: true } }
+        }
+    }).catch(() => []),
 
-  const clients = await prisma.user.findMany({
-    where: { role: UserRole.CLIENT },
-    include: {
-      clientProfile: true,
-      _count: {
-        select: { clientAppointments: true }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  }).catch(() => [])
+    prisma.service.findMany({
+        orderBy: { createdAt: 'asc' }
+    }).catch(() => []),
 
-  const services = await prisma.service.findMany({
-    orderBy: { createdAt: 'asc' }
-  }).catch(() => [])
+    prisma.appointment.count().catch(() => 0),
 
-  const totalAppointments = await prisma.appointment.count().catch(() => 0)
-  
-  const completedPayments = await prisma.payment.aggregate({
-    where: { status: 'COMPLETED' },
-    _sum: { amount: true }
-  }).catch(() => ({ _sum: { amount: 0 } }))
+    prisma.payment.aggregate({
+        where: { status: 'COMPLETED' },
+        _sum: { amount: true }
+    }).catch(() => ({ _sum: { amount: 0 } })),
 
-  const auditLogs = await prisma.auditLog.findMany({
-    include: { user: { select: { name: true } } },
-    orderBy: { createdAt: 'desc' },
-    take: 50
-  }).catch(() => [])
+    prisma.auditLog.findMany({
+        include: { user: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 50
+    }).catch(() => [])
+  ])
 
   // 2. Settings with Graceful Fallback
   let settings = { maintenanceMode: false, platformFeePercent: 20 }

@@ -51,7 +51,7 @@ export default function Footer() {
               <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
                 <li><a href="https://instagram.com/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">Instagram</a></li>
                 <li><a href="https://linkedin.com/company/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">LinkedIn</a></li>
-                <li><a href="https://wa.me/919953879928" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">WhatsApp</a></li>
+                <li><a href="/dashboard/client/therapists" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">WhatsApp</a></li>
               </ul>
             </div>
           </div>

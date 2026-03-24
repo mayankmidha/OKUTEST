@@ -53,7 +53,7 @@ export function DashboardSidebar() {
   return (
     <aside className="w-80 bg-oku-page-bg/50 backdrop-blur-3xl border-r border-oku-taupe/5 min-h-screen flex flex-col sticky top-0 z-40 p-6 gap-8">
       <div className="px-4 py-6">
-        <Link href="/" className="block group">
+        <Link href="/dashboard" className="block group">
           <motion.img 
             whileHover={{ scale: 1.05 }}
             src="/uploads/2025/07/Logoo.png" 

@@ -127,7 +127,7 @@ export default function ServicesSection() {
                 </div>
 
                 <Link
-                  href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
+                  href="/dashboard/client/therapists"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-8 py-4 border-2 border-oku-dark rounded-full text-oku-dark hover:bg-oku-dark hover:text-white transition-all duration-300"

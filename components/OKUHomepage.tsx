@@ -40,7 +40,7 @@ export default function OKUHomepage() {
             Oku is a psychotherapy collective offering <strong>inclusive, trauma-informed care</strong> for all parts of who you are. Book a free consultation to begin gently.
           </p>
           <Link 
-            href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
+            href="/dashboard/client/therapists"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-oku-dark text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-oku-taupe transition-all hover:scale-105"
@@ -145,7 +145,7 @@ export default function OKUHomepage() {
                   ))}
                 </div>
                 <Link 
-                  href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
+                  href="/dashboard/client/therapists"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block bg-oku-dark text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-oku-taupe transition-colors"
@@ -202,7 +202,7 @@ export default function OKUHomepage() {
               "It's okay to take your time."
             </blockquote>
             <Link 
-              href="https://wa.me/919953879928?text=Hi%20I%20want%20to%20book%20a%201-1%20session%20with%20you"
+              href="/dashboard/client/therapists"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-oku-dark text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-oku-taupe transition-all hover:scale-105"

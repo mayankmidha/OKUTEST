@@ -407,6 +407,7 @@ function AdminDashboardContent({
                   <tr>
                     <th className="p-8">Client Name</th>
                     <th className="p-8">Contact Identity</th>
+                    <th className="p-8 text-center">Onboarding</th>
                     <th className="p-8 text-center">Consent Status</th>
                     <th className="p-8 text-center">Sessions</th>
                     <th className="p-8 text-center">Attendance Note</th>
@@ -425,6 +426,13 @@ function AdminDashboardContent({
                          </div>
                       </td>
                       <td className="p-8 text-sm text-oku-taupe italic">{c.email}</td>
+                      <td className="p-8 text-center">
+                        <div className="flex flex-col gap-1.5 items-center">
+                            <span className={`px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest ${c.intakeForm ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+                                Intake: {c.intakeForm ? 'DONE' : 'PENDING'}
+                            </span>
+                        </div>
+                      </td>
                       <td className="p-8 text-center">
                         <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${c.hasSignedConsent ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
                             {c.hasSignedConsent ? 'SIGNED' : 'PENDING'}
