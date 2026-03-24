@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const { type, responses, score, result, assignmentId } = await req.json()
 
     // Find assessment by title (mapping type back to database model)
-    const assessmentDef = await prisma.assessment.findUnique({
+    const assessmentDef = await prisma.assessment.findFirst({
       where: { title: type }
     })
 

@@ -6,7 +6,7 @@ import {
   Calendar, Users, Clock, DollarSign, 
   Video, Activity, TrendingUp, 
   FileText, ArrowRight, Sparkles, Heart,
-  ShieldCheck, Zap, Brain, MessageSquare
+  ShieldCheck, Zap, Brain, MessageSquare, ArrowUpRight
 } from 'lucide-react'
 import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
 import { DashboardCard } from '@/components/DashboardCard'

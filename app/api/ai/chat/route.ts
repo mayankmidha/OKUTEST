@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '../../../../node_modules/@google/generative-ai'
+;
 
 export async function POST(req: Request) {
   try {
@@ -10,8 +11,6 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'dummy_key_to_prevent_crash' });
 
     const { prompt, context } = await req.json();
     const userId = session.user.id;
@@ -68,16 +67,17 @@ export async function POST(req: Request) {
       });
     }
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: fullPrompt,
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.4,
-      }
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemPrompt
     });
 
-    return NextResponse.json({ result: response.text, data: platformData });
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    return NextResponse.json({ result: text, data: platformData });
 
   } catch (error) {
     console.error("AI Core Integration Error:", error);

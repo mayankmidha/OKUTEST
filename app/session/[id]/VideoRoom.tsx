@@ -50,7 +50,6 @@ export function VideoRoom({
         const user: User = {
           id: userId,
           name: userName,
-          role: role === 'THERAPIST' ? 'admin' : 'user'
         }
 
         const newClient = new StreamVideoClient({ apiKey, user, token })
@@ -118,7 +117,7 @@ export function VideoRoom({
       </StreamVideo>
       
       {/* Custom styles to make Stream SDK fit our premium theme */}
-      <style dangerouslySetContent={{__html:`
+      <style dangerouslySetInnerHTML={{__html:`
         .str-video {
            --str-video-primary-color: #9D85B3;
            --str-video-bg-color: transparent;

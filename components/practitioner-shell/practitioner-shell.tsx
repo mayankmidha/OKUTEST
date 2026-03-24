@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { 
   Calendar, Users, Clock, Settings, 
   ChevronRight, LogOut, Bell, Search,
-  LayoutDashboard, UserCircle, Briefcase, MessageSquare, HelpCircle
+  LayoutDashboard, UserCircle, Briefcase, MessageSquare, HelpCircle, Brain
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 

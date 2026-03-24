@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenerativeAI } from '../../../../node_modules/@google/generative-ai'
 
 export async function GET() {
   const session = await auth()
@@ -66,9 +66,14 @@ export async function GET() {
     }
 
     // 3. Consult OCI
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
     const systemPrompt = `You are OKU CORE INTELLIGENCE (OCI), the autonomous brain of a Mental Health SaaS platform. Analyze system data and provide a concise 'Platform Vitality Report'.`
+    
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemPrompt
+    });
     
     const fullPrompt = `
       Analyze this system data: ${JSON.stringify(systemPulse)}
@@ -83,18 +88,13 @@ export async function GET() {
       Keep it clinical and ultra-concise.
     `
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: fullPrompt,
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.2,
-      }
-    });
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
 
     return NextResponse.json({
       timestamp: new Date().toISOString(),
-      analysis: response.text,
+      analysis: text,
       vitals: systemPulse.vitals
     })
 

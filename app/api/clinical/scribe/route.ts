@@ -2,7 +2,8 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenerativeAI } from '../../../../node_modules/@google/generative-ai'
+
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -44,8 +45,13 @@ export async function POST(req: Request) {
     }
 
     // 3. Consult OCI Scribe
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const systemPrompt = `You are Oku Clinical Scribe, an expert AI assistant for psychotherapists. Your task is to draft a professional SOAP note based on recent patient data.`
+    
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemPrompt
+    });
     
     const fullPrompt = `
       Draft a SOAP note for a ${clinicalContext.sessionType} with ${clinicalContext.patientName}.
@@ -64,16 +70,11 @@ export async function POST(req: Request) {
       Maintain a professional, clinical, yet trauma-informed tone. Keep each section to 2-3 sentences.
     `
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: fullPrompt,
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.3,
-      }
-    });
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
 
-    return NextResponse.json({ draft: response.text })
+    return NextResponse.json({ draft: text })
 
   } catch (error) {
     console.error("[OCI_SCRIBE_ERROR]", error)

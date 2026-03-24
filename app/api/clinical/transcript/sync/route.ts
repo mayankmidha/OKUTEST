@@ -2,7 +2,8 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenerativeAI } from '../../../../../node_modules/@google/generative-ai'
+
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -29,9 +30,8 @@ export async function POST(req: Request) {
     }
 
     // 1. Consult OKU CORE AI (Gemini)
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
-
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
     const systemPrompt = `You are OKU CORE AI, the central intelligence of a trauma-informed psychotherapy collective. 
     Your task is to analyze clinical session transcripts.
     Provide a JSON response with the following keys:
@@ -39,6 +39,11 @@ export async function POST(req: Request) {
     - sentiment: One word (POSITIVE, NEUTRAL, or NEGATIVE) representing the patient's state.
     - keyInsights: A list of 3-5 clinical observations (e.g., "High anxiety regarding work", "Positive progress on boundary setting").
     - riskLevel: (LOW, MEDIUM, HIGH) based on clinical markers.`
+
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: systemPrompt
+    });
 
     const fullPrompt = `
       Analyze the following session transcript for a ${appointment.service.name} with ${appointment.client.name}:
@@ -50,7 +55,8 @@ export async function POST(req: Request) {
     `
 
     const result = await model.generateContent(fullPrompt);
-    const responseText = result.response.text();
+    const response = await result.response;
+    const responseText = response.text();
     
     // Attempt to parse JSON from response (handling potential markdown blocks)
     const jsonStr = responseText.replace(/```json|```/g, "").trim();
