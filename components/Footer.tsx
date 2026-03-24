@@ -31,7 +31,7 @@ export default function Footer() {
               <h4 className="font-medium mb-8 uppercase tracking-[0.2em] text-[11px] text-oku-dark">Explore</h4>
               <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
                 <li><Link href="/about-us" className="hover:text-oku-purple transition-colors">Our Story</Link></li>
-                <li><Link href="/therapists" className="hover:text-oku-purple transition-colors">Our People</Link></li>
+                <li><Link href="/people" className="hover:text-oku-purple transition-colors">Our People</Link></li>
                 <li><Link href="/services" className="hover:text-oku-purple transition-colors">Services</Link></li>
                 <li><Link href="/blog" className="hover:text-oku-purple transition-colors">Blog</Link></li>
               </ul>
@@ -51,7 +51,7 @@ export default function Footer() {
               <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
                 <li><a href="https://instagram.com/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">Instagram</a></li>
                 <li><a href="https://linkedin.com/company/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">LinkedIn</a></li>
-                <li><a href="/dashboard/client/therapists" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">WhatsApp</a></li>
+                <li><Link href="/dashboard/client/therapists" className="hover:text-oku-pink transition-colors">WhatsApp Support</Link></li>
               </ul>
             </div>
           </div>
