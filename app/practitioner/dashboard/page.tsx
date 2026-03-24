@@ -110,6 +110,7 @@ export default async function PractitionerDashboardPage() {
       description="Refined practice management for deep clinical focus."
       badge="Practitioner HQ"
       currentPath="/practitioner/dashboard"
+      canPostBlogs={practitioner?.canPostBlogs}
       heroActions={
         <div className="flex items-center gap-4">
           <Link href="/practitioner/schedule" className="btn-sky hidden md:flex items-center gap-2">

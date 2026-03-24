@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { 
   Calendar, Users, Clock, Settings, 
   ChevronRight, LogOut, Bell, Search,
-  LayoutDashboard, UserCircle, Briefcase, MessageSquare, HelpCircle, Brain
+  LayoutDashboard, UserCircle, Briefcase, MessageSquare, HelpCircle, Brain, FileText
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
@@ -24,18 +24,28 @@ type PractitionerShellProps = {
   headerActions?: ReactNode
   heroActions?: ReactNode
   title: string
+  canPostBlogs?: boolean
 }
 
-const NAV_LINKS: PractitionerNavLink[] = [
-  { href: '/practitioner/dashboard', label: 'Overview', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/messages', label: 'Messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/appointments', label: 'Schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/clients', label: 'Patients', icon: <Users size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/intelligence', label: 'Intelligence', icon: <Brain size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/schedule', label: 'Hours', icon: <Clock size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/profile', label: 'Profile', icon: <UserCircle size={18} strokeWidth={1.5} /> },
-  { href: '/practitioner/support', label: 'Support', icon: <HelpCircle size={18} strokeWidth={1.5} /> },
-]
+const getNavLinks = (canPostBlogs: boolean): PractitionerNavLink[] => {
+  const links = [
+    { href: '/practitioner/dashboard', label: 'Overview', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
+    { href: '/practitioner/messages', label: 'Messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
+    { href: '/practitioner/appointments', label: 'Schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
+    { href: '/practitioner/clients', label: 'Patients', icon: <Users size={18} strokeWidth={1.5} /> },
+    { href: '/practitioner/intelligence', label: 'Intelligence', icon: <Brain size={18} strokeWidth={1.5} /> },
+    { href: '/practitioner/schedule', label: 'Hours', icon: <Clock size={18} strokeWidth={1.5} /> },
+  ]
+
+  if (canPostBlogs) {
+    links.push({ href: '/practitioner/blogs', label: 'Blogs', icon: <FileText size={18} strokeWidth={1.5} /> })
+  }
+
+  links.push({ href: '/practitioner/profile', label: 'Profile', icon: <UserCircle size={18} strokeWidth={1.5} /> })
+  links.push({ href: '/practitioner/support', label: 'Support', icon: <HelpCircle size={18} strokeWidth={1.5} /> })
+
+  return links
+}
 
 function isActiveLink(currentPath: string, href: string) {
   if (currentPath === href) return true
@@ -50,7 +60,9 @@ export function PractitionerShell({
   headerActions,
   heroActions,
   title,
+  canPostBlogs = false,
 }: PractitionerShellProps) {
+  const navLinks = getNavLinks(canPostBlogs)
   return (
     <div className="min-h-screen bg-oku-cream font-sans text-oku-dark selection:bg-oku-purple/20">
       {/* Sophisticated Background Layers */}
@@ -69,7 +81,7 @@ export function PractitionerShell({
 
             <nav className="space-y-2">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-4 opacity-40">Clinical Workspace</p>
-              {NAV_LINKS.map((link) => {
+              {navLinks.map((link) => {
                 const active = isActiveLink(currentPath, link.href)
                 const renderedIcon = link.icon
 

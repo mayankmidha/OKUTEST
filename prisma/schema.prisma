@@ -200,6 +200,7 @@ model PractitionerProfile {
   sessionDuration          Int                    @default(50)
   bufferDuration           Int                    @default(10)
   isVerified               Boolean                @default(false)
+  canPostBlogs             Boolean                @default(false)
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   npiNumber                String?

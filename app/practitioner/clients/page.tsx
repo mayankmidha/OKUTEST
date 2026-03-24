@@ -13,6 +13,11 @@ export default async function PractitionerClientsPage() {
     redirect('/auth/login')
   }
 
+  const profile = await prisma.practitionerProfile.findUnique({
+    where: { userId: session.user.id },
+    select: { canPostBlogs: true }
+  })
+
   // Fetch unique clients for this practitioner
   const appointments = await prisma.appointment.findMany({
     where: { practitionerId: session.user.id },
@@ -61,6 +66,7 @@ export default async function PractitionerClientsPage() {
       description="Manage your active caseload and clinical files."
       badge="Patients"
       currentPath="/practitioner/clients"
+      canPostBlogs={profile?.canPostBlogs}
       heroActions={
         <div className="relative w-full md:w-72">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe" size={16} />

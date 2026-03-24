@@ -23,6 +23,15 @@ export async function toggleTherapistVerification(practitionerId: string, isVeri
   revalidatePath('/admin/dashboard')
 }
 
+export async function toggleTherapistBlogPower(practitionerId: string, canPostBlogs: boolean) {
+  await checkAdmin()
+  await prisma.practitionerProfile.update({
+    where: { id: practitionerId },
+    data: { canPostBlogs }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
 export async function updateTherapistRate(practitionerId: string, hourlyRate: number) {
   await checkAdmin()
   await prisma.practitionerProfile.update({
@@ -78,10 +87,26 @@ export async function updatePlatformSettings(data: { maintenanceMode?: boolean, 
   revalidatePath('/admin/dashboard')
 }
 
+// Helper to check editorial access (Admin or Editor Therapist)
+async function checkEditorial() {
+  const session = await auth()
+  if (!session?.user) throw new Error('Unauthorized')
+  
+  if (session.user.role === UserRole.ADMIN) return session
+
+  const profile = await prisma.practitionerProfile.findUnique({
+    where: { userId: session.user.id }
+  })
+
+  if (profile?.canPostBlogs) return session
+  
+  throw new Error('Unauthorized')
+}
+
 // ─── BLOG ACTIONS ────────────────────────────────────────────────────────────
 
 export async function createPost(data: { title: string, content: string, excerpt?: string, category?: string, image?: string, published?: boolean }) {
-  const session = await checkAdmin()
+  const session = await checkEditorial()
   const slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
   
   await prisma.post.create({
@@ -92,25 +117,32 @@ export async function createPost(data: { title: string, content: string, excerpt
     }
   })
   revalidatePath('/admin/dashboard')
+  revalidatePath('/practitioner/blogs')
   revalidatePath('/blog')
 }
 
 export async function updatePost(id: string, data: { title?: string, content?: string, excerpt?: string, category?: string, image?: string, published?: boolean }) {
-  await checkAdmin()
+  const session = await checkEditorial()
+  
+  // If therapist, ensure they own the post (or just let them edit all if they are editors)
+  // For now, let's keep it simple: Editors can edit all blogs.
+  
   await prisma.post.update({
     where: { id },
     data
   })
   revalidatePath('/admin/dashboard')
+  revalidatePath('/practitioner/blogs')
   revalidatePath('/blog')
 }
 
 export async function deletePost(id: string) {
-  await checkAdmin()
+  await checkEditorial()
   await prisma.post.delete({
     where: { id }
   })
   revalidatePath('/admin/dashboard')
+  revalidatePath('/practitioner/blogs')
   revalidatePath('/blog')
 }
 

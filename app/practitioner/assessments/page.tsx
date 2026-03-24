@@ -17,7 +17,7 @@ export default async function PractitionerAssessmentsPage() {
     redirect('/auth/login')
   }
 
-  const [assessments, appointments] = await Promise.all([
+  const [assessments, appointments, profile] = await Promise.all([
     prisma.assessment.findMany({
         orderBy: { createdAt: 'desc' }
     }),
@@ -25,6 +25,10 @@ export default async function PractitionerAssessmentsPage() {
         where: { practitionerId: session.user.id },
         include: { client: { select: { id: true, name: true } } },
         distinct: ['clientId']
+    }),
+    prisma.practitionerProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { canPostBlogs: true }
     })
   ])
 
@@ -36,6 +40,7 @@ export default async function PractitionerAssessmentsPage() {
       description="Manage your custom screenings and assign them to your patient roster."
       badge="Clinical"
       currentPath="/practitioner/assessments"
+      canPostBlogs={profile?.canPostBlogs}
       heroActions={
         <Link href="/practitioner/assessments/new" className="btn-primary py-4 px-10 flex items-center gap-3 shadow-xl">
           <Plus size={18} /> Create New Tool

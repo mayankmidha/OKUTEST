@@ -10,12 +10,20 @@ import {
   Calendar, FileText, Zap, AlertTriangle, Megaphone, Sparkles, Brain,
   ArrowUpRight, Globe, Lock, MessageSquare
 } from 'lucide-react'
-import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, createService, toggleServiceStatus, updatePlatformSettings } from '../actions'
+import { 
+  toggleTherapistVerification, 
+  toggleTherapistBlogPower,
+  updateTherapistRate, 
+  updateServicePrice, 
+  createService, 
+  toggleServiceStatus, 
+  updatePlatformSettings 
+} from '../actions'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { OCIDiagnostic } from '@/components/OCIDiagnostic'
 import { AdminUserManagement } from '@/components/AdminUserManagement'
-import { AdminBlogManager } from '@/components/AdminBlogManager'
+import { BlogManager } from '@/components/BlogManager'
 import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
 
 function AdminDashboardContent({ 
@@ -283,6 +291,7 @@ function AdminDashboardContent({
                   <tr className="bg-oku-cream/50 text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe/60">
                     <th className="p-8">Practitioner Identity</th>
                     <th className="p-8 text-center">Consent</th>
+                    <th className="p-8 text-center">Editorial</th>
                     <th className="p-8">Credential Status</th>
                     <th className="p-8">Market Rate ($)</th>
                     <th className="p-8 text-right">Actions</th>
@@ -306,6 +315,14 @@ function AdminDashboardContent({
                         <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${t.hasSignedConsent ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
                             {t.hasSignedConsent ? 'SIGNED' : 'PENDING'}
                         </span>
+                      </td>
+                      <td className="p-8 text-center">
+                        <button 
+                          onClick={() => toggleTherapistBlogPower(t.practitionerProfile.id, !t.practitionerProfile.canPostBlogs)}
+                          className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all ${t.practitionerProfile.canPostBlogs ? 'bg-oku-purple text-oku-purple-dark border-oku-purple/30' : 'bg-oku-cream text-oku-taupe border-oku-taupe/10 opacity-40 hover:opacity-100'}`}
+                        >
+                            {t.practitionerProfile.canPostBlogs ? 'EDITOR' : 'READ-ONLY'}
+                        </button>
                       </td>
                       <td className="p-8">
                         <button 
@@ -358,7 +375,7 @@ function AdminDashboardContent({
 
         {activeTab === 'blogs' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <AdminBlogManager initialPosts={stats.allPosts} />
+            <BlogManager initialPosts={stats.allPosts} />
           </div>
         )}
 

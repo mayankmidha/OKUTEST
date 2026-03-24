@@ -15,15 +15,21 @@ export default async function PractitionerAppointmentsPage() {
     redirect('/auth/login')
   }
 
-  const appointments = await prisma.appointment.findMany({
-    where: { practitionerId: session.user.id },
-    include: {
-      client: true,
-      service: true,
-      soapNote: true
-    },
-    orderBy: { startTime: 'desc' }
-  })
+  const [appointments, profile] = await Promise.all([
+    prisma.appointment.findMany({
+      where: { practitionerId: session.user.id },
+      include: {
+        client: true,
+        service: true,
+        soapNote: true
+      },
+      orderBy: { startTime: 'desc' }
+    }),
+    prisma.practitionerProfile.findUnique({
+      where: { userId: session.user.id },
+      select: { canPostBlogs: true }
+    })
+  ])
 
   const upcoming = appointments.filter(a => new Date(a.startTime) > new Date() && a.status !== 'CANCELLED')
   const completed = appointments.filter(a => a.status === 'COMPLETED' || a.status === 'NO_SHOW')
@@ -34,6 +40,7 @@ export default async function PractitionerAppointmentsPage() {
       description="Clinical appointment schedule and session record management."
       badge="Schedule"
       currentPath="/practitioner/appointments"
+      canPostBlogs={profile?.canPostBlogs}
       heroActions={
         <Link href="/practitioner/schedule" className="btn-primary py-3.5 px-6 text-[10px] shadow-xl">Manage Hours</Link>
       }

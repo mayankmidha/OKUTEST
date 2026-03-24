@@ -1,14 +1,29 @@
 import { Mail, Phone, MessageSquare, ShieldAlert, LifeBuoy } from 'lucide-react'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { DashboardCard } from '@/components/DashboardCard'
+import { auth } from '@/auth'
+import { prisma } from '@/lib/prisma'
+import { redirect } from 'next/navigation'
 
-export default function PractitionerSupportPage() {
+export default async function PractitionerSupportPage() {
+  const session = await auth()
+  
+  if (!session?.user) {
+    redirect('/auth/login')
+  }
+
+  const profile = await prisma.practitionerProfile.findUnique({
+    where: { userId: session.user.id },
+    select: { canPostBlogs: true }
+  })
+
   return (
     <PractitionerShell
       title="Practitioner Support"
       description="Technical assistance and clinical operations support for your practice."
       badge="Help Desk"
       currentPath="/practitioner/support"
+      canPostBlogs={profile?.canPostBlogs}
     >
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">

@@ -9,7 +9,7 @@ import {
 import { createPost, updatePost, deletePost } from '@/app/admin/actions'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export function AdminBlogManager({ initialPosts }: { initialPosts: any[] }) {
+export function BlogManager({ initialPosts }: { initialPosts: any[] }) {
   const [posts, setPosts] = useState(initialPosts)
   const [isEditing, setIsEditing] = useState<string | null>(null) // 'new' or post.id
   const [formData, setFormData] = useState({

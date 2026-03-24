@@ -13,18 +13,24 @@ export default async function PractitionerIntelligencePage() {
     redirect('/auth/login')
   }
 
-  const transcripts = await prisma.transcript.findMany({
-    where: { appointment: { practitionerId: session.user.id } },
-    include: { 
-        appointment: { 
-            include: { 
-                service: true,
-                client: { select: { name: true } }
+  const [transcripts, profile] = await Promise.all([
+    prisma.transcript.findMany({
+        where: { appointment: { practitionerId: session.user.id } },
+        include: { 
+            appointment: { 
+                include: { 
+                    service: true,
+                    client: { select: { name: true } }
+                } 
             } 
-        } 
-    },
-    orderBy: { createdAt: 'desc' }
-  })
+        },
+        orderBy: { createdAt: 'desc' }
+    }),
+    prisma.practitionerProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { canPostBlogs: true }
+    })
+  ])
 
   return (
     <PractitionerShell
@@ -32,6 +38,7 @@ export default async function PractitionerIntelligencePage() {
         badge="OCI Core"
         currentPath="/practitioner/intelligence"
         description="AI-driven analysis of your clinical sessions and patient progress trends."
+        canPostBlogs={profile?.canPostBlogs}
     >
         <div className="space-y-12">
             {/* Intelligence Header Stats */}

@@ -14,15 +14,20 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
     redirect('/auth/login')
   }
 
-  // Find all clients the practitioner has had appointments with
-  const appointments = await prisma.appointment.findMany({
-    where: { practitionerId: session.user.id },
-    include: { client: true },
-    distinct: ['clientId']
-  })
+  const [appointments, profile] = await Promise.all([
+    prisma.appointment.findMany({
+      where: { practitionerId: session.user.id },
+      include: { client: true },
+      distinct: ['clientId']
+    }),
+    prisma.practitionerProfile.findUnique({
+      where: { userId: session.user.id },
+      select: { canPostBlogs: true }
+    })
+  ])
 
   const clients = appointments.map(a => a.client)
-  const activeClientId = searchParams.c || (clients.length > 0 ? clients[0].id : null)
+  const activeClientId = (await searchParams).c || (clients.length > 0 ? clients[0].id : null)
   const activeClient = clients.find(c => c.id === activeClientId)
 
   return (
@@ -31,6 +36,7 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
       description="Manage secure, asynchronous communications with your patient roster."
       badge="Messages"
       currentPath="/practitioner/messages"
+      canPostBlogs={profile?.canPostBlogs}
     >
       {clients.length === 0 ? (
         <div className="bg-white p-12 rounded-[3rem] border border-oku-taupe/10 shadow-xl text-center">

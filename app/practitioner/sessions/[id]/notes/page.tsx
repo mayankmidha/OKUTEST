@@ -13,13 +13,19 @@ export default async function SessionNotesPage({ params }: { params: Promise<{ i
     redirect("/dashboard")
   }
 
-  const therapistSession = await prisma.appointment.findUnique({
-    where: { id: id },
-    include: { 
-        client: true,
-        soapNote: true
-    }
-  })
+  const [therapistSession, profile] = await Promise.all([
+    prisma.appointment.findUnique({
+        where: { id: id },
+        include: { 
+            client: true,
+            soapNote: true
+        }
+    }),
+    prisma.practitionerProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { canPostBlogs: true }
+    })
+  ])
 
   if (!therapistSession || therapistSession.practitionerId !== session.user.id) {
     redirect("/practitioner/dashboard")
@@ -31,6 +37,7 @@ export default async function SessionNotesPage({ params }: { params: Promise<{ i
       badge="Clinical"
       currentPath="/practitioner/appointments"
       description={`Documenting session insights and therapeutic progress for ${therapistSession.client.name}.`}
+      canPostBlogs={profile?.canPostBlogs}
     >
       <div className="max-w-5xl mx-auto">
         <NotesEditor appointment={therapistSession} existingNote={therapistSession.soapNote} />

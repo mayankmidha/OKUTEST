@@ -31,6 +31,7 @@ export default async function PractitionerProfilePage() {
       badge="Profile"
       currentPath="/practitioner/profile"
       description="Manage your professional presence and practice details."
+      canPostBlogs={practitioner.canPostBlogs}
       heroActions={
         <>
           <Link

@@ -20,7 +20,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   }
 
   // Fetch the client data
-  const [clientData, assessments, transcripts] = await Promise.all([
+  const [clientData, assessments, transcripts, profile] = await Promise.all([
     prisma.user.findFirst({
         where: { 
             id: clientId,
@@ -58,6 +58,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         where: { appointment: { clientId: clientId, practitionerId: session.user.id } },
         include: { appointment: { include: { service: true } } },
         orderBy: { createdAt: 'desc' }
+    }),
+    prisma.practitionerProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { canPostBlogs: true }
     })
   ])
 
@@ -71,6 +75,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         badge="Clinical"
         currentPath="/practitioner/clients"
         description={`Full clinical record and history for ${clientData.name}.`}
+        canPostBlogs={profile?.canPostBlogs}
         heroActions={
             <div className="flex gap-4">
                 <Link href={`/practitioner/messages?c=${clientData.id}`} className="bg-white text-oku-dark border border-oku-taupe/10 py-3.5 px-6 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-md transition-all">Secure Message</Link>
