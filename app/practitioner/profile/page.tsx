@@ -9,6 +9,7 @@ import {
 } from '@/components/practitioner-shell/practitioner-shell'
 import { UserRole } from '@prisma/client'
 import EditProfileForm from './EditProfileForm'
+import { PasswordChangeForm } from '@/components/PasswordChangeForm'
 
 export default async function PractitionerProfilePage() {
   const session = await auth()
@@ -56,6 +57,12 @@ export default async function PractitionerProfilePage() {
                   {practitioner.isVerified ? 'Verified Account' : 'Awaiting Verification'}
                </PractitionerPill>
             </div>
+          </PractitionerSectionCard>
+
+          <PractitionerSectionCard title="Security & Credentials">
+             <div className="bg-white p-10 rounded-[2.5rem] border border-oku-taupe/5 shadow-sm">
+                <PasswordChangeForm />
+             </div>
           </PractitionerSectionCard>
         </div>
 

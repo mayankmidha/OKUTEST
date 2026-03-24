@@ -10,14 +10,26 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { name, phone, bio } = await req.json()
+    const { 
+        name, phone, bio, 
+        emergencyContactName, emergencyContactPhone, 
+        preferredLanguage, timezone 
+    } = await req.json()
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         name,
         phone,
-        bio
+        bio,
+        clientProfile: {
+            update: {
+                emergencyContactName,
+                emergencyContactPhone,
+                preferredLanguage,
+                timezone
+            }
+        }
       }
     })
 

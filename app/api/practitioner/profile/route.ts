@@ -11,7 +11,10 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { name, bio, hourlyRate, licenseNumber, specialization } = await req.json()
+    const { 
+        name, bio, hourlyRate, licenseNumber, specialization,
+        education, experienceYears, linkedinUrl, websiteUrl
+    } = await req.json()
 
     // Update User and PractitionerProfile in a transaction
     const [updatedUser, updatedProfile] = await prisma.$transaction([
@@ -25,7 +28,11 @@ export async function PATCH(req: Request) {
           bio,
           hourlyRate: parseFloat(hourlyRate),
           licenseNumber,
-          specialization
+          specialization,
+          education,
+          experienceYears: parseInt(experienceYears) || 0,
+          linkedinUrl,
+          websiteUrl
         }
       })
     ])

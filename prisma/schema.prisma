@@ -160,6 +160,10 @@ model ClientProfile {
   dateOfBirth    DateTime?
   gender        String?
   medicalHistory String?  @db.Text
+  emergencyContactName String?
+  emergencyContactPhone String?
+  preferredLanguage    String?  @default("English")
+  timezone            String?  @default("UTC")
   noShowCount    Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -177,6 +181,10 @@ model PractitionerProfile {
   npiNumber       String?  // Required for superbills
   specialization String[]
   bio             String?  @db.Text
+  education       String?
+  experienceYears Int?     @default(0)
+  linkedinUrl     String?
+  websiteUrl      String?
   hourlyRate      Float?
   sessionDuration Int      @default(50) // mins
   bufferDuration  Int      @default(10) // mins

@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { 
   Users, DollarSign, Settings, Activity, CheckCircle, 
-  Clock, Shield, Plus, Edit2, Check, X, 
+  Clock, Shield, Plus, Edit2, Check, X, UserPlus,
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
   Calendar, FileText, Zap, AlertTriangle, Megaphone, Sparkles, Brain,
@@ -14,6 +14,7 @@ import { toggleTherapistVerification, updateTherapistRate, updateServicePrice, c
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { OCIDiagnostic } from '@/components/OCIDiagnostic'
+import { AdminUserManagement } from '@/components/AdminUserManagement'
 
 function AdminDashboardContent({ 
   stats, 
@@ -111,6 +112,7 @@ function AdminDashboardContent({
       <div className="flex gap-2 overflow-x-auto no-scrollbar pb-8 mb-12 border-b border-oku-taupe/5">
         {[
           { id: 'overview', label: 'Pulse', icon: Activity },
+          { id: 'management', label: 'Management', icon: UserPlus },
           { id: 'therapists', label: 'Therapists', icon: Shield },
           { id: 'services', label: 'Catalog', icon: DollarSign },
           { id: 'clients', label: 'Patients', icon: Users },
@@ -240,6 +242,16 @@ function AdminDashboardContent({
                   <Globe className="absolute bottom-[-20px] left-[-20px] text-white opacity-5" size={150} />
                </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'management' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex flex-col gap-2 mb-12">
+               <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Identity & Access Management</h2>
+               <p className="text-sm text-oku-taupe italic font-display opacity-60">Provision new accounts and override security credentials globally.</p>
+            </div>
+            <AdminUserManagement />
           </div>
         )}
 
