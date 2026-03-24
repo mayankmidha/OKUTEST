@@ -45,12 +45,18 @@ export default async function AdminFinancialsPage() {
   // Group by Therapist for Payouts
   const therapistPayouts = new Map()
   payments.forEach(p => {
+    // Defensive checks for relations
+    if (!p.appointment || !p.appointment.practitioner) {
+        console.warn(`Payment ${p.id} is missing appointment or practitioner relation.`)
+        return
+    }
+
     const therapist = p.appointment.practitioner
     const therapistCut = p.amount * (1 - PLATFORM_FEE_PERCENTAGE)
     
     if (!therapistPayouts.has(therapist.id)) {
         therapistPayouts.set(therapist.id, {
-            name: therapist.name,
+            name: therapist.name || 'Unknown Therapist',
             email: therapist.email,
             avatar: therapist.avatar,
             totalGenerated: p.amount,
@@ -140,7 +146,7 @@ export default async function AdminFinancialsPage() {
                             <div>
                                 <p className="text-lg font-display font-bold text-oku-dark group-hover:text-oku-purple transition-colors">${p.amount.toFixed(2)}</p>
                                 <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-1 truncate max-w-[120px]">
-                                    {p.appointment.service.name}
+                                    {p.appointment?.service?.name || 'Standard Session'}
                                 </p>
                             </div>
                             <div className="text-right">
