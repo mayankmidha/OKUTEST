@@ -56,8 +56,23 @@ export default function PublicAssessmentsPage() {
     return matchesSearch && matchesCategory;
   });
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "name": "Clinical Assessments & Screenings | OKU Clinic",
+    "description": "Validated clinical tools for ADHD, Anxiety, Depression, and Trauma mapping.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "OKU Clinic"
+    }
+  };
+
   return (
     <div className="oku-page-public min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@400;500;700&display=swap');
         .oku-page-public {

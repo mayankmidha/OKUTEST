@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Clock, User, Share2 } from 'lucide-react'
+import { ArrowLeft, Clock, User, Share2, Sparkles, ArrowRight } from 'lucide-react'
+import { getMatchingAssessment } from '@/lib/assessment-matching'
+import { Metadata } from 'next'
 
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({
@@ -9,6 +11,25 @@ export async function generateStaticParams() {
     select: { slug: true }
   })
   return posts.map(p => ({ slug: p.slug }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const post = await prisma.post.findUnique({ where: { slug } })
+  if (!post) return {}
+
+  return {
+    title: `${post.title} | OKU Journal`,
+    description: post.excerpt || post.title,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: [post.image || '/og-image.jpg'],
+      type: 'article',
+      publishedTime: post.createdAt.toISOString(),
+      authors: [post.authorId],
+    }
+  }
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -22,6 +43,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   if (!post || !post.published) {
     notFound()
   }
+
+  const matchingAssessment = getMatchingAssessment(post.category || 'General');
 
   return (
     <div className="min-h-screen bg-oku-cream">
@@ -61,13 +84,36 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 {post.excerpt}
             </div>
             
-            <div className="text-oku-taupe text-lg leading-[2] whitespace-pre-wrap font-medium">
+            <div className="text-oku-taupe text-lg leading-[2] whitespace-pre-wrap font-medium mb-20">
                 {post.content}
             </div>
          </div>
 
+         {/* SEO & Growth CTA: Clinical Alignment */}
+         <div className="bg-oku-dark rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden group shadow-2xl mb-32">
+            <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-8">
+                    <Sparkles size={20} className="text-oku-purple animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Clinical Alignment</span>
+                </div>
+                <h3 className="text-3xl md:text-5xl font-display font-bold mb-8 leading-tight tracking-tight">
+                    Translate your <span className="italic text-oku-purple">curiosity</span> into clarity.
+                </h3>
+                <p className="text-lg text-white/60 font-display italic leading-relaxed mb-12 max-w-xl">
+                    Deepen your understanding of this topic with our clinically validated assessment.
+                </p>
+                <Link 
+                    href={`/assessments/${matchingAssessment.slug}`} 
+                    className="inline-flex items-center gap-4 bg-white text-oku-navy py-5 px-10 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-purple transition-all"
+                >
+                    {matchingAssessment.title} <ArrowRight size={16} />
+                </Link>
+            </div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
+         </div>
+
          {/* Author Card */}
-         <div className="mt-32 pt-16 border-t border-oku-taupe/10">
+         <div className="pt-16 border-t border-oku-taupe/10">
             <div className="flex flex-col md:flex-row items-center gap-10 bg-white p-12 rounded-[3rem] shadow-sm border border-oku-taupe/5">
                 <div className="w-24 h-24 rounded-full bg-oku-purple/10 overflow-hidden border-4 border-oku-cream shadow-inner">
                     {post.author.avatar ? <img src={post.author.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl font-display font-bold">🧘</div>}
@@ -82,7 +128,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
          </div>
 
-         <div className="mt-16 text-center">
+         <div className="mt-16 text-center space-y-6">
+            <div className="flex items-center justify-center gap-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Share this insight:</p>
+                <button className="w-10 h-10 rounded-full bg-white border border-oku-taupe/10 flex items-center justify-center text-oku-taupe hover:text-oku-purple transition-all shadow-sm">
+                    <Share2 size={16} />
+                </button>
+            </div>
             <Link href="/therapists" className="btn-primary py-5 px-12 shadow-2xl inline-block">
                 Begin Your Journey
             </Link>
