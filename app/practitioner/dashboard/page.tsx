@@ -7,7 +7,7 @@ import {
   Video, Activity, TrendingUp, 
   FileText, ArrowRight, Sparkles, Heart,
   ShieldCheck, Zap, Brain, MessageSquare, ArrowUpRight,
-  User as UserIcon
+  User as UserIcon, CheckCircle2
 } from 'lucide-react'
 import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
 import { DashboardCard } from '@/components/DashboardCard'
@@ -72,7 +72,6 @@ export default async function PractitionerDashboardPage() {
   ])
 
   if (!practitioner) {
-    // Auto-create profile if missing
     await prisma.practitionerProfile.create({
         data: { userId: session.user.id, bio: '', specialization: [] }
     })
@@ -92,9 +91,9 @@ export default async function PractitionerDashboardPage() {
 
   return (
     <PractitionerShell
-      title={`Welcome back, ${session.user.name?.split(' ')[0]}`}
-      description="Your clinical practice is synchronized. Here is your overview for today."
-      badge="Clinical Command"
+      title="Clinical Command"
+      description="Refined practice management for deep clinical focus."
+      badge="Practitioner HQ"
       currentPath="/practitioner/dashboard"
       canPostBlogs={practitioner.canPostBlogs}
       heroActions={
@@ -108,55 +107,68 @@ export default async function PractitionerDashboardPage() {
         </div>
       }
     >
-      {/* Stats Grid - Live Intelligence */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+      {/* 1. Practice Intelligence Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         <PractitionerStatCard 
           label="Total Revenue" 
           value={`$${earningsValue.toLocaleString()}`} 
           detail="Settled Payments" 
-          accent="bg-oku-green" 
+          accent="bg-oku-matcha-dark" 
         />
         <PractitionerStatCard 
           label="Active Caseload" 
           value={caseloadCount} 
           detail="Unique Patients" 
-          accent="bg-oku-purple" 
+          accent="bg-oku-lavender-dark" 
         />
         <PractitionerStatCard 
-          label="Pending Tasks" 
-          value={pendingTasks} 
-          detail="Clinical Actions" 
-          accent="bg-oku-pink" 
+          label="Completed" 
+          value={totalCompleted} 
+          detail="Lifetime Sessions" 
+          accent="bg-oku-glacier-dark" 
         />
-        <PractitionerStatCard 
-          label="Next Patient" 
-          value={upcomingSessions[0]?.client?.name?.split(' ')[0] || 'Clear'} 
-          detail={upcomingSessions[0] ? new Date(upcomingSessions[0].startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No sessions'} 
-          accent="bg-oku-ocean" 
-        />
+        <div className="bg-oku-dark text-white rounded-[2.5rem] p-8 relative overflow-hidden group shadow-pastel">
+           <div className="relative z-10">
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Next Session</p>
+              <p className="text-xl font-bold truncate mb-1">
+                {upcomingSessions[0]?.client?.name?.split(' ')[0] || 'Queue Clear'}
+              </p>
+              {upcomingSessions[0] && (
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender animate-pulse">
+                  Starting at {new Date(upcomingSessions[0].startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              )}
+           </div>
+           <Zap className="absolute bottom-[-10px] right-[-10px] text-oku-lavender opacity-10 group-hover:rotate-12 transition-transform" size={80} />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-10">
         
-        {/* Schedule & Notes */}
+        {/* 2. Main Clinical Column */}
         <div className="lg:col-span-8 space-y-10">
+          
+          {/* Active Schedule */}
           <section className="space-y-6">
             <div className="flex items-center justify-between px-2">
-              <h2 className="text-2xl font-display font-bold text-oku-dark">Active Schedule</h2>
-              <Link href="/practitioner/appointments" className="text-[10px] font-black uppercase tracking-widest text-oku-navy hover:text-oku-purple-dark transition-colors flex items-center gap-1">Full Ledger <ArrowUpRight size={14} /></Link>
+              <div className="flex items-center gap-3">
+                 <div className="w-2 h-2 rounded-full bg-oku-lavender-dark" />
+                 <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Active Schedule</h2>
+              </div>
+              <Link href="/practitioner/appointments" className="text-[9px] font-black uppercase tracking-widest text-oku-navy-light hover:underline flex items-center gap-1">Full Ledger <ArrowUpRight size={14} /></Link>
             </div>
             
             <div className="space-y-4">
               {todaySessions.length === 0 ? (
-                <div className="card-glass py-24 text-center border-dashed">
+                <div className="card-glass py-24 text-center border-dashed bg-oku-glacier/20 border-oku-glacier-dark/10">
                   <p className="text-oku-taupe font-display italic text-2xl opacity-40">The space is quiet today.</p>
                 </div>
               ) : (
                 todaySessions.map((appt: any) => (
-                  <div key={appt.id} className="card-glass p-1 group hover:border-oku-navy/20 transition-all">
+                  <div key={appt.id} className="card-glass p-1 group hover:border-oku-lavender-dark/20 transition-all border-oku-taupe/5">
                     <div className="p-7 flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex items-center gap-8">
-                        <div className="text-center min-w-[100px] p-4 bg-oku-cream rounded-2xl border border-oku-taupe/5">
+                        <div className="text-center min-w-[100px] p-4 bg-oku-lavender/30 rounded-2xl border border-oku-lavender-dark/10">
                            <p className="text-2xl font-display font-bold text-oku-dark tracking-tighter">
                              {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                            </p>
@@ -166,12 +178,12 @@ export default async function PractitionerDashboardPage() {
                         <div>
                           <p className="text-2xl font-display font-bold text-oku-dark leading-tight group-hover:text-oku-navy transition-colors">{appt.client?.name || 'Patient'}</p>
                           <div className="flex items-center gap-3 mt-1.5">
-                             <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-oku-navy/5 text-oku-navy-light rounded-full border border-oku-navy/5">{appt.service?.name || 'Session'}</span>
-                             <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-1 opacity-60"><ShieldCheck size={10} /> Clinical Protocol</span>
+                             <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-oku-glacier/50 text-oku-navy-light rounded-full border border-oku-glacier-dark/5">{appt.service?.name || 'Session'}</span>
+                             <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-1 opacity-60"><ShieldCheck size={10} /> Secure Entry</span>
                           </div>
                         </div>
                       </div>
-                      <Link href={`/session/${appt.id}`} className="btn-navy min-w-[160px] text-center">
+                      <Link href={`/session/${appt.id}`} className="btn-navy min-w-[160px] text-center shadow-pastel hover:scale-105 transition-transform">
                         Launch Room
                       </Link>
                     </div>
@@ -181,43 +193,48 @@ export default async function PractitionerDashboardPage() {
             </div>
           </section>
 
-          <div className="card-navy p-10 bg-oku-purple-dark group overflow-hidden border-none shadow-oku-purple-dark/20">
+          {/* Practitioner Resilience Banner */}
+          <div className="bg-oku-lavender p-12 rounded-[3.5rem] relative overflow-hidden group shadow-premium border border-white">
              <div className="relative z-10">
-                <Heart className="text-oku-cream mb-6 animate-pulse" size={32} />
-                <h3 className="text-3xl font-display font-bold text-white mb-4">Practitioner Resilience</h3>
-                <p className="text-oku-cream/80 italic font-display text-lg leading-relaxed mb-8 max-w-2xl">
+                <Heart className="text-oku-lavender-dark mb-6 animate-pulse" size={32} />
+                <h3 className="text-3xl font-display font-bold text-oku-dark mb-4">Clinical Resilience</h3>
+                <p className="text-oku-taupe italic font-display text-xl leading-relaxed mb-8 max-w-2xl">
                    "Your capacity to hold space for others begins with your own gentle returning. Take a breath before your next session."
                 </p>
-                <Link href="/practitioner/support" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-oku-cream hover:text-white transition-all group-hover:translate-x-2">
-                   Clinical Support Resources <ArrowUpRight size={14} />
-                </Link>
+                <div className="flex items-center gap-6">
+                    <Link href="/practitioner/support" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-oku-dark hover:text-oku-navy-light transition-all group-hover:translate-x-2">
+                       Support Resources <ArrowUpRight size={14} />
+                    </Link>
+                </div>
              </div>
-             <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
+             <div className="absolute top-0 right-0 w-80 h-80 bg-white/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
           </div>
         </div>
 
-        {/* Sidebar Tasks & Reflections */}
+        {/* 3. Workflow Sidebar */}
         <div className="lg:col-span-4 space-y-10">
-          <div className="h-[450px] card-glass overflow-hidden p-1">
+          {/* Task Manager Integration */}
+          <div className="h-[480px] card-glass overflow-hidden p-1 border-oku-rose-dark/5 bg-oku-rose/10">
              <TaskManager />
           </div>
 
-          <section className="card-glass p-10">
+          {/* Clinical Reflections / Recent Notes */}
+          <section className="card-glass p-10 border-white">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-display font-bold text-oku-dark">Clinical Reflections</h2>
-              <FileText size={20} className="text-oku-taupe/30" />
+              <h2 className="text-xl font-display font-bold text-oku-dark">Recent Notes</h2>
+              <FileText size={20} className="text-oku-lavender-dark opacity-40" />
             </div>
-            <div className="space-y-8 mt-4">
+            <div className="space-y-8">
                 {(!recentNotes || recentNotes.length === 0) ? (
-                    <p className="text-sm text-oku-taupe italic opacity-60 text-center py-10">No secure notes recorded.</p>
+                    <p className="text-xs text-oku-taupe italic opacity-60 text-center py-10">No secure notes recorded.</p>
                 ) : (
                     recentNotes.map((note) => (
                         <div key={note.id} className="flex gap-5 group cursor-pointer border-b border-oku-taupe/5 pb-6 last:border-0">
-                            <div className="w-12 h-12 rounded-2xl bg-oku-ocean flex items-center justify-center text-oku-navy-light shadow-inner group-hover:bg-oku-navy group-hover:text-white transition-all">
+                            <div className="w-12 h-12 rounded-2xl bg-oku-matcha flex items-center justify-center text-oku-matcha-dark shadow-inner group-hover:bg-oku-dark group-hover:text-white transition-all duration-500">
                                 <FileText size={20} />
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-base font-bold text-oku-dark group-hover:text-oku-navy transition-colors truncate">{note.appointment.client?.name}</p>
+                            <div className="flex-1 min-w-0 text-left">
+                                <p className="text-base font-bold text-oku-dark group-hover:text-oku-navy transition-colors truncate">{note.appointment.client?.name || 'Patient'}</p>
                                 <p className="text-[10px] uppercase tracking-widest text-oku-taupe opacity-60 font-black mt-1">
                                     Finalized {new Date(note.createdAt).toLocaleDateString()}
                                 </p>
@@ -227,11 +244,28 @@ export default async function PractitionerDashboardPage() {
                     ))
                 )}
             </div>
-            <Link href="/practitioner/clients" className="mt-10 btn-sky w-full block text-center py-4">Clinical Archive</Link>
+            <Link href="/practitioner/clients" className="mt-10 btn-sky w-full block text-center py-4 bg-white/40 border-white hover:bg-white shadow-sm transition-all">Clinical Archive</Link>
           </section>
+
+          {/* Patient Hub Link */}
+          <div className="card-glass p-10 bg-oku-dark text-white border-none shadow-2xl relative overflow-hidden group">
+             <div className="relative z-10">
+                <Users size={32} className="text-oku-lavender mb-6" strokeWidth={1.5} />
+                <h3 className="text-xl font-bold mb-2">Patient Roster</h3>
+                <p className="text-xs text-white/40 mb-8 leading-relaxed font-display italic">
+                   Manage patient records, documentation history, and clinical profiles.
+                </p>
+                <Link href="/practitioner/clients" className="btn-primary w-full bg-white text-oku-dark py-4 text-[9px] hover:bg-oku-lavender transition-all">
+                   Manage {caseloadCount} Patients
+                </Link>
+             </div>
+             <div className="absolute bottom-0 right-0 w-32 h-32 bg-oku-lavender/5 rounded-full blur-2xl" />
+          </div>
         </div>
       </div>
-      <AIAssistantWidget contextType="practitioner_summary" title="Clinical AI Assistant" />
+      
+      {/* Clinical AI Integration */}
+      <AIAssistantWidget contextType="practitioner_summary" title="Clinical AI Intelligence" />
     </PractitionerShell>
   )
 }
