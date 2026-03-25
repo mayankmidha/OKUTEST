@@ -93,6 +93,10 @@ model User {
   clientTreatmentPlans       TreatmentPlan[]      @relation("ClientTreatmentPlans")
   practitionerTreatmentPlans TreatmentPlan[]      @relation("PractitionerTreatmentPlans")
   activities                 UserActivity[]
+  groupParticipations        GroupParticipant[]
+
+  @@index([email])
+  @@index([role])
 }
 
 model InformedConsent {
@@ -269,7 +273,7 @@ model Notification {
 
 model Appointment {
   id               String              @id @default(cuid())
-  clientId         String
+  clientId         String?
   practitionerId   String
   serviceId        String
   startTime        DateTime
@@ -285,7 +289,13 @@ model Appointment {
   isTrial          Boolean             @default(false)
   superbillGenerated Boolean             @default(false)
   trialDuration    Int?                @default(10)
-  client           User                @relation("ClientAppointments", fields: [clientId], references: [id], map: "Appointment_clientId_fkey")
+
+  // Group Therapy Support
+  isGroupSession   Boolean             @default(false)
+  maxParticipants  Int                 @default(1)
+  participants     GroupParticipant[]
+
+  client           User?               @relation("ClientAppointments", fields: [clientId], references: [id], map: "Appointment_clientId_fkey")
   practitioner     User                @relation("PractitionerAppointments", fields: [practitionerId], references: [id], map: "Appointment_practitionerId_fkey")
   service          Service             @relation(fields: [serviceId], references: [id])
   payments         Payment[]
@@ -297,6 +307,19 @@ model Appointment {
   @@index([serviceId])
   @@index([status])
   @@index([startTime])
+}
+
+model GroupParticipant {
+  id            String      @id @default(cuid())
+  appointmentId String
+  userId        String
+  joinedAt      DateTime    @default(now())
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([appointmentId, userId])
+  @@index([appointmentId])
+  @@index([userId])
 }
 
 model Transcript {
