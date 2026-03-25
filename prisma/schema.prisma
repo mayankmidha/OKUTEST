@@ -97,6 +97,11 @@ model User {
   insurancePolicies          InsurancePolicy[]
   prescriptions              Prescription[]       @relation("ClientPrescriptions")
   authoredPrescriptions      Prescription[]       @relation("PractitionerPrescriptions")
+  
+  // B2B Support
+  organizationId             String?
+  organization               Organization?        @relation(fields: [organizationId], references: [id])
+  orgRole                    String?              @default("MEMBER") // ADMIN, MEMBER
 
   @@index([email])
   @@index([role])
@@ -556,4 +561,33 @@ model GroupNote {
   groupDynamics String?     @db.Text
   createdAt     DateTime    @default(now())
   appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+  id                String   @id @default(cuid())
+  name              String
+  slug              String   @unique
+  type              String   // CORPORATE, SCHOOL, HOSPITAL
+  logo              String?
+  billingEmail      String
+  subscriptionPlan  String   @default("BASIC")
+  maxMembers        Int      @default(10)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  users             User[]
+  contracts         Contract[]
+
+  @@index([slug])
+}
+
+model Contract {
+  id                String      @id @default(cuid())
+  organizationId    String
+  startDate         DateTime
+  endDate           DateTime
+  contractValue     Float
+  status            String      @default("ACTIVE") // ACTIVE, EXPIRED, PENDING
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
 }
