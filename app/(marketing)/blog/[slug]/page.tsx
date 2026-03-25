@@ -1,21 +1,52 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Clock, User, Share2, Sparkles, ArrowRight } from 'lucide-react'
+import { ArrowLeft, Clock, Share2, Sparkles, ArrowRight } from 'lucide-react'
 import { getMatchingAssessment } from '@/lib/assessment-matching'
 import { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
+async function getPublishedPostMetadata(slug: string) {
+  try {
+    return await prisma.post.findFirst({
+      where: { slug, published: true },
+    })
+  } catch (error) {
+    console.error('[BLOG_METADATA_FETCH]', error)
+    return null
+  }
+}
+
+async function getPublishedPost(slug: string) {
+  try {
+    return await prisma.post.findFirst({
+      where: { slug, published: true },
+      include: { author: { select: { name: true, bio: true, avatar: true } } },
+    })
+  } catch (error) {
+    console.error('[BLOG_POST_FETCH]', error)
+    return null
+  }
+}
+
 export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    select: { slug: true }
-  })
-  return posts.map(p => ({ slug: p.slug }))
+  try {
+    const posts = await prisma.post.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+
+    return posts.map((post) => ({ slug: post.slug }))
+  } catch (error) {
+    console.error('[BLOG_STATIC_PARAMS]', error)
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const post = await prisma.post.findUnique({ where: { slug } })
+  const post = await getPublishedPostMetadata(slug)
   if (!post) return {}
 
   return {
@@ -35,12 +66,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   
-  const post = await prisma.post.findUnique({
-    where: { slug },
-    include: { author: { select: { name: true, bio: true, avatar: true } } }
-  })
+  const post = await getPublishedPost(slug)
 
-  if (!post || !post.published) {
+  if (!post) {
     notFound()
   }
 

@@ -104,9 +104,7 @@ export default function WhatShapesOurWork() {
           </p>
           
           <Link
-            href="/dashboard/client/therapists"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/therapists"
             className="inline-flex items-center gap-2 px-8 py-4 bg-oku-dark text-white rounded-full hover:bg-oku-taupe transition-colors duration-300"
           >
             Book a free 1:1 consultation

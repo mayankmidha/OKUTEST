@@ -22,8 +22,18 @@ export default function Footer() {
               <span className="text-oku-taupe italic">healing and growth.</span>
             </h2>
             <p className="text-oku-taupe text-lg max-w-md leading-relaxed">
-              Inclusive, trauma-informed, and relational care designed to help you navigate life's complexities with grace.
+              Inclusive, trauma-informed, and relational care with therapist matching, gentle assessments, and secure ongoing support.
             </p>
+            <div className="flex flex-wrap gap-3 mt-8">
+              {['Free consults', 'Secure video', 'Assessments'].map((item) => (
+                <span
+                  key={item}
+                  className="px-4 py-2 rounded-full bg-white/70 border border-oku-taupe/10 text-[10px] uppercase tracking-[0.25em] font-black text-oku-dark"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
@@ -51,7 +61,7 @@ export default function Footer() {
               <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
                 <li><a href="https://instagram.com/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">Instagram</a></li>
                 <li><a href="https://linkedin.com/company/okutherapy" target="_blank" rel="noopener noreferrer" className="hover:text-oku-pink transition-colors">LinkedIn</a></li>
-                <li><Link href="/dashboard/client/therapists" className="hover:text-oku-pink transition-colors">WhatsApp Support</Link></li>
+                <li><Link href="/contact" className="hover:text-oku-pink transition-colors">Care Team</Link></li>
               </ul>
             </div>
           </div>

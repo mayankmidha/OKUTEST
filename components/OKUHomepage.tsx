@@ -158,6 +158,45 @@ const COMMUNITY_IMAGES = [
   "/uploads/2025/06/img-2.png",
 ];
 
+const TRUST_PILLARS = [
+  {
+    eyebrow: "Begin with care",
+    title: "Free consultation",
+    description: "Start with a low-pressure 15-minute conversation to see whether the fit feels right.",
+  },
+  {
+    eyebrow: "Find your fit",
+    title: "Therapist matching",
+    description: "Explore specializations, identities, and therapeutic styles before you commit to a session.",
+  },
+  {
+    eyebrow: "Stay supported",
+    title: "Assessments and secure care",
+    description: "Move from self-checks to secure sessions, notes, and ongoing support in one place.",
+  },
+];
+
+const STARTING_POINTS = [
+  {
+    kicker: "Start with people",
+    title: "Meet the collective",
+    description: "Browse verified therapists, understand their focus areas, and choose the kind of support that feels right.",
+    href: "/therapists",
+  },
+  {
+    kicker: "Start with clarity",
+    title: "Take a gentle self-check",
+    description: "Use clinically grounded assessments to better understand what you might be carrying right now.",
+    href: "/assessments",
+  },
+  {
+    kicker: "Start with options",
+    title: "See the care paths",
+    description: "Compare therapy, EMDR, movement work, and psychometric support before taking the next step.",
+    href: "/services",
+  },
+];
+
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function DynamicButton({ href, children, dark = true, isInternal = false }: { href: string; children: React.ReactNode; dark?: boolean; isInternal?: boolean }) {
@@ -520,6 +559,138 @@ export default function OkuHomepage() {
         }
         @media (max-width: 768px) { .hero-word-wrap { min-width: 180px; } }
 
+        .hero-grid {
+          display: grid;
+          gap: 32px;
+          align-items: end;
+        }
+        @media (min-width: 1024px) {
+          .hero-grid {
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+            gap: 48px;
+          }
+        }
+        .hero-copy {
+          max-width: 720px;
+        }
+        .hero-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .hero-support-link {
+          color: rgba(45,45,45,0.7);
+          font-size: 0.92rem;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+        .hero-support-link:hover {
+          color: var(--ink);
+        }
+        .hero-note {
+          font-size: 0.78rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: rgba(45,45,45,0.5);
+        }
+        .hero-editorial {
+          position: relative;
+          overflow: hidden;
+          border-radius: 28px;
+          padding: 28px;
+          background: linear-gradient(180deg, rgba(237,232,224,0.85), rgba(247,244,239,0.92));
+          border: 1px solid rgba(139,115,85,0.14);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.06);
+        }
+        .hero-editorial::after {
+          content: '';
+          position: absolute;
+          inset: auto -60px -80px auto;
+          width: 180px;
+          height: 180px;
+          border-radius: 999px;
+          background: rgba(196,168,130,0.16);
+          filter: blur(10px);
+        }
+        .hero-list {
+          display: grid;
+          gap: 16px;
+        }
+        .hero-list-item {
+          padding-top: 16px;
+          border-top: 1px solid rgba(45,45,45,0.1);
+          position: relative;
+          z-index: 1;
+        }
+        .hero-list-item:first-child {
+          padding-top: 0;
+          border-top: none;
+        }
+        .hero-list-item h3 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.45rem;
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+        .hero-list-item span {
+          display: inline-block;
+          margin-bottom: 6px;
+          font-size: 0.72rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--accent);
+        }
+
+        .entry-grid {
+          display: grid;
+          gap: 16px;
+          margin-top: 24px;
+        }
+        @media (min-width: 768px) {
+          .entry-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        .entry-card {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 24px;
+          min-height: 220px;
+          padding: 24px;
+          border-radius: 20px;
+          background: rgba(255,255,255,0.72);
+          border: 1px solid rgba(139,115,85,0.12);
+          text-decoration: none;
+          color: inherit;
+          transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+        }
+        .entry-card:hover {
+          transform: translateY(-4px);
+          background: rgba(255,255,255,0.92);
+          box-shadow: 0 22px 48px rgba(0,0,0,0.07);
+        }
+        .entry-kicker {
+          display: inline-block;
+          margin-bottom: 10px;
+          font-size: 0.72rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--accent);
+        }
+        .entry-card h3 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.8rem;
+          line-height: 1;
+          margin-bottom: 10px;
+        }
+        .entry-arrow {
+          font-size: 1rem;
+          color: var(--accent);
+        }
+
         /* ── Assessment CTA bar ── */
         .assessment-bar {
           background: var(--ink);
@@ -554,24 +725,69 @@ export default function OkuHomepage() {
         <section className="section-lg" style={{ background: "var(--cream)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 28, display: "inline-block" }}>Psychotherapy Collective · New Delhi</span>
-              <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
-                Come as you are.
-              </h1>
-              <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
-                We hold space for your
-              </h1>
-              <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 48 }}>
-                <span className="hero-word-wrap">
-                  <span className={`cursive-word ${wordVisible ? "visible" : "hidden"}`}>
-                    {CYCLING_WORDS[wordIdx]}
-                  </span>
-                </span>
-              </h1>
-              <p style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", maxWidth: 560, lineHeight: 1.7, marginBottom: 40, color: "rgba(45,45,45,0.75)" }}>
-                Oku is a psychotherapy collective offering <strong>inclusive, trauma-informed care</strong> for all parts of who you are. Book a free consultation to begin gently.
-              </p>
-              <DynamicButton href="/auth/signup" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
+              <div className="hero-grid">
+                <div className="hero-copy">
+                  <span className="chip" style={{ marginBottom: 28, display: "inline-block" }}>Psychotherapy Collective · New Delhi</span>
+                  <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
+                    Come as you are.
+                  </h1>
+                  <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
+                    We hold space for your
+                  </h1>
+                  <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 40 }}>
+                    <span className="hero-word-wrap">
+                      <span className={`cursive-word ${wordVisible ? "visible" : "hidden"}`}>
+                        {CYCLING_WORDS[wordIdx]}
+                      </span>
+                    </span>
+                  </h1>
+                  <p style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", maxWidth: 560, lineHeight: 1.7, marginBottom: 32, color: "rgba(45,45,45,0.75)" }}>
+                    Oku is a psychotherapy collective offering <strong>inclusive, trauma-informed care</strong> for all parts of who you are. Start with a free consultation, a gentle self-check, or a closer look at our collective.
+                  </p>
+                  <div className="hero-actions">
+                    <DynamicButton href="/therapists" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
+                    <DynamicButton href="/assessments" isInternal={true} dark={false}>Take a gentle self-check</DynamicButton>
+                    <Link href="/auth/login" className="hero-support-link">
+                      Already with us? Sign in
+                    </Link>
+                  </div>
+                  <p className="hero-note">Free consultations · Secure video sessions · Inclusive, affirming care</p>
+                </div>
+
+                <aside className="hero-editorial">
+                  <span className="chip" style={{ marginBottom: 18, display: "inline-block" }}>A Gentler Way In</span>
+                  <h2 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)", marginBottom: 12 }}>
+                    Start where your <strong>nervous system</strong> can say yes.
+                  </h2>
+                  <p style={{ color: "rgba(45,45,45,0.72)", lineHeight: 1.7, marginBottom: 24 }}>
+                    Whether you want to browse therapists, understand your symptoms, or simply ask a few questions first, Oku is designed to make the first step feel calmer.
+                  </p>
+                  <div className="hero-list">
+                    {TRUST_PILLARS.map((pillar) => (
+                      <div key={pillar.title} className="hero-list-item">
+                        <span>{pillar.eyebrow}</span>
+                        <h3>{pillar.title}</h3>
+                        <p style={{ color: "rgba(45,45,45,0.7)", lineHeight: 1.6 }}>{pillar.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </aside>
+              </div>
+            </SectionReveal>
+
+            <SectionReveal className="mt-10">
+              <div className="entry-grid">
+                {STARTING_POINTS.map((path) => (
+                  <Link key={path.title} href={path.href} className="entry-card">
+                    <div>
+                      <span className="entry-kicker">{path.kicker}</span>
+                      <h3>{path.title}</h3>
+                      <p style={{ color: "rgba(45,45,45,0.68)", lineHeight: 1.7 }}>{path.description}</p>
+                    </div>
+                    <span className="entry-arrow">Explore →</span>
+                  </Link>
+                ))}
+              </div>
             </SectionReveal>
           </div>
         </section>
@@ -690,7 +906,7 @@ export default function OkuHomepage() {
                     ))}
                   </div>
                   <div style={{ marginTop: 24 }}>
-                    <DynamicButton href="/auth/signup" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
+                    <DynamicButton href="/therapists" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
                   </div>
                 </div>
               </SectionReveal>
