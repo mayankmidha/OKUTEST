@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     // LOG THE ACTION
     await createAuditLog({
-        userId: updatedAppointment.clientId,
+        userId: updatedAppointment.clientId || 'system',
         action: 'PAYMENT_PROCESSED',
         resourceType: 'Payment',
         resourceId: sessionId,

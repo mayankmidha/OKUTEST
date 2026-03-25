@@ -36,7 +36,7 @@ export default async function SessionNotesPage({ params }: { params: Promise<{ i
       title="Clinical Progress Note"
       badge="Clinical"
       currentPath="/practitioner/appointments"
-      description={`Documenting session insights and therapeutic progress for ${therapistSession.client.name}.`}
+      description={`Documenting session insights and therapeutic progress for ${therapistSession.client?.name || 'Unknown Patient'}.`}
       canPostBlogs={profile?.canPostBlogs}
     >
       <div className="max-w-5xl mx-auto">

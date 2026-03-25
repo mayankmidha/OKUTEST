@@ -29,12 +29,12 @@ export default async function SuperbillPage({ params }: { params: Promise<{ id: 
     }
   })
 
-  if (!appointment || appointment.status !== 'COMPLETED') {
+  if (!appointment || appointment.status !== 'COMPLETED' || !appointment.client) {
     return (
         <div className="min-h-screen bg-oku-cream flex items-center justify-center p-6">
             <div className="text-center">
                 <p className="text-xl font-display text-oku-dark mb-4">Superbill unavailable.</p>
-                <p className="text-oku-taupe italic">Only completed sessions generate superbills.</p>
+                <p className="text-oku-taupe italic">Patient data or completion record not found.</p>
                 <Link href="/dashboard/client/book" className="mt-8 inline-block text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Return to History</Link>
             </div>
         </div>

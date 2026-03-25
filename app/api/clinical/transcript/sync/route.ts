@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenerativeAI } from '../../../../../node_modules/@google/generative-ai'
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 
 export async function POST(req: Request) {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     });
 
     const fullPrompt = `
-      Analyze the following session transcript for a ${appointment.service.name} with ${appointment.client.name}:
+      Analyze the following session transcript for a ${appointment.service.name} with ${appointment.client?.name || 'Patient'}:
       
       TRANSCRIPT:
       ${rawTranscript}

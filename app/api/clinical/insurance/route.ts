@@ -33,10 +33,19 @@ export async function POST(req: Request) {
     if (action === 'SUBMIT_CLAIM') {
       const appointment = await prisma.appointment.findUnique({
         where: { id: appointmentId },
-        include: { service: true, client: { include: { insurancePolicies: { where: { isPrimary: true } } } } }
+        include: { 
+          service: true, 
+          client: { 
+            include: { 
+              insurancePolicies: { 
+                where: { isPrimary: true } 
+              } 
+            } 
+          } 
+        }
       });
 
-      if (!appointment || !appointment.client.insurancePolicies[0]) {
+      if (!appointment || !appointment.client || !appointment.client.insurancePolicies?.[0]) {
         return new NextResponse("Incomplete claim data", { status: 400 });
       }
 

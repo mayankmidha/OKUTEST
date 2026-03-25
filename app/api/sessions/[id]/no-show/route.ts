@@ -23,6 +23,10 @@ export async function POST(req: Request) {
     return new NextResponse('Appointment not found', { status: 404 })
   }
 
+  if (!appointment.clientId) {
+    return new NextResponse('Cannot mark group/anonymous session as no-show via this endpoint.', { status: 400 })
+  }
+
   // Grace period check: Today's time must be > startTime + 15 mins
   const scheduledPlusGrace = new Date(appointment.startTime)
   scheduledPlusGrace.setMinutes(scheduledPlusGrace.getMinutes() + 15)

@@ -20,6 +20,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     });
 
     if (!appointment) return new NextResponse("Appointment not found", { status: 404 });
+    if (!appointment.client || !appointment.practitioner) {
+        return new NextResponse("Incomplete session data for superbill generation", { status: 400 });
+    }
 
     const doc = new jsPDF() as any;
     const client = appointment.client;

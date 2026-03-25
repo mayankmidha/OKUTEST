@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenerativeAI } from '../../../../node_modules/@google/generative-ai'
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 
 export async function POST(req: Request) {
@@ -33,11 +33,11 @@ export async function POST(req: Request) {
 
     // 2. Format Clinical Context
     const clinicalContext = {
-      patientName: appointment.client.name,
-      sessionType: appointment.service.name,
-      recentMoods: appointment.client.moodEntries.map(m => ({ score: m.mood, notes: m.notes })),
-      recentAssessments: appointment.client.assessmentAnswers.map(a => ({ title: a.assessment.title, result: a.result })),
-      activeGoals: appointment.client.clientTreatmentPlans[0]?.goals
+      patientName: appointment.client?.name || 'Unknown Patient',
+      sessionType: appointment.service?.name || 'Session',
+      recentMoods: appointment.client?.moodEntries?.map(m => ({ score: m.mood, notes: m.notes })) || [],
+      recentAssessments: appointment.client?.assessmentAnswers?.map(a => ({ title: a.assessment?.title, result: a.result })) || [],
+      activeGoals: appointment.client?.clientTreatmentPlans?.[0]?.goals
     }
 
     if (!process.env.GEMINI_API_KEY) {

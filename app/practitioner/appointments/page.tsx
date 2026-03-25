@@ -68,7 +68,7 @@ export default async function PractitionerAppointmentsPage() {
                         <Video size={28} />
                       </div>
                       <div>
-                        <p className="font-bold text-oku-dark text-xl">{appt.client.name}</p>
+                        <p className="font-bold text-oku-dark text-xl">{appt.client?.name || 'Unknown Patient'}</p>
                         <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service.name}</p>
                       </div>
                     </div>
@@ -109,7 +109,7 @@ export default async function PractitionerAppointmentsPage() {
                   {completed.map((appt) => (
                     <tr key={appt.id} className="hover:bg-oku-cream/20 transition-all group">
                       <td className="p-8">
-                        <p className="font-bold text-oku-dark">{appt.client.name}</p>
+                        <p className="font-bold text-oku-dark">{appt.client?.name || 'Unknown Patient'}</p>
                       </td>
                       <td className="p-8 text-sm text-oku-taupe">{appt.service.name}</td>
                       <td className="p-8 text-sm text-oku-taupe">{new Date(appt.startTime).toLocaleDateString()}</td>

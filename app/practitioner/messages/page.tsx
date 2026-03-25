@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { UserRole } from '@prisma/client'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
-export default async function PractitionerMessagesPage({ searchParams }: { searchParams: { c?: string } }) {
+export default async function PractitionerMessagesPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const session = await auth()
 
   if (!session?.user?.id || session.user.role !== UserRole.THERAPIST) {
@@ -26,8 +26,9 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
     })
   ])
 
-  const clients = appointments.map(a => a.client)
-  const activeClientId = (await searchParams).c || (clients.length > 0 ? clients[0].id : null)
+  const clients = appointments.map(a => a.client).filter(Boolean) as any[]
+  const { c: cParam } = await searchParams
+  const activeClientId = cParam || (clients.length > 0 ? clients[0].id : null)
   const activeClient = clients.find(c => c.id === activeClientId)
 
   return (
