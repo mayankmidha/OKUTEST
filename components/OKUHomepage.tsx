@@ -35,8 +35,19 @@ interface HowItWorksStep {
   desc: string;
 }
 
+interface CommunityPanel {
+  image: string;
+  sticker: string;
+  alt: string;
+  kicker: string;
+  title: string;
+  body: string;
+  href: string;
+  cta: string;
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
-const CYCLING_WORDS = ["grief", "anxiety", "loneliness", "confusion", "grief, loss, all of it"];
+const CYCLING_WORDS = ["grief", "longing", "quiet", "becoming", "anger", "story"];
 
 const FEATURES = [
   { icon: "/uploads/2025/06/Frame-23-2.png", label: "Slow Healing", desc: "We move at the pace your story asks for—never rushed." },
@@ -46,13 +57,27 @@ const FEATURES = [
 ];
 
 const TEAM: TeamMember[] = [
-  { name: "Dr. Suraj Singh", role: "Consultant Psychiatrist", image: "/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-600x600.jpg" },
-  { name: "Tanisha Singh", role: "Clinical Psychologist (A.) & Psychodynamic Psychotherapist", image: "/uploads/2025/07/Tanisha_-768x958.jpg" },
-  { name: "Rananjay Singh", role: "Queer Affirmative & Family Therapist", image: "/uploads/2025/07/Rananjay--579x1024.jpg" },
-  { name: "Amna Ansari", role: "Clinical Psychologist (A.)", image: "/uploads/2025/07/Amna-670x1024.jpg" },
+  { name: "Dr. Suraj Singh", role: "Consultant Psychiatrist", image: "/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" },
+  { name: "Tanisha Singh", role: "Clinical Psychologist (A.) & Psychodynamic Psychotherapist", image: "/uploads/2025/07/Tanisha_-821x1024.jpg" },
+  { name: "Rananjay Singh", role: "Queer Affirmative & Family Therapist", image: "/uploads/2025/07/Rananjay--869x1536.jpg" },
+  { name: "Amna Ansari", role: "Clinical Psychologist (A.)", image: "/uploads/2025/07/Amna-1006x1536.jpg" },
   { name: "Mohit Dudeja", role: "Queer Affirmative Therapist", image: "/uploads/2025/07/Mohit-911x1024.jpg" },
   { name: "Gursheel Kaur", role: "Psychodynamic Psychotherapist", image: "/uploads/2025/07/gursheel_pfp-1024x980.jpg" },
 ];
+
+const HERO_VISUALS = {
+  primary: {
+    image: "/uploads/2025/07/Tanisha_-821x1024.jpg",
+    alt: "Tanisha Singh portrait",
+  },
+  secondary: {
+    image: "/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg",
+    alt: "Dr. Suraj Singh portrait",
+  },
+  stickerOne: "/uploads/2025/06/Group-28.png",
+  stickerTwo: "/uploads/2025/06/Group-29.png",
+  stickerThree: "/uploads/2025/06/Frame-137.png",
+};
 
 const SERVICES: Service[] = [
   {
@@ -148,14 +173,43 @@ const HOW_IT_WORKS: HowItWorksStep[] = [
   { title: "Keep Unfolding", desc: "Healing isn't linear—we'll adjust, stay present, and move with you as things evolve." },
 ];
 
-const COMMUNITY_IMAGES = [
-  "/uploads/2025/06/Group-27.png",
-  "/uploads/2025/06/Group-28.png",
-  "/uploads/2025/06/img.png",
-  "/uploads/2025/06/Group-29.png",
-  "/uploads/2025/06/img-1.png",
-  "/uploads/2025/07/WApp.png",
-  "/uploads/2025/06/img-2.png",
+const COMMUNITY_PANELS: CommunityPanel[] = [
+  {
+    image: "/uploads/2025/06/img.png",
+    sticker: "/uploads/2025/06/Group-28.png",
+    alt: "Illustrated Oku community card",
+    kicker: "Our Story",
+    title: "A slower, softer way into therapy",
+    body: "See how Oku's values shape the tone, care style, and emotional safety of the space.",
+    href: "/about-us",
+    cta: "Read our story",
+  },
+  {
+    image: "/uploads/2025/06/img-1.png",
+    sticker: "/uploads/2025/06/Group-29.png",
+    alt: "Illustrated Oku journal card",
+    kicker: "The Journal",
+    title: "Keep exploring at your own pace",
+    body: "Browse reflections, clinical writing, and gentle language for what you might be carrying.",
+    href: "/blog",
+    cta: "Visit the journal",
+  },
+  {
+    image: "/uploads/2025/06/img-2.png",
+    sticker: "/uploads/2025/07/WApp.png",
+    alt: "Illustrated therapist discovery card",
+    kicker: "The Collective",
+    title: "Find the therapist who feels right",
+    body: "Meet verified practitioners and move toward the kind of support that matches your story.",
+    href: "/therapists",
+    cta: "Meet the collective",
+  },
+];
+
+const ASSESSMENT_SIGNALS = [
+  "No pressure, no labels",
+  "A gentle first step into support",
+  "Designed to guide you toward the right kind of care",
 ];
 
 const TRUST_PILLARS = [
@@ -561,24 +615,30 @@ export default function OkuHomepage() {
 
         .hero-grid {
           display: grid;
-          gap: 32px;
-          align-items: end;
+          gap: 40px;
+          align-items: center;
         }
         @media (min-width: 1024px) {
           .hero-grid {
-            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-            gap: 48px;
+            grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.98fr);
+            gap: 64px;
           }
         }
         .hero-copy {
-          max-width: 720px;
+          max-width: 700px;
         }
         .hero-actions {
           display: flex;
           flex-wrap: wrap;
           gap: 12px;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 14px;
+        }
+        .hero-secondary-links {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          margin-bottom: 18px;
         }
         .hero-support-link {
           color: rgba(45,45,45,0.7);
@@ -595,46 +655,60 @@ export default function OkuHomepage() {
           text-transform: uppercase;
           color: rgba(45,45,45,0.5);
         }
-        .hero-editorial {
+        .hero-visual {
           position: relative;
+          min-height: 520px;
+          padding: 16px 0 28px 32px;
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-end;
+        }
+        .hero-portrait-primary,
+        .hero-portrait-secondary {
           overflow: hidden;
-          border-radius: 28px;
-          padding: 28px;
-          background: linear-gradient(180deg, rgba(237,232,224,0.85), rgba(247,244,239,0.92));
-          border: 1px solid rgba(139,115,85,0.14);
-          box-shadow: 0 24px 60px rgba(0,0,0,0.06);
+          background: var(--warm);
+          box-shadow: 0 28px 60px rgba(0,0,0,0.08);
         }
-        .hero-editorial::after {
-          content: '';
-          position: absolute;
-          inset: auto -60px -80px auto;
-          width: 180px;
-          height: 180px;
-          border-radius: 999px;
-          background: rgba(196,168,130,0.16);
-          filter: blur(10px);
-        }
-        .hero-list {
-          display: grid;
-          gap: 16px;
-        }
-        .hero-list-item {
-          padding-top: 16px;
-          border-top: 1px solid rgba(45,45,45,0.1);
+        .hero-portrait-primary {
+          width: min(100%, 430px);
+          aspect-ratio: 5/6;
+          border-radius: 34px;
           position: relative;
-          z-index: 1;
+          z-index: 2;
         }
-        .hero-list-item:first-child {
-          padding-top: 0;
-          border-top: none;
+        .hero-portrait-secondary {
+          position: absolute;
+          left: 0;
+          bottom: 18px;
+          width: 220px;
+          aspect-ratio: 4/5;
+          border-radius: 28px;
+          border: 8px solid var(--cream);
+          z-index: 3;
         }
-        .hero-list-item h3 {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.45rem;
-          font-weight: 500;
-          margin-bottom: 4px;
+        .hero-portrait-primary img,
+        .hero-portrait-secondary img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: top center;
+          display: block;
         }
-        .hero-list-item span {
+        .hero-floating-note {
+          position: absolute;
+          top: 30px;
+          right: 26px;
+          max-width: 220px;
+          padding: 18px 18px 20px;
+          border-radius: 20px;
+          background: rgba(247,244,239,0.94);
+          border: 1px solid rgba(139,115,85,0.12);
+          box-shadow: 0 18px 42px rgba(0,0,0,0.08);
+          z-index: 4;
+        }
+        .hero-floating-note span,
+        .hero-trust-card span,
+        .community-panel-kicker {
           display: inline-block;
           margin-bottom: 6px;
           font-size: 0.72rem;
@@ -642,11 +716,84 @@ export default function OkuHomepage() {
           text-transform: uppercase;
           color: var(--accent);
         }
-
+        .hero-floating-note h3,
+        .hero-trust-card h3,
+        .feature-card h4,
+        .community-panel h3 {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 500;
+          letter-spacing: -0.01em;
+        }
+        .hero-floating-note h3 {
+          font-size: 1.45rem;
+          margin-bottom: 6px;
+          line-height: 1;
+        }
+        .hero-sticker {
+          position: absolute;
+          height: auto;
+          object-fit: contain;
+          pointer-events: none;
+          z-index: 5;
+        }
+        .hero-sticker.one {
+          width: 110px;
+          left: 32px;
+          top: -14px;
+        }
+        .hero-sticker.two {
+          width: 120px;
+          right: -14px;
+          bottom: 140px;
+        }
+        .hero-sticker.three {
+          width: 78px;
+          left: 124px;
+          bottom: -10px;
+        }
+        @media (max-width: 768px) {
+          .hero-visual {
+            min-height: 430px;
+            padding: 8px 0 24px;
+          }
+          .hero-portrait-secondary {
+            width: 170px;
+            bottom: 0;
+          }
+          .hero-floating-note {
+            top: 10px;
+            right: 4px;
+            max-width: 188px;
+          }
+          .hero-sticker.one {
+            width: 88px;
+            left: 8px;
+            top: -10px;
+          }
+          .hero-sticker.two {
+            width: 96px;
+            right: -6px;
+            bottom: 104px;
+          }
+          .hero-sticker.three {
+            left: 78px;
+            width: 64px;
+          }
+        }
+        .hero-bottom-band {
+          display: grid;
+          gap: 18px;
+          margin-top: 38px;
+        }
+        @media (min-width: 1024px) {
+          .hero-bottom-band {
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            align-items: start;
+          }
+        }
         .entry-grid {
           display: grid;
-          gap: 16px;
-          margin-top: 24px;
+          gap: 14px;
         }
         @media (min-width: 768px) {
           .entry-grid {
@@ -657,10 +804,9 @@ export default function OkuHomepage() {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          gap: 24px;
-          min-height: 220px;
-          padding: 24px;
-          border-radius: 20px;
+          gap: 16px;
+          padding: 22px;
+          border-radius: 22px;
           background: rgba(255,255,255,0.72);
           border: 1px solid rgba(139,115,85,0.12);
           text-decoration: none;
@@ -682,41 +828,420 @@ export default function OkuHomepage() {
         }
         .entry-card h3 {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 1.8rem;
-          line-height: 1;
+          font-size: 1.6rem;
+          line-height: 1.02;
           margin-bottom: 10px;
         }
         .entry-arrow {
           font-size: 1rem;
           color: var(--accent);
         }
-
-        /* ── Assessment CTA bar ── */
-        .assessment-bar {
-          background: var(--ink);
-          color: var(--cream);
-          border-radius: 20px;
-          padding: 48px;
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          align-items: flex-start;
+        .hero-trust-grid {
+          display: grid;
+          gap: 12px;
         }
-        @media (min-width: 768px) {
-          .assessment-bar {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 56px 64px;
+        @media (min-width: 640px) {
+          .hero-trust-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
           }
         }
-        .assessment-bar .dynamic-btn.light {
-          border-color: rgba(247,244,239,0.5);
-          color: var(--cream);
+        @media (min-width: 1024px) {
+          .hero-trust-grid {
+            grid-template-columns: 1fr;
+          }
         }
-        .assessment-bar .dynamic-btn.light::before { background: rgba(247,244,239,0.15); transform: scale(0); }
-        .assessment-bar .dynamic-btn.light:hover::before { transform: scale(1); }
-        .assessment-bar .dynamic-btn.light:hover { color: var(--cream); }
+        .hero-trust-card {
+          padding: 20px;
+          border-radius: 20px;
+          background: rgba(237,232,224,0.65);
+          border: 1px solid rgba(139,115,85,0.1);
+        }
+        .hero-trust-card h3 {
+          font-size: 1.28rem;
+          margin-bottom: 6px;
+          line-height: 1.05;
+        }
+
+        .feature-layout {
+          display: grid;
+          gap: 32px;
+          align-items: start;
+        }
+        @media (min-width: 960px) {
+          .feature-layout {
+            grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+            gap: 48px;
+          }
+        }
+        .feature-grid {
+          display: grid;
+          gap: 16px;
+        }
+        @media (min-width: 640px) {
+          .feature-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        .feature-card {
+          min-height: 210px;
+          padding: 28px 24px;
+          border-radius: 24px;
+          background: rgba(255,255,255,0.76);
+          border: 1px solid rgba(139,115,85,0.1);
+          box-shadow: 0 18px 38px rgba(0,0,0,0.04);
+        }
+        .feature-card img {
+          width: 56px;
+          height: 56px;
+          margin-bottom: 16px;
+          object-fit: contain;
+        }
+        .feature-card h4 {
+          font-size: 1.4rem;
+          margin-bottom: 8px;
+          line-height: 1;
+        }
+
+        .team-grid {
+          display: grid;
+          gap: 20px;
+        }
+        @media (min-width: 768px) {
+          .team-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        @media (min-width: 1100px) {
+          .team-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          .team-grid > *:nth-child(2n) .team-card-frame {
+            padding-top: 30px;
+          }
+        }
+        @media (max-width: 1099px) {
+          .team-grid > * .team-card-frame {
+            padding-top: 0;
+          }
+        }
+        .team-card {
+          position: relative;
+          overflow: visible;
+          background: transparent;
+        }
+        .team-card-frame {
+          position: relative;
+          padding-bottom: 14px;
+        }
+        .team-card img {
+          width: 100%;
+          aspect-ratio: 4/5;
+          object-fit: cover;
+          object-position: top center;
+          transition: transform 0.6s ease;
+          display: block;
+          border-radius: 30px;
+          box-shadow: 0 26px 52px rgba(0,0,0,0.08);
+        }
+        .team-card:hover img {
+          transform: scale(1.03);
+        }
+        .team-card-overlay {
+          position: relative;
+          margin: -58px 18px 0;
+          padding: 18px 18px 20px;
+          background: rgba(247,244,239,0.95);
+          backdrop-filter: blur(8px);
+          border-radius: 18px;
+          color: var(--ink);
+          border: 1px solid rgba(45,45,45,0.05);
+          box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+        }
+        .team-card-overlay h3 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.45rem;
+          font-weight: 500;
+          margin-bottom: 4px;
+          letter-spacing: -0.01em;
+        }
+        .team-card-overlay p {
+          font-size: 0.72rem;
+          opacity: 0.66;
+          line-height: 1.35;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+
+        .for-you-intro {
+          display: grid;
+          gap: 20px;
+          margin-bottom: 48px;
+        }
+        @media (min-width: 1024px) {
+          .for-you-intro {
+            grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+            align-items: end;
+          }
+        }
+        .for-you-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        @media (min-width: 640px) {
+          .for-you-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+        @media (min-width: 1024px) {
+          .for-you-grid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+          }
+          .for-you-span {
+            grid-column: span 2;
+          }
+        }
+        .for-you-card {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 40px;
+          min-height: 250px;
+          padding: 28px 24px;
+          border-radius: 24px;
+          background: rgba(255,255,255,0.76);
+          border: 1px solid rgba(139,115,85,0.1);
+          box-shadow: 0 18px 40px rgba(0,0,0,0.04);
+          transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .for-you-card:hover {
+          transform: translateY(-4px);
+          background: rgba(255,255,255,0.92);
+        }
+        .for-you-card img {
+          width: 58px;
+          height: 58px;
+          flex-shrink: 0;
+          object-fit: contain;
+        }
+
+        .community-layout {
+          display: grid;
+          gap: 36px;
+          align-items: center;
+          margin-bottom: 44px;
+        }
+        @media (min-width: 1024px) {
+          .community-layout {
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 52px;
+          }
+        }
+        .community-collage {
+          position: relative;
+          min-height: 470px;
+        }
+        .community-collage-card {
+          position: absolute;
+          padding: 12px;
+          background: rgba(247,244,239,0.88);
+          border-radius: 28px;
+          box-shadow: 0 24px 54px rgba(0,0,0,0.08);
+          overflow: hidden;
+        }
+        .community-collage-card img {
+          width: 100%;
+          height: 100%;
+          border-radius: 22px;
+          object-fit: cover;
+          display: block;
+        }
+        .community-collage-card.primary {
+          right: 0;
+          top: 18px;
+          width: min(100%, 360px);
+          aspect-ratio: 1/1;
+          z-index: 2;
+        }
+        .community-collage-card.secondary {
+          left: 12px;
+          top: 0;
+          width: 210px;
+          aspect-ratio: 4/5;
+          z-index: 3;
+        }
+        .community-collage-card.tertiary {
+          left: 74px;
+          bottom: 0;
+          width: 240px;
+          aspect-ratio: 1/1;
+          z-index: 1;
+        }
+        .community-sticker {
+          position: absolute;
+          height: auto;
+          object-fit: contain;
+          pointer-events: none;
+        }
+        .community-sticker.one {
+          width: 120px;
+          left: -8px;
+          bottom: 34px;
+          z-index: 4;
+        }
+        .community-sticker.two {
+          width: 110px;
+          right: 26px;
+          top: -12px;
+          z-index: 4;
+        }
+        .community-sticker.three {
+          width: 112px;
+          right: -14px;
+          bottom: 92px;
+          z-index: 4;
+        }
+        .community-sticker.four {
+          width: 82px;
+          left: 238px;
+          top: 214px;
+          z-index: 4;
+        }
+        @media (max-width: 768px) {
+          .community-collage {
+            min-height: 380px;
+          }
+          .community-collage-card.primary {
+            width: 260px;
+          }
+          .community-collage-card.secondary {
+            width: 160px;
+            left: 0;
+          }
+          .community-collage-card.tertiary {
+            width: 180px;
+            left: 52px;
+          }
+          .community-sticker.one {
+            width: 94px;
+            left: -6px;
+          }
+          .community-sticker.two {
+            width: 86px;
+          }
+          .community-sticker.three {
+            width: 90px;
+            right: -8px;
+          }
+          .community-sticker.four {
+            width: 62px;
+            left: 176px;
+            top: 182px;
+          }
+        }
+        .community-panel-grid {
+          display: grid;
+          gap: 18px;
+        }
+        @media (min-width: 900px) {
+          .community-panel-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        .community-panel {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 20px;
+          min-height: 100%;
+          padding: 22px;
+          border-radius: 28px;
+          text-decoration: none;
+          color: inherit;
+          background: rgba(247,244,239,0.88);
+          border: 1px solid rgba(139,115,85,0.12);
+          transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+        }
+        .community-panel:hover {
+          transform: translateY(-4px);
+          background: rgba(255,255,255,0.92);
+          box-shadow: 0 18px 40px rgba(0,0,0,0.06);
+        }
+        .community-panel-figure {
+          position: relative;
+          aspect-ratio: 1/1;
+          overflow: hidden;
+          border-radius: 22px;
+          background: rgba(237,232,224,0.8);
+          margin-bottom: 18px;
+        }
+        .community-panel-figure img:first-child {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .community-panel-sticker {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 88px;
+          height: auto;
+          object-fit: contain;
+        }
+        .community-panel h3 {
+          font-size: 1.8rem;
+          line-height: 1;
+          margin-bottom: 10px;
+        }
+        .community-panel-link {
+          color: var(--accent);
+          font-size: 0.9rem;
+        }
+
+        .assessment-shell {
+          padding: 34px 28px;
+          border-radius: 32px;
+          background: rgba(247,244,239,0.8);
+          border: 1px solid rgba(139,115,85,0.12);
+          box-shadow: 0 22px 48px rgba(0,0,0,0.05);
+        }
+        @media (min-width: 768px) {
+          .assessment-shell {
+            padding: 46px 44px;
+          }
+        }
+        .assessment-layout {
+          display: grid;
+          gap: 28px;
+          align-items: end;
+        }
+        @media (min-width: 900px) {
+          .assessment-layout {
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+            gap: 44px;
+          }
+        }
+        .assessment-signals {
+          display: grid;
+          gap: 12px;
+          margin: 8px 0 28px;
+        }
+        .assessment-signal {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(45,45,45,0.1);
+        }
+        .assessment-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+          background: var(--accent);
+          flex-shrink: 0;
+        }
       `}</style>
 
       <div className="oku-page-public">
@@ -746,7 +1271,11 @@ export default function OkuHomepage() {
                   </p>
                   <div className="hero-actions">
                     <DynamicButton href="/therapists" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
-                    <DynamicButton href="/assessments" isInternal={true} dark={false}>Take a gentle self-check</DynamicButton>
+                  </div>
+                  <div className="hero-secondary-links">
+                    <Link href="/assessments" className="hero-support-link">
+                      Take a gentle self-check
+                    </Link>
                     <Link href="/auth/login" className="hero-support-link">
                       Already with us? Sign in
                     </Link>
@@ -754,28 +1283,28 @@ export default function OkuHomepage() {
                   <p className="hero-note">Free consultations · Secure video sessions · Inclusive, affirming care</p>
                 </div>
 
-                <aside className="hero-editorial">
-                  <span className="chip" style={{ marginBottom: 18, display: "inline-block" }}>A Gentler Way In</span>
-                  <h2 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)", marginBottom: 12 }}>
-                    Start where your <strong>nervous system</strong> can say yes.
-                  </h2>
-                  <p style={{ color: "rgba(45,45,45,0.72)", lineHeight: 1.7, marginBottom: 24 }}>
-                    Whether you want to browse therapists, understand your symptoms, or simply ask a few questions first, Oku is designed to make the first step feel calmer.
-                  </p>
-                  <div className="hero-list">
-                    {TRUST_PILLARS.map((pillar) => (
-                      <div key={pillar.title} className="hero-list-item">
-                        <span>{pillar.eyebrow}</span>
-                        <h3>{pillar.title}</h3>
-                        <p style={{ color: "rgba(45,45,45,0.7)", lineHeight: 1.6 }}>{pillar.description}</p>
-                      </div>
-                    ))}
+                <div className="hero-visual">
+                  <div className="hero-portrait-primary">
+                    <img src={HERO_VISUALS.primary.image} alt={HERO_VISUALS.primary.alt} />
                   </div>
-                </aside>
+                  <div className="hero-portrait-secondary">
+                    <img src={HERO_VISUALS.secondary.image} alt={HERO_VISUALS.secondary.alt} />
+                  </div>
+                  <div className="hero-floating-note">
+                    <span>Held with care</span>
+                    <h3>Therapy that begins with listening</h3>
+                    <p style={{ color: "rgba(45,45,45,0.7)", lineHeight: 1.6 }}>
+                      Start with questions, silence, or uncertainty. We make room for all of it.
+                    </p>
+                  </div>
+                  <img className="hero-sticker one" src={HERO_VISUALS.stickerOne} alt="" aria-hidden="true" />
+                  <img className="hero-sticker two" src={HERO_VISUALS.stickerTwo} alt="" aria-hidden="true" />
+                  <img className="hero-sticker three" src={HERO_VISUALS.stickerThree} alt="" aria-hidden="true" />
+                </div>
               </div>
             </SectionReveal>
 
-            <SectionReveal className="mt-10">
+            <SectionReveal className="hero-bottom-band">
               <div className="entry-grid">
                 {STARTING_POINTS.map((path) => (
                   <Link key={path.title} href={path.href} className="entry-card">
@@ -788,6 +1317,15 @@ export default function OkuHomepage() {
                   </Link>
                 ))}
               </div>
+              <div className="hero-trust-grid">
+                {TRUST_PILLARS.map((pillar) => (
+                  <div key={pillar.title} className="hero-trust-card">
+                    <span>{pillar.eyebrow}</span>
+                    <h3>{pillar.title}</h3>
+                    <p style={{ color: "rgba(45,45,45,0.68)", lineHeight: 1.6 }}>{pillar.description}</p>
+                  </div>
+                ))}
+              </div>
             </SectionReveal>
           </div>
         </section>
@@ -796,25 +1334,30 @@ export default function OkuHomepage() {
         <section style={{ background: "var(--warm)", padding: "60px 0" }}>
           <div style={{ padding: "0 24px 0 24px" }} className="max-w">
             <SectionReveal>
-              <div style={{ marginBottom: 32 }}>
-                <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>
-                  A place to <em>explore,</em>
-                </h2>
-                <h3 className="heading-display" style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)", color: "var(--accent)", fontStyle: "italic" }}>
-                  not perform.
-                </h3>
-              </div>
-              <p style={{ maxWidth: 560, color: "rgba(45,45,45,0.7)", marginBottom: 40, lineHeight: 1.7 }}>
-                Oku was created as a gentle refuge for those <strong>who feel unseen</strong> in traditional therapy spaces. Whether you're unpacking generational pain, navigating identity, or simply seeking to <strong>reconnect with yourself</strong>, we invite you to explore—<strong>without pressure or performance.</strong>
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
-                {FEATURES.map((f) => (
-                  <div key={f.label} style={{ padding: "24px 20px", background: "var(--cream)", borderRadius: 14 }}>
-                    <img src={f.icon} alt={f.label} style={{ width: 48, height: 48, marginBottom: 12, objectFit: "contain" }} />
-                    <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.15rem", fontWeight: 400, marginBottom: 6 }}>{f.label}</h4>
-                    <p style={{ fontSize: "0.85rem", color: "rgba(45,45,45,0.65)", lineHeight: 1.5 }}>{f.desc}</p>
+              <div className="feature-layout">
+                <div>
+                  <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>A Gentler Way In</span>
+                  <div style={{ marginBottom: 20 }}>
+                    <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>
+                      A place to <em>explore,</em>
+                    </h2>
+                    <h3 className="heading-display" style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)", color: "var(--accent)", fontStyle: "italic" }}>
+                      not perform.
+                    </h3>
                   </div>
-                ))}
+                  <p style={{ maxWidth: 520, color: "rgba(45,45,45,0.7)", lineHeight: 1.75 }}>
+                    Oku was created as a gentle refuge for those <strong>who feel unseen</strong> in traditional therapy spaces. Whether you're unpacking generational pain, navigating identity, or simply seeking to <strong>reconnect with yourself</strong>, we invite you to explore without pressure or performance.
+                  </p>
+                </div>
+                <div className="feature-grid">
+                  {FEATURES.map((f) => (
+                    <div key={f.label} className="feature-card">
+                      <img src={f.icon} alt={f.label} />
+                      <h4>{f.label}</h4>
+                      <p style={{ fontSize: "0.92rem", color: "rgba(45,45,45,0.65)", lineHeight: 1.7 }}>{f.desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </SectionReveal>
           </div>
@@ -857,15 +1400,23 @@ export default function OkuHomepage() {
               <p style={{ maxWidth: 520, color: "rgba(45,45,45,0.65)", marginBottom: 56, lineHeight: 1.7 }}>
                 Meet our team of <strong>licensed therapists, facilitators, psychologists and listeners</strong>—bringing care, context, and presence into every session.
               </p>
+              <img
+                src="/uploads/2025/06/Vector-1.png"
+                alt=""
+                className="wave-divider"
+                style={{ marginBottom: 40 }}
+              />
             </SectionReveal>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
+            <div className="team-grid">
               {TEAM.map((member, i) => (
                 <SectionReveal key={member.name}>
                   <div className="team-card" style={{ animationDelay: `${i * 80}ms` }}>
-                    <img src={member.image} alt={member.name} loading="lazy" />
-                    <div className="team-card-overlay">
-                      <h3>{member.name}</h3>
-                      <p>{member.role}</p>
+                    <div className="team-card-frame">
+                      <img src={member.image} alt={member.name} loading="lazy" />
+                      <div className="team-card-overlay">
+                        <h3>{member.name}</h3>
+                        <p>{member.role}</p>
+                      </div>
                     </div>
                   </div>
                 </SectionReveal>
@@ -950,18 +1501,25 @@ export default function OkuHomepage() {
         <section className="section-lg" style={{ background: "var(--cream)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>This Space</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>This space</strong> is </h2>
-              <h3 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 56 }}>for you</h3>
+              <div className="for-you-intro">
+                <div>
+                  <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>This Space</span>
+                  <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>This space</strong> is </h2>
+                  <h3 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", color: "var(--accent)", fontStyle: "italic" }}>for you</h3>
+                </div>
+                <p style={{ maxWidth: 620, color: "rgba(45,45,45,0.68)", lineHeight: 1.8 }}>
+                  Whether you feel like too much, not enough, between worlds, or entirely new to therapy, this space is designed to feel more human than clinical. You do not have to edit yourself to be here.
+                </p>
+              </div>
             </SectionReveal>
             <div className="for-you-grid">
-              {FOR_YOU.map((card) => (
-                <SectionReveal key={card.heading}>
+              {FOR_YOU.map((card, i) => (
+                <SectionReveal key={card.heading} className={i === 0 || i === 4 || i === 8 ? "for-you-span" : ""}>
                   <div className="for-you-card">
                     <img src={card.icon} alt="" loading="lazy" />
                     <div>
-                      <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.05rem", fontWeight: 400, marginBottom: 4 }}>{card.heading}</h4>
-                      <p style={{ fontSize: "0.83rem", color: "rgba(45,45,45,0.6)", lineHeight: 1.5 }}>{card.subtext}</p>
+                      <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.55rem", fontWeight: 400, marginBottom: 10, lineHeight: 1.05 }}>{card.heading}</h4>
+                      <p style={{ fontSize: "0.92rem", color: "rgba(45,45,45,0.62)", lineHeight: 1.7 }}>{card.subtext}</p>
                     </div>
                   </div>
                 </SectionReveal>
@@ -974,30 +1532,47 @@ export default function OkuHomepage() {
         <section className="section" id="community" style={{ background: "var(--warm)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Community</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>Join our<br /><strong>slow and soft</strong></h2>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 16 }}>community.</h2>
-              <p style={{ maxWidth: 560, color: "rgba(45,45,45,0.65)", marginBottom: 40, lineHeight: 1.7 }}>
-                <strong>We don't wear lab coats or hand you a fixed plan.</strong> Instead, we offer a slower, more spacious kind of care—relational, body-aware, and rooted in who you are.
-              </p>
-              <div style={{ marginBottom: 48 }}>
-                <a
-                  href="https://www.youtube.com/watch?v=ZbT0NsovMRU"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="nav-link"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.9rem", opacity: 1, color: "var(--accent)", fontWeight: 500 }}
-                >
-                  <span style={{ fontSize: "1.2rem" }}>▶</span> Watch our story on YouTube
-                </a>
+              <div className="community-layout">
+                <div>
+                  <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Community</span>
+                  <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>A softer way to<br /><strong>keep exploring</strong></h2>
+                  <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 16 }}>beyond the first session.</h2>
+                  <p style={{ maxWidth: 540, color: "rgba(45,45,45,0.68)", lineHeight: 1.8 }}>
+                    The homepage should not feel like a dead end. Whether you want to understand our philosophy, read something reflective, or move straight into therapist discovery, these are gentle next steps that stay inside the product experience.
+                  </p>
+                </div>
+                <div className="community-collage">
+                  <div className="community-collage-card primary">
+                    <img src="/uploads/2025/06/img.png" alt="Oku illustrated community moment" loading="lazy" />
+                  </div>
+                  <div className="community-collage-card secondary">
+                    <img src="/uploads/2025/06/img-1.png" alt="Oku illustrated journal moment" loading="lazy" />
+                  </div>
+                  <div className="community-collage-card tertiary">
+                    <img src="/uploads/2025/06/img-2.png" alt="Oku illustrated therapist discovery moment" loading="lazy" />
+                  </div>
+                  <img className="community-sticker one" src="/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker two" src="/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker three" src="/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker four" src="/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
+                </div>
               </div>
             </SectionReveal>
-            <div className="community-grid">
-              {COMMUNITY_IMAGES.map((src, i) => (
-                <SectionReveal key={i}>
-                  <div className="community-img-wrap">
-                    <img src={src} alt={`Oku community moment ${i + 1}`} loading="lazy" />
-                  </div>
+            <div className="community-panel-grid">
+              {COMMUNITY_PANELS.map((panel) => (
+                <SectionReveal key={panel.title}>
+                  <Link href={panel.href} className="community-panel">
+                    <div>
+                      <div className="community-panel-figure">
+                        <img src={panel.image} alt={panel.alt} loading="lazy" />
+                        <img src={panel.sticker} alt="" aria-hidden="true" className="community-panel-sticker" />
+                      </div>
+                      <span className="community-panel-kicker">{panel.kicker}</span>
+                      <h3>{panel.title}</h3>
+                      <p style={{ color: "rgba(45,45,45,0.66)", lineHeight: 1.7 }}>{panel.body}</p>
+                    </div>
+                    <span className="community-panel-link">{panel.cta} →</span>
+                  </Link>
                 </SectionReveal>
               ))}
             </div>
@@ -1039,17 +1614,34 @@ export default function OkuHomepage() {
         <section className="section" style={{ background: "var(--warm)" }}>
           <div className="max-w">
             <SectionReveal>
-              <div className="assessment-bar">
-                <div>
-                  <h2 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", color: "var(--cream)", marginBottom: 8 }}>
-                    How have<br /><strong>you been feeling</strong> lately?
-                  </h2>
-                  <p style={{ color: "rgba(247,244,239,0.65)", maxWidth: 440, lineHeight: 1.7, marginTop: 12 }}>
-                    Just a few gentle questions to help us understand what you're carrying now. No pressure, no labels—just a first step toward care.
-                  </p>
-                </div>
-                <div style={{ flexShrink: 0 }}>
-                  <DynamicButton href="/assessments" isInternal={true} dark={false}>Begin gently →</DynamicButton>
+              <div className="assessment-shell">
+                <span className="chip" style={{ marginBottom: 18, display: "inline-block" }}>Gentle Self-Check</span>
+                <img
+                  src="/uploads/2025/06/Vector-1.png"
+                  alt=""
+                  className="wave-divider"
+                  style={{ marginBottom: 28 }}
+                />
+                <div className="assessment-layout">
+                  <div>
+                    <h2 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", marginBottom: 10 }}>
+                      How have <strong>you been feeling</strong> lately?
+                    </h2>
+                    <p style={{ color: "rgba(45,45,45,0.7)", maxWidth: 520, lineHeight: 1.8 }}>
+                      Just a few gentle questions to help us understand what you're carrying now. No pressure, no labels, and no need to know exactly what kind of support you need before you begin.
+                    </p>
+                  </div>
+                  <div>
+                    <div className="assessment-signals">
+                      {ASSESSMENT_SIGNALS.map((signal) => (
+                        <div key={signal} className="assessment-signal">
+                          <span className="assessment-dot" />
+                          <p style={{ color: "rgba(45,45,45,0.72)" }}>{signal}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <DynamicButton href="/assessments" isInternal={true}>Begin the self-check</DynamicButton>
+                  </div>
                 </div>
               </div>
             </SectionReveal>
