@@ -61,7 +61,7 @@ export default async function PractitionerDashboardPage() {
       distinct: ['clientId'],
     }).then(res => res.length),
     prisma.task.count({
-      where: { userId: session.user.id, completed: false }
+      where: { userId: session.user.id, isCompleted: false }
     }),
     prisma.soapNote.findMany({
       where: { appointment: { practitionerId: session.user.id } },

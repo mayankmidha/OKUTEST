@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma'
-import { PractitionerCard } from '@/components/PractitionerCard'
 import { autoConvert, formatCurrency } from '@/lib/currency'
 import { Briefcase, Award, BookOpen, ArrowRight, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'

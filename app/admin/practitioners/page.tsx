@@ -161,7 +161,7 @@ export default function AdminPractitionersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-oku-dark">
-                          {practitioner.specialization.map((spec, index) => (
+                          {practitioner.specialization.map((spec: string, index: number) => (
                             <span key={index} className="inline-block bg-oku-purple/10 text-oku-purple px-2 py-1 rounded text-xs mr-1 mb-1">
                               {spec}
                             </span>

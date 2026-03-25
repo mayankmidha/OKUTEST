@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenerativeAI } from '../../../../node_modules/@google/generative-ai'
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 
 export async function POST(req: Request) {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       }
     })
 
-    if (!appointment) return new NextResponse("Appointment not found", { status: 404 })
+    if (!appointment || !appointment.client) return new NextResponse("Appointment or Client not found", { status: 404 })
 
     // 2. Format Clinical Context
     const clinicalContext = {

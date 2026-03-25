@@ -6,7 +6,7 @@ export async function sendSessionReminder(appointmentId: string) {
     include: { client: true, practitioner: true }
   })
 
-  if (!appointment || !appointment.client.email) return
+  if (!appointment || !appointment.client || !appointment.client.email) return
 
   // In production, integrate with Resend, SendGrid, or AWS SES
   console.log(`[CLINICAL_REMINDER] Sending alert to ${appointment.client.email} for session with ${appointment.practitioner.name} at ${appointment.startTime}`)

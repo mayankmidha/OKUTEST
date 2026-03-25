@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         include: { service: true, client: { include: { insurancePolicies: { where: { isPrimary: true } } } } }
       });
 
-      if (!appointment || !appointment.client.insurancePolicies[0]) {
+      if (!appointment || !appointment.client || !appointment.client.insurancePolicies[0]) {
         return new NextResponse("Incomplete claim data", { status: 400 });
       }
 
