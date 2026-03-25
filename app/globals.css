@@ -1,96 +1,79 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@400;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    @apply border-oku-taupe/10;
-  }
-  
-  html {
-    @apply scroll-smooth antialiased text-oku-dark selection:bg-oku-purple selection:text-oku-dark;
-  }
+:root {
+  --foreground-rgb: 28, 27, 26;
+  --background-start-rgb: 250, 249, 246;
+  --background-end-rgb: 252, 250, 247;
+}
 
-  body {
-    @apply bg-oku-cream font-body text-oku-dark leading-relaxed;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold tracking-tight text-oku-dark;
-  }
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
 }
 
 @layer components {
-  .nav-pill {
-    @apply bg-oku-nav-pill backdrop-blur-md border border-white/20 rounded-pill px-8 py-3 shadow-sm;
-  }
-  
   .btn-primary {
-    @apply bg-oku-dark text-white px-8 py-4 rounded-full font-bold transition-all hover:bg-oku-navy-light active:scale-95 shadow-lg hover:shadow-xl;
-  }
-
-  .btn-pastel {
-    @apply bg-oku-purple text-oku-dark px-8 py-4 rounded-full font-bold transition-all hover:bg-oku-purple-dark hover:text-white active:scale-95 border border-oku-purple-dark/10 shadow-md hover:shadow-lg;
+    @apply bg-oku-dark text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-navy transition-all duration-500 shadow-premium active:scale-95 flex items-center justify-center gap-3;
   }
 
   .btn-navy {
-    @apply bg-oku-navy text-white px-8 py-4 rounded-full font-bold transition-all hover:bg-oku-navy-light active:scale-95 shadow-lg hover:shadow-xl;
+    @apply bg-oku-navy text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-dark transition-all duration-500 shadow-premium active:scale-95 flex items-center justify-center gap-3;
   }
 
   .btn-sky {
-    @apply bg-oku-sky text-oku-navy-light px-8 py-4 rounded-full font-bold transition-all hover:bg-oku-ocean active:scale-95 border border-oku-blue-mid/20 shadow-sm hover:shadow-md;
+    @apply bg-oku-sky text-oku-navy-light px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-ocean transition-all duration-500 border border-oku-ocean shadow-sm active:scale-95 flex items-center justify-center gap-3;
   }
 
   .card-glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/40 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all duration-500;
+    @apply bg-white/60 backdrop-blur-3xl border border-white rounded-[2.5rem] md:rounded-[3.5rem] shadow-premium transition-all duration-700;
   }
 
   .card-navy {
-    @apply bg-oku-navy text-white rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden;
+    @apply bg-oku-dark text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden;
   }
 
-  .card-ocean {
-    @apply bg-oku-ocean border border-oku-blue-mid/20 rounded-[2.5rem] p-10 shadow-sm hover:shadow-md transition-all duration-500;
+  .font-display {
+    @apply font-serif;
   }
 
-  .footer-col-even {
-    @apply rotate-4;
-  }
-
-  .footer-col-odd {
-    @apply rotate-[-4deg];
-  }
-
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .font-script {
+    @apply font-cursive;
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Scrollbar styling */
+/* Custom Scrollbar for Premium Feel */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-oku-cream;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-oku-purple-dark/30 rounded-full;
+  @apply bg-oku-taupe/10 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-oku-taupe/20;
+}
+
+.mirror {
+  transform: scaleX(-1);
 }

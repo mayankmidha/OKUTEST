@@ -29,10 +29,6 @@ export default async function ClientDashboardPage() {
         clientProfile: true,
         intakeForm: true,
         insurancePolicies: true,
-        prescriptions: {
-          where: { status: 'ACTIVE' },
-          include: { practitioner: true }
-        },
         clientAppointments: {
           where: {
             startTime: { gte: new Date() },
@@ -245,29 +241,8 @@ export default async function ClientDashboardPage() {
           {/* New Insight Section */}
           <WellnessVisualizer />
 
-          {/* Clinical Records: Prescriptions & Insurance */}
-          <div className="grid md:grid-cols-2 gap-6 pt-4">
-             <div className="card-glass p-8 group hover:border-oku-purple/20 transition-all">
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 rounded-xl bg-oku-purple/10 text-oku-purple flex items-center justify-center">
-                      <Pill size={18} />
-                   </div>
-                   <h3 className="font-bold text-oku-dark">Active Prescriptions</h3>
-                </div>
-                {(!user.prescriptions || user.prescriptions.length === 0) ? (
-                   <p className="text-xs text-oku-taupe italic opacity-60">No active medications recorded.</p>
-                ) : (
-                   <div className="space-y-4">
-                      {user.prescriptions.map((rx: any) => (
-                         <div key={rx.id} className="pb-4 border-b border-oku-taupe/5 last:border-0 last:pb-0">
-                            <p className="font-bold text-oku-dark text-sm">{rx.medicationName} <span className="font-normal text-oku-taupe">{rx.dosage}</span></p>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/60 mt-1">{rx.frequency}</p>
-                         </div>
-                      ))}
-                   </div>
-                )}
-             </div>
-
+          {/* Clinical Records: Insurance */}
+          <div className="pt-4">
              <div className="card-glass p-8 group hover:border-oku-green/20 transition-all">
                 <div className="flex items-center gap-3 mb-6">
                    <div className="w-10 h-10 rounded-xl bg-oku-green/10 text-oku-green-dark flex items-center justify-center">

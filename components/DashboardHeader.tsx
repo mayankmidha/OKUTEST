@@ -16,12 +16,12 @@ export function DashboardHeader({ title, description, actions }: DashboardHeader
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 md:gap-10 mb-12 md:mb-20"
     >
-      <div className="max-w-2xl px-2">
-        <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold text-oku-dark tracking-tighter leading-[0.9] mb-4 md:mb-6">
+      <div className="max-w-3xl px-2">
+        <h1 className="text-5xl md:text-6xl lg:text-8xl font-display font-bold text-oku-dark tracking-tight leading-[0.85] mb-6 md:mb-8">
           {title}
         </h1>
         {description && (
-          <p className="text-lg md:text-xl text-oku-taupe font-display italic leading-relaxed opacity-70">
+          <p className="text-xl md:text-2xl text-oku-taupe font-display italic leading-relaxed opacity-70 border-l-2 border-oku-lavender-dark/20 pl-8">
             {description}
           </p>
         )}
