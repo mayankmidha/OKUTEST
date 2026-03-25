@@ -13,7 +13,7 @@ import { AppointmentStatus, UserRole, Prisma } from '@prisma/client'
 import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 import { TaskManager } from '@/components/TaskManager'
-import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
+import { PractitionerShell, PractitionerStatCard } from '@/components/practitioner-shell/practitioner-shell'
 import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
 
 export default async function PractitionerDashboardPage() {
@@ -23,19 +23,16 @@ export default async function PractitionerDashboardPage() {
     redirect('/auth/login')
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { location: true }
-  })
-
-  let practitioner: any = null
-  let totalCompleted = 0
-  let totalEarnings: any = { _sum: { amount: 0 } }
-  let recentNotes: any[] = []
-  let needsRedirect = false
-
-  try {
-    practitioner = await prisma.practitionerProfile.findUnique({
+  // 1. Fetch Practice Intelligence
+  const [
+    practitioner,
+    totalCompleted,
+    totalEarnings,
+    caseloadCount,
+    pendingTasks,
+    recentNotes
+  ] = await Promise.all([
+    prisma.practitionerProfile.findUnique({
       where: { userId: session.user.id },
       include: {
         user: {
@@ -45,78 +42,61 @@ export default async function PractitionerDashboardPage() {
                         startTime: { gte: new Date(new Date().setHours(0,0,0,0)) },
                         status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
                     },
-                    include: {
-                        client: true,
-                        service: true
-                    },
+                    include: { client: true, service: true },
                     orderBy: { startTime: 'asc' }
                 }
             }
         }
       }
+    }),
+    prisma.appointment.count({
+      where: { practitionerId: session.user.id, status: AppointmentStatus.COMPLETED }
+    }),
+    prisma.payment.aggregate({
+      where: { appointment: { practitionerId: session.user.id }, status: 'COMPLETED' },
+      _sum: { amount: true }
+    }),
+    prisma.appointment.findMany({
+      where: { practitionerId: session.user.id },
+      distinct: ['clientId'],
+    }).then(res => res.length),
+    prisma.task.count({
+      where: { userId: session.user.id, completed: false }
+    }),
+    prisma.soapNote.findMany({
+      where: { appointment: { practitionerId: session.user.id } },
+      include: { appointment: { include: { client: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 3
     })
+  ])
 
-    if (!practitioner) {
-      await prisma.practitionerProfile.create({
-          data: { userId: session.user.id, bio: '', specialization: [] }
-      })
-      needsRedirect = true
-    } else {
-      totalCompleted = await prisma.appointment.count({
-          where: { 
-              practitionerId: session.user.id,
-              status: AppointmentStatus.COMPLETED
-          }
-      })
-
-      totalEarnings = await prisma.payment.aggregate({
-          where: {
-              appointment: { practitionerId: session.user.id },
-              status: 'COMPLETED'
-          },
-          _sum: { amount: true }
-      })
-
-      recentNotes = await prisma.soapNote.findMany({
-          where: { appointment: { practitionerId: session.user.id } },
-          include: { appointment: { include: { client: true } } },
-          orderBy: { createdAt: 'desc' },
-          take: 3
-      })
-    }
-  } catch (error) {
-    console.error("Practitioner Dashboard Error:", error)
-    return (
-      <div className="py-20 px-10 bg-oku-cream min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Brain className="animate-float mx-auto text-oku-purple-dark mb-6" size={48} />
-          <h1 className="text-3xl font-display font-bold text-oku-dark">Clinical Syncing...</h1>
-          <p className="text-oku-taupe italic mt-2">Finalizing your secure profile. Please refresh in a moment.</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (needsRedirect) {
+  if (!practitioner) {
+    // Auto-create profile if missing
+    await prisma.practitionerProfile.create({
+        data: { userId: session.user.id, bio: '', specialization: [] }
+    })
     redirect('/practitioner/dashboard')
   }
 
-  const todaySessions = (practitioner?.user?.practitionerAppointments || []).filter((a: any) => {
+  const todaySessions = (practitioner.user.practitionerAppointments || []).filter((a: any) => {
       const today = new Date().setHours(0,0,0,0)
       return new Date(a.startTime).setHours(0,0,0,0) === today
   })
 
-  const upcomingSessions = (practitioner?.user?.practitionerAppointments || []).filter((a: any) => {
+  const upcomingSessions = (practitioner.user.practitionerAppointments || []).filter((a: any) => {
       return new Date(a.startTime) > new Date()
   })
 
+  const earningsValue = totalEarnings._sum.amount || 0;
+
   return (
     <PractitionerShell
-      title="Clinical Command"
-      description="Refined practice management for deep clinical focus."
-      badge="Practitioner HQ"
+      title={`Welcome back, ${session.user.name?.split(' ')[0]}`}
+      description="Your clinical practice is synchronized. Here is your overview for today."
+      badge="Clinical Command"
       currentPath="/practitioner/dashboard"
-      canPostBlogs={practitioner?.canPostBlogs}
+      canPostBlogs={practitioner.canPostBlogs}
       heroActions={
         <div className="flex items-center gap-4">
           <Link href="/practitioner/schedule" className="btn-sky hidden md:flex items-center gap-2">
@@ -128,66 +108,32 @@ export default async function PractitionerDashboardPage() {
         </div>
       }
     >
-      {/* Stats Grid - Enhanced with Navy & Ocean */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-        <div className="card-glass p-8 flex items-center justify-between group">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Today's Load</p>
-            <p className="text-4xl font-display font-bold text-oku-dark">{todaySessions.length}</p>
-            <p className="text-xs text-oku-taupe font-medium mt-1">Confirmed Sessions</p>
-          </div>
-          <div className="w-14 h-14 rounded-2xl bg-oku-purple/20 text-oku-purple-dark flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
-            <Video size={24} />
-          </div>
-        </div>
-
-        <div className="card-glass p-8 flex items-center justify-between group">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Lifetime</p>
-            <p className="text-4xl font-display font-bold text-oku-dark">{totalCompleted}</p>
-            <p className="text-xs text-oku-taupe font-medium mt-1">Completed Sessions</p>
-          </div>
-          <div className="w-14 h-14 rounded-2xl bg-oku-ocean text-oku-navy-light flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
-            <TrendingUp size={24} />
-          </div>
-        </div>
-
-        <div className="card-glass p-8 flex items-center justify-between group">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Practice Revenue</p>
-            <div className="flex flex-col">
-                {(() => {
-                    const conv = autoConvert(totalEarnings._sum.amount || 0, user?.location || undefined);
-                    return (
-                        <>
-                            <p className="text-4xl font-display font-bold text-oku-dark">{formatCurrency(conv.amount, conv.currency)}</p>
-                            {conv.currency !== 'INR' && (
-                                <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40 mt-1">≈ ₹{convertToINR(totalEarnings._sum.amount || 0).toLocaleString()}</p>
-                            )}
-                        </>
-                    )
-                })()}
-            </div>
-            <p className="text-xs text-oku-taupe font-medium mt-1">Settled Payments</p>
-          </div>
-          <div className="w-14 h-14 rounded-2xl bg-oku-green/20 text-oku-green-dark flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
-            <DollarSign size={24} />
-          </div>
-        </div>
-
-        <div className="card-navy p-8 flex items-center justify-between group overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple opacity-60 mb-2">Next Patient</p>
-            <p className="text-xl font-bold truncate pr-2 group-hover:translate-x-1 transition-transform">
-              {upcomingSessions[0] ? upcomingSessions[0].client?.name : 'Queue clear'}
-            </p>
-            <div className="flex items-center gap-2 mt-2">
-               <span className="w-2 h-2 rounded-full bg-oku-purple animate-pulse" />
-               <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Ready for Launch</span>
-            </div>
-          </div>
-          <Zap className="absolute bottom-[-10px] right-[-10px] text-oku-purple opacity-10 group-hover:rotate-12 transition-transform" size={100} />
-        </div>
+      {/* Stats Grid - Live Intelligence */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <PractitionerStatCard 
+          label="Total Revenue" 
+          value={`$${earningsValue.toLocaleString()}`} 
+          detail="Settled Payments" 
+          accent="bg-oku-green" 
+        />
+        <PractitionerStatCard 
+          label="Active Caseload" 
+          value={caseloadCount} 
+          detail="Unique Patients" 
+          accent="bg-oku-purple" 
+        />
+        <PractitionerStatCard 
+          label="Pending Tasks" 
+          value={pendingTasks} 
+          detail="Clinical Actions" 
+          accent="bg-oku-pink" 
+        />
+        <PractitionerStatCard 
+          label="Next Patient" 
+          value={upcomingSessions[0]?.client?.name?.split(' ')[0] || 'Clear'} 
+          detail={upcomingSessions[0] ? new Date(upcomingSessions[0].startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No sessions'} 
+          accent="bg-oku-ocean" 
+        />
       </div>
 
       <div className="grid lg:grid-cols-12 gap-10">
@@ -246,9 +192,7 @@ export default async function PractitionerDashboardPage() {
                    Clinical Support Resources <ArrowUpRight size={14} />
                 </Link>
              </div>
-             {/* Decorative Elements */}
              <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
-             <div className="absolute bottom-0 left-0 w-64 h-64 bg-oku-dark/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />
           </div>
         </div>
 
@@ -285,26 +229,9 @@ export default async function PractitionerDashboardPage() {
             </div>
             <Link href="/practitioner/clients" className="mt-10 btn-sky w-full block text-center py-4">Clinical Archive</Link>
           </section>
-
-          <div className="card-glass p-10 bg-oku-ocean/30 border-oku-blue-mid/20">
-             <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-oku-navy text-white flex items-center justify-center">
-                   <MessageSquare size={18} />
-                </div>
-                <h3 className="font-bold text-oku-dark">Secure Messaging</h3>
-             </div>
-             <p className="text-xs text-oku-taupe leading-relaxed mb-6 italic font-display">
-                HIPAA-compliant channel for patient coordination and follow-up.
-             </p>
-             <Link href="/practitioner/messages" className="text-[10px] font-black uppercase tracking-widest text-oku-navy-light hover:underline flex items-center gap-1">
-                Open Inbox <ArrowRight size={12} />
-             </Link>
-          </div>
         </div>
       </div>
       <AIAssistantWidget contextType="practitioner_summary" title="Clinical AI Assistant" />
     </PractitionerShell>
   )
 }
-
-import { UserCircle } from 'lucide-react'
