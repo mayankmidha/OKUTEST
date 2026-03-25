@@ -64,6 +64,30 @@ export async function POST(req: Request) {
       finalPractitionerId = profile.userId
     }
 
+    // 1. CONCURRENCY GUARD: Check for existing overlapping sessions
+    const conflict = await prisma.appointment.findFirst({
+        where: {
+            practitionerId: finalPractitionerId,
+            status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
+            OR: [
+                {
+                    // Starts during another session
+                    startTime: { lte: startTime },
+                    endTime: { gt: startTime }
+                },
+                {
+                    // Ends during another session
+                    startTime: { lt: endTime },
+                    endTime: { gte: endTime }
+                }
+            ]
+        }
+    })
+
+    if (conflict) {
+        return new NextResponse('Conflict: This time slot is no longer available.', { status: 409 })
+    }
+
     // Create Appointment with PENDING status (requires advance payment)
     const appointment = await prisma.appointment.create({
       data: {

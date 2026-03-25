@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /practitioner/
+Disallow: /dashboard/
+Disallow: /api/
+
+Sitemap: https://okutherapy.com/sitemap.xml

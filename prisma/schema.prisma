@@ -313,7 +313,7 @@ model Appointment {
   groupNote        GroupNote?
 
   @@index([clientId])
-  @@index([practitionerId])
+  @@index([practitionerId, startTime, status])
   @@index([serviceId])
   @@index([status])
   @@index([startTime])
