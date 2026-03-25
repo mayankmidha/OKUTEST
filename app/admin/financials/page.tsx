@@ -99,7 +99,7 @@ export default async function AdminFinancialsPage() {
                   })()}
                </p>
             </DashboardCard>
-            <DashboardCard subtitle={`Platform Net (${settings?.platformFeePercent || 20}%)`} icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="green">
+            <DashboardCard subtitle={`Platform Net (${settings?.platformFeePercent || 20}%)`} icon={<ArrowUpRight size={20} strokeWidth={1.5} />} variant="matcha">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
                   {(() => {
                       const conv = autoConvert(totalPlatformCut);
@@ -107,7 +107,7 @@ export default async function AdminFinancialsPage() {
                   })()}
                </p>
             </DashboardCard>
-            <DashboardCard subtitle="Provider Liabilities" icon={<Wallet size={20} strokeWidth={1.5} />} variant="purple">
+            <DashboardCard subtitle="Provider Liabilities" icon={<Wallet size={20} strokeWidth={1.5} />} variant="lavender">
                <p className="text-5xl font-display font-bold text-oku-dark tracking-tighter">
                   {(() => {
                       const conv = autoConvert(totalTherapistPayouts);

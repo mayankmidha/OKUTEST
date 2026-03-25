@@ -38,14 +38,6 @@ body {
   .card-navy {
     @apply bg-oku-dark text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden;
   }
-
-  .font-display {
-    @apply font-serif;
-  }
-
-  .font-script {
-    @apply font-cursive;
-  }
 }
 
 .no-scrollbar::-webkit-scrollbar {

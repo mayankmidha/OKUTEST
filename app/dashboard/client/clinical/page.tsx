@@ -106,7 +106,7 @@ export default async function ClientClinicalHub() {
             ) : (
               <div className="space-y-6">
                 {treatmentPlans.map(plan => (
-                  <DashboardCard key={plan.id} variant={plan.status === 'ACTIVE' ? 'purple' : 'white'} title={plan.status === 'ACTIVE' ? 'Active Clinical Plan' : 'Revised Plan'}>
+                  <DashboardCard key={plan.id} variant={plan.status === 'ACTIVE' ? 'lavender' : 'white'} title={plan.status === 'ACTIVE' ? 'Active Clinical Plan' : 'Revised Plan'}>
                     <div className="mt-4 space-y-6">
                        <div className="flex justify-between items-start border-b border-oku-taupe/5 pb-4">
                           <div>
