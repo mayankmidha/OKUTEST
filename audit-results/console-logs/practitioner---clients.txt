@@ -1,0 +1,29 @@
+Route: /practitioner/clients
+Label: Practitioner — Clients
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/practitioner/clients/cmn1l9akm0017k2vlam3om3x6?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=nr1q3 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients/cmn1l9akm0017k2vlam3om3x6?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=1if0t — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=1if0t — net::ERR_ABORTED

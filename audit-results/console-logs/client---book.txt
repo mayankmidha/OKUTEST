@@ -1,0 +1,28 @@
+Route: /dashboard/client/book
+Label: Client — Book
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/therapists?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=1cbmh — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=ivx77 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=ivx77 — net::ERR_ABORTED

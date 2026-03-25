@@ -108,7 +108,7 @@ export default function EmergencyPage() {
                 <Link href="/dashboard" className="px-12 py-5 bg-oku-dark text-white rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-navy transition-all shadow-xl">
                     Return to Safety
                 </Link>
-                <Link href="/people" className="px-12 py-5 bg-white text-oku-dark border border-oku-taupe/10 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all shadow-sm">
+                <Link href="/therapists" className="px-12 py-5 bg-white text-oku-dark border border-oku-taupe/10 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all shadow-sm">
                     Browse Collective
                 </Link>
             </div>

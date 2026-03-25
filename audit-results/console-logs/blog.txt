@@ -1,0 +1,11 @@
+Route: /blog
+Label: Blog
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/blog?_rsc=3h8go — net::ERR_ABORTED
+GET http://localhost:3000/blog?_rsc=dt32r — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=dt32r — net::ERR_ABORTED

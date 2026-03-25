@@ -1,0 +1,8 @@
+Route: /auth/signup
+Label: Sign Up
+Status: ✅ OK
+
+── Console Errors ──
+Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+
+── Network Failures ──

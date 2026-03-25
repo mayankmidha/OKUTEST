@@ -1,0 +1,8 @@
+Route: /dashboard/client/assessments
+Label: Client — Assessments
+Status: ❌ 404
+
+── Console Errors ──
+Failed to load resource: the server responded with a status of 404 (Not Found)
+
+── Network Failures ──

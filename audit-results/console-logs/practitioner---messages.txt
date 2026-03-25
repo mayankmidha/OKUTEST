@@ -1,0 +1,31 @@
+Route: /practitioner/messages
+Label: Practitioner — Messages
+Status: ✅ OK
+
+── Console Errors ──
+Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+
+── Network Failures ──
+GET http://localhost:3000/practitioner/support?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?c=cmn1l9akm0017k2vlam3om3x6&_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=hzvif — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?c=cmn1l9akm0017k2vlam3om3x6&_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=zjh35 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=zjh35 — net::ERR_ABORTED

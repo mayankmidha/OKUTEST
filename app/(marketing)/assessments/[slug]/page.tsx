@@ -7,6 +7,12 @@ import { ASSESSMENTS } from '@/lib/assessments'
 import Link from 'next/link'
 import { ArrowRight, ChevronLeft, CheckCircle2, Calendar, Loader2, Sparkles } from 'lucide-react'
 
+export async function generateStaticParams() {
+  return ASSESSMENTS.map((a) => ({
+    slug: a.slug,
+  }))
+}
+
 function AssessmentContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   const searchParams = useSearchParams()

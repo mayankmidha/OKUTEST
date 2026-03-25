@@ -33,7 +33,7 @@ export function SEOManager({
     "author": [{
         "@type": "Person",
         "name": author || "OKU Clinical Team",
-        "url": "https://okutherapy.com/people"
+        "url": "https://okutherapy.com/therapists"
       }],
     "publisher": {
       "@type": "Organization",

@@ -1,0 +1,33 @@
+Route: /dashboard/client/therapists
+Label: Client — Browse Therapists
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/dashboard/client/book/new/cmn1l97yt0011k2vlij7ofpla?type=trial&_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book/new/cmn1l97yt0011k2vlij7ofpla?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/vault?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=hxcqr — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book/new/cmn1l97yt0011k2vlij7ofpla?_rsc=10t8v — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book/new/cmn1l97yt0011k2vlij7ofpla?type=trial&_rsc=10t8v — net::ERR_ABORTED

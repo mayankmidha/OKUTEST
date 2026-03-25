@@ -1,0 +1,36 @@
+Route: /dashboard/client
+Label: Client — Home
+Status: ✅ OK
+
+── Console Errors ──
+Failed to load resource: the server responded with a status of 403 (Forbidden)
+
+── Network Failures ──
+GET http://localhost:3000/dashboard/client/clinical?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/intake?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=tluk7 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=spgww — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/intake?_rsc=spgww — net::ERR_ABORTED

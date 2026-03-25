@@ -135,7 +135,7 @@ export default function AboutPage() {
                         Every practitioner in our collective is fully licensed and professionally vetted. We combine clinical precision with cultural humility to ensure you are in grounded hands.
                     </p>
                     <Link 
-                        href="/people" 
+                        href="/therapists" 
                         className="inline-flex items-center gap-4 bg-white text-oku-navy py-6 px-12 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-purple transition-all shadow-2xl active:scale-95"
                     >
                         Meet the Collective <ArrowRight size={16} />

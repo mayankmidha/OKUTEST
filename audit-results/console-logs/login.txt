@@ -1,0 +1,8 @@
+Route: /auth/login
+Label: Login
+Status: ✅ OK
+
+── Console Errors ──
+Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+
+── Network Failures ──

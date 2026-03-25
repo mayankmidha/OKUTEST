@@ -1,0 +1,33 @@
+Route: /practitioner/appointments
+Label: Practitioner — Sessions
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/practitioner/schedule?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/sessions/cmn4dkr1c0001k2cjoz8xdzym/notes?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/sessions/cmn4k1o7p0001k2qvemfdo5wd/notes?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=15hwx — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/sessions/cmn4dkr1c0001k2cjoz8xdzym/notes?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/sessions/cmn4k1o7p0001k2qvemfdo5wd/notes?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=15ua2 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=15ua2 — net::ERR_ABORTED

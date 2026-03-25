@@ -247,7 +247,7 @@ export default function ServicesPage() {
                 <Link href="/auth/signup" className="px-12 py-6 bg-oku-dark text-white rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-navy transition-all shadow-xl">
                     Free Consultation
                 </Link>
-                <Link href="/people" className="px-12 py-6 bg-white text-oku-dark border border-oku-taupe/10 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all shadow-sm">
+                <Link href="/therapists" className="px-12 py-6 bg-white text-oku-dark border border-oku-taupe/10 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all shadow-sm">
                     Meet the Collective
                 </Link>
             </div>

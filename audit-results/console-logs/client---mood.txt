@@ -1,0 +1,32 @@
+Route: /dashboard/client/mood
+Label: Client — Mood
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/dashboard/profile?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/vault?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=1ck3i — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=iw5o8 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client?_rsc=iw5o8 — net::ERR_ABORTED

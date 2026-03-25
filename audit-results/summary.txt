@@ -1,0 +1,23 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  AUDIT SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Login success : YES
+  Total routes  : 29
+  ✅ OK          : 21
+  🔒 Auth wall  : 0
+  🔀 Redirect   : 5
+  ❌ Failed     : 3
+
+  FAILED / AUTH-WALLED ROUTES:
+  ❌ 404  /dashboard/client/sessions  →  404
+  ❌ 404  /dashboard/client/assessments  →  404
+  ❌ 404  /dashboard/client/profile  →  404
+  🔀 Redirect  /practitioner/availability  →  Redirected to: http://localhost:3000/practitioner/schedule
+  🔀 Redirect  /admin/dashboard  →  Redirected to: http://localhost:3000/practitioner/dashboard
+  🔀 Redirect  /admin/users  →  Redirected to: http://localhost:3000/practitioner/dashboard
+  🔀 Redirect  /admin/practitioners  →  Redirected to: http://localhost:3000/practitioner/dashboard
+  🔀 Redirect  /admin/sessions  →  Redirected to: http://localhost:3000/practitioner/dashboard
+
+  Screenshots → /Users/midha/Downloads/oku-therapy-integrated/audit-results/screenshots
+  Full report → /Users/midha/Downloads/oku-therapy-integrated/audit-results/report.json
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

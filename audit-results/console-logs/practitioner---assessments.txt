@@ -1,0 +1,30 @@
+Route: /practitioner/assessments
+Label: Practitioner — Assessments
+Status: ✅ OK
+
+── Console Errors ──
+Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+
+── Network Failures ──
+GET http://localhost:3000/practitioner/assessments/new?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=19vbc — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments/new?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=1xk27 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=1xk27 — net::ERR_ABORTED

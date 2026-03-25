@@ -1,0 +1,28 @@
+Route: /dashboard/client/messages
+Label: Client — Messages
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/dashboard/client/therapists?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=50sm5 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/assessments?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=5d5r6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=5d5r6 — net::ERR_ABORTED

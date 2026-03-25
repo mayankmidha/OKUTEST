@@ -656,7 +656,7 @@ export default function OkuHomepage() {
               ))}
             </div>
             <div className="mt-16 flex justify-center">
-                <DynamicButton href="/people" isInternal={true} dark={false}>View Detailed Profiles</DynamicButton>
+                <DynamicButton href="/therapists" isInternal={true} dark={false}>View Detailed Profiles</DynamicButton>
             </div>
           </div>
         </section>

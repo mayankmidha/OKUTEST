@@ -1,0 +1,15 @@
+Route: /therapists
+Label: Therapists
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/blog?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?with=cmn1l97yt0010k2vl6x38xvqc&_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book/new/cmn1l97yt0011k2vlij7ofpla?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?with=cmn1l97yt0010k2vl6x38xvqc&_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book/new/cmn1l97yt0011k2vlij7ofpla?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/blog?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?_rsc=nqznt — net::ERR_ABORTED

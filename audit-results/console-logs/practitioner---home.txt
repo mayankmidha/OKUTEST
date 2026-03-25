@@ -1,0 +1,29 @@
+Route: /practitioner/dashboard
+Label: Practitioner — Home
+Status: ✅ OK
+
+── Console Errors ──
+
+── Network Failures ──
+GET http://localhost:3000/practitioner/appointments?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=xowmu — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/appointments?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/profile?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/schedule?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/support?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/intelligence?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/messages?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/organizations?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/billing?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/clients?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/prescriptions?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/practitioner/dashboard?_rsc=18es6 — net::ERR_ABORTED
