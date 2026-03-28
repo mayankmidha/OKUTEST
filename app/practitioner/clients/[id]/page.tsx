@@ -56,7 +56,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     }),
     prisma.transcript.findMany({
         where: { appointment: { clientId: clientId, practitionerId: session.user.id } },
-        include: { appointment: { include: { service: true } } },
+        include: {
+            appointment: {
+                include: {
+                    service: true,
+                    client: {
+                        select: { name: true }
+                    }
+                }
+            }
+        },
         orderBy: { createdAt: 'desc' }
     }),
     prisma.practitionerProfile.findUnique({

@@ -13,7 +13,7 @@ interface Transcript {
   appointment: {
     startTime: Date
     service: { name: string }
-    client: { name: string }
+    client: { name: string | null } | null
   }
 }
 
@@ -29,7 +29,10 @@ export function ClinicalAITranscriptViewer({ transcripts }: { transcripts: Trans
 
   return (
     <div className="space-y-8">
-      {transcripts.map((t, i) => (
+      {transcripts.map((t, i) => {
+        const clientName = t.appointment.client?.name || 'Client'
+
+        return (
         <motion.div 
           key={t.id}
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +48,7 @@ export function ClinicalAITranscriptViewer({ transcripts }: { transcripts: Trans
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-navy">OKU CORE AI ANALYSIS</p>
                 <div className="flex items-center gap-2">
-                    <p className="font-bold text-oku-dark text-lg">{t.appointment.client.name}</p>
+                    <p className="font-bold text-oku-dark text-lg">{clientName}</p>
                     <span className="text-oku-taupe/40 text-xs">•</span>
                     <p className="text-xs font-bold text-oku-taupe">{new Date(t.appointment.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {t.appointment.service.name}</p>
                 </div>
@@ -94,7 +97,8 @@ export function ClinicalAITranscriptViewer({ transcripts }: { transcripts: Trans
             </div>
           </div>
         </motion.div>
-      ))}
+        )
+      })}
     </div>
   )
 }
