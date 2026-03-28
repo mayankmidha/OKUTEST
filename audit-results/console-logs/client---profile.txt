@@ -1,8 +1,27 @@
 Route: /dashboard/client/profile
 Label: Client — Profile
-Status: ❌ 404
+Status: ✅ OK
 
 ── Console Errors ──
-Failed to load resource: the server responded with a status of 404 (Not Found)
 
 ── Network Failures ──
+GET http://localhost:3000/dashboard/profile?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/vault?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/referrals?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard?_rsc=p79g3 — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/vault?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/referrals?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client?_rsc=1cw0a — net::ERR_ABORTED
+GET http://localhost:3000/dashboard?_rsc=1cw0a — net::ERR_ABORTED

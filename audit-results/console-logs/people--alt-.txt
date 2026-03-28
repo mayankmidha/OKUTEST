@@ -1,11 +1,21 @@
 Route: /people
 Label: People (alt)
-Status: ✅ OK
+Status: 🔀 Redirect
 
 ── Console Errors ──
 
 ── Network Failures ──
-GET http://localhost:3000/blog?_rsc=wnbjt — net::ERR_ABORTED
-GET http://localhost:3000/blog?_rsc=1m8ke — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard?_rsc=1m8ke — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/blog?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/blog?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/?_rsc=1r3a0 — net::ERR_ABORTED
+GET http://localhost:3000/?_rsc=pe17r — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/blog?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=nqznt — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/blog?_rsc=1otkb — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=1otkb — net::ERR_ABORTED

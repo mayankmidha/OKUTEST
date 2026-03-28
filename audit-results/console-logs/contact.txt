@@ -5,7 +5,9 @@ Status: ✅ OK
 ── Console Errors ──
 
 ── Network Failures ──
+GET http://localhost:3000/therapists?_rsc=otxpx — net::ERR_ABORTED
 GET http://localhost:3000/blog?_rsc=otxpx — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=otxpx — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=gxphe — net::ERR_ABORTED
 GET http://localhost:3000/blog?_rsc=gxphe — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard?_rsc=gxphe — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=gxphe — net::ERR_ABORTED

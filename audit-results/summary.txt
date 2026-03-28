@@ -1,22 +1,33 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   AUDIT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Login success : YES
+  Login success : NO
   Total routes  : 29
-  ✅ OK          : 21
-  🔒 Auth wall  : 0
-  🔀 Redirect   : 5
-  ❌ Failed     : 3
+  ✅ OK          : 13
+  🔒 Auth wall  : 13
+  🔀 Redirect   : 1
+  ❌ Failed     : 2
 
   FAILED / AUTH-WALLED ROUTES:
-  ❌ 404  /dashboard/client/sessions  →  404
+  🔴 Error  /therapists  →  Exception: page.goto: Timeout 20000ms exceeded.
+Call log:
+[2m  - navigating to "http://localhost:3000/therapists", waiting until "networkidle"[22m
+
+  🔀 Redirect  /people  →  Redirected to: http://localhost:3000/therapists
+  🔒 Auth Wall  /dashboard/client  →  Redirected to login from /dashboard/client
+  🔒 Auth Wall  /dashboard/client/therapists  →  Redirected to login from /dashboard/client/therapists
   ❌ 404  /dashboard/client/assessments  →  404
-  ❌ 404  /dashboard/client/profile  →  404
-  🔀 Redirect  /practitioner/availability  →  Redirected to: http://localhost:3000/practitioner/schedule
-  🔀 Redirect  /admin/dashboard  →  Redirected to: http://localhost:3000/practitioner/dashboard
-  🔀 Redirect  /admin/users  →  Redirected to: http://localhost:3000/practitioner/dashboard
-  🔀 Redirect  /admin/practitioners  →  Redirected to: http://localhost:3000/practitioner/dashboard
-  🔀 Redirect  /admin/sessions  →  Redirected to: http://localhost:3000/practitioner/dashboard
+  🔒 Auth Wall  /dashboard/client/book  →  Redirected to login from /dashboard/client/book
+  🔒 Auth Wall  /dashboard/client/mood  →  Redirected to login from /dashboard/client/mood
+  🔒 Auth Wall  /dashboard/client/messages  →  Redirected to login from /dashboard/client/messages
+  🔒 Auth Wall  /practitioner/dashboard  →  Redirected to login from /practitioner/dashboard
+  🔒 Auth Wall  /practitioner/clients  →  Redirected to login from /practitioner/clients
+  🔒 Auth Wall  /practitioner/appointments  →  Redirected to login from /practitioner/appointments
+  🔒 Auth Wall  /practitioner/availability  →  Redirected to login from /practitioner/availability
+  🔒 Auth Wall  /practitioner/messages  →  Redirected to login from /practitioner/messages
+  🔒 Auth Wall  /practitioner/assessments  →  Redirected to login from /practitioner/assessments
+  🔒 Auth Wall  /practitioner/profile  →  Redirected to login from /practitioner/profile
+  🔒 Auth Wall  /admin/dashboard  →  Redirected to login from /admin/dashboard
 
   Screenshots → /Users/midha/Downloads/oku-therapy-integrated/audit-results/screenshots
   Full report → /Users/midha/Downloads/oku-therapy-integrated/audit-results/report.json

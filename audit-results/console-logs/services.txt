@@ -5,6 +5,9 @@ Status: ✅ OK
 ── Console Errors ──
 
 ── Network Failures ──
+GET http://localhost:3000/therapists?_rsc=nmjo1 — net::ERR_ABORTED
 GET http://localhost:3000/blog?_rsc=nmjo1 — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=nmjo1 — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=1b7g2 — net::ERR_ABORTED
 GET http://localhost:3000/blog?_rsc=1b7g2 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard?_rsc=1b7g2 — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=1b7g2 — net::ERR_ABORTED

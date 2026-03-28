@@ -5,7 +5,15 @@ Status: ✅ OK
 ── Console Errors ──
 
 ── Network Failures ──
+GET http://localhost:3000/blog/social-media-and-mental-health-setting-boundaries?_rsc=3h8go — net::ERR_ABORTED
+GET http://localhost:3000/blog/coping-with-grief-a-non-linear-path?_rsc=3h8go — net::ERR_ABORTED
+GET http://localhost:3000/blog/the-myth-of-productivity-and-self-worth?_rsc=3h8go — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=3h8go — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=3h8go — net::ERR_ABORTED
 GET http://localhost:3000/blog?_rsc=3h8go — net::ERR_ABORTED
+GET http://localhost:3000/therapists?_rsc=dt32r — net::ERR_ABORTED
+GET http://localhost:3000/blog/social-media-and-mental-health-setting-boundaries?_rsc=dt32r — net::ERR_ABORTED
 GET http://localhost:3000/blog?_rsc=dt32r — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard?_rsc=dt32r — net::ERR_ABORTED
+GET http://localhost:3000/assessments?_rsc=dt32r — net::ERR_ABORTED
+GET http://localhost:3000/blog/coping-with-grief-a-non-linear-path?_rsc=dt32r — net::ERR_ABORTED
+GET http://localhost:3000/blog/the-myth-of-productivity-and-self-worth?_rsc=dt32r — net::ERR_ABORTED

@@ -1,30 +1,29 @@
 Route: /admin/practitioners
 Label: Admin — Practitioners
-Status: 🔀 Redirect
+Status: ✅ OK
 
 ── Console Errors ──
-Failed to load resource: the server responded with a status of 429 (Too Many Requests)
-Failed to load resource: the server responded with a status of 429 (Too Many Requests)
 
 ── Network Failures ──
-GET http://localhost:3000/practitioner/appointments?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/schedule?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/profile?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/intelligence?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/support?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/organizations?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/messages?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/prescriptions?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/billing?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/clients?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard?_rsc=xowmu — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/appointments?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/profile?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/schedule?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/support?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/messages?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/intelligence?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/organizations?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/prescriptions?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/dashboard?_rsc=18es6 — net::ERR_ABORTED
-GET http://localhost:3000/practitioner/clients?_rsc=18es6 — net::ERR_ABORTED
+GET http://localhost:3000/admin/dashboard?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/vault?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/referrals?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/dashboard?_rsc=1316g — net::ERR_ABORTED
+GET http://localhost:3000/admin/dashboard?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/profile?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/therapists?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/clinical?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/vault?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/mood?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/referrals?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/book?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client/messages?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard/client?_rsc=znnmk — net::ERR_ABORTED
+GET http://localhost:3000/dashboard?_rsc=znnmk — net::ERR_ABORTED

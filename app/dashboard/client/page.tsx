@@ -106,9 +106,6 @@ export default async function ClientDashboardPage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/client/referrals" className="btn-sky hidden md:flex items-center gap-2">
-             <Gift size={18} /> Referral Hub
-          </Link>
           {hasAdhdAssessments && (
             <Link href="/dashboard/client/adhd" className="btn-sky hidden xl:flex items-center gap-2">
                <Sparkles size={18} /> ADHD Helper
@@ -298,17 +295,6 @@ export default async function ClientDashboardPage() {
 
         {/* Right Column: Insights & Recommendations */}
         <div className="lg:col-span-4 space-y-10">
-          {referralCode && (
-            <ReferralShareCard
-              inviteUrl={inviteUrl}
-              referralCode={referralCode}
-              referralCount={referralSummary.referralCount}
-              recentRewards={referralSummary.rewards.slice(0, 3)}
-              totalEarned={referralSummary.totalEarned}
-              availableCredit={referralSummary.availableCredit}
-              detailHref="/dashboard/client/referrals"
-            />
-          )}
           
           <div className="card-navy group">
              <div className="relative z-10">
