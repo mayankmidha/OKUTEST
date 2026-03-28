@@ -2,7 +2,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
-import { Brain, TrendingUp, Search } from 'lucide-react'
+import { Brain, TrendingUp, Search, AlertTriangle, Languages } from 'lucide-react'
 import { ClinicalAITranscriptViewer } from '@/components/ClinicalAITranscriptViewer'
 import { UserRole } from '@prisma/client'
 
@@ -32,6 +32,22 @@ export default async function PractitionerIntelligencePage() {
     })
   ])
 
+  const elevatedTranscripts = transcripts.filter(
+    (transcript) => transcript.riskLevel === 'HIGH' || transcript.riskLevel === 'CRITICAL'
+  )
+  const multilingualSessions = transcripts.filter((transcript) => {
+    const language = transcript.detectedLanguage?.toLowerCase() || ''
+    return language && !language.includes('english') && language !== 'unknown'
+  })
+  const averageHope = transcripts.length
+    ? Math.round(
+        transcripts.reduce((sum, transcript) => {
+          const hope = Number((transcript.sentimentScores as any)?.hope || 0)
+          return sum + (Number.isFinite(hope) ? hope : 0)
+        }, 0) / transcripts.length
+      )
+    : 0
+
   return (
     <PractitionerShell
         title="Clinical Intelligence"
@@ -42,7 +58,7 @@ export default async function PractitionerIntelligencePage() {
     >
         <div className="space-y-12">
             {/* Intelligence Header Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="card-glass p-8 group">
                     <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Processed Sessions</p>
                     <p className="text-4xl font-display font-bold text-oku-dark">{transcripts.length}</p>
@@ -53,19 +69,28 @@ export default async function PractitionerIntelligencePage() {
                 </div>
 
                 <div className="card-glass p-8 group">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Overall Sentiment</p>
-                    <p className="text-4xl font-display font-bold text-oku-dark">Stable</p>
-                    <div className="mt-4 flex items-center gap-2 text-oku-purple">
-                        <Brain size={14} />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Aggregate Pulse</span>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Risk Watchlist</p>
+                    <p className="text-4xl font-display font-bold text-oku-dark">{elevatedTranscripts.length}</p>
+                    <div className="mt-4 flex items-center gap-2 text-amber-600">
+                        <AlertTriangle size={14} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">High / Critical Flags</span>
+                    </div>
+                </div>
+
+                <div className="card-glass p-8 group">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Multilingual Sessions</p>
+                    <p className="text-4xl font-display font-bold text-oku-dark">{multilingualSessions.length}</p>
+                    <div className="mt-4 flex items-center gap-2 text-oku-navy">
+                        <Languages size={14} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Cross-language coverage</span>
                     </div>
                 </div>
 
                 <div className="card-navy p-8 overflow-hidden relative">
                     <div className="relative z-10">
                         <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple opacity-60 mb-2">AI Status</p>
-                        <p className="text-xl font-bold text-white">OKU CORE v2.5</p>
-                        <p className="text-[10px] font-medium text-white/40 mt-2">Active Background Monitoring</p>
+                        <p className="text-xl font-bold text-white">OKU CORE v3</p>
+                        <p className="text-[10px] font-medium text-white/40 mt-2">Hope signal avg {averageHope}% • multilingual analysis active</p>
                     </div>
                     <Brain className="absolute bottom-[-10px] right-[-10px] text-oku-purple opacity-10" size={100} />
                 </div>

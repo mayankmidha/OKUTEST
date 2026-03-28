@@ -77,6 +77,12 @@ function AdminDashboardContent({
     psychiatrySessionPlatformFeePercent: 20,
     assessmentPlatformFeePercent: 20,
     minimumPayoutAmount: 25,
+    okuAiEnabled: true,
+    multilingualAiEnabled: true,
+    autoTranslateTranscripts: true,
+    adhdCareModeEnabled: true,
+    requireConsentBeforeTranscription: true,
+    transcriptRetentionDays: 365,
   })
   const [isSavingSetting, setIsSavingSetting] = useState(false)
 
@@ -299,7 +305,7 @@ function AdminDashboardContent({
                 <div className="flex flex-col">
                     <p className="text-4xl font-display font-bold text-oku-dark">
                         {(() => {
-                            const conv = autoConvert(stats.totalRevenue);
+                            const conv = autoConvert(stats.totalRevenue, undefined, 'INR');
                             return formatCurrency(conv.amount, conv.currency);
                         })()}
                     </p>
@@ -387,7 +393,7 @@ function AdminDashboardContent({
                               </div>
                               <div className="flex items-center justify-between text-oku-purple">
                                  <span>Min Payout</span>
-                                 <span>{formatCurrency(autoConvert(settings.minimumPayoutAmount).amount, autoConvert(settings.minimumPayoutAmount).currency)}</span>
+                                 <span>{formatCurrency(autoConvert(settings.minimumPayoutAmount, undefined, 'INR').amount, autoConvert(settings.minimumPayoutAmount, undefined, 'INR').currency)}</span>
                               </div>
                            </div>
                         </div>
@@ -535,8 +541,13 @@ function AdminDashboardContent({
                             </div>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-4 group/rate cursor-pointer" onClick={() => { setEditingRate(t.practitionerProfile.id); setNewRate(String(t.practitionerProfile.hourlyRate || 0)) }}>
-                            <span className="text-xl font-display font-bold text-oku-dark">${t.practitionerProfile.hourlyRate || 0}</span>
+                          <div className="flex items-center gap-4 group/rate cursor-pointer" onClick={() => { setEditingRate(t.practitionerProfile.id); setNewRate(String(t.practitionerProfile.internationalSessionRate || t.practitionerProfile.hourlyRate || 0)) }}>
+                            <div>
+                              <span className="text-xl font-display font-bold text-oku-dark">Intl ₹{(t.practitionerProfile.internationalSessionRate || t.practitionerProfile.hourlyRate || 0).toLocaleString()}</span>
+                              <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-oku-taupe">
+                                India ₹{(t.practitionerProfile.indiaSessionRate || t.practitionerProfile.hourlyRate || 0).toLocaleString()}
+                              </p>
+                            </div>
                             <div className="w-8 h-8 rounded-full bg-oku-cream-warm/30 flex items-center justify-center text-oku-taupe group-hover/rate:bg-oku-navy group-hover/rate:text-white transition-all">
                               <Edit2 size={12} />
                             </div>
@@ -779,8 +790,8 @@ function AdminDashboardContent({
                         </td>
                         <td className="p-8">
                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                             t.sentiment === 'POSITIVE' ? 'bg-green-50 text-green-600' : 
-                             t.sentiment === 'NEGATIVE' ? 'bg-red-50 text-red-600' : 
+                             t.sentiment === 'IMPROVING' ? 'bg-green-50 text-green-600' : 
+                             t.sentiment === 'DISTRESSED' || t.sentiment === 'AT_RISK' ? 'bg-red-50 text-red-600' : 
                              'bg-blue-50 text-blue-600'
                            }`}>
                              {t.sentiment}
@@ -788,9 +799,20 @@ function AdminDashboardContent({
                         </td>
                         <td className="p-8">
                            <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${t.riskLevel === 'HIGH' ? 'bg-oku-danger animate-ping' : 'bg-oku-success'}`} />
-                              <span className="font-bold text-[10px] uppercase tracking-widest opacity-60">OPTIMAL</span>
+                              <div className={`w-2 h-2 rounded-full ${
+                                t.riskLevel === 'HIGH'
+                                  ? 'bg-oku-danger animate-ping'
+                                  : t.riskLevel === 'MEDIUM'
+                                    ? 'bg-amber-500'
+                                    : 'bg-oku-success'
+                              }`} />
+                              <span className="font-bold text-[10px] uppercase tracking-widest opacity-60">
+                                {t.riskLevel || 'LOW'}
+                              </span>
                            </div>
+                           <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe/60">
+                             {t.detectedLanguage || 'Unknown language'}
+                           </p>
                         </td>
                         <td className="p-8 text-right font-mono opacity-60">
                            {new Date(t.createdAt).toLocaleDateString()}
@@ -964,7 +986,7 @@ function AdminDashboardContent({
                             <p className="text-xs text-oku-taupe/60 mt-1 italic">Providers can request cash-out only once they cross this threshold.</p>
                           </div>
                           <span className="text-2xl font-display font-bold text-oku-dark min-w-[110px] text-right">
-                            {formatCurrency(autoConvert(settings.minimumPayoutAmount).amount, autoConvert(settings.minimumPayoutAmount).currency)}
+                            {formatCurrency(autoConvert(settings.minimumPayoutAmount, undefined, 'INR').amount, autoConvert(settings.minimumPayoutAmount, undefined, 'INR').currency)}
                           </span>
                         </div>
                         <input
@@ -976,6 +998,58 @@ function AdminDashboardContent({
                           className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
                         />
                       </div>
+                   </div>
+                </div>
+
+                <div className="rounded-[2.5rem] border border-oku-taupe/5 bg-white p-8 space-y-8 shadow-sm">
+                   <div>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-2">
+                       <Brain size={14} className="text-oku-purple" /> OKU Core Controls
+                     </p>
+                     <p className="text-sm text-oku-taupe italic mt-2">Govern multilingual transcripts, ADHD care support, consent gates, and transcript retention from one panel.</p>
+                   </div>
+
+                   <div className="space-y-5">
+                     {[
+                       ['okuAiEnabled', 'OKU Core Enabled', 'Master switch for AI assistant, transcript analysis, and audio transcription.'],
+                       ['multilingualAiEnabled', 'Multilingual Understanding', 'Allows OKU Core to process mixed-language prompts and transcripts.'],
+                       ['autoTranslateTranscripts', 'Auto-Translate Summaries', 'Keeps the raw transcript intact while generating clinician-friendly English summaries.'],
+                       ['adhdCareModeEnabled', 'ADHD Care Mode', 'Enables executive-function supports and ADHD-sensitive care suggestions.'],
+                       ['requireConsentBeforeTranscription', 'Consent Gate for Transcription', 'Blocks transcript and audio processing until client consent is on file.'],
+                     ].map(([key, label, helper]) => (
+                       <div key={key} className="flex items-center justify-between gap-6 rounded-[2rem] border border-oku-taupe/10 bg-oku-cream/20 px-6 py-5">
+                         <div>
+                           <p className="font-bold text-oku-dark">{label}</p>
+                           <p className="text-sm text-oku-taupe italic mt-1">{helper}</p>
+                         </div>
+                         <button
+                           onClick={() => setSettings({ ...settings, [key]: !Boolean(settings[key as keyof typeof settings]) })}
+                           className={`w-16 h-8 rounded-full transition-all relative ${Boolean(settings[key as keyof typeof settings]) ? 'bg-oku-purple' : 'bg-oku-taupe/20'}`}
+                         >
+                           <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${Boolean(settings[key as keyof typeof settings]) ? 'left-9 shadow-lg' : 'left-1'}`} />
+                         </button>
+                       </div>
+                     ))}
+
+                     <div className="space-y-3">
+                       <div className="flex items-center justify-between gap-4">
+                         <div>
+                           <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Transcript Retention (days)</label>
+                           <p className="text-xs text-oku-taupe/60 mt-1 italic">Controls how long OKU Core transcript intelligence should remain available in the system.</p>
+                         </div>
+                         <span className="text-2xl font-display font-bold text-oku-dark min-w-[80px] text-right">
+                           {settings.transcriptRetentionDays}
+                         </span>
+                       </div>
+                       <input
+                         type="number"
+                         min="1"
+                         step="1"
+                         value={settings.transcriptRetentionDays}
+                         onChange={(e) => setSettings({ ...settings, transcriptRetentionDays: Number.parseInt(e.target.value || '1', 10) })}
+                         className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
+                       />
+                     </div>
                    </div>
                 </div>
              </div>

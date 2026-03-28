@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Printer, ArrowLeft } from 'lucide-react'
+import { formatCurrency } from '@/lib/currency'
+import { getAppointmentBillingAmount } from '@/lib/pricing'
 
 export default async function SuperbillPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -42,7 +44,8 @@ export default async function SuperbillPage({ params }: { params: Promise<{ id: 
   }
 
   const payment = appointment.payments[0]
-  const amountPaid = payment ? payment.amount : appointment.service.price
+  const appointmentAmount = getAppointmentBillingAmount(appointment)
+  const amountPaid = payment ? payment.amount : appointmentAmount
   const receiptNumber = payment ? payment.id.toUpperCase().slice(-8) : `SB-${appointment.id.toUpperCase().slice(-6)}`
 
   return (
@@ -113,7 +116,7 @@ export default async function SuperbillPage({ params }: { params: Promise<{ id: 
                                 <p className="text-xs text-oku-taupe mt-1">CPT: 90837 (Psychotherapy, 60 mins)</p>
                             </td>
                             <td className="py-6 text-sm text-oku-taupe">Z65.8 (Other specified problems)</td>
-                            <td className="py-6 font-bold text-right">${appointment.service.price.toFixed(2)}</td>
+                            <td className="py-6 font-bold text-right">{formatCurrency(appointmentAmount, 'INR')}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -124,15 +127,15 @@ export default async function SuperbillPage({ params }: { params: Promise<{ id: 
                 <div className="w-64">
                     <div className="flex justify-between py-2 text-sm text-oku-taupe">
                         <span>Total Billed:</span>
-                        <span>${appointment.service.price.toFixed(2)}</span>
+                        <span>{formatCurrency(appointmentAmount, 'INR')}</span>
                     </div>
                     <div className="flex justify-between py-2 text-sm text-oku-taupe">
                         <span>Patient Paid:</span>
-                        <span>-${amountPaid.toFixed(2)}</span>
+                        <span>-{formatCurrency(amountPaid, 'INR')}</span>
                     </div>
                     <div className="flex justify-between py-4 border-t border-oku-dark mt-2 font-display font-bold text-xl text-oku-dark">
                         <span>Balance Due:</span>
-                        <span>$0.00</span>
+                        <span>{formatCurrency(0, 'INR')}</span>
                     </div>
                 </div>
             </div>

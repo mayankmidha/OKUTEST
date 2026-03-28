@@ -4,13 +4,14 @@ import { prisma } from '@/lib/prisma'
 import { 
   ClipboardCheck, FileText, Target, 
   ShieldCheck, ArrowRight, History, 
-  Sparkles, Activity
+  Sparkles, Activity, Brain
 } from 'lucide-react'
 import Link from 'next/link'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { ASSESSMENTS } from '@/lib/assessments'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
+import { getAdhdSupportPlan } from '@/lib/adhd-support'
 
 export default async function ClientClinicalHub() {
   const session = await auth()
@@ -52,6 +53,7 @@ export default async function ClientClinicalHub() {
     (sum, task) => sum + (task.chargeAmount || task.assessment?.price || 0),
     0
   )
+  const adhdSupportPlan = getAdhdSupportPlan(assessmentAnswers as any)
 
   return (
     <div className="py-12 px-10">
@@ -234,6 +236,41 @@ export default async function ClientClinicalHub() {
 
         {/* Sidebar: Compliance & Info */}
         <div className="space-y-8">
+          {adhdSupportPlan && (
+            <DashboardCard title="ADHD Helper" icon={<Brain size={20} strokeWidth={1.5} />} variant="lavender">
+              <div className="mt-4 space-y-5">
+                <div className="rounded-[1.75rem] border border-oku-purple/10 bg-white/70 p-5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple">Latest Support Signal</p>
+                  <p className="mt-2 text-lg font-display font-bold text-oku-dark">{adhdSupportPlan.latestAssessmentTitle}</p>
+                  <p className="mt-1 text-sm text-oku-taupe">{adhdSupportPlan.latestAssessmentResult}</p>
+                  <p className="mt-3 text-sm text-oku-dark leading-relaxed">{adhdSupportPlan.summary}</p>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Support Moves</p>
+                  <div className="space-y-2">
+                    {adhdSupportPlan.strategies.map((strategy) => (
+                      <div key={strategy} className="rounded-2xl bg-white px-4 py-3 text-sm text-oku-dark border border-oku-taupe/5">
+                        {strategy}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Bring To Session</p>
+                  <div className="space-y-2">
+                    {adhdSupportPlan.sessionPrepPrompts.map((prompt) => (
+                      <div key={prompt} className="rounded-2xl border border-dashed border-oku-purple/20 px-4 py-3 text-sm text-oku-dark bg-oku-cream/40">
+                        {prompt}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </DashboardCard>
+          )}
+
           <DashboardCard title="Onboarding Status" icon={<ShieldCheck size={20} strokeWidth={1.5} />}>
              <div className="space-y-6 mt-4">
                 <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-oku-taupe/5">

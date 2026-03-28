@@ -12,9 +12,20 @@ export async function PATCH(req: Request) {
 
   try {
     const { 
-        name, bio, hourlyRate, licenseNumber, specialization,
-        education, experienceYears, linkedinUrl, websiteUrl, baseCurrency
+        name,
+        bio,
+        indiaSessionRate,
+        internationalSessionRate,
+        licenseNumber,
+        specialization,
+        education,
+        experienceYears,
+        linkedinUrl,
+        websiteUrl,
     } = await req.json()
+
+    const parsedIndiaSessionRate = Number.parseFloat(String(indiaSessionRate ?? ''))
+    const parsedInternationalSessionRate = Number.parseFloat(String(internationalSessionRate ?? ''))
 
     // Update User and PractitionerProfile in a transaction
     const [updatedUser, updatedProfile] = await prisma.$transaction([
@@ -26,14 +37,16 @@ export async function PATCH(req: Request) {
         where: { userId: session.user.id },
         data: {
           bio,
-          hourlyRate: parseFloat(hourlyRate),
+          hourlyRate: Number.isNaN(parsedInternationalSessionRate) ? null : parsedInternationalSessionRate,
+          indiaSessionRate: Number.isNaN(parsedIndiaSessionRate) ? null : parsedIndiaSessionRate,
+          internationalSessionRate: Number.isNaN(parsedInternationalSessionRate) ? null : parsedInternationalSessionRate,
           licenseNumber,
           specialization,
           education,
           experienceYears: parseInt(experienceYears) || 0,
           linkedinUrl,
           websiteUrl,
-          baseCurrency
+          baseCurrency: 'INR',
         }
       })
     ])

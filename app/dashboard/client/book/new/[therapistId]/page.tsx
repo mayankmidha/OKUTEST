@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { AppointmentStatus } from '@prisma/client'
 import BookingClient from './BookingClient'
+import { detectCurrency, getLiveExchangeRates } from '@/lib/currency'
+import { resolvePractitionerSessionPrice } from '@/lib/pricing'
 
 export default async function BookingPage({ params }: { params: Promise<{ therapistId: string }> }) {
   const session = await auth()
@@ -13,7 +15,8 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
     redirect(`/auth/login?callbackUrl=/book/${therapistId}`)
   }
 
-  const practitioner = await prisma.practitionerProfile.findUnique({
+  const [practitioner, user, exchangeRates] = await Promise.all([
+    prisma.practitionerProfile.findUnique({
     where: { id: therapistId },
     include: { 
         user: {
@@ -28,9 +31,17 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
         },
         availability: true
     }
-  })
+  }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { location: true },
+    }),
+    getLiveExchangeRates('INR'),
+  ])
 
   if (!practitioner) return <div>Practitioner not found</div>
+  const sessionPricing = resolvePractitionerSessionPrice(practitioner, user?.location)
+  const viewerCurrency = detectCurrency(user?.location)
 
   const services = await prisma.service.findMany({
       where: { isActive: true },
@@ -97,6 +108,10 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
                 practitioner={practitioner} 
                 services={services} 
                 availableSlots={slots} 
+                sessionPriceInInr={sessionPricing.amountInInr}
+                pricingRegion={sessionPricing.pricingRegion}
+                viewerCurrency={viewerCurrency}
+                exchangeRates={exchangeRates}
             />
         </div>
     </div>

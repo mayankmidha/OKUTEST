@@ -33,6 +33,7 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
 
   const getSmartHint = () => {
     if (contextType === 'practitioner_summary') return "Draft summary of today's schedule"
+    if (contextType === 'adhd_helper') return 'Break my week into tiny steps'
     if (contextType === 'client_insight') return "Reflect on my recent mood trends"
     return "Check platform status"
   }
@@ -60,7 +61,7 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
                   <Sparkles size={16} className="text-oku-purple animate-pulse" />
                 </div>
                 <div>
-                   <span className="font-bold text-sm block tracking-tight">OKU CORE</span>
+                   <span className="font-bold text-sm block tracking-tight">{title}</span>
                    <span className="text-[10px] text-oku-purple font-black uppercase tracking-widest opacity-60">System Integrated</span>
                 </div>
               </div>
@@ -91,7 +92,9 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
                 <form onSubmit={handleGenerate} className="flex-1 flex flex-col space-y-6">
                   <div className="flex-1 space-y-4">
                     <p className="text-xs text-oku-taupe font-medium leading-relaxed">
-                      I am the Oku Core intelligence. I maintain real-time synchronization with all platform systems.
+                      {contextType === 'adhd_helper'
+                        ? 'I can turn clinical ADHD signals into practical daily support like task breakdowns, session prep, focus blocks, and low-overwhelm routines.'
+                        : 'I am the Oku Core intelligence. I maintain real-time synchronization with all platform systems.'}
                     </p>
                     
                     <div className="flex flex-wrap gap-2 mb-4">
@@ -107,7 +110,9 @@ export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { con
                     <textarea
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Ask about schedule, wellness, or platform status..."
+                      placeholder={contextType === 'adhd_helper'
+                        ? 'Ask for a focus plan, body-doubling script, or low-overwhelm routine...'
+                        : 'Ask about schedule, wellness, or platform status...'}
                       className="w-full bg-oku-cream-warm/20 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all resize-none h-32"
                     />
                   </div>

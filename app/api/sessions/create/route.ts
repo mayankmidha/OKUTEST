@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { createAuditLog } from '@/lib/audit'
 import { AppointmentStatus, UserRole } from '@prisma/client'
+import { resolvePractitionerSessionPrice } from '@/lib/pricing'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -56,13 +57,37 @@ export async function POST(req: Request) {
 
     // Correctly resolve practitionerId (it might be a profile ID)
     let finalPractitionerId = practitionerProfileId
-    const profile = await prisma.practitionerProfile.findUnique({
-      where: { id: practitionerProfileId },
-      select: { userId: true }
+    const bookingClient = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { location: true },
     })
+
+    let profile = await prisma.practitionerProfile.findUnique({
+      where: { id: practitionerProfileId },
+      select: {
+        userId: true,
+        indiaSessionRate: true,
+        internationalSessionRate: true,
+        hourlyRate: true,
+        baseCurrency: true,
+      }
+    })
+    if (!profile) {
+      profile = await prisma.practitionerProfile.findUnique({
+        where: { userId: practitionerProfileId },
+        select: {
+          userId: true,
+          indiaSessionRate: true,
+          internationalSessionRate: true,
+          hourlyRate: true,
+          baseCurrency: true,
+        }
+      })
+    }
     if (profile) {
       finalPractitionerId = profile.userId
     }
+    const pricing = resolvePractitionerSessionPrice(profile, bookingClient?.location)
 
     // 1. CONCURRENCY GUARD: Check for existing overlapping sessions
     const conflict = await prisma.appointment.findFirst({
@@ -96,7 +121,9 @@ export async function POST(req: Request) {
           serviceId: finalServiceId,
           startTime: startTime,
           endTime: endTime,
-          status: AppointmentStatus.PENDING
+          status: AppointmentStatus.PENDING,
+          priceSnapshot: pricing.amountInInr,
+          pricingRegion: pricing.pricingRegion,
       }
     })
 

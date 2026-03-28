@@ -9,6 +9,7 @@ export default function ClientProfileForm({ initialData }: { initialData: any })
     name: initialData.name || '',
     email: initialData.email || '',
     phone: initialData.phone || '',
+    location: initialData.location || 'India',
     bio: initialData.bio || '',
     emergencyContactName: initialData.clientProfile?.emergencyContactName || '',
     emergencyContactPhone: initialData.clientProfile?.emergencyContactPhone || '',
@@ -77,6 +78,29 @@ export default function ClientProfileForm({ initialData }: { initialData: any })
                 placeholder="Not set"
                 className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
             />
+            </div>
+            <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe flex items-center gap-2">Country</label>
+            <select
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all appearance-none"
+            >
+                <option value="India">India</option>
+                <option value="USA">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="Germany">Germany</option>
+                <option value="France">France</option>
+                <option value="United Arab Emirates">United Arab Emirates</option>
+                <option value="Saudi Arabia">Saudi Arabia</option>
+                <option value="Singapore">Singapore</option>
+                <option value="Japan">Japan</option>
+                <option value="Switzerland">Switzerland</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="Other">Other</option>
+            </select>
             </div>
         </div>
       </div>

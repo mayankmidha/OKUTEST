@@ -26,6 +26,7 @@ export default function Header() {
     { name: 'Collective', href: '/therapists' },
     { name: 'Services', href: '/services' },
     { name: 'Assessments', href: '/assessments' },
+    { name: 'Ecosystem', href: '/insurance' },
     { name: 'Blog', href: '/blog' },
   ];
 

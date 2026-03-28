@@ -1,14 +1,25 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Brain, MessageSquare, TrendingUp, AlertCircle, Quote } from 'lucide-react'
+import { Brain, MessageSquare, TrendingUp, Quote } from 'lucide-react'
 
 interface Transcript {
   id: string
   content: string
+  detectedLanguage: string | null
   summary: string | null
   sentiment: string | null
+  riskLevel: string | null
   keyInsights: any
+  sentimentScores: {
+    distress?: number
+    hope?: number
+    regulation?: number
+    engagement?: number
+  } | null
+  clinicalSignals: any
+  adhdSignals: any
+  careRecommendations: any
   createdAt: Date
   appointment: {
     startTime: Date
@@ -54,17 +65,42 @@ export function ClinicalAITranscriptViewer({ transcripts }: { transcripts: Trans
                 </div>
               </div>
             </div>
-            <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 ${
-              t.sentiment === 'POSITIVE' ? 'bg-green-50 text-green-700' :
-              t.sentiment === 'NEGATIVE' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
-            }`}>
-              <TrendingUp size={12} />
-              {t.sentiment || 'NEUTRAL'} PULSE
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 ${
+                t.sentiment === 'IMPROVING' ? 'bg-green-50 text-green-700' :
+                t.sentiment === 'ELEVATED' ? 'bg-amber-50 text-amber-700' :
+                t.sentiment === 'DISTRESSED' || t.sentiment === 'AT_RISK' ? 'bg-red-50 text-red-700' :
+                'bg-blue-50 text-blue-700'
+              }`}>
+                <TrendingUp size={12} />
+                {t.sentiment || 'STABLE'} PULSE
+              </div>
+              <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                t.riskLevel === 'CRITICAL' ? 'bg-red-200 text-red-800' :
+                t.riskLevel === 'HIGH' ? 'bg-red-100 text-red-700' :
+                t.riskLevel === 'MEDIUM' ? 'bg-amber-100 text-amber-700' :
+                'bg-oku-matcha/40 text-oku-matcha-dark'
+              }`}>
+                {t.riskLevel || 'LOW'} RISK
+              </div>
             </div>
           </div>
 
           <div className="p-8 grid lg:grid-cols-2 gap-10">
             <div className="space-y-6">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-oku-taupe/5 bg-oku-cream/40 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Language</p>
+                  <p className="mt-2 text-sm font-bold text-oku-dark">{t.detectedLanguage || 'Unknown'}</p>
+                </div>
+                <div className="rounded-2xl border border-oku-taupe/5 bg-oku-cream/40 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Signals</p>
+                  <p className="mt-2 text-sm font-bold text-oku-dark">
+                    {Array.isArray(t.clinicalSignals) ? t.clinicalSignals.length : 0} tracked
+                  </p>
+                </div>
+              </div>
+
               <div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3 flex items-center gap-2">
                   <Quote size={12} className="text-oku-purple" /> Clinical Summary
@@ -84,16 +120,81 @@ export function ClinicalAITranscriptViewer({ transcripts }: { transcripts: Trans
                   ))}
                 </div>
               </div>
+
+              {t.sentimentScores && (
+                <div>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Sentiment Map</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Distress', value: t.sentimentScores.distress || 0 },
+                      { label: 'Hope', value: t.sentimentScores.hope || 0 },
+                      { label: 'Regulation', value: t.sentimentScores.regulation || 0 },
+                      { label: 'Engagement', value: t.sentimentScores.engagement || 0 },
+                    ].map((metric) => (
+                      <div key={metric.label} className="rounded-2xl border border-oku-taupe/5 bg-white p-4">
+                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-oku-taupe">
+                          <span>{metric.label}</span>
+                          <span>{metric.value}</span>
+                        </div>
+                        <div className="mt-3 h-2 rounded-full bg-oku-cream overflow-hidden">
+                          <div className="h-full rounded-full bg-oku-purple" style={{ width: `${metric.value}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="bg-oku-cream-warm/20 rounded-[2rem] p-6 border border-oku-taupe/5 relative overflow-hidden">
-               <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4 flex items-center gap-2">
-                  <MessageSquare size={12} /> Raw Transcript Preview
-               </h4>
-               <div className="max-h-[150px] overflow-y-auto text-[11px] leading-relaxed text-oku-taupe/80 font-mono scrollbar-hide">
-                  {t.content}
-               </div>
-               <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+            <div className="space-y-6">
+              <div className="bg-oku-cream-warm/20 rounded-[2rem] p-6 border border-oku-taupe/5 relative overflow-hidden">
+                 <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4 flex items-center gap-2">
+                    <MessageSquare size={12} /> Raw Transcript Preview
+                 </h4>
+                 <div className="max-h-[150px] overflow-y-auto text-[11px] leading-relaxed text-oku-taupe/80 font-mono scrollbar-hide">
+                    {t.content}
+                 </div>
+                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+              </div>
+
+              {Array.isArray(t.clinicalSignals) && t.clinicalSignals.length > 0 && (
+                <div className="rounded-[2rem] border border-oku-taupe/5 bg-white p-6">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Clinical Signals</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {t.clinicalSignals.map((signal: string, index: number) => (
+                      <span key={`${signal}-${index}`} className="rounded-xl bg-oku-ocean/20 px-3 py-2 text-[10px] font-bold text-oku-navy">
+                        {signal}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {Array.isArray(t.adhdSignals) && t.adhdSignals.length > 0 && (
+                <div className="rounded-[2rem] border border-oku-taupe/5 bg-oku-lilac/20 p-6">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">ADHD / Executive Function Flags</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {t.adhdSignals.map((signal: string, index: number) => (
+                      <span key={`${signal}-${index}`} className="rounded-xl bg-white px-3 py-2 text-[10px] font-bold text-oku-purple-dark border border-oku-purple/10">
+                        {signal}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {Array.isArray(t.careRecommendations) && t.careRecommendations.length > 0 && (
+                <div className="rounded-[2rem] border border-oku-taupe/5 bg-oku-matcha/15 p-6">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-4">Care Recommendations</h4>
+                  <ul className="space-y-2 text-sm text-oku-dark">
+                    {t.careRecommendations.map((item: string, index: number) => (
+                      <li key={`${item}-${index}`} className="rounded-2xl bg-white/80 px-4 py-3">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

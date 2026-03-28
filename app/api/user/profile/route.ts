@@ -40,7 +40,7 @@ export async function PATCH(req: Request) {
     const { 
         name, phone, bio, 
         emergencyContactName, emergencyContactPhone, 
-        preferredLanguage, timezone 
+        preferredLanguage, timezone, location
     } = await req.json()
 
     const user = await prisma.user.update({
@@ -49,6 +49,7 @@ export async function PATCH(req: Request) {
         name,
         phone,
         bio,
+        location,
         clientProfile: {
             update: {
                 emergencyContactName,

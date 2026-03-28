@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import { formatCurrency } from "@/lib/currency";
+import { getAppointmentBillingAmount } from "@/lib/pricing";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -27,6 +29,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const doc = new jsPDF() as any;
     const client = appointment.client;
     const practitioner = appointment.practitioner;
+    const appointmentAmount = getAppointmentBillingAmount(appointment);
 
     // Header - Oku Clinic Brand
     doc.setFontSize(22);
@@ -60,7 +63,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
           '90837', // Default psychotherapy code
           appointment.service.name,
           `${appointment.service.duration} mins`,
-          `$${appointment.service.price}`
+          formatCurrency(appointmentAmount, 'INR')
         ]
       ],
       theme: 'grid',
@@ -70,7 +73,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     // Totals
     const finalY = (doc as any).lastAutoTable.finalY || 100;
     doc.setFontSize(12);
-    doc.text(`Total Amount Paid: $${appointment.service.price}`, 140, finalY + 20);
+    doc.text(`Total Amount Paid: ${formatCurrency(appointmentAmount, 'INR')}`, 140, finalY + 20);
     doc.setFontSize(10);
     doc.text("Status: PAID", 140, finalY + 28);
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { stripe } from '@/lib/stripe'
+import { normalizeCurrencyCode } from '@/lib/currency'
 
 export async function POST(req: Request) {
   try {
@@ -10,23 +11,25 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const { amount, sessionId } = await req.json()
+    const { amount, sessionId, currency } = await req.json()
 
     if (!amount || !sessionId) {
       return new NextResponse('Missing amount or sessionId', { status: 400 })
     }
+    const normalizedCurrency = normalizeCurrencyCode(currency || 'INR').toLowerCase()
 
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Stripe expects cents
-      currency: 'usd',
+      currency: normalizedCurrency,
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
         userId: session.user.id as string,
         sessionId: sessionId as string,
-        type: 'session_fee'
+        type: 'session_fee',
+        currency: normalizedCurrency,
       },
     })
 

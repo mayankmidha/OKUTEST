@@ -70,6 +70,10 @@ export default async function ClientDashboardPage() {
 
   const upcomingAppointments = user.clientAppointments || []
   const recentAssessments = user.assessmentAnswers || []
+  const hasAdhdAssessments = recentAssessments.some((answer) => {
+    const title = answer.assessment?.title?.toLowerCase() || ''
+    return title.includes('adhd') || title.includes('executive') || title.includes('asrs') || title.includes('conners') || title.includes('brief')
+  })
   const hasIncompleteIntake = !user.intakeForm
   const hasIncompleteConsent = !user.hasSignedConsent
   const referralCode = await ensureUserReferralCode(user.id, user.name)
@@ -105,6 +109,11 @@ export default async function ClientDashboardPage() {
           <Link href="/dashboard/client/referrals" className="btn-sky hidden md:flex items-center gap-2">
              <Gift size={18} /> Referral Hub
           </Link>
+          {hasAdhdAssessments && (
+            <Link href="/dashboard/client/adhd" className="btn-sky hidden xl:flex items-center gap-2">
+               <Sparkles size={18} /> ADHD Helper
+            </Link>
+          )}
           <Link href="/dashboard/client/therapists" className="btn-navy group flex items-center gap-3">
              <Search size={18} className="group-hover:rotate-12 transition-transform" /> Browse Specialists
           </Link>
@@ -367,7 +376,7 @@ export default async function ClientDashboardPage() {
       
       {/* Footer Space AI */}
       <div className="mt-20">
-         <AIAssistantWidget contextType="client_insight" title="Wellness Insights" />
+         <AIAssistantWidget contextType={hasAdhdAssessments ? "adhd_helper" : "client_insight"} title={hasAdhdAssessments ? "ADHD Helper" : "Wellness Insights"} />
       </div>
     </div>
   )

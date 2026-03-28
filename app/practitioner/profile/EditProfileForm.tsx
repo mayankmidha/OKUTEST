@@ -2,20 +2,22 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, User, Mail, DollarSign, Award, BookOpen, Link as LinkIcon, Briefcase } from 'lucide-react'
+import { Loader2, Save, User, Award, BookOpen, Link as LinkIcon, Briefcase } from 'lucide-react'
+import { resolvePractitionerPricing } from '@/lib/pricing'
 
 export default function EditProfileForm({ initialData }: { initialData: any }) {
+  const initialPricing = resolvePractitionerPricing(initialData)
   const [formData, setFormData] = useState({
     name: initialData.user?.name || '',
     bio: initialData.bio || '',
-    hourlyRate: initialData.hourlyRate || 150,
+    indiaSessionRate: initialData.indiaSessionRate || initialPricing.indiaSessionRate,
+    internationalSessionRate: initialData.internationalSessionRate || initialPricing.internationalSessionRate,
     licenseNumber: initialData.licenseNumber || '',
     specialization: initialData.specialization || [],
     education: initialData.education || '',
     experienceYears: initialData.experienceYears || 0,
     linkedinUrl: initialData.linkedinUrl || '',
     websiteUrl: initialData.websiteUrl || '',
-    baseCurrency: initialData.baseCurrency || 'USD',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -84,27 +86,42 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
                 />
             </div>
             <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe">Market Rate ($/hr)</label>
+                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe">India Session Price</label>
                 <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe/40" size={16} />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-oku-taupe/50">₹</span>
                     <input
                         type="number"
-                        value={formData.hourlyRate}
-                        onChange={(e) => setFormData({ ...formData, hourlyRate: parseFloat(e.target.value) })}
+                        min="0"
+                        step="50"
+                        value={formData.indiaSessionRate}
+                        onChange={(e) => setFormData({ ...formData, indiaSessionRate: Number.parseFloat(e.target.value || '0') })}
                         className="pl-12 w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
                     />
                 </div>
+                <p className="text-xs text-oku-taupe/70 italic">Shown to clients based in India and stored as the platform base amount.</p>
             </div>
             <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe">Base Currency</label>
-                <select
-                    value={formData.baseCurrency}
-                    onChange={(e) => setFormData({ ...formData, baseCurrency: e.target.value })}
-                    className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all appearance-none"
-                >
-                    <option value="USD">USD (US Dollar)</option>
-                    <option value="INR">INR (Indian Rupee)</option>
-                </select>
+                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe">International Session Price</label>
+                <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-oku-taupe/50">₹</span>
+                    <input
+                        type="number"
+                        min="0"
+                        step="50"
+                        value={formData.internationalSessionRate}
+                        onChange={(e) => setFormData({ ...formData, internationalSessionRate: Number.parseFloat(e.target.value || '0') })}
+                        className="pl-12 w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
+                    />
+                </div>
+                <p className="text-xs text-oku-taupe/70 italic">
+                  International clients see this amount converted into their local currency using live FX rates.
+                </p>
+            </div>
+            <div className="md:col-span-2 rounded-[2rem] border border-oku-purple/10 bg-oku-purple/5 px-5 py-4 text-sm text-oku-dark">
+                <p className="font-bold text-oku-purple-dark">Billing Base: INR</p>
+                <p className="mt-1 text-oku-taupe">
+                  OKU now stores session pricing in INR platform-wide. International clients will still see USD, GBP, EUR, and other local currencies at checkout.
+                </p>
             </div>
         </div>
       </div>

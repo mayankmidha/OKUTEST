@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, AlertCircle, Sparkles, Loader2, Wand2 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 export function NotesEditor({ appointment, existingNote }: { appointment: any, existingNote?: any }) {
   const [formData, setFormData] = useState({
@@ -25,18 +24,28 @@ export function NotesEditor({ appointment, existingNote }: { appointment: any, e
         body: JSON.stringify({ appointmentId: appointment.id })
       })
       if (res.ok) {
-        const { draft } = await res.json()
-        
-        // Parse the draft (assuming the LLM followed instructions)
-        const subjectiveMatch = draft.match(/SUBJECTIVE:([\s\S]*?)OBJECTIVE:/i)
-        const objectiveMatch = draft.match(/OBJECTIVE:([\s\S]*?)ASSESSMENT:/i)
-        const assessmentMatch = draft.match(/ASSESSMENT:([\s\S]*?)PLAN:/i)
-        const planMatch = draft.match(/PLAN:([\s\S]*)/i)
+        const draft = await res.json()
 
-        if (subjectiveMatch) setFormData(prev => ({ ...prev, subjective: subjectiveMatch[1].trim() }))
-        if (objectiveMatch) setFormData(prev => ({ ...prev, objective: objectiveMatch[1].trim() }))
-        if (assessmentMatch) setFormData(prev => ({ ...prev, assessment: assessmentMatch[1].trim() }))
-        if (planMatch) setFormData(prev => ({ ...prev, plan: planMatch[1].trim() }))
+        if (typeof draft === 'string') {
+          const subjectiveMatch = draft.match(/SUBJECTIVE:([\s\S]*?)OBJECTIVE:/i)
+          const objectiveMatch = draft.match(/OBJECTIVE:([\s\S]*?)ASSESSMENT:/i)
+          const assessmentMatch = draft.match(/ASSESSMENT:([\s\S]*?)PLAN:/i)
+          const planMatch = draft.match(/PLAN:([\s\S]*)/i)
+
+          if (subjectiveMatch) setFormData(prev => ({ ...prev, subjective: subjectiveMatch[1].trim() }))
+          if (objectiveMatch) setFormData(prev => ({ ...prev, objective: objectiveMatch[1].trim() }))
+          if (assessmentMatch) setFormData(prev => ({ ...prev, assessment: assessmentMatch[1].trim() }))
+          if (planMatch) setFormData(prev => ({ ...prev, plan: planMatch[1].trim() }))
+          return
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          subjective: draft?.soapNote?.subjective || draft?.subjective || prev.subjective,
+          objective: draft?.soapNote?.objective || draft?.objective || prev.objective,
+          assessment: draft?.soapNote?.assessment || draft?.assessment || prev.assessment,
+          plan: draft?.soapNote?.plan || draft?.plan || prev.plan,
+        }))
       }
     } catch (e) {
       console.error(e)

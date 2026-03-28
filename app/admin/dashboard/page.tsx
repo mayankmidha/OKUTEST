@@ -54,6 +54,12 @@ export default async function AdminDashboardPage() {
     psychiatrySessionPlatformFeePercent: 20,
     assessmentPlatformFeePercent: 20,
     minimumPayoutAmount: 25,
+    okuAiEnabled: true,
+    multilingualAiEnabled: true,
+    autoTranslateTranscripts: true,
+    adhdCareModeEnabled: true,
+    requireConsentBeforeTranscription: true,
+    transcriptRetentionDays: 365,
   }
   try {
     const dbSettings = await prisma.platformSettings.findUnique({

@@ -4,8 +4,25 @@ import { useState } from 'react'
 import { Calendar, Clock, ArrowRight, CheckCircle2, Loader2, Info } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { type ExchangeRateTable, formatCurrency, localizeAmount } from '@/lib/currency'
 
-export default function BookingClient({ practitioner, services, availableSlots }: { practitioner: any, services: any[], availableSlots: any[] }) {
+export default function BookingClient({
+  practitioner,
+  services,
+  availableSlots,
+  sessionPriceInInr,
+  pricingRegion,
+  viewerCurrency,
+  exchangeRates,
+}: {
+  practitioner: any
+  services: any[]
+  availableSlots: any[]
+  sessionPriceInInr: number
+  pricingRegion: string
+  viewerCurrency: string
+  exchangeRates: ExchangeRateTable
+}) {
     const [selectedService, setSelectedService] = useState(services[0]?.id)
     const [selectedDate, setSelectedDate] = useState(availableSlots[0]?.date)
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
@@ -13,6 +30,15 @@ export default function BookingClient({ practitioner, services, availableSlots }
 
     const activeService = services.find(s => s.id === selectedService)
     const activeDay = availableSlots.find(d => d.date === selectedDate)
+    const localizedSessionPrice = localizeAmount(
+        sessionPriceInInr,
+        undefined,
+        'INR',
+        exchangeRates,
+        viewerCurrency
+    )
+    const displaySessionPrice = formatCurrency(localizedSessionPrice.amount, localizedSessionPrice.currency)
+    const baseSessionPrice = formatCurrency(sessionPriceInInr, 'INR')
 
     const handleConfirm = () => {
         if(!selectedService || !selectedDate || !selectedTime) return;
@@ -87,11 +113,14 @@ export default function BookingClient({ practitioner, services, availableSlots }
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <p className="font-bold">{s.name}</p>
-                                        <p className={`font-display font-bold text-xl ${isSelected ? 'text-oku-purple' : ''}`}>${s.price}</p>
+                                        <p className={`font-display font-bold text-xl ${isSelected ? 'text-oku-purple' : ''}`}>{displaySessionPrice}</p>
                                     </div>
                                     <div className={`flex items-center gap-2 text-[10px] uppercase tracking-widest font-black ${isSelected ? 'text-oku-taupe' : 'text-white/40'}`}>
                                         <Clock size={12} /> {s.duration} minutes
                                     </div>
+                                    <p className={`mt-3 text-[10px] uppercase tracking-widest ${isSelected ? 'text-oku-taupe/80' : 'text-white/40'}`}>
+                                        {pricingRegion === 'INDIA' ? 'India pricing' : 'International pricing'} • Base {baseSessionPrice}
+                                    </p>
                                 </button>
                             )
                         })}
@@ -183,9 +212,12 @@ export default function BookingClient({ practitioner, services, availableSlots }
                                         </p>
                                     </div>
                                     <p className="text-2xl font-display font-bold text-oku-purple">
-                                        ${activeService?.price}
+                                        {displaySessionPrice}
                                     </p>
                                 </div>
+                                <p className="mt-3 text-xs text-oku-taupe">
+                                    Stored in INR and converted into your local currency at live exchange rates.
+                                </p>
                             </div>
 
                             <button

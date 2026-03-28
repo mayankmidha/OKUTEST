@@ -24,7 +24,7 @@ import { isPsychiatristProfile } from '@/lib/practitioner-type'
 import { getPractitionerFinanceSummary } from '@/lib/provider-finance'
 
 function formatMoney(amount: number) {
-  const converted = autoConvert(amount)
+  const converted = autoConvert(amount, undefined, 'INR')
   return formatCurrency(converted.amount, converted.currency)
 }
 

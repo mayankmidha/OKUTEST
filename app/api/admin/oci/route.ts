@@ -22,7 +22,19 @@ export async function GET() {
     ] = await Promise.all([
         prisma.user.findMany({ select: { role: true, createdAt: true, hasSignedConsent: true }, orderBy: { createdAt: 'desc' }, take: 100 }),
         prisma.appointment.findMany({ include: { service: true, client: { select: { name: true } } }, orderBy: { startTime: 'desc' }, take: 50 }),
-        prisma.transcript.findMany({ select: { sentiment: true, summary: true, keyInsights: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 20 }),
+        prisma.transcript.findMany({
+          select: {
+            sentiment: true,
+            summary: true,
+            keyInsights: true,
+            riskLevel: true,
+            detectedLanguage: true,
+            adhdSignals: true,
+            createdAt: true
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 20
+        }),
         prisma.payment.findMany({ where: { status: 'COMPLETED' }, select: { amount: true }, orderBy: { createdAt: 'desc' }, take: 50 }),
         prisma.userActivity.findMany({ orderBy: { createdAt: 'desc' }, take: 50 }),
         prisma.practitionerProfile.findMany({ include: { user: { select: { name: true, hasSignedConsent: true } } } })
@@ -35,8 +47,11 @@ export async function GET() {
             practitionerCompliance: (therapists.filter(t => t.user.hasSignedConsent).length / therapists.length) * 100
         },
         riskIntelligence: {
-            highRiskSessions: transcripts.filter(t => t.summary?.toLowerCase().includes('risk') || t.summary?.toLowerCase().includes('crisis')).length,
-            sentimentDistribution: transcripts.map(t => t.sentiment)
+            highRiskSessions: transcripts.filter(t => t.riskLevel === 'HIGH').length,
+            mediumRiskSessions: transcripts.filter(t => t.riskLevel === 'MEDIUM').length,
+            sentimentDistribution: transcripts.map(t => t.sentiment),
+            multilingualSessions: transcripts.filter(t => t.detectedLanguage && t.detectedLanguage.toLowerCase() !== 'english').length,
+            adhdFlaggedSessions: transcripts.filter(t => Array.isArray(t.adhdSignals) && t.adhdSignals.length > 0).length
         },
         economicMoat: {
             sessionVolume: appointments.length,

@@ -30,7 +30,7 @@ export function roundMoney(amount: number) {
 }
 
 export function formatMoney(amount: number) {
-  const converted = autoConvert(amount)
+  const converted = autoConvert(amount, undefined, 'INR')
   return formatCurrency(converted.amount, converted.currency)
 }
 

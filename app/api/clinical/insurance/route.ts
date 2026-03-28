@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getAppointmentBillingAmount } from "@/lib/pricing";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -39,13 +40,14 @@ export async function POST(req: Request) {
       if (!appointment || !appointment.client || !appointment.client.insurancePolicies[0]) {
         return new NextResponse("Incomplete claim data", { status: 400 });
       }
+      const appointmentAmount = getAppointmentBillingAmount(appointment)
 
       const claim = await prisma.claim.create({
         data: {
           policyId: appointment.client.insurancePolicies[0].id,
           appointmentId: appointment.id,
           status: 'SUBMITTED',
-          claimAmount: appointment.service.price,
+          claimAmount: appointmentAmount,
           filedAt: new Date()
         }
       });

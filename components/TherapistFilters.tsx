@@ -8,12 +8,44 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { formatCurrency, autoConvert } from '@/lib/currency'
+import { type ExchangeRateTable, formatCurrency, localizeAmount } from '@/lib/currency'
+import { resolvePractitionerSessionPrice } from '@/lib/pricing'
 
-export default function TherapistFilters({ therapists, specialties, isFirstTime = false, userLocation }: { therapists: any[], specialties: string[], isFirstTime?: boolean, userLocation?: string }) {
+export default function TherapistFilters({
+  therapists,
+  specialties,
+  isFirstTime = false,
+  userLocation,
+  viewerCurrency,
+  exchangeRates,
+}: {
+  therapists: any[]
+  specialties: string[]
+  isFirstTime?: boolean
+  userLocation?: string
+  viewerCurrency: string
+  exchangeRates: ExchangeRateTable
+}) {
+  const getDisplayedSessionRate = (practitioner: any) => {
+    const pricing = resolvePractitionerSessionPrice(practitioner, userLocation)
+    return localizeAmount(
+      pricing.amountInInr,
+      userLocation,
+      'INR',
+      exchangeRates,
+      viewerCurrency
+    ).amount
+  }
+
+  const allDisplayedPrices = therapists.map(getDisplayedSessionRate)
+  const sliderMax = Math.max(
+    viewerCurrency === 'INR' ? 3000 : 50,
+    Math.ceil((Math.max(...allDisplayedPrices, 0) || 0) / (viewerCurrency === 'INR' ? 250 : 10)) *
+      (viewerCurrency === 'INR' ? 250 : 10)
+  )
   const [search, setSearch] = useState('')
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
-  const [maxPrice, setMaxPrice] = useState<number>(300)
+  const [maxPrice, setMaxPrice] = useState<number>(sliderMax)
 
   const filtered = therapists.filter(t => {
     const matchesSearch = t.user.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -22,7 +54,7 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
     const matchesSpecialty = selectedSpecialties.length === 0 || 
                              selectedSpecialties.some(s => t.specialization?.includes(s))
     
-    const matchesPrice = (t.hourlyRate || 150) <= maxPrice
+    const matchesPrice = getDisplayedSessionRate(t) <= maxPrice
 
     return matchesSearch && matchesSpecialty && matchesPrice
   })
@@ -45,8 +77,8 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
              <h3 className="text-sm font-black uppercase tracking-widest text-oku-dark flex items-center gap-2">
                 <Filter size={16} className="text-oku-purple" /> Filters
              </h3>
-             {(selectedSpecialties.length > 0 || search || maxPrice < 300) && (
-                <button onClick={() => { setSearch(''); setSelectedSpecialties([]); setMaxPrice(300); }} className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Clear All</button>
+             {(selectedSpecialties.length > 0 || search || maxPrice < sliderMax) && (
+                <button onClick={() => { setSearch(''); setSelectedSpecialties([]); setMaxPrice(sliderMax); }} className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Clear All</button>
              )}
           </div>
 
@@ -69,12 +101,12 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
             {/* Price Range */}
             <div className="space-y-4">
                <div className="flex justify-between items-center">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60">Max Hourly Rate</label>
-                  <span className="text-sm font-bold text-oku-dark">${maxPrice}</span>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60">Max Session Rate</label>
+                  <span className="text-sm font-bold text-oku-dark">{formatCurrency(maxPrice, viewerCurrency)}</span>
                </div>
                <input 
                  type="range" 
-                 min="50" max="300" step="10"
+                 min="0" max={sliderMax} step={viewerCurrency === 'INR' ? 250 : 10}
                  value={maxPrice}
                  onChange={(e) => setMaxPrice(parseInt(e.target.value))}
                  className="w-full accent-oku-purple"
@@ -157,10 +189,7 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
                          </div>
                       </div>
                       <span className="bg-white text-oku-dark px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">
-                          {(() => {
-                              const conv = autoConvert(practitioner.hourlyRate || 150, userLocation);
-                              return formatCurrency(conv.amount, conv.currency);
-                          })()} / HR
+                          {formatCurrency(getDisplayedSessionRate(practitioner), viewerCurrency)} / SESSION
                       </span>
                   </div>
                 </div>

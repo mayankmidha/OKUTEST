@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { UserRole, AppointmentStatus } from '@prisma/client'
+import { getAppointmentBillingAmount } from '@/lib/pricing'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
   }
 
   try {
+      const appointmentAmount = getAppointmentBillingAmount(appointment)
       await prisma.$transaction([
           // 1. Mark appointment as No-Show
           prisma.appointment.update({
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
               data: {
                   attendanceStatus: 'no_show',
                   status: AppointmentStatus.NO_SHOW,
-                  noShowFeeCharged: appointment.service.price // Charge full service fee as no-show fee
+                  noShowFeeCharged: appointmentAmount // Charge full service fee as no-show fee
               }
           }),
           // 2. Increment client no-show count

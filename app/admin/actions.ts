@@ -36,7 +36,10 @@ export async function updateTherapistRate(practitionerId: string, hourlyRate: nu
   await checkAdmin()
   await prisma.practitionerProfile.update({
     where: { id: practitionerId },
-    data: { hourlyRate }
+    data: {
+      hourlyRate,
+      internationalSessionRate: hourlyRate,
+    }
   })
   revalidatePath('/admin/dashboard')
 }
@@ -123,6 +126,12 @@ export async function updatePlatformSettings(data: {
   psychiatrySessionPlatformFeePercent?: number
   assessmentPlatformFeePercent?: number
   minimumPayoutAmount?: number
+  okuAiEnabled?: boolean
+  multilingualAiEnabled?: boolean
+  autoTranslateTranscripts?: boolean
+  adhdCareModeEnabled?: boolean
+  requireConsentBeforeTranscription?: boolean
+  transcriptRetentionDays?: number
 }) {
   await checkAdmin()
   await prisma.platformSettings.upsert({
@@ -136,6 +145,12 @@ export async function updatePlatformSettings(data: {
       psychiatrySessionPlatformFeePercent: data.psychiatrySessionPlatformFeePercent ?? data.platformFeePercent ?? 20.0,
       assessmentPlatformFeePercent: data.assessmentPlatformFeePercent ?? data.platformFeePercent ?? 20.0,
       minimumPayoutAmount: data.minimumPayoutAmount ?? 25.0,
+      okuAiEnabled: data.okuAiEnabled ?? true,
+      multilingualAiEnabled: data.multilingualAiEnabled ?? true,
+      autoTranslateTranscripts: data.autoTranslateTranscripts ?? true,
+      adhdCareModeEnabled: data.adhdCareModeEnabled ?? true,
+      requireConsentBeforeTranscription: data.requireConsentBeforeTranscription ?? true,
+      transcriptRetentionDays: data.transcriptRetentionDays ?? 365,
     }
   })
   revalidatePath('/admin/dashboard')

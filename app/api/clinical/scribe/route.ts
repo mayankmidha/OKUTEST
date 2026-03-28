@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { draftClinicalScribe, getOkuAiSettings } from "@/lib/oku-ai"
 
 
 export async function POST(req: Request) {
@@ -40,41 +40,15 @@ export async function POST(req: Request) {
       activeGoals: appointment.client.clientTreatmentPlans[0]?.goals
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-        return NextResponse.json({ draft: "OCI OFFLINE: Please configure API key to use Scribe." })
+    const settings = await getOkuAiSettings()
+
+    if (!settings.okuAiEnabled) {
+      return NextResponse.json({ error: "OKU_AI_DISABLED" }, { status: 503 })
     }
 
-    // 3. Consult OCI Scribe
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const systemPrompt = `You are Oku Clinical Scribe, an expert AI assistant for psychotherapists. Your task is to draft a professional SOAP note based on recent patient data.`
-    
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
-      systemInstruction: systemPrompt
-    });
-    
-    const fullPrompt = `
-      Draft a SOAP note for a ${clinicalContext.sessionType} with ${clinicalContext.patientName}.
-      
-      Patient Data:
-      - Recent Mood Trend: ${JSON.stringify(clinicalContext.recentMoods)}
-      - Latest Assessments: ${JSON.stringify(clinicalContext.recentAssessments)}
-      - Treatment Goals: ${clinicalContext.activeGoals}
+    const draft = await draftClinicalScribe(clinicalContext)
 
-      Please provide a draft in exactly 4 sections:
-      SUBJECTIVE: (A concise summary of how the patient is feeling based on trends)
-      OBJECTIVE: (Observations of behavior and mood consistency)
-      ASSESSMENT: (Clinical impression of progress toward goals)
-      PLAN: (Proposed focus for the next session)
-
-      Maintain a professional, clinical, yet trauma-informed tone. Keep each section to 2-3 sentences.
-    `
-
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const text = response.text();
-
-    return NextResponse.json({ draft: text })
+    return NextResponse.json({ draft, adhdCareModeEnabled: settings.adhdCareModeEnabled })
 
   } catch (error) {
     console.error("[OCI_SCRIBE_ERROR]", error)

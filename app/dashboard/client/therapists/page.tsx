@@ -5,6 +5,7 @@ import { UserRole } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import TherapistFilters from '@/components/TherapistFilters'
 import { Sparkles } from 'lucide-react'
+import { detectCurrency, getLiveExchangeRates } from '@/lib/currency'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,7 +16,7 @@ export default async function ClientTherapistsDashboardPage() {
     redirect('/auth/login')
   }
 
-  const [practitioners, userAppointmentCount, user] = await Promise.all([
+  const [practitioners, userAppointmentCount, user, exchangeRates] = await Promise.all([
     prisma.practitionerProfile.findMany({
         where: { isVerified: true },
         include: { user: true }
@@ -26,10 +27,12 @@ export default async function ClientTherapistsDashboardPage() {
     prisma.user.findUnique({
         where: { id: session.user.id },
         select: { location: true }
-    })
+    }),
+    getLiveExchangeRates('INR'),
   ])
 
   const isFirstTime = userAppointmentCount === 0
+  const viewerCurrency = detectCurrency(user?.location)
 
   // Get unique specialties for filters
   const allSpecialties = practitioners.flatMap(p => p.specialization)
@@ -48,7 +51,14 @@ export default async function ClientTherapistsDashboardPage() {
       />
 
       <div className="mt-10">
-        <TherapistFilters therapists={practitioners} specialties={uniqueSpecialties} isFirstTime={isFirstTime} userLocation={user?.location || undefined} />
+        <TherapistFilters
+          therapists={practitioners}
+          specialties={uniqueSpecialties}
+          isFirstTime={isFirstTime}
+          userLocation={user?.location || undefined}
+          viewerCurrency={viewerCurrency}
+          exchangeRates={exchangeRates}
+        />
       </div>
     </div>
   )

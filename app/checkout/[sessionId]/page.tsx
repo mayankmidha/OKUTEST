@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { getCheckoutReferralCredit } from '@/lib/referrals'
+import { detectCurrency, formatCurrency, getLiveExchangeRates, localizeAmount } from '@/lib/currency'
+import { getAppointmentBillingAmount } from '@/lib/pricing'
 
 export default async function CheckoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const session = await auth()
@@ -11,24 +13,37 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
     redirect('/auth/login')
   }
 
-  const booking = await prisma.appointment.findUnique({
+  const [booking, user, exchangeRates] = await Promise.all([
+    prisma.appointment.findUnique({
     where: { id: sessionId },
     include: { 
       practitioner: { include: { practitionerProfile: true } },
       service: true
     }
-  })
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { location: true },
+    }),
+    getLiveExchangeRates('INR'),
+  ])
 
   if (!booking) {
     return <div>Appointment not found</div>
   }
 
   const checkoutSummary = await getCheckoutReferralCredit(booking.id)
-  const grossAmount = checkoutSummary?.grossAmount ?? booking.service.price
+  const viewerCurrency = detectCurrency(user?.location)
+  const grossAmount = checkoutSummary?.grossAmount ?? getAppointmentBillingAmount(booking)
   const availableCredit = checkoutSummary?.availableCredit ?? 0
   const creditApplied = checkoutSummary?.creditApplied ?? 0
-  const netAmount = checkoutSummary?.netAmount ?? booking.service.price
-  const totalDueLabel = `$${netAmount.toFixed(2)}`
+  const netAmount = checkoutSummary?.netAmount ?? getAppointmentBillingAmount(booking)
+  const localizedGross = localizeAmount(grossAmount, user?.location, 'INR', exchangeRates, viewerCurrency)
+  const localizedAvailable = localizeAmount(availableCredit, user?.location, 'INR', exchangeRates, viewerCurrency)
+  const localizedCreditApplied = localizeAmount(creditApplied, user?.location, 'INR', exchangeRates, viewerCurrency)
+  const localizedNet = localizeAmount(netAmount, user?.location, 'INR', exchangeRates, viewerCurrency)
+  const totalDueLabel = formatCurrency(localizedNet.amount, localizedNet.currency)
+  const baseNetLabel = formatCurrency(netAmount, 'INR')
 
   return (
     <div className="min-h-screen bg-oku-cream py-20 px-6">
@@ -56,15 +71,15 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
                 <div className="space-y-4 mb-8">
                     <div className="flex justify-between items-center text-oku-dark">
                         <span className="text-sm font-bold uppercase tracking-[0.25em] text-oku-taupe">Session Total</span>
-                        <span className="text-lg font-display font-bold">${grossAmount.toFixed(2)}</span>
+                        <span className="text-lg font-display font-bold">{formatCurrency(localizedGross.amount, localizedGross.currency)}</span>
                     </div>
                     <div className="flex justify-between items-center text-oku-dark">
                         <span className="text-sm font-bold uppercase tracking-[0.25em] text-oku-taupe">Referral Credit Available</span>
-                        <span className="text-lg font-display font-bold">${availableCredit.toFixed(2)}</span>
+                        <span className="text-lg font-display font-bold">{formatCurrency(localizedAvailable.amount, localizedAvailable.currency)}</span>
                     </div>
                     <div className="flex justify-between items-center text-oku-dark">
                         <span className="text-sm font-bold uppercase tracking-[0.25em] text-oku-taupe">Credit Applied</span>
-                        <span className="text-lg font-display font-bold text-green-700">-${creditApplied.toFixed(2)}</span>
+                        <span className="text-lg font-display font-bold text-green-700">-{formatCurrency(localizedCreditApplied.amount, localizedCreditApplied.currency)}</span>
                     </div>
                     <div className="rounded-3xl border border-oku-peach/40 bg-oku-peach/20 px-5 py-4">
                         <div className="flex justify-between items-center">
@@ -72,7 +87,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
                             <span className="text-2xl font-display font-bold text-oku-dark">{totalDueLabel}</span>
                         </div>
                         <p className="mt-2 text-sm text-oku-taupe">
-                            Referral credit is automatically used before card or UPI payment.
+                            Referral credit is automatically used before card or UPI payment. Base billing amount: {baseNetLabel}.
                         </p>
                     </div>
                 </div>

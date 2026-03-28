@@ -76,6 +76,9 @@ export async function POST(req: Request) {
             education: education?.trim() || null,
             experienceYears: Number.isNaN(parsedExperienceYears) ? 0 : parsedExperienceYears,
             hourlyRate: Number.isNaN(parsedHourlyRate) ? null : parsedHourlyRate,
+            indiaSessionRate: Number.isNaN(parsedHourlyRate) ? null : parsedHourlyRate,
+            internationalSessionRate: Number.isNaN(parsedHourlyRate) ? null : parsedHourlyRate,
+            baseCurrency: 'INR',
           }
         } : undefined
       },

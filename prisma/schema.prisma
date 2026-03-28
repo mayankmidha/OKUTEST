@@ -37,7 +37,7 @@ model Payout {
   id              String   @id @default(cuid())
   practitionerId  String
   amount          Float
-  currency        String   @default("USD")
+  currency        String   @default("INR")
   status          String   @default("PENDING") // PENDING, COMPLETED, FAILED
   referenceId     String?  // Bank transfer ref
   requestNote     String?
@@ -232,6 +232,8 @@ model PractitionerProfile {
   specialization           String[]
   bio                      String?
   hourlyRate               Float?
+  indiaSessionRate         Float?
+  internationalSessionRate Float?
   sessionDuration          Int                    @default(50)
   bufferDuration           Int                    @default(10)
   isVerified               Boolean                @default(false)
@@ -244,7 +246,7 @@ model PractitionerProfile {
   linkedinUrl              String?
   websiteUrl               String?
   stripeAccountId          String?
-  baseCurrency             String                 @default("USD")
+  baseCurrency             String                 @default("INR")
   availability             Availability[]
   overrides                AvailabilityOverride[]
   blockedDates             BlockedDate[]
@@ -286,6 +288,12 @@ model PlatformSettings {
   psychiatrySessionPlatformFeePercent Float  @default(20.0)
   assessmentPlatformFeePercent     Float    @default(20.0)
   minimumPayoutAmount              Float    @default(25.0)
+  okuAiEnabled                     Boolean  @default(true)
+  multilingualAiEnabled            Boolean  @default(true)
+  autoTranslateTranscripts         Boolean  @default(true)
+  adhdCareModeEnabled              Boolean  @default(true)
+  requireConsentBeforeTranscription Boolean @default(true)
+  transcriptRetentionDays          Int      @default(365)
   supportEmail                     String   @default("support@okutherapy.com")
   announcementTitle                String?
   announcementText                 String?
@@ -322,6 +330,8 @@ model Appointment {
   superbillGenerated Boolean             @default(false)
   trialDuration    Int?                @default(10)
   referralCreditApplied Float          @default(0)
+  priceSnapshot    Float?
+  pricingRegion    String?
 
   // Group Therapy Support
   isGroupSession   Boolean             @default(false)
@@ -362,9 +372,15 @@ model Transcript {
   id            String      @id @default(cuid())
   appointmentId String      @unique
   content       String
+  detectedLanguage String?
   summary       String?
   sentiment     String?
+  riskLevel     String?
   keyInsights   Json?
+  sentimentScores Json?
+  clinicalSignals Json?
+  adhdSignals   Json?
+  careRecommendations Json?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)

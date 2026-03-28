@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { PaymentStatus, UserRole } from '@prisma/client'
+import { getAppointmentBillingAmount } from '@/lib/pricing'
 
 export const MAX_REFERRAL_REWARDS = 3
 export const REFERRAL_REWARD_PERCENT = 10
@@ -122,7 +123,8 @@ export async function awardReferralRewardForAppointment(appointmentId: string) {
     return null
   }
 
-  const rewardAmount = Number((appointment.service.price * (REFERRAL_REWARD_PERCENT / 100)).toFixed(2))
+  const appointmentAmount = getAppointmentBillingAmount(appointment)
+  const rewardAmount = Number((appointmentAmount * (REFERRAL_REWARD_PERCENT / 100)).toFixed(2))
 
   const [, reward] = await prisma.$transaction([
     prisma.clientProfile.upsert({
@@ -173,17 +175,18 @@ export async function getCheckoutReferralCredit(appointmentId: string) {
   })
 
   if (!appointment) return null
+  const appointmentAmount = getAppointmentBillingAmount(appointment)
 
   const availableCredit = appointment.client?.clientProfile?.referralCreditBalance || 0
   const creditApplied = appointment.referralCreditApplied > 0
     ? appointment.referralCreditApplied
-    : Math.min(availableCredit, appointment.service.price)
+    : Math.min(availableCredit, appointmentAmount)
 
   return {
-    grossAmount: appointment.service.price,
+    grossAmount: appointmentAmount,
     availableCredit,
     creditApplied,
-    netAmount: Math.max(appointment.service.price - creditApplied, 0),
+    netAmount: Math.max(appointmentAmount - creditApplied, 0),
   }
 }
 
@@ -208,23 +211,24 @@ export async function applyReferralCreditToAppointment(appointmentId: string) {
   })
 
   if (!appointment) return null
+  const appointmentAmount = getAppointmentBillingAmount(appointment)
 
   if (appointment.referralCreditApplied > 0) {
     return {
-      grossAmount: appointment.service.price,
+      grossAmount: appointmentAmount,
       creditApplied: appointment.referralCreditApplied,
-      netAmount: Math.max(appointment.service.price - appointment.referralCreditApplied, 0),
+      netAmount: Math.max(appointmentAmount - appointment.referralCreditApplied, 0),
     }
   }
 
   const availableCredit = appointment.client?.clientProfile?.referralCreditBalance || 0
-  const creditApplied = Math.min(availableCredit, appointment.service.price)
+  const creditApplied = Math.min(availableCredit, appointmentAmount)
 
   if (!appointment.client?.id || creditApplied <= 0) {
     return {
-      grossAmount: appointment.service.price,
+      grossAmount: appointmentAmount,
       creditApplied: 0,
-      netAmount: appointment.service.price,
+      netAmount: appointmentAmount,
     }
   }
 
@@ -246,9 +250,9 @@ export async function applyReferralCreditToAppointment(appointmentId: string) {
   ])
 
   return {
-    grossAmount: appointment.service.price,
+    grossAmount: appointmentAmount,
     creditApplied,
-    netAmount: Math.max(appointment.service.price - creditApplied, 0),
+    netAmount: Math.max(appointmentAmount - creditApplied, 0),
   }
 }
 
@@ -274,6 +278,7 @@ export async function getReferralSummaryForUser(userId: string) {
           select: {
             id: true,
             startTime: true,
+            priceSnapshot: true,
             service: {
               select: {
                 name: true,
@@ -314,6 +319,7 @@ export async function getReferralSummaryForUser(userId: string) {
         appointment: {
           select: {
             startTime: true,
+            priceSnapshot: true,
             service: {
               select: {
                 name: true,
@@ -365,7 +371,7 @@ export async function getReferralSummaryForUser(userId: string) {
         id: appointment.id,
         startTime: appointment.startTime,
         serviceName: appointment.service.name,
-        price: appointment.service.price,
+        price: getAppointmentBillingAmount(appointment),
         paidAmount: appointment.payments[0]?.amount || 0,
         paidAt: appointment.payments[0]?.createdAt || null,
         processor: appointment.payments[0]?.processor || null,

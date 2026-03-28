@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { UserRole } from "@prisma/client";
+import { analyzeClinicalTranscript, getOkuAiSettings } from "@/lib/oku-ai";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -10,46 +11,102 @@ export async function POST(req: Request) {
   try {
     const { appointmentId, transcriptContent } = await req.json();
 
-    // 1. Save the raw transcript first
-    const transcript = await prisma.transcript.upsert({
-      where: { appointmentId },
-      update: { content: transcriptContent },
-      create: { 
-        appointmentId, 
-        content: transcriptContent 
+    if (!appointmentId || !transcriptContent) {
+      return new NextResponse("Missing transcript payload", { status: 400 });
+    }
+
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        practitioner: {
+          select: { name: true },
+        },
+        client: {
+          select: {
+            hasSignedConsent: true,
+            name: true,
+            assessmentAnswers: {
+              include: {
+                assessment: {
+                  select: {
+                    title: true,
+                  },
+                },
+              },
+              orderBy: { completedAt: "desc" },
+              take: 4,
+            },
+          },
+        },
+        service: {
+          select: { name: true },
+        },
       },
     });
 
-    // 2. Use Oku Core (Gemini) to generate the Clinical Summary & SOAP Draft
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      systemInstruction: "You are the Oku Clinical Intelligence engine. Your goal is to transform raw therapy transcripts into professional, HIPPA-compliant SOAP notes and clinical summaries."
+    if (!appointment) {
+      return new NextResponse("Appointment not found", { status: 404 });
+    }
+
+    const isAdmin = session.user.role === UserRole.ADMIN
+    const canAccessAppointment =
+      isAdmin ||
+      appointment.practitionerId === session.user.id ||
+      appointment.clientId === session.user.id
+
+    if (!canAccessAppointment) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const settings = await getOkuAiSettings()
+
+    if (!settings.okuAiEnabled) {
+      return NextResponse.json({ error: "OKU_AI_DISABLED" }, { status: 503 })
+    }
+
+    if (settings.requireConsentBeforeTranscription && !appointment.client?.hasSignedConsent) {
+      return NextResponse.json({ error: "TRANSCRIPTION_CONSENT_REQUIRED" }, { status: 403 })
+    }
+
+    const aiResponse = await analyzeClinicalTranscript({
+      transcriptContent,
+      patientName: appointment.client?.name,
+      sessionType: appointment.service?.name,
+      practitionerName: appointment.practitioner?.name,
+      recentAssessments: appointment.client?.assessmentAnswers?.map((answer) => ({
+        title: answer.assessment?.title,
+        result: answer.result,
+        score: answer.score,
+      })),
+      settings,
     });
 
-    const prompt = `
-      RAW TRANSCRIPT:
-      ${transcriptContent}
-
-      TASK:
-      1. Provide a 'Clinical Summary' (2-3 paragraphs).
-      2. Detect 'Sentiment' (Stable, Improving, or At Risk).
-      3. Extract 'Key Insights' as a JSON array of strings.
-      4. Draft a 'SOAP NOTE' with sections: SUBJECTIVE, OBJECTIVE, ASSESSMENT, PLAN.
-
-      OUTPUT FORMAT: Return ONLY a JSON object with keys: summary, sentiment, keyInsights (array), soapNote (object with S, O, A, P keys).
-    `;
-
-    const result = await model.generateContent(prompt);
-    const aiResponse = JSON.parse(result.response.text().replace(/```json|```/g, ""));
-
-    // 3. Update the Transcript with AI insights
-    await prisma.transcript.update({
-      where: { id: transcript.id },
-      data: {
+    await prisma.transcript.upsert({
+      where: { appointmentId },
+      create: {
+        appointmentId,
+        content: transcriptContent,
+        detectedLanguage: aiResponse.detectedLanguage,
         summary: aiResponse.summary,
         sentiment: aiResponse.sentiment,
+        riskLevel: aiResponse.riskLevel,
         keyInsights: aiResponse.keyInsights,
+        sentimentScores: aiResponse.sentimentScores,
+        clinicalSignals: aiResponse.clinicalSignals,
+        adhdSignals: aiResponse.adhdSignals,
+        careRecommendations: aiResponse.careRecommendations,
+      },
+      update: {
+        content: transcriptContent,
+        detectedLanguage: aiResponse.detectedLanguage,
+        summary: aiResponse.summary,
+        sentiment: aiResponse.sentiment,
+        riskLevel: aiResponse.riskLevel,
+        keyInsights: aiResponse.keyInsights,
+        sentimentScores: aiResponse.sentimentScores,
+        clinicalSignals: aiResponse.clinicalSignals,
+        adhdSignals: aiResponse.adhdSignals,
+        careRecommendations: aiResponse.careRecommendations,
       }
     });
 
@@ -71,7 +128,11 @@ export async function POST(req: Request) {
       }
     });
 
-    return NextResponse.json({ success: true, message: "Clinical intelligence processed." });
+    return NextResponse.json({
+      success: true,
+      message: "Clinical intelligence processed.",
+      analysis: aiResponse,
+    });
 
   } catch (error) {
     console.error("[TRANSCRIPT_PROCESS_ERROR]", error);

@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { analyzeClinicalTranscript, getOkuAiSettings } from "@/lib/oku-ai"
 
 
 export async function POST(req: Request) {
@@ -20,64 +20,99 @@ export async function POST(req: Request) {
 
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: { client: true, service: true }
+      include: {
+        client: {
+          include: {
+            assessmentAnswers: {
+              include: {
+                assessment: {
+                  select: {
+                    title: true,
+                  },
+                },
+              },
+              orderBy: { completedAt: "desc" },
+              take: 4,
+            },
+          },
+        },
+        practitioner: {
+          select: { name: true },
+        },
+        service: true,
+      }
     })
 
     if (!appointment) return new NextResponse("Appointment not found", { status: 404 })
 
-    if (!process.env.GEMINI_API_KEY) {
-        return NextResponse.json({ error: "OCI OFFLINE: Gemini API key not configured." })
+    const settings = await getOkuAiSettings()
+
+    if (!settings.okuAiEnabled) {
+      return NextResponse.json({ error: "OKU_AI_DISABLED" }, { status: 503 })
     }
 
-    // 1. Consult OKU CORE AI (Gemini)
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    const systemPrompt = `You are OKU CORE AI, the central intelligence of a trauma-informed psychotherapy collective. 
-    Your task is to analyze clinical session transcripts.
-    Provide a JSON response with the following keys:
-    - summary: A 3-sentence trauma-informed summary of the session.
-    - sentiment: One word (POSITIVE, NEUTRAL, or NEGATIVE) representing the patient's state.
-    - keyInsights: A list of 3-5 clinical observations (e.g., "High anxiety regarding work", "Positive progress on boundary setting").
-    - riskLevel: (LOW, MEDIUM, HIGH) based on clinical markers.`
+    if (settings.requireConsentBeforeTranscription && !appointment.client?.hasSignedConsent) {
+      return NextResponse.json({ error: "TRANSCRIPTION_CONSENT_REQUIRED" }, { status: 403 })
+    }
 
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      systemInstruction: systemPrompt
-    });
-
-    const fullPrompt = `
-      Analyze the following session transcript for a ${appointment.service.name} with ${appointment.client?.name || 'Patient'}:
-      
-      TRANSCRIPT:
-      ${rawTranscript}
-
-      Respond ONLY with valid JSON.
-    `
-
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const responseText = response.text();
-    
-    // Attempt to parse JSON from response (handling potential markdown blocks)
-    const jsonStr = responseText.replace(/```json|```/g, "").trim();
-    const aiAnalysis = JSON.parse(jsonStr);
+    const aiAnalysis = await analyzeClinicalTranscript({
+      transcriptContent: rawTranscript,
+      patientName: appointment.client?.name,
+      sessionType: appointment.service?.name,
+      practitionerName: appointment.practitioner?.name,
+      recentAssessments: appointment.client?.assessmentAnswers?.map((answer) => ({
+        title: answer.assessment?.title,
+        result: answer.result,
+        score: answer.score,
+      })),
+      settings,
+    })
 
     // 2. Save to Transcript model
     const transcript = await prisma.transcript.upsert({
       where: { appointmentId: appointment.id },
       update: {
         content: rawTranscript,
+        detectedLanguage: aiAnalysis.detectedLanguage,
         summary: aiAnalysis.summary,
         sentiment: aiAnalysis.sentiment,
+        riskLevel: aiAnalysis.riskLevel,
         keyInsights: aiAnalysis.keyInsights,
+        sentimentScores: aiAnalysis.sentimentScores,
+        clinicalSignals: aiAnalysis.clinicalSignals,
+        adhdSignals: aiAnalysis.adhdSignals,
+        careRecommendations: aiAnalysis.careRecommendations,
       },
       create: {
         appointmentId: appointment.id,
         content: rawTranscript,
+        detectedLanguage: aiAnalysis.detectedLanguage,
         summary: aiAnalysis.summary,
         sentiment: aiAnalysis.sentiment,
         keyInsights: aiAnalysis.keyInsights,
+        riskLevel: aiAnalysis.riskLevel,
+        sentimentScores: aiAnalysis.sentimentScores,
+        clinicalSignals: aiAnalysis.clinicalSignals,
+        adhdSignals: aiAnalysis.adhdSignals,
+        careRecommendations: aiAnalysis.careRecommendations,
       }
+    })
+
+    await prisma.soapNote.upsert({
+      where: { appointmentId: appointment.id },
+      update: {
+        subjective: aiAnalysis.soapNote.S,
+        objective: aiAnalysis.soapNote.O,
+        assessment: aiAnalysis.soapNote.A,
+        plan: aiAnalysis.soapNote.P,
+      },
+      create: {
+        appointmentId: appointment.id,
+        subjective: aiAnalysis.soapNote.S,
+        objective: aiAnalysis.soapNote.O,
+        assessment: aiAnalysis.soapNote.A,
+        plan: aiAnalysis.soapNote.P,
+      },
     })
 
     return NextResponse.json({ 
