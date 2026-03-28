@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { UserRole } from "@prisma/client";
 import { analyzeClinicalTranscript, getOkuAiSettings } from "@/lib/oku-ai";
+import { triggerEmergencyAlert } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -19,12 +20,14 @@ export async function POST(req: Request) {
       where: { id: appointmentId },
       include: {
         practitioner: {
-          select: { name: true },
+          select: { name: true, email: true },
         },
         client: {
           select: {
+            id: true,
             hasSignedConsent: true,
             name: true,
+            email: true,
             assessmentAnswers: {
               include: {
                 assessment: {
@@ -68,9 +71,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "TRANSCRIPTION_CONSENT_REQUIRED" }, { status: 403 })
     }
 
+    // Anonymize patient context for AI privacy
     const aiResponse = await analyzeClinicalTranscript({
       transcriptContent,
-      patientName: appointment.client?.name,
+      patientName: `Client-${appointment.client?.id?.slice(-4)}`,
       sessionType: appointment.service?.name,
       practitionerName: appointment.practitioner?.name,
       recentAssessments: appointment.client?.assessmentAnswers?.map((answer) => ({
@@ -109,6 +113,15 @@ export async function POST(req: Request) {
         careRecommendations: aiResponse.careRecommendations,
       }
     });
+
+    // Handle high risk detection alerts
+    if (aiResponse.riskLevel === 'HIGH') {
+        await triggerEmergencyAlert({
+            appointmentId,
+            riskLevel: aiResponse.riskLevel,
+            clinicalSignals: aiResponse.clinicalSignals
+        })
+    }
 
     // 4. Upsert the SOAP Note draft
     await prisma.soapNote.upsert({

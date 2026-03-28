@@ -96,6 +96,60 @@ export async function sendSessionReminder(appointmentId: string) {
   })
 }
 
+export async function triggerEmergencyAlert({
+  appointmentId,
+  riskLevel,
+  clinicalSignals
+}: {
+  appointmentId: string,
+  riskLevel: string,
+  clinicalSignals: string[]
+}) {
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: { client: true, practitioner: true }
+  })
+
+  if (!appointment || riskLevel !== 'HIGH') return
+
+  const resendApiKey = process.env.RESEND_API_KEY
+  const adminEmail = process.env.ADMIN_EMAIL || 'safety@okutherapy.com'
+
+  console.warn(`[EMERGENCY_ALERT] HIGH RISK DETECTED for Appointment ${appointmentId}. Signals: ${clinicalSignals.join(', ')}`)
+
+  if (resendApiKey) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${resendApiKey}`
+        },
+        body: JSON.stringify({
+          from: 'Safety Core <safety@okutherapy.com>',
+          to: [appointment.practitioner.email, adminEmail],
+          subject: `URGENT: High Risk Detected - Session ${appointmentId}`,
+          html: `
+            <div style="font-family: sans-serif; padding: 40px; border: 2px solid #ff0000; border-radius: 16px;">
+              <h1 style="color: #ff0000;">Emergency Clinical Alert</h1>
+              <p>The Oku AI Core has detected <strong>HIGH RISK</strong> markers in a recent session transcript.</p>
+              <div style="background: #fff5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Practitioner:</strong> ${appointment.practitioner.name}</p>
+                <p><strong>Client:</strong> ${appointment.client?.name || 'Anonymized'}</p>
+                <p><strong>Signals:</strong> ${clinicalSignals.join(', ')}</p>
+              </div>
+              <p>Please review the full transcript and follow established emergency protocols immediately.</p>
+              <a href="${process.env.NEXT_PUBLIC_APP_URL}/practitioner/sessions/${appointmentId}" style="display: inline-block; background: #000; color: #fff; padding: 15px 30px; border-radius: 50px; text-decoration: none;">Review Session</a>
+            </div>
+          `
+        })
+      })
+    } catch (e) {
+      console.error("[EMERGENCY_NOTIFICATION_FAILED]", e)
+    }
+  }
+}
+
 export async function processDailyReminders() {
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
