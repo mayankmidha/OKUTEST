@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Clock, ShieldCheck, AlertTriangle, LogOut, Loader2 } from "lucide-react"
 import Link from 'next/link'
@@ -16,13 +16,21 @@ export default function TelehealthSessionPage() {
   const [hasJoined, setHasJoined] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadAttempt, setLoadAttempt] = useState(0)
+
+  const handleReturnHome = useCallback(() => {
+    router.push('/dashboard')
+  }, [router])
 
   useEffect(() => {
+    const controller = new AbortController()
+
     async function initSession() {
       try {
+        setError(null)
         const [sessionRes, userRes] = await Promise.all([
-          fetch(`/api/sessions/${params.id}`),
-          fetch('/api/user/profile')
+          fetch(`/api/sessions/${params.id}`, { signal: controller.signal }),
+          fetch('/api/user/profile', { signal: controller.signal })
         ])
 
         if (!sessionRes.ok || !userRes.ok) {
@@ -36,13 +44,27 @@ export default function TelehealthSessionPage() {
         setSessionData(sessionJson)
         setCurrentUser(userJson)
       } catch (err) {
+        if (controller.signal.aborted) return
         setError("Network disruption. Re-establishing secure tunnel...")
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
     initSession()
-  }, [params.id])
+
+    return () => controller.abort()
+  }, [params.id, loadAttempt])
+
+  const handleRetryLoad = () => {
+    setHasJoined(false)
+    setSessionData(null)
+    setCurrentUser(null)
+    setError(null)
+    setIsLoading(true)
+    setLoadAttempt((attempt) => attempt + 1)
+  }
 
   if (isLoading) {
     return (
@@ -60,7 +82,10 @@ export default function TelehealthSessionPage() {
             <AlertTriangle className="text-oku-danger mx-auto mb-6" size={40} />
             <h2 className="text-2xl font-display font-bold text-white mb-4">Connection Failed</h2>
             <p className="text-white/40 text-sm mb-10 italic">{error || "This session window is no longer active."}</p>
-            <Link href="/dashboard" className="btn-navy w-full py-4 block">Return to Safety</Link>
+            <div className="space-y-3">
+              <button onClick={handleRetryLoad} className="btn-primary w-full py-4 block">Retry Connection</button>
+              <button onClick={handleReturnHome} className="btn-navy w-full py-4 block">Return to Safety</button>
+            </div>
          </div>
       </div>
     )
@@ -106,7 +131,7 @@ export default function TelehealthSessionPage() {
                 </div>
                 <div className="w-px h-6 bg-white/10 hidden sm:block" />
                 <button 
-                  onClick={() => router.push('/dashboard')}
+                  onClick={handleReturnHome}
                   className="flex items-center gap-2 text-white/60 hover:text-white bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
                 >
                   <LogOut size={14} /> Leave
@@ -122,6 +147,7 @@ export default function TelehealthSessionPage() {
               userName={currentUser.name || 'User'}
               role={currentUser.role as string}
               isTrial={sessionData.isTrial}
+              onLeave={handleReturnHome}
             />
 
             {/* Therapist Sidebar Controls */}

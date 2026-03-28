@@ -21,6 +21,7 @@ import { TaskManager } from '@/components/TaskManager'
 import { PractitionerShell, PractitionerStatCard } from '@/components/practitioner-shell/practitioner-shell'
 import { autoConvert, formatCurrency } from '@/lib/currency'
 import { isPsychiatristProfile } from '@/lib/practitioner-type'
+import { getPractitionerFinanceSummary } from '@/lib/provider-finance'
 
 function formatMoney(amount: number) {
   const converted = autoConvert(amount)
@@ -99,7 +100,6 @@ export default async function PractitionerDashboardPage() {
   const [
     practitioner,
     totalCompleted,
-    totalEarnings,
     caseloadCount,
     pendingTasks,
     recentNotes,
@@ -125,10 +125,6 @@ export default async function PractitionerDashboardPage() {
     }),
     prisma.appointment.count({
       where: { practitionerId: session.user.id, status: AppointmentStatus.COMPLETED },
-    }),
-    prisma.payment.aggregate({
-      where: { appointment: { practitionerId: session.user.id }, status: 'COMPLETED' },
-      _sum: { amount: true },
     }),
     prisma.appointment.findMany({
       where: { practitionerId: session.user.id },
@@ -158,6 +154,8 @@ export default async function PractitionerDashboardPage() {
     }).catch(() => []),
   ])
 
+  const finance = await getPractitionerFinanceSummary(session.user.id)
+
   if (!practitioner) {
     await prisma.practitionerProfile.create({
       data: { userId: session.user.id, bio: '', specialization: [] },
@@ -179,7 +177,7 @@ export default async function PractitionerDashboardPage() {
   const followUpsNextWeek = upcomingSessions.filter((appointment: any) => {
     return new Date(appointment.startTime) <= weekAhead
   })
-  const earningsValue = totalEarnings._sum.amount || 0
+  const earningsValue = finance.totalEarned
   const earningsLabel = formatMoney(earningsValue)
   const isPsychiatrist = isPsychiatristProfile(practitioner)
 
@@ -206,7 +204,7 @@ export default async function PractitionerDashboardPage() {
           <PractitionerStatCard
             label="Total Revenue"
             value={earningsLabel}
-            detail="Settled Consults"
+            detail="Sessions + assessments"
             accent="bg-oku-matcha-dark"
           />
           <PractitionerStatCard
@@ -398,12 +396,12 @@ export default async function PractitionerDashboardPage() {
       }
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        <PractitionerStatCard
-          label="Total Revenue"
-          value={earningsLabel}
-          detail="Settled Payments"
-          accent="bg-oku-matcha-dark"
-        />
+          <PractitionerStatCard
+            label="Total Revenue"
+            value={earningsLabel}
+            detail="Sessions + assessments"
+            accent="bg-oku-matcha-dark"
+          />
         <PractitionerStatCard
           label="Active Caseload"
           value={caseloadCount}

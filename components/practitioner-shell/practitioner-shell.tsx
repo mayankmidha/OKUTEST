@@ -33,7 +33,7 @@ const getNavLinks = (canPostBlogs: boolean): PractitionerNavLink[] => {
     { href: '/practitioner/dashboard', label: 'Overview', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
     { href: '/practitioner/appointments', label: 'Schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
     { href: '/practitioner/clients', label: 'Patients', icon: <Users size={18} strokeWidth={1.5} /> },
-    { href: '/practitioner/billing', label: 'Billing & Claims', icon: <Receipt size={18} strokeWidth={1.5} /> },
+    { href: '/practitioner/billing', label: 'Billing & Payouts', icon: <Receipt size={18} strokeWidth={1.5} /> },
     { href: '/practitioner/messages', label: 'Messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
     { href: '/practitioner/intelligence', label: 'Intelligence', icon: <Brain size={18} strokeWidth={1.5} /> },
   ]

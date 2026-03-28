@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { 
   Calendar, Clock, Users, FileText, Heart, 
   Video, Search, Sparkles, ClipboardCheck, BookOpen,
-  ArrowUpRight, Wind, ShieldCheck, AlertCircle, Pill, Shield
+  ArrowUpRight, Wind, ShieldCheck, AlertCircle, Pill, Shield, Gift
 } from 'lucide-react'
 import { AppointmentStatus } from '@prisma/client'
 import { DashboardHeader } from '@/components/DashboardHeader'
@@ -102,6 +102,9 @@ export default async function ClientDashboardPage() {
         </div>
         
         <div className="flex items-center gap-4">
+          <Link href="/dashboard/client/referrals" className="btn-sky hidden md:flex items-center gap-2">
+             <Gift size={18} /> Referral Hub
+          </Link>
           <Link href="/dashboard/client/therapists" className="btn-navy group flex items-center gap-3">
              <Search size={18} className="group-hover:rotate-12 transition-transform" /> Browse Specialists
           </Link>
@@ -294,6 +297,7 @@ export default async function ClientDashboardPage() {
               recentRewards={referralSummary.rewards.slice(0, 3)}
               totalEarned={referralSummary.totalEarned}
               availableCredit={referralSummary.availableCredit}
+              detailHref="/dashboard/client/referrals"
             />
           )}
           

@@ -11,6 +11,8 @@ export function AssessmentModule({ params }: { params: Promise<{ slug: string }>
   const { slug } = use(params)
   const searchParams = useSearchParams()
   const assignmentId = searchParams.get('assignmentId')
+  const assignmentFee = Number(searchParams.get('fee') || '0')
+  const billingState = searchParams.get('billing') || 'PENDING'
   
   const assessment = ASSESSMENTS.find(a => a.slug === slug)
   const [currentStep, setCurrentStep] = useState(-1)
@@ -20,6 +22,7 @@ export function AssessmentModule({ params }: { params: Promise<{ slug: string }>
   const [resultData, setResultData] = useState<{ score: number, result: string, description: string } | null>(null)
   const [matchedTherapists, setMatchedTherapists] = useState<any[]>([])
   const router = useRouter()
+  const hasBillableAssignment = !!assignmentId && assignmentFee > 0
 
   if (!assessment) {
     return (
@@ -189,6 +192,32 @@ export function AssessmentModule({ params }: { params: Promise<{ slug: string }>
               <p className="text-xl text-oku-taupe mb-12 font-display italic leading-relaxed">
                 "{assessment.longDescription || assessment.description}"
               </p>
+              {assignmentId && (
+                <div className="mb-10 rounded-[2rem] border border-oku-taupe/10 bg-oku-cream-warm/30 p-6 text-left">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-3">Assessment Billing</p>
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-oku-dark">
+                        {hasBillableAssignment ? `Fee: $${assignmentFee.toFixed(2)}` : 'No separate fee attached'}
+                      </p>
+                      <p className="text-xs text-oku-taupe mt-1">
+                        {hasBillableAssignment
+                          ? 'This charge is applied only after you complete the assessment.'
+                          : 'This screening is included as part of your care plan.'}
+                      </p>
+                    </div>
+                    <span className="self-start rounded-full bg-white px-3 py-1 text-[9px] font-black uppercase tracking-widest text-oku-purple border border-oku-purple/10">
+                      {billingState === 'COMPLETED'
+                        ? 'Billed'
+                        : billingState === 'WAIVED'
+                          ? 'Waived'
+                          : hasBillableAssignment
+                            ? 'Pending on completion'
+                            : 'Included'}
+                    </span>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4 mb-12 text-left">
                 <div className="bg-oku-cream-warm/30 p-6 rounded-3xl border border-oku-taupe/5">
                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Estimated Time</p>
@@ -198,6 +227,14 @@ export function AssessmentModule({ params }: { params: Promise<{ slug: string }>
                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Clinical Items</p>
                    <p className="text-lg font-bold text-oku-dark">{assessment.questions.length}</p>
                 </div>
+                {assignmentId && (
+                  <div className="bg-oku-cream-warm/30 p-6 rounded-3xl border border-oku-taupe/5 col-span-2">
+                     <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Client Transparency</p>
+                     <p className="text-sm text-oku-dark leading-relaxed">
+                       We show charges before you start so there are no surprises. If you were assigned this assessment by your clinician, the fee is tied to that assigned task.
+                     </p>
+                  </div>
+                )}
               </div>
               <button onClick={handleStart} className="btn-primary w-full py-5 text-lg shadow-xl">
                 Begin Clinical Screening
@@ -230,6 +267,26 @@ export function AssessmentModule({ params }: { params: Promise<{ slug: string }>
               <h2 className="text-4xl font-display font-bold text-oku-dark leading-snug mb-12 tracking-tighter">
                 {assessment.questions[currentStep].text}
               </h2>
+
+              {assignmentId && (
+                <div className="mb-10 rounded-[2rem] bg-oku-cream-warm/30 border border-oku-taupe/10 p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe">Assessment Fee</p>
+                        <p className="text-sm text-oku-dark mt-1">
+                          {hasBillableAssignment ? `$${assignmentFee.toFixed(2)} billed after completion` : 'No additional charge'}
+                        </p>
+                      </div>
+                    <span className="rounded-full bg-white px-3 py-1 text-[9px] font-black uppercase tracking-widest text-oku-purple border border-oku-purple/10">
+                      {billingState === 'COMPLETED'
+                        ? 'Billed'
+                        : hasBillableAssignment
+                          ? 'Pending'
+                          : 'Included'}
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <div className="grid gap-4">
                 {assessment.options.map((opt, i) => (

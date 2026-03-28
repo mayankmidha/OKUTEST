@@ -89,6 +89,9 @@ export function AssignAssessmentModal({ assessment, clients }: { assessment: any
                    <p className="text-xs text-oku-taupe leading-relaxed italic">
                      Once assigned, this assessment will appear instantly on the patient's dashboard clinical hub for completion.
                    </p>
+                   <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-oku-purple">
+                     {assessment.price > 0 ? `Client charge on completion: $${Number(assessment.price).toFixed(2)}` : 'No additional client charge'}
+                   </p>
                 </div>
 
                 <button 

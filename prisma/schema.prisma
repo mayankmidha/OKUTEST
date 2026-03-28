@@ -40,6 +40,8 @@ model Payout {
   currency        String   @default("USD")
   status          String   @default("PENDING") // PENDING, COMPLETED, FAILED
   referenceId     String?  // Bank transfer ref
+  requestNote     String?
+  processedAt     DateTime?
   periodStart     DateTime
   periodEnd       DateTime
   createdAt       DateTime @default(now())
@@ -128,16 +130,26 @@ model InformedConsent {
 }
 
 model AssignedAssessment {
-  id             String     @id @default(cuid())
-  clientId       String
-  practitionerId String
-  assessmentId   String
-  status         String     @default("PENDING")
-  createdAt      DateTime   @default(now())
-  completedAt    DateTime?
-  assessment     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  client         User       @relation("ClientAssignments", fields: [clientId], references: [id], onDelete: Cascade)
-  practitioner   User       @relation("PractitionerAssignments", fields: [practitionerId], references: [id], onDelete: Cascade)
+  id                      String                  @id @default(cuid())
+  clientId                String
+  practitionerId          String
+  assessmentId            String
+  status                  String                  @default("PENDING")
+  chargeAmount            Float                   @default(0)
+  billingStatus           AssessmentBillingStatus @default(NOT_REQUIRED)
+  processor               String?
+  platformFeePercent      Float                   @default(0)
+  platformFeeAmount       Float                   @default(0)
+  practitionerPayoutAmount Float                  @default(0)
+  createdAt               DateTime                @default(now())
+  completedAt             DateTime?
+  chargedAt               DateTime?
+  assessment              Assessment              @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  client                  User                    @relation("ClientAssignments", fields: [clientId], references: [id], onDelete: Cascade)
+  practitioner            User                    @relation("PractitionerAssignments", fields: [practitionerId], references: [id], onDelete: Cascade)
+
+  @@index([practitionerId, billingStatus])
+  @@index([clientId, billingStatus])
 }
 
 model UserActivity {
@@ -267,13 +279,17 @@ model BlockedDate {
 }
 
 model PlatformSettings {
-  id                 String   @id @default("global")
-  maintenanceMode    Boolean  @default(false)
-  platformFeePercent Float    @default(20.0)
-  supportEmail       String   @default("support@okutherapy.com")
-  announcementTitle  String?
-  announcementText   String?
-  updatedAt          DateTime @updatedAt
+  id                               String   @id @default("global")
+  maintenanceMode                  Boolean  @default(false)
+  platformFeePercent               Float    @default(20.0)
+  therapySessionPlatformFeePercent Float    @default(20.0)
+  psychiatrySessionPlatformFeePercent Float  @default(20.0)
+  assessmentPlatformFeePercent     Float    @default(20.0)
+  minimumPayoutAmount              Float    @default(25.0)
+  supportEmail                     String   @default("support@okutherapy.com")
+  announcementTitle                String?
+  announcementText                 String?
+  updatedAt                        DateTime @updatedAt
 }
 
 model Notification {
@@ -372,6 +388,7 @@ model Assessment {
   description   String?
   questions     Json
   isActive      Boolean              @default(true)
+  price         Float                @default(0)
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   creatorId     String?
@@ -421,6 +438,9 @@ model Payment {
   appointmentId   String
   userId          String
   amount          Float
+  platformFeePercent Float      @default(0)
+  platformFeeAmount Float       @default(0)
+  practitionerPayoutAmount Float @default(0)
   stripePaymentId String?
   processor       String?
   status          PaymentStatus @default(PENDING)
@@ -529,6 +549,14 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum AssessmentBillingStatus {
+  NOT_REQUIRED
+  PENDING
+  COMPLETED
+  FAILED
+  WAIVED
 }
 
 model InsurancePolicy {

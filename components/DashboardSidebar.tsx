@@ -7,7 +7,7 @@ import {
   Settings, Heart, ClipboardCheck, 
   Shield, FileText, Bell, LogOut,
   ChevronRight, Activity, DollarSign,
-  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare
+  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -21,6 +21,7 @@ export function DashboardSidebar() {
     { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
+    { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} />, color: 'text-oku-peach-dark' },
     { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Clinical', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },

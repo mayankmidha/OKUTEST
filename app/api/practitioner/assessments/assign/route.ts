@@ -1,7 +1,8 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-import { UserRole } from "@prisma/client"
+import { AssessmentBillingStatus, UserRole } from "@prisma/client"
+import { getAssessmentRevenueSplit, getPlatformSettings } from "@/lib/provider-finance"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -17,12 +18,35 @@ export async function POST(req: Request) {
       return new NextResponse("Missing required fields", { status: 400 })
     }
 
+    const [assessment, settings] = await Promise.all([
+      prisma.assessment.findUnique({
+        where: { id: assessmentId },
+        select: { id: true, price: true },
+      }),
+      getPlatformSettings(),
+    ])
+
+    if (!assessment) {
+      return new NextResponse("Assessment not found", { status: 404 })
+    }
+
+    const chargeAmount = assessment.price || 0
+    const revenueSplit = getAssessmentRevenueSplit({
+      grossAmount: chargeAmount,
+      settings,
+    })
+
     const assignment = await prisma.assignedAssessment.create({
       data: {
         clientId,
         assessmentId,
         practitionerId: session.user.id,
-        status: "PENDING"
+        status: "PENDING",
+        chargeAmount,
+        billingStatus: chargeAmount > 0 ? AssessmentBillingStatus.PENDING : AssessmentBillingStatus.NOT_REQUIRED,
+        platformFeePercent: revenueSplit.platformFeePercent,
+        platformFeeAmount: revenueSplit.platformFeeAmount,
+        practitionerPayoutAmount: revenueSplit.practitionerPayoutAmount,
       }
     })
 

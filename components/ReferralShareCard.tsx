@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Copy, Gift, Link2, Users } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowUpRight, Check, Copy, Gift, Link2, Users } from 'lucide-react'
 
 type ReferralRewardPreview = {
   id: string
@@ -19,6 +20,7 @@ export function ReferralShareCard({
   recentRewards,
   totalEarned,
   availableCredit,
+  detailHref,
 }: {
   inviteUrl: string
   referralCode: string
@@ -26,6 +28,7 @@ export function ReferralShareCard({
   recentRewards: ReferralRewardPreview[]
   totalEarned: number
   availableCredit: number
+  detailHref?: string
 }) {
   const [copiedTarget, setCopiedTarget] = useState<'code' | 'link' | null>(null)
 
@@ -123,6 +126,16 @@ export function ReferralShareCard({
           </div>
         )}
       </div>
+
+      {detailHref && (
+        <Link
+          href={detailHref}
+          className="mt-8 inline-flex items-center gap-2 rounded-full border border-oku-taupe/10 bg-white px-5 py-3 text-[10px] font-black uppercase tracking-[0.28em] text-oku-dark transition-all hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          Open Referral Hub
+          <ArrowUpRight size={14} />
+        </Link>
+      )}
     </section>
   )
 }

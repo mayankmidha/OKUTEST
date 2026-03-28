@@ -3,11 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Plus, Trash2, Save, ArrowLeft, 
-  Settings, Layout, PlusCircle, ChevronRight
-} from 'lucide-react'
-import Link from 'next/link'
+import { Trash2, Save, Settings, PlusCircle, ChevronRight } from 'lucide-react'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 interface Question {
@@ -20,6 +16,7 @@ export default function NewAssessmentClient({ canPostBlogs = false }: { canPostB
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [price, setPrice] = useState('0')
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: Math.random().toString(36).substr(2, 9),
@@ -63,7 +60,7 @@ export default function NewAssessmentClient({ canPostBlogs = false }: { canPostB
       const response = await fetch('/api/practitioner/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, questions })
+        body: JSON.stringify({ title, description, questions, price: Number.parseFloat(price || '0') || 0 })
       })
 
       if (response.ok) {
@@ -102,7 +99,7 @@ export default function NewAssessmentClient({ canPostBlogs = false }: { canPostB
              <div className="space-y-6">
                 <div>
                   <label className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2 block">Assessment Title</label>
-                  <input 
+                  <input
                     type="text" 
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -118,6 +115,21 @@ export default function NewAssessmentClient({ canPostBlogs = false }: { canPostB
                     placeholder="Purpose and instructions for the patient..."
                     className="w-full bg-oku-cream-warm/30 border-none rounded-2xl p-4 min-h-[100px] focus:ring-2 focus:ring-oku-purple/20 transition-all"
                   />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2 block">Assessment Fee</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="0"
+                    className="w-full bg-oku-cream-warm/30 border-none rounded-2xl p-4 text-lg font-bold placeholder:opacity-30 focus:ring-2 focus:ring-oku-purple/20 transition-all"
+                  />
+                  <p className="mt-2 text-[10px] uppercase tracking-widest font-black text-oku-taupe/60">
+                    Charged to the client when an assigned assessment is completed.
+                  </p>
                 </div>
              </div>
           </div>
@@ -182,6 +194,7 @@ export default function NewAssessmentClient({ canPostBlogs = false }: { canPostB
                 <p>• Questions use a standard 0-3 clinical scale.</p>
                 <p>• Assessments are instantly available to all assigned patients.</p>
                 <p>• Scoring is aggregated for longitudinal tracking.</p>
+                <p>• Paid assessments flow into provider earnings and admin commission reporting.</p>
              </div>
           </div>
           
@@ -190,6 +203,9 @@ export default function NewAssessmentClient({ canPostBlogs = false }: { canPostB
              <div className="p-6 bg-white rounded-3xl shadow-sm border border-oku-taupe/5">
                 <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2">Patient View</p>
                 <p className="font-bold text-oku-dark leading-tight">{title || 'Assessment Title'}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-widest font-black text-oku-purple">
+                  {Number.parseFloat(price || '0') > 0 ? `$${Number.parseFloat(price || '0').toFixed(2)} upon completion` : 'No additional charge'}
+                </p>
                 <div className="mt-4 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-oku-purple">
                   <span>Start Screening</span>
                   <ChevronRight size={14} />

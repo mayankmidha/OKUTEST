@@ -116,7 +116,14 @@ export async function deleteServiceDefinition(serviceId: string) {
   return { mode: 'deleted' as const }
 }
 
-export async function updatePlatformSettings(data: { maintenanceMode?: boolean, platformFeePercent?: number }) {
+export async function updatePlatformSettings(data: {
+  maintenanceMode?: boolean
+  platformFeePercent?: number
+  therapySessionPlatformFeePercent?: number
+  psychiatrySessionPlatformFeePercent?: number
+  assessmentPlatformFeePercent?: number
+  minimumPayoutAmount?: number
+}) {
   await checkAdmin()
   await prisma.platformSettings.upsert({
     where: { id: 'global' },
@@ -124,10 +131,17 @@ export async function updatePlatformSettings(data: { maintenanceMode?: boolean, 
     create: {
       id: 'global',
       maintenanceMode: data.maintenanceMode ?? false,
-      platformFeePercent: data.platformFeePercent ?? 20.0
+      platformFeePercent: data.platformFeePercent ?? 20.0,
+      therapySessionPlatformFeePercent: data.therapySessionPlatformFeePercent ?? data.platformFeePercent ?? 20.0,
+      psychiatrySessionPlatformFeePercent: data.psychiatrySessionPlatformFeePercent ?? data.platformFeePercent ?? 20.0,
+      assessmentPlatformFeePercent: data.assessmentPlatformFeePercent ?? data.platformFeePercent ?? 20.0,
+      minimumPayoutAmount: data.minimumPayoutAmount ?? 25.0,
     }
   })
   revalidatePath('/admin/dashboard')
+  revalidatePath('/admin/financials')
+  revalidatePath('/practitioner/dashboard')
+  revalidatePath('/practitioner/billing')
 }
 
 // Helper to check editorial access (Admin or Editor Therapist)
@@ -191,19 +205,33 @@ export async function deletePost(id: string) {
 
 // ─── PAYOUT ACTIONS ──────────────────────────────────────────────────────────
 
-export async function markAsPaid(practitionerId: string, amount: number) {
+export async function markAsPaid(practitionerId: string, amount: number, payoutId?: string) {
   await checkAdmin()
-  
-  await prisma.payout.create({
-    data: {
-      practitionerId,
-      amount,
-      status: 'COMPLETED',
-      periodStart: new Date(new Date().setDate(1)), // Start of month
-      periodEnd: new Date(),
-      referenceId: 'MANUAL-' + Date.now()
-    }
-  })
-  
+
+  if (payoutId) {
+    await prisma.payout.update({
+      where: { id: payoutId },
+      data: {
+        status: 'COMPLETED',
+        processedAt: new Date(),
+        referenceId: 'MANUAL-' + Date.now(),
+      },
+    })
+  } else {
+    await prisma.payout.create({
+      data: {
+        practitionerId,
+        amount,
+        status: 'COMPLETED',
+        processedAt: new Date(),
+        periodStart: new Date(new Date().setDate(1)), // Start of month
+        periodEnd: new Date(),
+        referenceId: 'MANUAL-' + Date.now()
+      }
+    })
+  }
+
   revalidatePath('/admin/financials')
+  revalidatePath('/practitioner/billing')
+  revalidatePath('/practitioner/dashboard')
 }

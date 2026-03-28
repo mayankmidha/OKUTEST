@@ -253,18 +253,74 @@ export async function applyReferralCreditToAppointment(appointmentId: string) {
 }
 
 export async function getReferralSummaryForUser(userId: string) {
-  const [referralCount, rewards, clientProfile] = await Promise.all([
-    prisma.user.count({
+  const [referredClients, rewards, clientProfile, redeemedCredit] = await Promise.all([
+    prisma.user.findMany({
       where: {
         referredById: userId,
         role: UserRole.CLIENT,
       },
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+        clientAppointments: {
+          where: {
+            payments: {
+              some: {
+                status: PaymentStatus.COMPLETED,
+              },
+            },
+          },
+          select: {
+            id: true,
+            startTime: true,
+            service: {
+              select: {
+                name: true,
+                price: true,
+              },
+            },
+            payments: {
+              where: {
+                status: PaymentStatus.COMPLETED,
+              },
+              orderBy: { createdAt: 'desc' },
+              select: {
+                amount: true,
+                createdAt: true,
+                processor: true,
+              },
+            },
+            referralReward: {
+              select: {
+                id: true,
+                rewardStep: true,
+                rewardAmount: true,
+                createdAt: true,
+              },
+            },
+          },
+          orderBy: { startTime: 'desc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.referralReward.findMany({
       where: { referrerId: userId },
       include: {
         referredUser: {
           select: { name: true },
+        },
+        appointment: {
+          select: {
+            startTime: true,
+            service: {
+              select: {
+                name: true,
+                price: true,
+              },
+            },
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -273,14 +329,60 @@ export async function getReferralSummaryForUser(userId: string) {
       where: { userId },
       select: { referralCreditBalance: true },
     }),
+    prisma.appointment.aggregate({
+      where: {
+        clientId: userId,
+        referralCreditApplied: {
+          gt: 0,
+        },
+      },
+      _sum: {
+        referralCreditApplied: true,
+      },
+    }),
   ])
 
   const totalEarned = rewards.reduce((sum, reward) => sum + reward.rewardAmount, 0)
+  const referralCount = referredClients.length
+
+  const trackedReferrals = referredClients.map((client) => {
+    const rewardsForClient = rewards.filter((reward) => reward.referredUserId === client.id)
+    const paidSessionsCount = client.clientAppointments.length
+    const rewardedSessionsCount = rewardsForClient.length
+    const earnedAmount = rewardsForClient.reduce((sum, reward) => sum + reward.rewardAmount, 0)
+
+    return {
+      id: client.id,
+      name: client.name,
+      joinedAt: client.createdAt,
+      paidSessionsCount,
+      rewardedSessionsCount,
+      earnedAmount,
+      latestPaidSessionAt:
+        client.clientAppointments[0]?.payments[0]?.createdAt || client.clientAppointments[0]?.startTime || null,
+      sessionsRemainingForRewards: Math.max(MAX_REFERRAL_REWARDS - rewardedSessionsCount, 0),
+      sessions: client.clientAppointments.map((appointment) => ({
+        id: appointment.id,
+        startTime: appointment.startTime,
+        serviceName: appointment.service.name,
+        price: appointment.service.price,
+        paidAmount: appointment.payments[0]?.amount || 0,
+        paidAt: appointment.payments[0]?.createdAt || null,
+        processor: appointment.payments[0]?.processor || null,
+        reward: appointment.referralReward,
+      })),
+    }
+  })
+
+  const convertedReferralCount = trackedReferrals.filter((client) => client.paidSessionsCount > 0).length
 
   return {
     referralCount,
+    convertedReferralCount,
     rewards,
     totalEarned,
     availableCredit: clientProfile?.referralCreditBalance || 0,
+    totalCreditRedeemed: redeemedCredit._sum.referralCreditApplied || 0,
+    referredClients: trackedReferrals,
   }
 }

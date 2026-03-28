@@ -25,7 +25,7 @@ import { DashboardCard } from '@/components/DashboardCard'
 import { OCIDiagnostic } from '@/components/OCIDiagnostic'
 import { AdminUserManagement } from '@/components/AdminUserManagement'
 import { BlogManager } from '@/components/BlogManager'
-import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
+import { formatCurrency, autoConvert } from '@/lib/currency'
 import { getPractitionerDisciplineLabel, isPsychiatristProfile } from '@/lib/practitioner-type'
 
 type ServiceEditorState = {
@@ -70,14 +70,22 @@ function AdminDashboardContent({
   const router = useRouter()
   const currentTab = searchParams.get('tab') || 'overview'
   const [activeTab, setActiveTab] = useState(currentTab)
-  const [settings, setSettingsState] = useState(initialSettings || { maintenanceMode: false, platformFeePercent: 20 })
+  const [settings, setSettingsState] = useState(initialSettings || {
+    maintenanceMode: false,
+    platformFeePercent: 20,
+    therapySessionPlatformFeePercent: 20,
+    psychiatrySessionPlatformFeePercent: 20,
+    assessmentPlatformFeePercent: 20,
+    minimumPayoutAmount: 25,
+  })
   const [isSavingSetting, setIsSavingSetting] = useState(false)
 
   const setSettings = async (newSettings: any) => {
-    setSettingsState(newSettings)
+    const mergedSettings = { ...settings, ...newSettings }
+    setSettingsState(mergedSettings)
     setIsSavingSetting(true)
     try {
-       await updatePlatformSettings(newSettings)
+       await updatePlatformSettings(mergedSettings)
     } finally {
        setIsSavingSetting(false)
     }
@@ -353,7 +361,7 @@ function AdminDashboardContent({
                         </div>
                      </div>
 
-                     <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 gap-6">
                         <div className="p-6 rounded-[2rem] bg-white border border-oku-taupe/5 shadow-inner">
                            <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe mb-2">Pending Admits</p>
                            <p className="text-3xl font-display font-bold text-oku-dark">{therapists.filter((t: any) => !t.practitionerProfile?.isVerified).length}</p>
@@ -363,8 +371,25 @@ function AdminDashboardContent({
                            <p className="text-3xl font-display font-bold text-oku-dark">{services.filter((s: any) => s.isActive).length}</p>
                         </div>
                         <div className="p-6 rounded-[2rem] bg-white border border-oku-taupe/5 shadow-inner">
-                           <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe mb-2">Platform Fee</p>
-                           <p className="text-3xl font-display font-bold text-oku-dark">{settings.platformFeePercent}%</p>
+                           <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe mb-3">Commission Matrix</p>
+                           <div className="space-y-2 text-[10px] font-black uppercase tracking-widest text-oku-dark">
+                              <div className="flex items-center justify-between">
+                                 <span>Therapy</span>
+                                 <span>{settings.therapySessionPlatformFeePercent}%</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                 <span>Psychiatry</span>
+                                 <span>{settings.psychiatrySessionPlatformFeePercent}%</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                 <span>Assessments</span>
+                                 <span>{settings.assessmentPlatformFeePercent}%</span>
+                              </div>
+                              <div className="flex items-center justify-between text-oku-purple">
+                                 <span>Min Payout</span>
+                                 <span>{formatCurrency(autoConvert(settings.minimumPayoutAmount).amount, autoConvert(settings.minimumPayoutAmount).currency)}</span>
+                              </div>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -890,19 +915,67 @@ function AdminDashboardContent({
                    </button>
                 </div>
 
-                <div className="space-y-4">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-2">
-                      <Zap size={14} className="text-oku-purple" /> Platform Take Rate (%)
-                   </label>
-                   <div className="flex items-center gap-4">
-                      <input 
-                        type="range" 
-                        min="0" max="50" 
-                        value={settings.platformFeePercent} 
-                        onChange={(e) => setSettings({...settings, platformFeePercent: parseInt(e.target.value)})}
-                        className="flex-1 accent-oku-purple"
-                      />
-                      <span className="text-2xl font-display font-bold text-oku-dark min-w-[60px] text-right">{settings.platformFeePercent}%</span>
+                <div className="rounded-[2.5rem] border border-oku-taupe/5 bg-white p-8 space-y-8 shadow-sm">
+                   <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-2">
+                          <Zap size={14} className="text-oku-purple" /> Commission Controls
+                        </p>
+                        <p className="text-sm text-oku-taupe italic mt-2">Adjust the platform cut by service type, plus the payout threshold.</p>
+                      </div>
+                      {isSavingSetting && (
+                        <span className="px-3 py-1 rounded-full bg-oku-purple/10 text-oku-purple text-[9px] font-black uppercase tracking-widest">
+                          Saving
+                        </span>
+                      )}
+                   </div>
+
+                   <div className="space-y-6">
+                      {[
+                        { key: 'therapySessionPlatformFeePercent', label: 'Therapy Session Commission', helper: 'Applied to standard therapy consults.' },
+                        { key: 'psychiatrySessionPlatformFeePercent', label: 'Psychiatry Session Commission', helper: 'Applied to medication and psychiatry consults.' },
+                        { key: 'assessmentPlatformFeePercent', label: 'Assessment Commission', helper: 'Applied when a paid assessment is completed.' },
+                      ].map((item) => (
+                        <div key={item.key} className="space-y-3">
+                           <div className="flex items-center justify-between gap-4">
+                              <div>
+                                 <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">{item.label}</label>
+                                 <p className="text-xs text-oku-taupe/60 mt-1 italic">{item.helper}</p>
+                              </div>
+                              <span className="text-2xl font-display font-bold text-oku-dark min-w-[60px] text-right">
+                                {settings[item.key as keyof typeof settings]}%
+                              </span>
+                           </div>
+                           <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              value={Number(settings[item.key as keyof typeof settings] || 0)}
+                              onChange={(e) => setSettings({ ...settings, [item.key]: Number.parseInt(e.target.value, 10) })}
+                              className="w-full accent-oku-purple"
+                           />
+                        </div>
+                      ))}
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Minimum Payout Amount</label>
+                            <p className="text-xs text-oku-taupe/60 mt-1 italic">Providers can request cash-out only once they cross this threshold.</p>
+                          </div>
+                          <span className="text-2xl font-display font-bold text-oku-dark min-w-[110px] text-right">
+                            {formatCurrency(autoConvert(settings.minimumPayoutAmount).amount, autoConvert(settings.minimumPayoutAmount).currency)}
+                          </span>
+                        </div>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={settings.minimumPayoutAmount}
+                          onChange={(e) => setSettings({ ...settings, minimumPayoutAmount: Number.parseFloat(e.target.value || '0') })}
+                          className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
+                        />
+                      </div>
                    </div>
                 </div>
              </div>

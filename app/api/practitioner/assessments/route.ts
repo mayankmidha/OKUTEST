@@ -11,18 +11,23 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { title, description, questions } = await req.json()
+    const { title, description, questions, price } = await req.json()
 
     if (!title || !questions || questions.length === 0) {
       return new NextResponse("Missing required fields", { status: 400 })
     }
 
+    const normalizedPrice = Number.parseFloat(String(price ?? 0))
+
     const assessment = await prisma.assessment.create({
       data: {
         title,
         description,
+        price: Number.isNaN(normalizedPrice) ? 0 : normalizedPrice,
         questions: questions, // Prisma handles Json
         isActive: true,
+        isCustom: true,
+        creatorId: session.user.id,
       }
     })
 

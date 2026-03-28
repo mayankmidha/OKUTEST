@@ -47,12 +47,19 @@ export default async function AdminDashboardPage() {
   ])
 
   // 2. Settings with Graceful Fallback
-  let settings = { maintenanceMode: false, platformFeePercent: 20 }
+  let settings = {
+    maintenanceMode: false,
+    platformFeePercent: 20,
+    therapySessionPlatformFeePercent: 20,
+    psychiatrySessionPlatformFeePercent: 20,
+    assessmentPlatformFeePercent: 20,
+    minimumPayoutAmount: 25,
+  }
   try {
     const dbSettings = await prisma.platformSettings.findUnique({
         where: { id: 'global' }
     })
-    if (dbSettings) settings = dbSettings as any
+    if (dbSettings) settings = { ...settings, ...dbSettings } as any
   } catch (e) {
     console.warn("PlatformSettings table may not exist yet.")
   }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Check, Loader2 } from 'lucide-react'
 import { markAsPaid } from '@/app/admin/actions'
 
-export function AdminPayoutButton({ practitionerId, amount }: { practitionerId: string, amount: number }) {
+export function AdminPayoutButton({ practitionerId, amount, payoutId }: { practitionerId: string, amount: number, payoutId?: string }) {
   const [isPending, setIsPending] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
 
@@ -12,7 +12,7 @@ export function AdminPayoutButton({ practitionerId, amount }: { practitionerId: 
     if (!confirm(`Confirm manual payout of $${amount.toFixed(2)}?`)) return
     setIsPending(true)
     try {
-      await markAsPaid(practitionerId, amount)
+      await markAsPaid(practitionerId, amount, payoutId)
       setIsPaid(true)
     } catch (e) {
       alert('Error marking as paid')

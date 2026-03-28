@@ -35,11 +35,23 @@ export default async function ClientClinicalHub() {
     prisma.assignedAssessment.findMany({
       where: { clientId: session.user.id, status: 'PENDING' },
       include: { 
-        assessment: true,
+        assessment: {
+          select: {
+            id: true,
+            title: true,
+            price: true,
+          }
+        },
         practitioner: { select: { name: true } }
       }
     })
   ])
+
+  const billableAssignedTasks = assignedTasks.filter((task) => (task.chargeAmount || task.assessment?.price || 0) > 0)
+  const totalAssignedAssessmentCharge = assignedTasks.reduce(
+    (sum, task) => sum + (task.chargeAmount || task.assessment?.price || 0),
+    0
+  )
 
   return (
     <div className="py-12 px-10">
@@ -56,10 +68,30 @@ export default async function ClientClinicalHub() {
       {/* 0. Pending Clinical Assignments */}
       {assignedTasks.length > 0 && (
         <section className="mb-12">
+           <div className="mb-6 grid gap-4 md:grid-cols-3">
+             <DashboardCard title="Assigned Assessments" variant="lavender">
+               <p className="text-3xl font-display font-bold text-oku-dark">{assignedTasks.length}</p>
+               <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe">Pending clinical tasks</p>
+             </DashboardCard>
+             <DashboardCard title="Billable Queue" variant="matcha">
+               <p className="text-3xl font-display font-bold text-oku-dark">{billableAssignedTasks.length}</p>
+               <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe">Assessments with a fee</p>
+             </DashboardCard>
+             <DashboardCard title="Assessment Charges" variant="white">
+               <p className="text-3xl font-display font-bold text-oku-dark">${totalAssignedAssessmentCharge.toFixed(2)}</p>
+               <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe">Collected on completion</p>
+             </DashboardCard>
+           </div>
            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mb-6 ml-2">Clinical Actions Required</h2>
            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {assignedTasks.map(task => {
                 const slug = ASSESSMENTS.find(a => a.title === task.assessment.title)?.slug
+                const chargeAmount = task.chargeAmount || task.assessment?.price || 0
+                const billingLabel = task.billingStatus === 'COMPLETED'
+                  ? 'Billed'
+                  : task.billingStatus === 'PENDING' && chargeAmount > 0
+                    ? 'Bill on completion'
+                    : 'Included'
                 return (
                   <div key={task.id} className="bg-oku-purple text-white p-8 rounded-[2.5rem] shadow-xl shadow-oku-purple/20 relative overflow-hidden group">
                      <div className="relative z-10">
@@ -67,13 +99,26 @@ export default async function ClientClinicalHub() {
                            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                               <Sparkles size={20} />
                            </div>
-                           <span className="text-[9px] font-black uppercase tracking-widest bg-white/10 px-2 py-1 rounded-full border border-white/10">Assigned</span>
+                           <span className="text-[9px] font-black uppercase tracking-widest bg-white/10 px-2 py-1 rounded-full border border-white/10">
+                             {billingLabel}
+                           </span>
                         </div>
                         <h3 className="text-xl font-display font-bold mb-2 leading-tight">{task.assessment.title}</h3>
                         <p className="text-xs text-white/60 mb-8 italic">Requested by {task.practitioner.name}</p>
+                        <div className="mb-8 rounded-3xl bg-white/10 border border-white/10 p-4">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">Assessment Fee</p>
+                          <p className="text-lg font-display font-bold">
+                            {chargeAmount > 0 ? `$${Number(chargeAmount).toFixed(2)}` : 'Included in care'}
+                          </p>
+                          <p className="mt-1 text-[10px] text-white/60 leading-relaxed">
+                            {chargeAmount > 0
+                              ? 'This fee is charged only after you complete the screening.'
+                              : 'No separate charge is attached to this assessment.'}
+                          </p>
+                        </div>
                         
                         <Link 
-                          href={slug ? `/assessments/${slug}?assignmentId=${task.id}` : `/assessments?assignmentId=${task.id}`}
+                          href={slug ? `/assessments/${slug}?assignmentId=${task.id}&fee=${encodeURIComponent(String(chargeAmount))}&billing=${encodeURIComponent(task.billingStatus || 'PENDING')}` : `/assessments?assignmentId=${task.id}&fee=${encodeURIComponent(String(chargeAmount))}&billing=${encodeURIComponent(task.billingStatus || 'PENDING')}`}
                           className="w-full py-4 bg-white text-oku-purple rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-oku-cream transition-all shadow-lg"
                         >
                           Complete Now <ArrowRight size={14} />

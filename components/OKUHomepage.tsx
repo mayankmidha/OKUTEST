@@ -46,6 +46,13 @@ interface CommunityPanel {
   cta: string;
 }
 
+interface VisualArchiveItem {
+  image: string;
+  alt: string;
+  label: string;
+  fit?: "contain" | "cover";
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const CYCLING_WORDS = ["grief", "longing", "quiet", "becoming", "anger", "story"];
 
@@ -203,6 +210,160 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     body: "Meet verified practitioners and move toward the kind of support that matches your story.",
     href: "/therapists",
     cta: "Meet the collective",
+  },
+];
+
+const SOURCE_ARCHIVE_FEATURED: VisualArchiveItem[] = [
+  {
+    image: "/uploads/2025/07/Aboutt.png",
+    alt: "Pinned note inviting people to come as they are",
+    label: "Invitation",
+  },
+  {
+    image: "/uploads/2025/07/Frame-200.png",
+    alt: "Blue note about being understood in the room",
+    label: "Being understood",
+  },
+  {
+    image: "/uploads/2025/07/Frame-243.png",
+    alt: "Pinned note about healing together instead of in isolation",
+    label: "Healing together",
+  },
+  {
+    image: "/uploads/2025/07/b3.png",
+    alt: "Blurred portrait with note about the body holding unspoken stories",
+    label: "Embodied care",
+  },
+  {
+    image: "/uploads/2025/07/b32.png",
+    alt: "Portrait with note about being seen without conditions",
+    label: "Affirmation",
+  },
+  {
+    image: "/uploads/2025/06/Frame-57.png",
+    alt: "Portrait and note about wanting to be heard",
+    label: "Being heard",
+  },
+  {
+    image: "/uploads/2025/06/Frame-57-1.png",
+    alt: "Portrait and note about the body remembering trauma",
+    label: "Body memory",
+  },
+  {
+    image: "/uploads/2025/06/Frame-57-3.png",
+    alt: "Journal scene with note about understanding what is going on",
+    label: "Clarity",
+  },
+];
+
+const SOURCE_ARCHIVE_SUPPORTING: VisualArchiveItem[] = [
+  {
+    image: "/uploads/2025/06/compassion.gif",
+    alt: "Compassion symbol animation",
+    label: "Compassion",
+  },
+  {
+    image: "/uploads/2025/06/inclusion.gif",
+    alt: "Inclusion symbol animation",
+    label: "Inclusion",
+  },
+  {
+    image: "/uploads/2025/06/soul.gif",
+    alt: "Soul symbol animation",
+    label: "Soul",
+  },
+  {
+    image: "/uploads/2025/07/Group-21.png",
+    alt: "Meditative sea illustration in a wave shape",
+    label: "Stillness",
+  },
+  {
+    image: "/uploads/2025/07/Group-33.png",
+    alt: "Illustration of two therapy chairs and a cup",
+    label: "Therapy room",
+  },
+  {
+    image: "/uploads/2025/06/Group-31.png",
+    alt: "Line illustration of a mind full of questions",
+    label: "Questioning",
+  },
+  {
+    image: "/uploads/2025/06/Frame-247.png",
+    alt: "Line illustration of a person sitting in reflection",
+    label: "Reflection",
+  },
+  {
+    image: "/uploads/2025/06/Frame-247-1.png",
+    alt: "Line illustration of a person resting in calm",
+    label: "Grounding",
+  },
+  {
+    image: "/uploads/2025/07/Group-18-2.png",
+    alt: "Lavender pinned note shape",
+    label: "Note pin",
+  },
+  {
+    image: "/uploads/2025/07/Group-19.png",
+    alt: "Blue pinned note shape",
+    label: "Paper texture",
+  },
+];
+
+const SOURCE_ARCHIVE_STUDIO: VisualArchiveItem[] = [
+  {
+    image: "/uploads/2025/06/BG.png",
+    alt: "Soft abstract OKU background texture",
+    label: "Backdrop",
+  },
+  {
+    image: "/uploads/2025/06/267202932_78107c9f-66b6-4fe1-9985-b9e858e1bdf9-1.png",
+    alt: "Illustrative OKU artwork from the original archive",
+    label: "Archive sketch",
+  },
+  {
+    image: "/uploads/2025/06/concept-mental-health-selfcare-self-development-vector-illustration-1.png",
+    alt: "Illustration about self-care and mental health",
+    label: "Self-care",
+  },
+  {
+    image: "/uploads/2025/06/video_call_using_the_doctor_s_laptop-1.png",
+    alt: "Illustration of a care session happening over video",
+    label: "Digital care",
+  },
+  {
+    image: "/uploads/2025/06/ChatGPT-Image-May-25-2025-01_59_55-PM-1.png",
+    alt: "Warm atmospheric OKU concept image",
+    label: "Warmth",
+  },
+  {
+    image: "/uploads/2025/06/ChatGPT-Image-May-25-2025-02_30_11-PM-1.png",
+    alt: "Soft pastel OKU concept image",
+    label: "Softness",
+  },
+  {
+    image: "/uploads/2025/06/ChatGPT-Image-May-25-2025-02_31_14-PM-1.png",
+    alt: "Calming OKU concept image",
+    label: "Calm",
+  },
+  {
+    image: "/uploads/2025/07/ChatGPT-Image-May-22-2025-05_28_30-PM-1.png",
+    alt: "Gentle OKU concept image",
+    label: "Gentleness",
+  },
+  {
+    image: "/uploads/2025/06/Frame-235-scaled-e1751135861258.png",
+    alt: "Pastel OKU composition from the original archive",
+    label: "Moodboard",
+  },
+  {
+    image: "/uploads/2025/06/Frame-244.png",
+    alt: "Illustrative OKU design asset",
+    label: "Studio detail",
+  },
+  {
+    image: "/uploads/2025/06/Frame-57-4.png",
+    alt: "Reflective note card from the original OKU archive",
+    label: "Inner voice",
   },
 ];
 
@@ -1200,6 +1361,102 @@ export default function OkuHomepage() {
           font-size: 0.9rem;
         }
 
+        .visual-archive-shell {
+          position: relative;
+          padding: 32px 20px;
+          border-radius: 36px;
+          overflow: hidden;
+          background:
+            linear-gradient(135deg, rgba(247,244,239,0.92), rgba(237,232,224,0.82)),
+            url('/uploads/2025/06/BG.png');
+          background-size: cover;
+          border: 1px solid rgba(139,115,85,0.12);
+          box-shadow: 0 24px 52px rgba(0,0,0,0.05);
+        }
+        @media (min-width: 768px) {
+          .visual-archive-shell {
+            padding: 42px 34px;
+          }
+        }
+        .visual-archive-intro {
+          display: grid;
+          gap: 20px;
+          align-items: end;
+          margin-bottom: 28px;
+        }
+        @media (min-width: 980px) {
+          .visual-archive-intro {
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+            gap: 40px;
+          }
+        }
+        .visual-archive-feature-grid {
+          display: grid;
+          gap: 18px;
+          margin-bottom: 22px;
+        }
+        @media (min-width: 700px) {
+          .visual-archive-feature-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        @media (min-width: 1200px) {
+          .visual-archive-feature-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+        .visual-archive-card {
+          position: relative;
+          min-height: 240px;
+          border-radius: 28px;
+          overflow: hidden;
+          background: rgba(255,255,255,0.62);
+          border: 1px solid rgba(139,115,85,0.12);
+          box-shadow: 0 18px 34px rgba(0,0,0,0.04);
+        }
+        .visual-archive-card img {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+        .visual-archive-card.featured img {
+          padding: 14px;
+          object-fit: contain;
+          background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(247,244,239,0.75));
+        }
+        .visual-archive-card.strip {
+          min-height: 170px;
+        }
+        .visual-archive-card.strip img {
+          padding: 12px;
+          object-fit: contain;
+        }
+        .visual-archive-label {
+          position: absolute;
+          left: 14px;
+          bottom: 14px;
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: rgba(45,45,45,0.78);
+          color: white;
+          font-size: 0.68rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          backdrop-filter: blur(10px);
+        }
+        .visual-archive-strip {
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: minmax(180px, 1fr);
+          gap: 16px;
+          overflow-x: auto;
+          padding-bottom: 8px;
+          scrollbar-width: none;
+        }
+        .visual-archive-strip::-webkit-scrollbar {
+          display: none;
+        }
+
         .assessment-shell {
           padding: 34px 28px;
           border-radius: 32px;
@@ -1576,6 +1833,58 @@ export default function OkuHomepage() {
                 </SectionReveal>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── Visual Archive ── */}
+        <section className="section-lg" style={{ background: "linear-gradient(180deg, var(--warm) 0%, var(--cream) 100%)" }}>
+          <div className="max-w">
+            <SectionReveal>
+              <div className="visual-archive-shell">
+                <div className="visual-archive-intro">
+                  <div>
+                    <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Source Archive</span>
+                    <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", marginBottom: 16 }}>
+                      The original <strong>OKU visual world</strong>, restored into the homepage.
+                    </h2>
+                  </div>
+                  <p style={{ color: "rgba(45,45,45,0.68)", lineHeight: 1.85, maxWidth: 560 }}>
+                    We pulled the editorial imagery, note cards, care symbols, and illustrated therapy motifs from the source OKU project into this product homepage so the software carries the same emotional language as the brand itself.
+                  </p>
+                </div>
+
+                <div className="visual-archive-feature-grid">
+                  {SOURCE_ARCHIVE_FEATURED.map((item) => (
+                    <div key={item.image} className="visual-archive-card featured">
+                      <img src={item.image} alt={item.alt} loading="lazy" style={{ objectFit: item.fit || "contain" }} />
+                      <span className="visual-archive-label">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <SectionReveal>
+                  <div className="visual-archive-strip" style={{ marginBottom: 18 }}>
+                    {SOURCE_ARCHIVE_SUPPORTING.map((item) => (
+                      <div key={item.image} className="visual-archive-card strip">
+                        <img src={item.image} alt={item.alt} loading="lazy" style={{ objectFit: item.fit || "contain" }} />
+                        <span className="visual-archive-label">{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </SectionReveal>
+
+                <SectionReveal>
+                  <div className="visual-archive-strip">
+                    {SOURCE_ARCHIVE_STUDIO.map((item) => (
+                      <div key={item.image} className="visual-archive-card strip">
+                        <img src={item.image} alt={item.alt} loading="lazy" style={{ objectFit: item.fit || "contain" }} />
+                        <span className="visual-archive-label">{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </SectionReveal>
+              </div>
+            </SectionReveal>
           </div>
         </section>
 

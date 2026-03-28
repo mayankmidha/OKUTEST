@@ -80,6 +80,9 @@ export default async function PractitionerAssessmentsPage() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">{new Date(a.createdAt).toLocaleDateString()}</span>
                     </div>
                 </div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-oku-purple">
+                  {a.price > 0 ? `$${a.price.toFixed(2)} billed on completion` : 'Included assessment'}
+                </div>
                 
                 <AssignAssessmentModal assessment={a} clients={clients} />
               </div>

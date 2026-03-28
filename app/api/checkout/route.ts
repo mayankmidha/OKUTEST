@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { PaymentStatus } from '@prisma/client'
 import { applyReferralCreditToAppointment } from '@/lib/referrals'
+import { getPlatformSettings, getSessionRevenueSplit } from '@/lib/provider-finance'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -23,7 +24,14 @@ export async function POST(req: Request) {
       // Find the appointment to get the base price
       const appointment = await prisma.appointment.findUnique({
         where: { id: sessionId },
-        include: { service: true }
+        include: {
+          service: true,
+          practitioner: {
+            include: {
+              practitionerProfile: true,
+            },
+          },
+        }
       })
 
       if (!appointment) {
@@ -33,6 +41,12 @@ export async function POST(req: Request) {
       const checkoutSummary = await applyReferralCreditToAppointment(appointment.id)
       const netAmount = checkoutSummary?.netAmount ?? appointment.service.price
       const processor = netAmount === 0 ? 'referral-credit' : method
+      const settings = await getPlatformSettings()
+      const revenueSplit = getSessionRevenueSplit({
+        grossAmount: netAmount,
+        practitionerProfile: appointment.practitioner.practitionerProfile,
+        settings,
+      })
 
       if (!processor) {
         return new NextResponse('Missing payment method', { status: 400 })
@@ -44,6 +58,9 @@ export async function POST(req: Request) {
             userId: session.user.id,
             appointmentId: appointment.id,
             amount: netAmount,
+            platformFeePercent: revenueSplit.platformFeePercent,
+            platformFeeAmount: revenueSplit.platformFeeAmount,
+            practitionerPayoutAmount: revenueSplit.practitionerPayoutAmount,
             processor,
             status: PaymentStatus.PENDING
         }
