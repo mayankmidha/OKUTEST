@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createAuditLog } from '@/lib/audit'
 import { AppointmentStatus, PaymentStatus } from '@prisma/client'
+import { awardReferralRewardForAppointment } from '@/lib/referrals'
 
 export async function POST(req: Request) {
   try {
@@ -38,6 +39,8 @@ export async function POST(req: Request) {
         resourceId: sessionId,
         changes: JSON.stringify({ status: 'CONFIRMED', method })
     })
+
+    await awardReferralRewardForAppointment(sessionId)
 
     return NextResponse.json({ success: true })
   } catch (e) {

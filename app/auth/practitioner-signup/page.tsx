@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, User, Mail, Phone, Briefcase, Shield } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export default function PractitionerSignupPage() {
   const [formData, setFormData] = useState({
@@ -13,12 +13,11 @@ export default function PractitionerSignupPage() {
     confirmPassword: '',
     phone: '',
     licenseNumber: '',
-    specialization: 'General Therapy',
-    experience: '',
+    specialization: '',
+    experienceYears: '',
     education: '',
     bio: '',
     consultationFee: '',
-    languages: ['English']
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -28,15 +27,6 @@ export default function PractitionerSignupPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleLanguageToggle = (language: string) => {
-    setFormData(prev => ({
-      ...prev,
-      languages: prev.languages.includes(language)
-        ? prev.languages.filter(lang => lang !== language)
-        : [...prev.languages, language]
-    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,20 +41,28 @@ export default function PractitionerSignupPage() {
     }
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
           role: 'THERAPIST',
-          consultationFee: parseFloat(formData.consultationFee) || 0
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          licenseNumber: formData.licenseNumber,
+          specialization: formData.specialization,
+          experienceYears: parseInt(formData.experienceYears, 10) || 0,
+          education: formData.education,
+          bio: formData.bio,
+          consultationFee: parseFloat(formData.consultationFee) || 0,
         }),
       })
 
       if (response.ok) {
-        router.push('/auth/login?message=Account created successfully')
+        router.push('/auth/login?message=Practitioner account created successfully')
       } else {
         const data = await response.json()
         setError(data.error || 'Failed to create account')
@@ -86,10 +84,10 @@ export default function PractitionerSignupPage() {
             Back to Home
           </Link>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Join as a Healthcare Provider
+            Join as a Practitioner
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Create your professional profile and start helping clients
+            Psychiatrists, psychologists, and therapists can create a professional profile and begin seeing clients.
           </p>
         </div>
 
@@ -180,7 +178,7 @@ export default function PractitionerSignupPage() {
 
                 <div>
                   <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
-                    Specialization
+                    Primary Specialization
                   </label>
                   <select
                     id="specialization"
@@ -190,29 +188,32 @@ export default function PractitionerSignupPage() {
                     value={formData.specialization}
                     onChange={handleChange}
                   >
-                    <option value="General Therapy">General Therapy</option>
-                    <option value="Depression">Depression</option>
-                    <option value="Anxiety">Anxiety Disorders</option>
-                    <option value="Trauma">Trauma & PTSD</option>
-                    <option value="OCD">OCD</option>
-                    <option value="Relationship">Relationship Counseling</option>
-                    <option value="Child">Child & Adolescent Therapy</option>
+                    <option value="" disabled>Select a specialization</option>
+                    <option value="Psychiatry">Psychiatry</option>
+                    <option value="Medication Management">Medication Management</option>
+                    <option value="Clinical Psychology">Clinical Psychology</option>
+                    <option value="Psychodynamic Psychotherapy">Psychodynamic Psychotherapy</option>
+                    <option value="Trauma & PTSD">Trauma & PTSD</option>
+                    <option value="Anxiety & OCD">Anxiety & OCD</option>
+                    <option value="Child & Adolescent Psychiatry">Child & Adolescent Psychiatry</option>
+                    <option value="Couples & Family Therapy">Couples & Family Therapy</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="experienceYears" className="block text-sm font-medium text-gray-700 mb-2">
                   Years of Experience
-                  </label>
+                </label>
                   <input
-                    id="experience"
-                    name="experience"
-                    type="text"
+                    id="experienceYears"
+                    name="experienceYears"
+                    type="number"
+                    min="0"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                    placeholder="5+ years"
-                    value={formData.experience}
+                    placeholder="8"
+                    value={formData.experienceYears}
                     onChange={handleChange}
                   />
                 </div>
@@ -253,7 +254,7 @@ export default function PractitionerSignupPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="consultationFee" className="block text-sm font-medium text-gray-700 mb-2">
-                  Consultation Fee ($)
+                  Consultation Fee
                 </label>
                 <input
                   id="consultationFee"
@@ -266,25 +267,6 @@ export default function PractitionerSignupPage() {
                   value={formData.consultationFee}
                   onChange={handleChange}
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Languages
-                </label>
-                <div className="space-y-2">
-                  {['English', 'Spanish', 'French', 'German', 'Mandarin', 'Hindi'].map((language) => (
-                    <label key={language} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.languages.includes(language)}
-                        onChange={() => handleLanguageToggle(language)}
-                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">{language}</span>
-                    </label>
-                  ))}
-                </div>
               </div>
             </div>
 

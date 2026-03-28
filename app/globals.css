@@ -6,37 +6,47 @@
   --foreground-rgb: 28, 27, 26;
   --background-start-rgb: 250, 249, 246;
   --background-end-rgb: 252, 250, 247;
+  --oku-surface: 255, 255, 255;
+  --oku-border: 234, 228, 220;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background:
+    radial-gradient(circle at top right, rgba(238, 232, 248, 0.55), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(234, 246, 241, 0.45), transparent 24%),
+    linear-gradient(to bottom, rgb(var(--background-end-rgb)), rgb(var(--background-start-rgb)));
+  min-height: 100vh;
+  line-height: 1.5;
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-oku-dark text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-navy transition-all duration-500 shadow-premium active:scale-95 flex items-center justify-center gap-3;
+    @apply bg-oku-dark text-white px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.24em] hover:bg-oku-navy transition-all duration-300 shadow-premium active:scale-[0.98] flex items-center justify-center gap-3;
   }
 
   .btn-navy {
-    @apply bg-oku-navy text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-dark transition-all duration-500 shadow-premium active:scale-95 flex items-center justify-center gap-3;
+    @apply bg-oku-navy text-white px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.24em] hover:bg-oku-dark transition-all duration-300 shadow-premium active:scale-[0.98] flex items-center justify-center gap-3;
   }
 
   .btn-sky {
-    @apply bg-oku-sky text-oku-navy-light px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-ocean transition-all duration-500 border border-oku-ocean shadow-sm active:scale-95 flex items-center justify-center gap-3;
+    @apply bg-oku-sky text-oku-navy-light px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.24em] hover:bg-oku-ocean transition-all duration-300 border border-oku-ocean shadow-sm active:scale-[0.98] flex items-center justify-center gap-3;
   }
 
   .card-glass {
-    @apply bg-white/60 backdrop-blur-3xl border border-white rounded-[2.5rem] md:rounded-[3.5rem] shadow-premium transition-all duration-700;
+    @apply bg-white/75 backdrop-blur-xl border border-white/80 rounded-[2rem] md:rounded-[2.75rem] shadow-premium transition-all duration-300;
   }
 
   .card-navy {
-    @apply bg-oku-dark text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden;
+    @apply bg-oku-dark text-white p-8 md:p-10 rounded-[2.5rem] shadow-premium relative overflow-hidden;
+  }
+
+  .input-soft {
+    @apply w-full rounded-2xl border border-oku-taupe/10 bg-white/80 px-5 py-3.5 text-sm text-oku-dark shadow-sm outline-none transition-all placeholder:text-oku-taupe/35 focus:border-oku-navy/20 focus:ring-4 focus:ring-oku-lilac/40;
+  }
+
+  .pill-soft {
+    @apply inline-flex items-center gap-2 rounded-full border border-white bg-white/80 px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-oku-taupe shadow-sm;
   }
 }
 

@@ -73,6 +73,49 @@ export async function toggleServiceStatus(serviceId: string, isActive: boolean) 
   revalidatePath('/admin/dashboard')
 }
 
+export async function updateServiceDefinition(
+  serviceId: string,
+  data: { name: string, duration: number, price: number, description?: string, isActive: boolean }
+) {
+  await checkAdmin()
+  await prisma.service.update({
+    where: { id: serviceId },
+    data: {
+      name: data.name,
+      duration: data.duration,
+      price: data.price,
+      description: data.description,
+      isActive: data.isActive,
+    }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
+export async function deleteServiceDefinition(serviceId: string) {
+  await checkAdmin()
+
+  const linkedAppointments = await prisma.appointment.count({
+    where: { serviceId }
+  })
+
+  if (linkedAppointments > 0) {
+    await prisma.service.update({
+      where: { id: serviceId },
+      data: { isActive: false }
+    })
+
+    revalidatePath('/admin/dashboard')
+    return { mode: 'archived' as const }
+  }
+
+  await prisma.service.delete({
+    where: { id: serviceId }
+  })
+
+  revalidatePath('/admin/dashboard')
+  return { mode: 'deleted' as const }
+}
+
 export async function updatePlatformSettings(data: { maintenanceMode?: boolean, platformFeePercent?: number }) {
   await checkAdmin()
   await prisma.platformSettings.upsert({

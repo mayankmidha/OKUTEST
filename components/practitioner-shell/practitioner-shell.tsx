@@ -76,24 +76,24 @@ export function PractitionerShell({
 
       <div className="relative flex min-h-screen">
         {/* Sidebar - Hidden on mobile, visible on XL */}
-        <aside className="w-80 border-r border-oku-taupe/5 bg-white/40 backdrop-blur-3xl hidden xl:flex flex-col sticky top-0 h-screen">
-          <div className="p-10">
+        <aside className="w-80 border-r border-white bg-white/70 backdrop-blur-xl hidden xl:flex flex-col sticky top-0 h-screen">
+          <div className="p-8">
             <Link href="/practitioner/dashboard" className="block mb-12">
                <img src="/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 w-auto grayscale brightness-0 opacity-80" />
             </Link>
 
             <nav className="space-y-2">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-4 opacity-40">Clinical Workspace</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-oku-taupe mb-5 ml-4 opacity-40">Clinical Workspace</p>
               {navLinks.map((link) => {
                 const active = isActiveLink(currentPath, link.href)
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-4 px-6 py-4 rounded-[1.5rem] transition-all duration-500 group ${
+                    className={`flex items-center gap-4 px-5 py-3.5 rounded-[1.4rem] transition-all duration-300 group ${
                       active 
-                      ? 'bg-oku-dark text-white shadow-2xl shadow-oku-dark/10' 
-                      : 'text-oku-taupe hover:bg-white hover:text-oku-dark hover:shadow-xl hover:shadow-oku-taupe/5'
+                        ? 'bg-oku-dark text-white shadow-2xl shadow-oku-dark/10'
+                        : 'text-oku-taupe hover:bg-white hover:text-oku-dark hover:shadow-xl hover:shadow-oku-taupe/5'
                     }`}
                   >
                     <div className={active ? 'text-oku-purple' : 'group-hover:text-oku-purple transition-colors'}>
@@ -182,7 +182,7 @@ export function PractitionerShell({
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col min-w-0">
           {/* Top Navigation */}
-          <header className="h-20 md:h-24 border-b border-oku-taupe/5 bg-white/20 backdrop-blur-md px-6 md:px-10 flex items-center justify-between sticky top-0 z-40">
+          <header className="h-20 md:h-24 border-b border-white bg-white/55 backdrop-blur-md px-6 md:px-10 flex items-center justify-between sticky top-0 z-40">
             <div className="flex items-center gap-4">
                 <button 
                   onClick={() => setIsMobileMenuOpen(true)}
@@ -221,7 +221,7 @@ export function PractitionerShell({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="rounded-[2.5rem] md:rounded-[3.5rem] bg-white p-8 md:p-12 lg:p-16 border border-oku-taupe/5 shadow-sm relative overflow-hidden"
+              className="rounded-[2.25rem] md:rounded-[3rem] bg-white/90 p-8 md:p-12 lg:p-14 border border-white shadow-sm relative overflow-hidden"
             >
               <div className="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 md:gap-10">
                 <div className="max-w-3xl">

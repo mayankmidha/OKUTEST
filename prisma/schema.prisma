@@ -54,6 +54,8 @@ model User {
   id                         String               @id @default(cuid())
   name                       String?
   email                      String               @unique
+  referralCode               String?              @unique
+  referredById               String?
   emailVerified              DateTime?
   image                      String?
   role                       UserRole             @default(CLIENT)
@@ -102,9 +104,14 @@ model User {
   organizationId             String?
   organization               Organization?        @relation(fields: [organizationId], references: [id])
   orgRole                    String?              @default("MEMBER") // ADMIN, MEMBER
+  referredBy                 User?                @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals                  User[]               @relation("UserReferrals")
+  earnedReferralRewards      ReferralReward[]     @relation("ReferralRewardReferrer")
+  referralSourceRewards      ReferralReward[]     @relation("ReferralRewardReferredUser")
 
   @@index([email])
   @@index([role])
+  @@index([referredById])
 }
 
 model InformedConsent {
@@ -196,6 +203,7 @@ model ClientProfile {
   gender                String?
   medicalHistory        String?
   noShowCount           Int                @default(0)
+  referralCreditBalance Float              @default(0)
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
   emergencyContactName  String?
@@ -297,6 +305,7 @@ model Appointment {
   isTrial          Boolean             @default(false)
   superbillGenerated Boolean             @default(false)
   trialDuration    Int?                @default(10)
+  referralCreditApplied Float          @default(0)
 
   // Group Therapy Support
   isGroupSession   Boolean             @default(false)
@@ -311,6 +320,7 @@ model Appointment {
   transcript       Transcript?
   claim            Claim?
   groupNote        GroupNote?
+  referralReward   ReferralReward?
 
   @@index([clientId])
   @@index([practitionerId, startTime, status])
@@ -418,6 +428,25 @@ model Payment {
   updatedAt       DateTime      @updatedAt
   appointment     Appointment   @relation(fields: [appointmentId], references: [id], map: "Payment_appointmentId_fkey")
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Payment_userId_fkey")
+}
+
+model ReferralReward {
+  id             String      @id @default(cuid())
+  referrerId     String
+  referredUserId String
+  appointmentId  String      @unique
+  rewardStep     Int
+  rewardPercent  Float       @default(10)
+  rewardAmount   Float
+  status         String      @default("EARNED")
+  createdAt      DateTime    @default(now())
+  appointment    Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  referrer       User        @relation("ReferralRewardReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredUser   User        @relation("ReferralRewardReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@unique([referredUserId, rewardStep])
+  @@index([referrerId])
+  @@index([referredUserId])
 }
 
 model AuditLog {

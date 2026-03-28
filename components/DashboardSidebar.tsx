@@ -43,7 +43,7 @@ export function DashboardSidebar() {
   const adminLinks = [
     { label: 'Pulse', href: '/admin/dashboard', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
     { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Therapists', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
+    { label: 'Practitioners', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
     { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <FileText size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
     { label: 'Services', href: '/admin/dashboard?tab=services', icon: <Briefcase size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
   ]
@@ -51,20 +51,20 @@ export function DashboardSidebar() {
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
 
   return (
-    <aside className="w-80 bg-oku-page-bg/50 backdrop-blur-3xl border-r border-oku-taupe/5 min-h-screen flex flex-col sticky top-0 z-40 p-6 gap-8">
-      <div className="px-4 py-6">
+    <aside className="w-80 bg-white/70 backdrop-blur-xl border-r border-white min-h-screen flex flex-col sticky top-0 z-40 p-5 gap-6">
+      <div className="px-4 py-5">
         <Link href="/dashboard" className="block group">
           <motion.img 
             whileHover={{ scale: 1.05 }}
             src="/uploads/2025/07/Logoo.png" 
             alt="OKU" 
-            className="h-10 w-auto" 
+            className="h-9 w-auto opacity-90"
           />
         </Link>
       </div>
 
       <nav className="flex-1 space-y-2 px-2">
-        <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-oku-taupe/40 mb-8 ml-4">Terminal</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.36em] text-oku-taupe/40 mb-6 ml-4">Workspace</p>
         <div className="space-y-1">
           {links.map((link) => {
             const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
@@ -78,14 +78,14 @@ export function DashboardSidebar() {
                 {active && (
                   <motion.div 
                     layoutId="sidebar-active"
-                    className="absolute inset-0 bg-white rounded-3xl shadow-xl shadow-oku-taupe/5 border border-oku-taupe/10"
+                    className="absolute inset-0 bg-white rounded-[1.75rem] shadow-lg shadow-oku-taupe/5 border border-oku-taupe/10"
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <div className={`relative flex items-center justify-between p-4 rounded-3xl transition-all duration-500 ${
+                <div className={`relative flex items-center justify-between p-3.5 rounded-[1.75rem] transition-all duration-300 ${
                   active 
-                  ? 'text-oku-dark' 
-                  : 'text-oku-taupe hover:text-oku-dark hover:translate-x-1'
+                    ? 'text-oku-dark'
+                    : 'text-oku-taupe hover:text-oku-dark hover:translate-x-1'
                 }`}>
                   <div className="flex items-center gap-5">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500 ${
@@ -114,7 +114,7 @@ export function DashboardSidebar() {
       </nav>
 
       <div className="mt-auto space-y-6">
-        <div className="p-6 rounded-[2.5rem] bg-white shadow-2xl shadow-oku-taupe/10 border border-oku-taupe/5 group transition-all duration-500 hover:shadow-oku-purple/5">
+        <div className="p-6 rounded-[2rem] bg-white/90 shadow-lg shadow-oku-taupe/10 border border-white group transition-all duration-300 hover:shadow-oku-purple/5">
            <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-oku-purple/30 to-oku-blue/30 flex items-center justify-center text-oku-dark font-display font-medium shadow-inner">
                  {session?.user?.name?.substring(0, 1)}

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { 
@@ -8,16 +9,16 @@ import {
   TrendingUp, BarChart3, PieChart, ShieldAlert,
   Search, Filter, MoreVertical, ExternalLink,
   Calendar, FileText, Zap, AlertTriangle, Megaphone, Sparkles, Brain,
-  ArrowUpRight, Globe, Lock, MessageSquare
+  ArrowUpRight, Globe, Lock, MessageSquare, Pill, Trash2
 } from 'lucide-react'
 import { 
   toggleTherapistVerification, 
   toggleTherapistBlogPower,
   updateTherapistRate, 
-  updateServicePrice, 
   createService, 
-  toggleServiceStatus, 
-  updatePlatformSettings 
+  updatePlatformSettings,
+  updateServiceDefinition,
+  deleteServiceDefinition,
 } from '../actions'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
@@ -25,6 +26,25 @@ import { OCIDiagnostic } from '@/components/OCIDiagnostic'
 import { AdminUserManagement } from '@/components/AdminUserManagement'
 import { BlogManager } from '@/components/BlogManager'
 import { formatCurrency, convertToINR, autoConvert } from '@/lib/currency'
+import { getPractitionerDisciplineLabel, isPsychiatristProfile } from '@/lib/practitioner-type'
+
+type ServiceEditorState = {
+  id: string | null
+  name: string
+  description: string
+  duration: string
+  price: string
+  isActive: boolean
+}
+
+const emptyServiceEditorState: ServiceEditorState = {
+  id: null,
+  name: '',
+  description: '',
+  duration: '50',
+  price: '0',
+  isActive: true,
+}
 
 function AdminDashboardContent({ 
   stats, 
@@ -73,12 +93,21 @@ function AdminDashboardContent({
 
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [newRate, setNewRate] = useState<string>('')
-  
-  const [editingService, setEditingService] = useState<string | null>(null)
-  const [newPrice, setNewPrice] = useState<string>('')
+  const [serviceEditor, setServiceEditor] = useState<ServiceEditorState>(emptyServiceEditorState)
+  const [serviceEditorMode, setServiceEditorMode] = useState<'create' | 'edit'>('create')
+  const [isServiceEditorOpen, setIsServiceEditorOpen] = useState(false)
+  const [isSavingService, setIsSavingService] = useState(false)
+  const [serviceNotice, setServiceNotice] = useState('')
+  const [serviceError, setServiceError] = useState('')
+
+  const psychiatristCount = therapists.filter((practitioner: any) => isPsychiatristProfile(practitioner.practitionerProfile)).length
+  const therapistCount = therapists.length - psychiatristCount
+  const liveServices = services.filter((service: any) => service.isActive)
+  const archivedServices = services.filter((service: any) => !service.isActive)
 
   const handleVerifyToggle = async (id: string, currentStatus: boolean) => {
     await toggleTherapistVerification(id, !currentStatus)
+    router.refresh()
   }
 
   const handleSaveRate = async (id: string) => {
@@ -86,13 +115,111 @@ function AdminDashboardContent({
       await updateTherapistRate(id, parseFloat(newRate))
     }
     setEditingRate(null)
+    router.refresh()
   }
 
-  const handleSaveServicePrice = async (id: string) => {
-    if (newPrice) {
-      await updateServicePrice(id, parseFloat(newPrice))
+  const openCreateServiceEditor = () => {
+    setServiceEditorMode('create')
+    setServiceEditor(emptyServiceEditorState)
+    setServiceError('')
+    setServiceNotice('')
+    setIsServiceEditorOpen(true)
+  }
+
+  const openEditServiceEditor = (service: any) => {
+    setServiceEditorMode('edit')
+    setServiceEditor({
+      id: service.id,
+      name: service.name,
+      description: service.description || '',
+      duration: String(service.duration),
+      price: String(service.price),
+      isActive: service.isActive,
+    })
+    setServiceError('')
+    setServiceNotice('')
+    setIsServiceEditorOpen(true)
+  }
+
+  const closeServiceEditor = () => {
+    setIsServiceEditorOpen(false)
+    setServiceEditor(emptyServiceEditorState)
+    setServiceError('')
+  }
+
+  const handleServiceEditorSubmit = async () => {
+    setIsSavingService(true)
+    setServiceError('')
+
+    try {
+      const payload = {
+        name: serviceEditor.name.trim(),
+        description: serviceEditor.description.trim(),
+        duration: Number.parseInt(serviceEditor.duration, 10),
+        price: Number.parseFloat(serviceEditor.price),
+        isActive: serviceEditor.isActive,
+      }
+
+      if (!payload.name || Number.isNaN(payload.duration) || Number.isNaN(payload.price)) {
+        setServiceError('Name, duration, and price are required.')
+        return
+      }
+
+      if (serviceEditorMode === 'create') {
+        await createService(payload)
+        setServiceNotice(`${payload.name} has been added to the protocol catalog.`)
+      } else if (serviceEditor.id) {
+        await updateServiceDefinition(serviceEditor.id, payload)
+        setServiceNotice(`${payload.name} has been updated.`)
+      }
+
+      closeServiceEditor()
+      router.refresh()
+    } catch (error) {
+      setServiceError('Unable to save this protocol right now.')
+    } finally {
+      setIsSavingService(false)
     }
-    setEditingService(null)
+  }
+
+  const handleDeleteService = async (service: any) => {
+    const confirmed = window.confirm(
+      `Delete ${service.name}? Protocols with booked appointments will be archived instead of being hard-deleted.`
+    )
+
+    if (!confirmed) return
+
+    setServiceError('')
+
+    try {
+      const result = await deleteServiceDefinition(service.id)
+      setServiceNotice(
+        result.mode === 'archived'
+          ? `${service.name} has existing appointments, so it was archived and removed from current protocols.`
+          : `${service.name} was deleted from the catalog.`
+      )
+      router.refresh()
+    } catch (error) {
+      setServiceError('Unable to remove this protocol right now.')
+    }
+  }
+
+  const handleRestoreService = async (service: any) => {
+    setServiceError('')
+
+    try {
+      await updateServiceDefinition(service.id, {
+        name: service.name,
+        description: service.description || '',
+        duration: service.duration,
+        price: service.price,
+        isActive: true,
+      })
+      setServiceNotice(`${service.name} has been restored to the live protocol catalog.`)
+      router.refresh()
+    } catch (error) {
+      setServiceError('Unable to restore this protocol right now.')
+    }
   }
 
   return (
@@ -124,7 +251,7 @@ function AdminDashboardContent({
         {[
           { id: 'overview', label: 'Pulse', icon: Activity },
           { id: 'management', label: 'Management', icon: UserPlus },
-          { id: 'therapists', label: 'Therapists', icon: Shield },
+          { id: 'therapists', label: 'Practitioners', icon: Shield },
           { id: 'blogs', label: 'Blogs', icon: FileText },
           { id: 'services', label: 'Catalog', icon: DollarSign },
           { id: 'clients', label: 'Patients', icon: Users },
@@ -218,7 +345,7 @@ function AdminDashboardContent({
                   <div className="space-y-10 relative z-10">
                      <div className="space-y-4">
                         <div className="flex justify-between text-[10px] uppercase tracking-widest font-black text-oku-navy">
-                           <span>Therapist Onboarding Progress</span>
+                           <span>Practitioner Onboarding Progress</span>
                            <span>{Math.round((therapists.filter((t: any) => t.practitionerProfile?.isVerified).length / (therapists.length || 1)) * 100)}%</span>
                         </div>
                         <div className="h-2 w-full bg-oku-ocean rounded-full overflow-hidden">
@@ -277,11 +404,21 @@ function AdminDashboardContent({
         {activeTab === 'therapists' && (
           <div className="card-glass overflow-hidden animate-in slide-in-from-bottom-4 duration-700">
             <div className="p-10 border-b border-oku-taupe/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Practitioner Network</h2>
-              <div className="flex items-center gap-4">
-                 <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-oku-taupe/40 group-focus-within:text-oku-navy transition-colors" size={14} />
-                    <input type="text" placeholder="Search verified team..." className="pl-12 pr-6 py-4 bg-oku-cream border border-oku-taupe/10 rounded-2xl text-[11px] font-bold focus:outline-none focus:border-oku-navy transition-all w-72 shadow-inner" />
+              <div>
+                <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Practitioner Network</h2>
+                <p className="text-sm text-oku-taupe italic font-display opacity-60 mt-1">
+                  {psychiatristCount} psychiatrist{psychiatristCount === 1 ? '' : 's'} and {therapistCount} therapist{therapistCount === 1 ? '' : 's'} in the current roster.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 flex-wrap">
+                 <div className="px-4 py-2 rounded-full bg-oku-cream border border-oku-taupe/10 text-[10px] font-black uppercase tracking-widest text-oku-taupe">
+                   {therapists.length} Total
+                 </div>
+                 <div className="px-4 py-2 rounded-full bg-oku-navy/10 border border-oku-navy/10 text-[10px] font-black uppercase tracking-widest text-oku-navy">
+                   {psychiatristCount} Psychiatrists
+                 </div>
+                 <div className="px-4 py-2 rounded-full bg-oku-purple/10 border border-oku-purple/10 text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">
+                   {therapistCount} Therapists
                  </div>
               </div>
             </div>
@@ -290,6 +427,7 @@ function AdminDashboardContent({
                 <thead>
                   <tr className="bg-oku-cream/50 text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe/60">
                     <th className="p-8">Practitioner Identity</th>
+                    <th className="p-8">Discipline</th>
                     <th className="p-8 text-center">Consent</th>
                     <th className="p-8 text-center">Editorial</th>
                     <th className="p-8">Credential Status</th>
@@ -308,7 +446,24 @@ function AdminDashboardContent({
                           <div>
                             <p className="font-bold text-oku-dark text-lg group-hover:text-oku-navy transition-colors">{t.name}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40 mt-1">{t.email}</p>
+                            <p className="text-xs text-oku-taupe mt-2">{t.practitionerProfile?.specialization?.slice(0, 2).join(' • ') || 'Specialization pending'}</p>
                           </div>
+                        </div>
+                      </td>
+                      <td className="p-8">
+                        <div className="flex items-center gap-3">
+                          {isPsychiatristProfile(t.practitionerProfile) ? (
+                            <Pill size={16} className="text-oku-navy" />
+                          ) : (
+                            <Shield size={16} className="text-oku-purple-dark" />
+                          )}
+                          <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
+                            isPsychiatristProfile(t.practitionerProfile)
+                              ? 'bg-oku-navy/10 text-oku-navy border-oku-navy/10'
+                              : 'bg-oku-purple/10 text-oku-purple-dark border-oku-purple/10'
+                          }`}>
+                            {getPractitionerDisciplineLabel(t.practitionerProfile)}
+                          </span>
                         </div>
                       </td>
                       <td className="p-8 text-center">
@@ -318,7 +473,10 @@ function AdminDashboardContent({
                       </td>
                       <td className="p-8 text-center">
                         <button 
-                          onClick={() => toggleTherapistBlogPower(t.practitionerProfile.id, !t.practitionerProfile.canPostBlogs)}
+                          onClick={async () => {
+                            await toggleTherapistBlogPower(t.practitionerProfile.id, !t.practitionerProfile.canPostBlogs)
+                            router.refresh()
+                          }}
                           className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all ${t.practitionerProfile.canPostBlogs ? 'bg-oku-purple text-oku-purple-dark border-oku-purple/30' : 'bg-oku-cream text-oku-taupe border-oku-taupe/10 opacity-40 hover:opacity-100'}`}
                         >
                             {t.practitionerProfile.canPostBlogs ? 'EDITOR' : 'READ-ONLY'}
@@ -361,9 +519,9 @@ function AdminDashboardContent({
                         )}
                       </td>
                       <td className="p-8 text-right">
-                        <button className="text-oku-taupe hover:text-oku-navy p-3 rounded-2xl hover:bg-oku-ocean/50 transition-all">
-                           <MoreVertical size={18} />
-                        </button>
+                        <Link href="/admin/dashboard?tab=services" className="text-[9px] font-black uppercase tracking-widest text-oku-navy hover:underline">
+                          Manage Protocols
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -380,48 +538,122 @@ function AdminDashboardContent({
         )}
 
         {activeTab === 'services' && (
-          <div className="card-glass p-10 animate-in fade-in slide-in-from-right-4 duration-700">
-            <div className="flex items-center justify-between mb-12">
-               <div>
-                  <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Clinical Catalog</h2>
-                  <p className="text-sm text-oku-taupe italic font-display opacity-60 mt-1">Global service definitions and standard pricing.</p>
-               </div>
-               <button className="btn-navy flex items-center gap-3">
-                  <Plus size={18} /> Add New Protocol
-               </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {services.map((s: any) => (
-                <div key={s.id} className="card-glass p-1 group hover:-translate-y-2 transition-all duration-500 hover:border-oku-navy/20">
-                  <div className="p-8 flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-10">
-                      <div className="w-14 h-14 rounded-2xl bg-oku-ocean text-oku-navy flex items-center justify-center shadow-inner group-hover:bg-oku-navy group-hover:text-white transition-all duration-500">
-                        <Zap size={24} />
+          <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
+            <div className="card-glass p-10">
+              <div className="flex items-center justify-between mb-12">
+                 <div>
+                    <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Clinical Catalog</h2>
+                    <p className="text-sm text-oku-taupe italic font-display opacity-60 mt-1">
+                      Edit, retire, restore, and create protocols without leaving the admin dashboard.
+                    </p>
+                 </div>
+                 <button onClick={openCreateServiceEditor} className="btn-navy flex items-center gap-3">
+                    <Plus size={18} /> Add New Protocol
+                 </button>
+              </div>
+
+              {serviceNotice && (
+                <div className="mb-6 rounded-[1.5rem] border border-emerald-100 bg-emerald-50 px-6 py-4 text-sm text-emerald-700">
+                  {serviceNotice}
+                </div>
+              )}
+
+              {serviceError && (
+                <div className="mb-6 rounded-[1.5rem] border border-red-100 bg-red-50 px-6 py-4 text-sm text-red-700">
+                  {serviceError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {liveServices.map((service: any) => (
+                  <div key={service.id} className="card-glass p-1 group hover:-translate-y-2 transition-all duration-500 hover:border-oku-navy/20">
+                    <div className="p-8 flex flex-col h-full">
+                      <div className="flex justify-between items-start mb-10">
+                        <div className="w-14 h-14 rounded-2xl bg-oku-ocean text-oku-navy flex items-center justify-center shadow-inner group-hover:bg-oku-navy group-hover:text-white transition-all duration-500">
+                          <Zap size={24} />
+                        </div>
+                        <div className="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-700 border border-emerald-100">
+                          System Live
+                        </div>
                       </div>
-                      <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${s.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-oku-cream-warm text-oku-taupe border border-oku-taupe/5'}`}>
-                        {s.isActive ? 'System Live' : 'Maintenance'}
+
+                      <h3 className="text-2xl font-display font-bold text-oku-dark group-hover:text-oku-navy transition-colors mb-3">
+                        {service.name}
+                      </h3>
+                      <p className="text-sm text-oku-taupe font-display italic opacity-60 line-clamp-2 mb-10">
+                        {service.description}
+                      </p>
+
+                      <div className="mt-auto pt-8 border-t border-oku-taupe/5 space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Clock size={14} className="text-oku-taupe/40" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-taupe">{service.duration} MIN</span>
+                          </div>
+                          <p className="text-3xl font-display font-bold text-oku-dark">${service.price}</p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => openEditServiceEditor(service)}
+                            className="flex-1 rounded-full border border-oku-taupe/10 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-dark hover:border-oku-dark transition-all"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteService(service)}
+                            className="rounded-full border border-red-100 bg-red-50 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-700 hover:bg-red-100 transition-all"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <h3 className="text-2xl font-display font-bold text-oku-dark group-hover:text-oku-navy transition-colors mb-3">{s.name}</h3>
-                    <p className="text-sm text-oku-taupe font-display italic opacity-60 line-clamp-2 mb-10">{s.description}</p>
-                    
-                    <div className="mt-auto pt-8 border-t border-oku-taupe/5 flex items-center justify-between">
-                       <div className="flex items-center gap-2">
-                          <Clock size={14} className="text-oku-taupe/40" />
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-taupe">{s.duration} MIN</span>
-                       </div>
-                       
-                       <div className="flex items-center gap-4 cursor-pointer group/p" onClick={() => { setEditingService(s.id); setNewPrice(String(s.price)) }}>
-                          <p className="text-3xl font-display font-bold text-oku-dark">${s.price}</p>
-                          <ArrowUpRight size={16} className="text-oku-taupe opacity-0 group-hover/p:opacity-100 transition-all -translate-x-2 group-hover/p:translate-x-0" />
-                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {archivedServices.length > 0 && (
+              <div className="card-glass p-10">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Archived Protocols</h3>
+                    <p className="text-sm text-oku-taupe italic font-display opacity-60 mt-1">
+                      Protocols with linked historical appointments are archived instead of hard-deleted.
+                    </p>
+                  </div>
+                  <div className="px-4 py-2 rounded-full bg-oku-cream border border-oku-taupe/10 text-[10px] font-black uppercase tracking-widest text-oku-taupe">
+                    {archivedServices.length} Archived
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {archivedServices.map((service: any) => (
+                    <div key={service.id} className="rounded-[2rem] border border-oku-taupe/10 bg-white px-6 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-oku-dark">{service.name}</p>
+                        <p className="text-xs text-oku-taupe mt-1">{service.duration} min • ${service.price}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => openEditServiceEditor(service)}
+                          className="rounded-full border border-oku-taupe/10 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-dark"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleRestoreService(service)}
+                          className="rounded-full border border-oku-navy/10 bg-oku-navy/10 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-oku-navy"
+                        >
+                          Restore
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -677,6 +909,108 @@ function AdminDashboardContent({
           </div>
         )}
       </div>
+
+      {isServiceEditorOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-oku-dark/40 backdrop-blur-sm p-6">
+          <div className="w-full max-w-2xl rounded-[2.5rem] border border-white/60 bg-white p-10 shadow-2xl">
+            <div className="flex items-start justify-between gap-6 mb-8">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe opacity-50">
+                  {serviceEditorMode === 'create' ? 'New Protocol' : 'Edit Protocol'}
+                </p>
+                <h3 className="text-3xl font-display font-bold text-oku-dark mt-3">
+                  {serviceEditorMode === 'create' ? 'Add Clinical Protocol' : serviceEditor.name || 'Update Clinical Protocol'}
+                </h3>
+              </div>
+              <button onClick={closeServiceEditor} className="rounded-full border border-oku-taupe/10 p-3 text-oku-taupe hover:text-oku-dark transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Protocol Name</label>
+                <input
+                  type="text"
+                  value={serviceEditor.name}
+                  onChange={(e) => setServiceEditor((current) => ({ ...current, name: e.target.value }))}
+                  className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
+                  placeholder="Medication Review Follow-Up"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Duration (min)</label>
+                <input
+                  type="number"
+                  min="10"
+                  value={serviceEditor.duration}
+                  onChange={(e) => setServiceEditor((current) => ({ ...current, duration: e.target.value }))}
+                  className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Price ($)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={serviceEditor.price}
+                  onChange={(e) => setServiceEditor((current) => ({ ...current, price: e.target.value }))}
+                  className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Description</label>
+                <textarea
+                  rows={4}
+                  value={serviceEditor.description}
+                  onChange={(e) => setServiceEditor((current) => ({ ...current, description: e.target.value }))}
+                  className="w-full rounded-2xl border border-oku-taupe/10 bg-oku-cream/40 px-5 py-4 text-sm text-oku-dark focus:outline-none focus:border-oku-navy"
+                  placeholder="Briefly describe the protocol, clinical objective, and intended session type."
+                />
+              </div>
+
+              <div className="md:col-span-2 flex items-center justify-between rounded-[2rem] border border-oku-taupe/10 bg-oku-cream/30 px-6 py-5">
+                <div>
+                  <p className="font-bold text-oku-dark">Protocol Visibility</p>
+                  <p className="text-sm text-oku-taupe">Inactive protocols are removed from current booking options.</p>
+                </div>
+                <button
+                  onClick={() => setServiceEditor((current) => ({ ...current, isActive: !current.isActive }))}
+                  className={`w-16 h-8 rounded-full transition-all relative ${serviceEditor.isActive ? 'bg-oku-navy' : 'bg-oku-taupe/20'}`}
+                >
+                  <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${serviceEditor.isActive ? 'left-9 shadow-lg' : 'left-1'}`} />
+                </button>
+              </div>
+            </div>
+
+            {serviceError && (
+              <div className="mt-6 rounded-[1.5rem] border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+                {serviceError}
+              </div>
+            )}
+
+            <div className="mt-8 flex items-center justify-end gap-3">
+              <button
+                onClick={closeServiceEditor}
+                className="rounded-full border border-oku-taupe/10 bg-white px-6 py-3 text-[10px] font-black uppercase tracking-widest text-oku-dark"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleServiceEditorSubmit}
+                disabled={isSavingService}
+                className="rounded-full bg-oku-dark px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-xl disabled:opacity-50"
+              >
+                {isSavingService ? 'Saving...' : serviceEditorMode === 'create' ? 'Create Protocol' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

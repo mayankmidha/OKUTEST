@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { PaymentStatus } from '@prisma/client'
+import { applyReferralCreditToAppointment } from '@/lib/referrals'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
   }
 
   try {
-      // Find the appointment to get the price
+      // Find the appointment to get the base price
       const appointment = await prisma.appointment.findUnique({
         where: { id: sessionId },
         include: { service: true }
@@ -29,19 +30,27 @@ export async function POST(req: Request) {
         return new NextResponse('Appointment not found', { status: 404 })
       }
 
+      const checkoutSummary = await applyReferralCreditToAppointment(appointment.id)
+      const netAmount = checkoutSummary?.netAmount ?? appointment.service.price
+      const processor = netAmount === 0 ? 'referral-credit' : method
+
+      if (!processor) {
+        return new NextResponse('Missing payment method', { status: 400 })
+      }
+
       // Create a Payment record
       await prisma.payment.create({
         data: {
             userId: session.user.id,
             appointmentId: appointment.id,
-            amount: appointment.service.price,
-            processor: method,
+            amount: netAmount,
+            processor,
             status: PaymentStatus.PENDING
         }
       })
       
       // Redirect to success page
-      return NextResponse.redirect(new URL(`/checkout/${sessionId}/success?method=${method}`, req.url), 303)
+      return NextResponse.redirect(new URL(`/checkout/${sessionId}/success?method=${processor}`, req.url), 303)
   } catch (e) {
       console.error('Error initiating payment:', e)
       return new NextResponse('Error initiating payment', { status: 500 })

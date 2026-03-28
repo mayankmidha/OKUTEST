@@ -30,6 +30,14 @@ const config: Config = {
         'oku-champagne-dark': '#BFB09B',
         'oku-sky': '#F0F7FF',
         'oku-ocean': '#E0EEF5',
+        'oku-peach': '#FBEDE5',
+        'oku-peach-dark': '#D8A48C',
+        'oku-mint': '#EAF6F1',
+        'oku-mint-dark': '#8DB8A8',
+        'oku-butter': '#FFF6DB',
+        'oku-butter-dark': '#D6B66B',
+        'oku-lilac': '#EEE8F8',
+        'oku-lilac-dark': '#B5A3D6',
 
         // Legacy compatibility (mapped to new tones)
         'oku-purple': '#F3F0F7',

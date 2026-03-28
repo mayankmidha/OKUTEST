@@ -60,7 +60,7 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
                     type="text" 
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Find a therapist..."
+                    placeholder="Find a specialist..."
                     className="w-full bg-oku-cream/30 border border-oku-taupe/10 pl-10 pr-4 py-3 rounded-xl text-xs focus:outline-none focus:border-oku-purple transition-all"
                   />
                </div>
@@ -115,7 +115,10 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
 
         <div className="grid grid-cols-1 gap-10">
           <AnimatePresence mode="popLayout">
-            {filtered.map((practitioner) => (
+            {filtered.map((practitioner) => {
+              const practitionerTitle = practitioner.specialization?.[0]?.trim() || 'Practitioner'
+
+              return (
               <motion.div 
                 layout
                 initial={{ opacity: 0, y: 20 }}
@@ -168,7 +171,7 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
                     <div>
                         <h2 className="text-4xl font-display font-bold text-oku-dark tracking-tighter group-hover:text-oku-navy transition-colors">{practitioner.user.name}</h2>
                         <div className="flex items-center gap-3 mt-1">
-                            <p className="text-oku-purple font-script text-xl italic opacity-80">Psychotherapist</p>
+                            <p className="text-oku-purple font-script text-xl italic opacity-80">{practitionerTitle}</p>
                             <span className="w-1 h-1 rounded-full bg-oku-taupe/20" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 flex items-center gap-1">
                                 <Briefcase size={10} /> {practitioner.experienceYears || 0} Years Experience
@@ -231,7 +234,7 @@ export default function TherapistFilters({ therapists, specialties, isFirstTime 
                   </div>
                 </div>
               </motion.div>
-            ))}
+            )})}
           </AnimatePresence>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
+import { getCheckoutReferralCredit } from '@/lib/referrals'
 
 export default async function CheckoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const session = await auth()
@@ -22,6 +22,13 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
   if (!booking) {
     return <div>Appointment not found</div>
   }
+
+  const checkoutSummary = await getCheckoutReferralCredit(booking.id)
+  const grossAmount = checkoutSummary?.grossAmount ?? booking.service.price
+  const availableCredit = checkoutSummary?.availableCredit ?? 0
+  const creditApplied = checkoutSummary?.creditApplied ?? 0
+  const netAmount = checkoutSummary?.netAmount ?? booking.service.price
+  const totalDueLabel = `$${netAmount.toFixed(2)}`
 
   return (
     <div className="min-h-screen bg-oku-cream py-20 px-6">
@@ -46,27 +53,58 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center mb-8">
-                    <span className="text-lg font-bold text-oku-dark">Total Due</span>
-                    <span className="text-2xl font-display font-bold text-oku-dark">${booking.service.price}</span>
+                <div className="space-y-4 mb-8">
+                    <div className="flex justify-between items-center text-oku-dark">
+                        <span className="text-sm font-bold uppercase tracking-[0.25em] text-oku-taupe">Session Total</span>
+                        <span className="text-lg font-display font-bold">${grossAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-oku-dark">
+                        <span className="text-sm font-bold uppercase tracking-[0.25em] text-oku-taupe">Referral Credit Available</span>
+                        <span className="text-lg font-display font-bold">${availableCredit.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-oku-dark">
+                        <span className="text-sm font-bold uppercase tracking-[0.25em] text-oku-taupe">Credit Applied</span>
+                        <span className="text-lg font-display font-bold text-green-700">-${creditApplied.toFixed(2)}</span>
+                    </div>
+                    <div className="rounded-3xl border border-oku-peach/40 bg-oku-peach/20 px-5 py-4">
+                        <div className="flex justify-between items-center">
+                            <span className="text-lg font-bold text-oku-dark">Total Due</span>
+                            <span className="text-2xl font-display font-bold text-oku-dark">{totalDueLabel}</span>
+                        </div>
+                        <p className="mt-2 text-sm text-oku-taupe">
+                            Referral credit is automatically used before card or UPI payment.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Payment Buttons (Stubs) */}
                 <div className="space-y-4">
-                    <form action="/api/checkout" method="POST">
-                        <input type="hidden" name="sessionId" value={booking.id} />
-                        <input type="hidden" name="method" value="stripe" />
-                        <button className="w-full py-4 bg-oku-purple text-oku-dark rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
-                            Pay with Card (Stripe)
-                        </button>
-                    </form>
-                    <form action="/api/checkout" method="POST">
-                        <input type="hidden" name="sessionId" value={booking.id} />
-                        <input type="hidden" name="method" value="razorpay" />
-                        <button className="w-full py-4 bg-oku-blue text-blue-800 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
-                            Pay with UPI (Razorpay)
-                        </button>
-                    </form>
+                    {netAmount === 0 ? (
+                        <form action="/api/checkout" method="POST">
+                            <input type="hidden" name="sessionId" value={booking.id} />
+                            <input type="hidden" name="method" value="referral-credit" />
+                            <button className="w-full py-4 bg-oku-green text-green-900 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
+                                Confirm with Referral Credit
+                            </button>
+                        </form>
+                    ) : (
+                        <>
+                            <form action="/api/checkout" method="POST">
+                                <input type="hidden" name="sessionId" value={booking.id} />
+                                <input type="hidden" name="method" value="stripe" />
+                                <button className="w-full py-4 bg-oku-purple text-oku-dark rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
+                                    Pay {totalDueLabel} with Card (Stripe)
+                                </button>
+                            </form>
+                            <form action="/api/checkout" method="POST">
+                                <input type="hidden" name="sessionId" value={booking.id} />
+                                <input type="hidden" name="method" value="razorpay" />
+                                <button className="w-full py-4 bg-oku-blue text-blue-800 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
+                                    Pay {totalDueLabel} with UPI (Razorpay)
+                                </button>
+                            </form>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

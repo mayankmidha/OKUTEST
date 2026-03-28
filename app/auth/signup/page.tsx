@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, ArrowRight, User, Mail, Phone, Lock, Heart, Shield } from 'lucide-react'
 
@@ -30,20 +30,35 @@ export default function SignupPage() {
     phone: '',
     role: 'CLIENT',
     location: 'India',
+    referralCode: '',
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   // Pre-fill from session storage (lead nurturing)
-  useState(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const pendingTrial = sessionStorage.getItem('pending_trial_booking')
       if (pendingTrial) {
         const data = JSON.parse(pendingTrial)
-        setFormData(prev => ({ ...prev, name: data.guestName || '', email: data.guestEmail || '' }))
+        setFormData(prev => ({
+          ...prev,
+          name: prev.name || data.guestName || '',
+          email: prev.email || data.guestEmail || '',
+        }))
       }
     }
-  })
+  }, [])
+
+  useEffect(() => {
+    const referralCode = new URLSearchParams(window.location.search).get('ref')
+    if (referralCode) {
+      setFormData((current) => ({
+        ...current,
+        referralCode: current.referralCode || referralCode,
+      }))
+    }
+  }, [])
 
   const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((current) => ({ ...current, [field]: value }))
@@ -221,6 +236,19 @@ export default function SignupPage() {
                   </select>
                 </div>
               </div>
+
+              {formData.role === 'CLIENT' && (
+                <div className="space-y-3">
+                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe ml-4 opacity-50">Referral Code</label>
+                  <input
+                    type="text"
+                    value={formData.referralCode}
+                    onChange={(e) => handleChange('referralCode', e.target.value.toUpperCase())}
+                    className="w-full bg-white/60 border border-white rounded-[2rem] px-8 py-5 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/5 transition-all shadow-sm placeholder:text-oku-taupe/30"
+                    placeholder="Optional invite code"
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"

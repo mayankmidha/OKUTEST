@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { 
@@ -12,6 +13,8 @@ import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
+import { ReferralShareCard } from '@/components/ReferralShareCard'
+import { ensureUserReferralCode, getReferralSummaryForUser } from '@/lib/referrals'
 
 export default async function ClientDashboardPage() {
   const session = await auth()
@@ -69,6 +72,12 @@ export default async function ClientDashboardPage() {
   const recentAssessments = user.assessmentAnswers || []
   const hasIncompleteIntake = !user.intakeForm
   const hasIncompleteConsent = !user.hasSignedConsent
+  const referralCode = await ensureUserReferralCode(user.id, user.name)
+  const referralSummary = await getReferralSummaryForUser(user.id)
+  const requestHeaders = await headers()
+  const host = requestHeaders.get('host') || 'localhost:3000'
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const inviteUrl = `${protocol}://${host}/auth/signup?ref=${referralCode}`
 
   const practitioners = await prisma.practitionerProfile.findMany({
     include: { user: true },
@@ -277,6 +286,16 @@ export default async function ClientDashboardPage() {
 
         {/* Right Column: Insights & Recommendations */}
         <div className="lg:col-span-4 space-y-10">
+          {referralCode && (
+            <ReferralShareCard
+              inviteUrl={inviteUrl}
+              referralCode={referralCode}
+              referralCount={referralSummary.referralCount}
+              recentRewards={referralSummary.rewards.slice(0, 3)}
+              totalEarned={referralSummary.totalEarned}
+              availableCredit={referralSummary.availableCredit}
+            />
+          )}
           
           <div className="card-navy group">
              <div className="relative z-10">
