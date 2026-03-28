@@ -1,5 +1,5 @@
-import { WpPage } from "@/components/wp-page";
+import OKUHomepage from "@/components/OKUHomepage";
 
 export default function Home() {
-  return <WpPage slug="home" />;
+  return <OKUHomepage />;
 }
