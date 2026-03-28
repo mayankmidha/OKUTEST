@@ -501,37 +501,14 @@ export default function OkuHomepage() {
         }
 
         .oku-page-public {
-          background: var(--cream);
+          background: url('/wp-content/uploads/2025/06/BG.png') no-repeat center center fixed;
+          background-size: cover;
           color: var(--ink);
           font-family: 'DM Sans', sans-serif;
           line-height: 1.6;
           -webkit-font-smoothing: antialiased;
           overflow-x: hidden;
           position: relative;
-        }
-
-        .cloud-bg {
-          position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
-          pointer-events: none;
-          z-index: 0;
-          overflow: hidden;
-        }
-        .cloud {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(100px);
-          opacity: 0.4;
-          animation: breathe 20s infinite alternate ease-in-out;
-        }
-        .cloud-1 { width: 60vw; height: 60vw; top: -10%; left: -10%; background: #E0F2FE; }
-        .cloud-2 { width: 50vw; height: 50vw; bottom: -10%; right: -10%; background: #F0F9FF; animation-delay: -5s; }
-        .cloud-3 { width: 40vw; height: 40vw; top: 40%; right: 10%; background: #FAF5FF; animation-delay: -10s; }
-
-        @keyframes breathe {
-          0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
-          50% { transform: scale(1.1) translate(2%, 2%); opacity: 0.5; }
-          100% { transform: scale(0.95) translate(-1%, -1%); opacity: 0.3; }
         }
 
         /* ── Typography ── */
