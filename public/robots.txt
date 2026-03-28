@@ -1,8 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /practitioner/
-Disallow: /dashboard/
-Disallow: /api/
-
-Sitemap: https://okutherapy.com/sitemap.xml
+Sitemap: ${process.env.NEXT_PUBLIC_APP_URL || 'https://okutherapy.com'}/sitemap.xml
