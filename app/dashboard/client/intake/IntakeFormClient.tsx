@@ -2,11 +2,26 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { DashboardCard } from '@/components/DashboardCard'
-import { ShieldCheck, FileText, AlertCircle, Save, CheckCircle2, Loader2, MapPin, User, Phone } from 'lucide-react'
+import { 
+    ShieldCheck, 
+    FileText, 
+    AlertCircle, 
+    Save, 
+    CheckCircle2, 
+    Loader2, 
+    MapPin, 
+    User, 
+    Phone,
+    ArrowRight,
+    ArrowLeft,
+    Sparkles,
+    Heart
+} from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { InformedConsentViewer } from '@/components/InformedConsentViewer'
 
 export default function IntakeFormClient({ initialData }: { initialData: any }) {
+  const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     legalName: initialData?.legalName || '',
     currentAddress: initialData?.currentAddress || '',
@@ -16,14 +31,16 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
     hasSignedConsent: initialData?.hasSignedConsent || false,
     hasAcceptedPrivacy: initialData?.hasAcceptedPrivacy || false,
     medicalHistory: initialData?.medicalHistory || '',
+    isOnboarded: true
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     if (!formData.hasSignedConsent || !formData.hasAcceptedPrivacy) {
         alert('Please accept the Oku Therapy Informed Consent and Privacy Policy to proceed.')
+        setStep(3)
         return
     }
 
@@ -36,167 +53,150 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
       })
 
       if (res.ok) {
-        alert('Clinical intake and Informed Consent completed successfully.')
-        router.refresh()
         router.push('/dashboard/client')
-      } else {
-        throw new Error('Failed to save intake form')
       }
-    } catch (e) {
-      console.error(e)
-      alert('Error saving your clinical records. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const nextStep = () => setStep(prev => prev + 1)
+  const prevStep = () => setStep(prev => prev - 1)
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
-      
-      {/* 1. Legal Identity */}
-      <DashboardCard title="1. Clinical Identity" icon={<User size={20} strokeWidth={1.5} />}>
-        <div className="grid md:grid-cols-2 gap-8">
-            <div className="md:col-span-2 space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Client's Full Legal Name</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="As per government identification"
-                  value={formData.legalName}
-                  onChange={(e) => setFormData({...formData, legalName: e.target.value})}
-                  className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                />
+    <div className="max-w-4xl mx-auto py-10">
+        <div className="mb-12 flex justify-between items-center px-4">
+            <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-purple mb-2">Patient Intake: Step {step} of 4</p>
+                <h2 className="text-4xl font-display font-bold text-oku-dark tracking-tighter">
+                    {step === 1 && "Personal Identity"}
+                    {step === 2 && "Safety Net"}
+                    {step === 3 && "Clinical Consent"}
+                    {step === 4 && "Medical History"}
+                </h2>
             </div>
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Current Address</label>
-                <textarea 
-                  rows={3}
-                  required
-                  placeholder="Full current residential address"
-                  value={formData.currentAddress}
-                  onChange={(e) => setFormData({...formData, currentAddress: e.target.value})}
-                  className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                />
-            </div>
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Permanent Address</label>
-                <textarea 
-                  rows={3}
-                  required
-                  placeholder="Full permanent residential address"
-                  value={formData.permanentAddress}
-                  onChange={(e) => setFormData({...formData, permanentAddress: e.target.value})}
-                  className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                />
+            <div className="flex gap-2">
+                {[1,2,3,4].map(i => (
+                    <div key={i} className={`w-12 h-1.5 rounded-full transition-all duration-500 ${i <= step ? 'bg-oku-purple' : 'bg-oku-taupe/10'}`} />
+                ))}
             </div>
         </div>
-      </DashboardCard>
 
-      {/* 2. Emergency Contacts */}
-      <DashboardCard title="2. Safety Net (Emergency Contacts)" icon={<Phone size={20} strokeWidth={1.5} />}>
-        <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Primary Emergency Contact</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Name, Relationship & Phone Number"
-                  value={formData.emergencyContact1}
-                  onChange={(e) => setFormData({...formData, emergencyContact1: e.target.value})}
-                  className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                />
-            </div>
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Secondary Emergency Contact</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Name, Relationship & Phone Number"
-                  value={formData.emergencyContact2}
-                  onChange={(e) => setFormData({...formData, emergencyContact2: e.target.value})}
-                  className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-                />
-            </div>
-        </div>
-      </DashboardCard>
+        <AnimatePresence mode="wait">
+            <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="card-pebble relative overflow-hidden"
+            >
+                {step === 1 && (
+                    <div className="space-y-10">
+                        <div className="space-y-4">
+                            <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Legal Name</label>
+                            <input 
+                                className="input-pebble text-2xl font-bold" 
+                                value={formData.legalName} 
+                                onChange={e => setFormData({...formData, legalName: e.target.value})}
+                                placeholder="As per identification"
+                            />
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Current Residence</label>
+                                <textarea 
+                                    className="input-pebble min-h-[120px]" 
+                                    value={formData.currentAddress} 
+                                    onChange={e => setFormData({...formData, currentAddress: e.target.value})}
+                                    placeholder="Your current full address..."
+                                />
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Permanent Residence</label>
+                                <textarea 
+                                    className="input-pebble min-h-[120px]" 
+                                    value={formData.permanentAddress} 
+                                    onChange={e => setFormData({...formData, permanentAddress: e.target.value})}
+                                    placeholder="Same as above if applicable..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-      {/* 3. Informed Consent Form Viewer */}
-      <div className="space-y-6">
-        <h3 className="text-2xl font-display font-bold text-oku-dark tracking-tight ml-4">3. Clinical Consent</h3>
-        <InformedConsentViewer />
-        
-        <div className="space-y-4 px-4">
-            <label className="flex items-start gap-4 p-8 bg-white border border-oku-taupe/10 rounded-[2.5rem] cursor-pointer hover:border-oku-purple transition-all group shadow-sm">
-                <input 
-                    type="checkbox" 
-                    required
-                    checked={formData.hasSignedConsent}
-                    onChange={(e) => setFormData({...formData, hasSignedConsent: e.target.checked})}
-                    className="mt-1 w-6 h-6 accent-oku-purple" 
-                />
-                <div className="space-y-1">
-                    <p className="font-bold text-oku-dark group-hover:text-oku-purple transition-colors">
-                        Digitally Sign Informed Consent
-                    </p>
-                    <p className="text-xs text-oku-taupe leading-relaxed">
-                        I have read the Oku Therapy Informed Consent Form. I understand the benefits, risks, confidentiality limitations (including the "No Secrets" policy), and the cancellation policy. I give my informed consent to proceed.
-                    </p>
+                {step === 2 && (
+                    <div className="space-y-10">
+                        <p className="text-sm text-oku-taupe italic leading-relaxed">Safety is our priority. Please provide contacts we can reach in case of an emergency during therapy.</p>
+                        <div className="space-y-4">
+                            <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Primary Emergency Contact</label>
+                            <input className="input-pebble" value={formData.emergencyContact1} onChange={e => setFormData({...formData, emergencyContact1: e.target.value})} placeholder="Name, Relationship & Phone Number" />
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Secondary Emergency Contact</label>
+                            <input className="input-pebble" value={formData.emergencyContact2} onChange={e => setFormData({...formData, emergencyContact2: e.target.value})} placeholder="Name, Relationship & Phone Number" />
+                        </div>
+                    </div>
+                )}
+
+                {step === 3 && (
+                    <div className="space-y-10">
+                        <div className="h-[400px] overflow-y-auto pr-4 custom-scrollbar bg-oku-cream-warm/30 rounded-3xl p-8 border border-oku-taupe/10">
+                            <InformedConsentViewer />
+                        </div>
+                        <div className="space-y-4">
+                            <label className="flex items-start gap-4 p-6 bg-oku-lavender/10 border border-oku-lavender/20 rounded-[2rem] cursor-pointer group">
+                                <input type="checkbox" className="mt-1 w-6 h-6 accent-oku-purple" checked={formData.hasSignedConsent} onChange={e => setFormData({...formData, hasSignedConsent: e.target.checked})} />
+                                <span className="text-[11px] font-black uppercase tracking-widest text-oku-dark group-hover:text-oku-purple transition-colors">I sign the informed clinical consent</span>
+                            </label>
+                            <label className="flex items-start gap-4 p-6 bg-oku-lavender/10 border border-oku-lavender/20 rounded-[2rem] cursor-pointer group">
+                                <input type="checkbox" className="mt-1 w-6 h-6 accent-oku-purple" checked={formData.hasAcceptedPrivacy} onChange={e => setFormData({...formData, hasAcceptedPrivacy: e.target.checked})} />
+                                <span className="text-[11px] font-black uppercase tracking-widest text-oku-dark group-hover:text-oku-purple transition-colors">I accept the HIPAA & Platform Privacy terms</span>
+                            </label>
+                        </div>
+                    </div>
+                )}
+
+                {step === 4 && (
+                    <div className="space-y-10">
+                        <div className="space-y-4">
+                            <label className="text-[10px] uppercase tracking-[0.3em] font-black text-oku-taupe ml-2">Medical & Clinical History</label>
+                            <textarea 
+                                className="input-pebble min-h-[200px] text-lg leading-relaxed" 
+                                value={formData.medicalHistory} 
+                                onChange={e => setFormData({...formData, medicalHistory: e.target.value})}
+                                placeholder="Previous diagnoses, medications, or therapy goals..."
+                            />
+                        </div>
+                        <div className="bg-oku-matcha/20 p-8 rounded-[3rem] border border-oku-matcha/30 flex items-center gap-6">
+                            <Sparkles className="text-oku-matcha-dark" size={32} />
+                            <div>
+                                <p className="font-bold text-oku-dark">You're almost there.</p>
+                                <p className="text-xs text-oku-taupe">Completing this allows your therapist to prepare for your first session.</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="mt-16 flex justify-between gap-4">
+                    <button 
+                        type="button" 
+                        onClick={step === 1 ? () => router.back() : prevStep} 
+                        className="px-10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] border border-oku-taupe/10 hover:bg-oku-cream-warm transition-all"
+                    >
+                        {step === 1 ? "Cancel" : "Back"}
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={step === 4 ? handleSubmit : nextStep} 
+                        disabled={isSubmitting}
+                        className="bg-oku-dark text-white px-12 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:bg-oku-purple-dark transition-all flex items-center gap-3"
+                    >
+                        {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : (step === 4 ? "Begin Therapy Journey" : "Continue")}
+                        {step < 4 && <ArrowRight size={18} />}
+                    </button>
                 </div>
-            </label>
-
-            <label className="flex items-start gap-4 p-8 bg-white border border-oku-taupe/10 rounded-[2.5rem] cursor-pointer hover:border-oku-purple transition-all group shadow-sm">
-                <input 
-                    type="checkbox" 
-                    required
-                    checked={formData.hasAcceptedPrivacy}
-                    onChange={(e) => setFormData({...formData, hasAcceptedPrivacy: e.target.checked})}
-                    className="mt-1 w-6 h-6 accent-oku-purple" 
-                />
-                <div className="space-y-1">
-                    <p className="font-bold text-oku-dark group-hover:text-oku-purple transition-colors">
-                        Accept HIPAA & Platform Privacy Policy
-                    </p>
-                    <p className="text-xs text-oku-taupe leading-relaxed">
-                        I understand how my personal health information will be stored and protected under Indian jurisdiction and Oku Therapy's digital privacy standards.
-                    </p>
-                </div>
-            </label>
-        </div>
-      </div>
-
-      {/* 4. Medical History */}
-      <DashboardCard title="4. Clinical Background" icon={<FileText size={20} strokeWidth={1.5} />}>
-        <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe ml-2">Medical History / Clinical Notes</label>
-            <textarea 
-              rows={6}
-              placeholder="Please share any previous diagnoses, medications, or specific clinical needs your therapist should be aware of."
-              value={formData.medicalHistory}
-              onChange={(e) => setFormData({...formData, medicalHistory: e.target.value})}
-              className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all"
-            />
-        </div>
-      </DashboardCard>
-
-      <div className="flex items-center gap-6 pt-4">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="btn-primary py-6 px-16 flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:shadow-oku-purple/20 transition-all disabled:opacity-50"
-        >
-          {isSubmitting ? <Loader2 className="animate-spin" /> : <Save size={18} />}
-          Authenticate & Finalize Onboarding
-        </button>
-        {initialData?.signedAt && (
-            <div className="flex flex-col">
-                <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe opacity-40">Clinical Lock Date</span>
-                <span className="text-green-600 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                    <CheckCircle2 size={14} /> {new Date(initialData.signedAt).toLocaleDateString()}
-                </span>
-            </div>
-        )}
-      </div>
-
-    </form>
+            </motion.div>
+        </AnimatePresence>
+    </div>
   )
 }

@@ -219,6 +219,7 @@ model VerificationToken {
 model ClientProfile {
   id                    String             @id @default(cuid())
   userId                String             @unique
+  isOnboarded           Boolean            @default(false)
   dateOfBirth           DateTime?
   gender                String?
   medicalHistory        String?
@@ -236,6 +237,7 @@ model ClientProfile {
 model PractitionerProfile {
   id                       String                 @id @default(cuid())
   userId                   String                 @unique
+  isOnboarded              Boolean                @default(false)
   licenseNumber            String?
   specialization           String[]
   bio                      String?

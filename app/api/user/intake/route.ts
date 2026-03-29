@@ -48,6 +48,12 @@ export async function POST(req: Request) {
       }
     })
 
+    // Update ClientProfile to mark as onboarded
+    await prisma.clientProfile.update({
+        where: { userId: session.user.id },
+        data: { isOnboarded: true }
+    })
+
     return NextResponse.json(intake)
   } catch (error) {
     console.error("Intake form error:", error)

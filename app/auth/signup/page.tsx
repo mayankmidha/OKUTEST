@@ -30,6 +30,7 @@ export default function SignupPage() {
     phone: '',
     role: 'CLIENT',
     location: 'India',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     referralCode: '',
   })
   const [error, setError] = useState('')
@@ -84,7 +85,8 @@ export default function SignupPage() {
         return
       }
 
-      router.push('/auth/login?message=Welcome to the community! Please sign in.')
+      // Automatically sign in or redirect to login with a clear message
+      router.push('/auth/login?message=Account created! Please sign in to complete your clinical profile.')
     } catch {
       setError('Unable to create account right now. Please try again.')
     } finally {

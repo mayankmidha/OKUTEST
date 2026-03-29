@@ -1,27 +1,31 @@
 import { NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { UserRole } from '@prisma/client'
 import { createReferralCode, findReferralReferrer } from '@/lib/referrals'
+import { detectCurrency } from '@/lib/currency'
 
 export async function POST(req: Request) {
   try {
+    const body = await req.json()
     const {
       name,
       email,
       password,
       role,
-      location,
-      phone,
-      bio,
-      licenseNumber,
-      specialization,
-      education,
-      experienceYears,
-      consultationFee,
-      hourlyRate,
+      location: manualLocation,
       referralCode,
-    } = await req.json()
+    } = body
+
+    // 1. SMART DETECTION: Get location/timezone from headers or client
+    const headerList = await headers()
+    const ipCountry = headerList.get('x-vercel-ip-country') || 'IN' // Default to India for safety
+    const timezone = body.timezone || 'UTC'
+    
+    // Auto-resolve location if not provided
+    const finalLocation = manualLocation || (ipCountry === 'IN' ? 'India' : 'International')
+    const baseCurrency = detectCurrency(finalLocation)
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -45,13 +49,6 @@ export async function POST(req: Request) {
 
     // Determine initial role
     const userRole = role === 'THERAPIST' ? UserRole.THERAPIST : UserRole.CLIENT
-    const practitionerSpecializations = Array.isArray(specialization)
-      ? specialization.filter(Boolean)
-      : typeof specialization === 'string' && specialization.trim()
-        ? [specialization.trim()]
-        : []
-    const parsedExperienceYears = Number.parseInt(String(experienceYears ?? ''), 10)
-    const parsedHourlyRate = Number.parseFloat(String(consultationFee ?? hourlyRate ?? ''))
     const referredBy = await findReferralReferrer(referralCode)
     const generatedReferralCode = await createReferralCode(name)
 
@@ -64,21 +61,16 @@ export async function POST(req: Request) {
         referredById: referredBy?.role === UserRole.CLIENT ? referredBy.id : null,
         password: hashedPassword,
         role: userRole,
-        location: location || null,
-        phone: phone || null,
-        // Auto-create profile based on role
-        clientProfile: userRole === UserRole.CLIENT ? { create: {} } : undefined,
+        location: finalLocation,
+        // Auto-create profile with smart defaults
+        clientProfile: userRole === UserRole.CLIENT ? { 
+            create: { timezone } 
+        } : undefined,
         practitionerProfile: userRole === UserRole.THERAPIST ? {
           create: {
-            bio: bio?.trim() || '',
-            licenseNumber: licenseNumber?.trim() || null,
-            specialization: practitionerSpecializations,
-            education: education?.trim() || null,
-            experienceYears: Number.isNaN(parsedExperienceYears) ? 0 : parsedExperienceYears,
-            hourlyRate: Number.isNaN(parsedHourlyRate) ? null : parsedHourlyRate,
-            indiaSessionRate: Number.isNaN(parsedHourlyRate) ? null : parsedHourlyRate,
-            internationalSessionRate: Number.isNaN(parsedHourlyRate) ? null : parsedHourlyRate,
-            baseCurrency: 'INR',
+            baseCurrency,
+            timezone,
+            isVerified: false
           }
         } : undefined
       },
@@ -96,8 +88,8 @@ export async function POST(req: Request) {
           email: user.email,
           role: user.role,
           location: user.location,
-          phone: user.phone,
-          specialization: practitionerSpecializations,
+          timezone,
+          baseCurrency,
           referredById: user.referredById,
           referralCode: user.referralCode,
         }),
