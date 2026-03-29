@@ -101,6 +101,8 @@ model User {
   insurancePolicies          InsurancePolicy[]
   prescriptions              Prescription[]       @relation("ClientPrescriptions")
   authoredPrescriptions      Prescription[]       @relation("PractitionerPrescriptions")
+  aiCareSessions             AiCareSession[]
+  careContext                CareContext?
   
   // B2B Support
   organizationId             String?
@@ -588,6 +590,30 @@ model Document {
   practitionerId String?
   client         User     @relation("ClientDocuments", fields: [clientId], references: [id], onDelete: Cascade)
   practitioner   User?    @relation("PractitionerDocuments", fields: [practitionerId], references: [id], onDelete: Cascade)
+}
+
+model AiCareSession {
+  id            String   @id @default(cuid())
+  userId        String
+  startTime     DateTime @default(now())
+  summary       String?  @db.Text
+  dominantMood  String?
+  riskDetected  Boolean  @default(false)
+  careInsights  Json?    // Structured clinical insights for the human therapist
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CareContext {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  longTermMemory    String?  @db.Text // AI's high-level understanding of the user
+  currentStruggles  String[]
+  recentWins        String[]
+  executiveFunction Json?    // Current ADHD energy levels / spoon count
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
