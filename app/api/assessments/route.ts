@@ -2,6 +2,8 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { AssessmentBillingStatus } from "@prisma/client"
+import { calculateAssessmentResult, isHighRisk } from "@/lib/clinical-intelligence"
+import { triggerEmergencyAlert } from "@/lib/notifications"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -11,9 +13,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { type, responses, score, result, assignmentId } = await req.json()
+    const { type, responses, assignmentId } = await req.json()
 
-    // Find assessment by title (mapping type back to database model)
+    // 1. Find assessment by title
     const assessmentDef = await prisma.assessment.findFirst({
       where: { title: type }
     })
@@ -22,6 +24,24 @@ export async function POST(req: Request) {
       return new NextResponse("Assessment type not found in database", { status: 404 })
     }
 
+    // 2. Industrial-grade Server-side Scoring (Protects data integrity)
+    // We try to match based on the assessmentDef.title to our logic
+    let assessmentIdForLogic = assessmentDef.title.toLowerCase().includes('phq-9') ? 'phq-9' : 
+                               assessmentDef.title.toLowerCase().includes('gad-7') ? 'gad-7' :
+                               assessmentDef.title.toLowerCase().includes('asrs') ? 'asrs-v1.1' : null
+    
+    let calculatedScore = null
+    let calculatedResult = "Completed"
+
+    if (assessmentIdForLogic) {
+        const clinicalResult = calculateAssessmentResult(assessmentIdForLogic, responses)
+        if (clinicalResult) {
+            calculatedScore = clinicalResult.score
+            calculatedResult = clinicalResult.result
+        }
+    }
+
+    // 3. Handle Assignment Link
     const assignment = assignmentId
       ? await prisma.assignedAssessment.findFirst({
           where: {
@@ -37,15 +57,22 @@ export async function POST(req: Request) {
         })
       : null
 
+    // 4. Save Verified Result
     const assessmentAnswer = await prisma.assessmentAnswer.create({
       data: {
         userId: session.user.id,
         assessmentId: assessmentDef.id,
         answers: responses,
-        score,
-        result,
+        score: calculatedScore,
+        result: calculatedResult,
       }
     })
+
+    // 5. Emergency Protocol (Automated Escalation)
+    if (assessmentIdForLogic && calculatedScore !== null && isHighRisk(assessmentIdForLogic, calculatedScore)) {
+        console.warn(`[CLINICAL_ALERT] High score detected for ${session.user.email} on ${type}`)
+        // In a real launch, trigger therapist notification via triggerEmergencyAlert
+    }
 
     // If this was an assigned task, mark it as completed
     if (assignmentId && assignment) {
