@@ -553,9 +553,9 @@ model Document {
   createdAt      DateTime @default(now())
   clientId       String
   isPrivate      Boolean  @default(false)
-  practitionerId String
+  practitionerId String?
   client         User     @relation("ClientDocuments", fields: [clientId], references: [id], onDelete: Cascade)
-  practitioner   User     @relation("PractitionerDocuments", fields: [practitionerId], references: [id], onDelete: Cascade)
+  practitioner   User?    @relation("PractitionerDocuments", fields: [practitionerId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {

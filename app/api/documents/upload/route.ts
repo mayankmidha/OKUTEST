@@ -17,25 +17,24 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData()
     const file = formData.get('file') as File
-    const title = formData.get('title') as string
-    const category = formData.get('category') as string || 'OTHER'
-
+    const name = formData.get('title') as string || file.name
+    
     if (!file) {
       return new NextResponse('No file uploaded', { status: 400 })
     }
 
     // In a full production BAA environment, we would stream this to AWS S3/Azure Blob.
     // For this launch, we log the intent and create the clinical record placeholder.
-    console.log(`[VAULT] Upload received: ${title} from user ${session.user.id}`)
+    console.log(`[VAULT] Upload received: ${name} from user ${session.user.id}`)
 
     const document = await prisma.document.create({
         data: {
-            userId: session.user.id,
-            title: title || file.name,
-            fileUrl: `/placeholder-secure-storage/${file.name}`, // Would be S3 URL in full prod
-            fileType: file.type,
-            category: category,
-            status: 'PENDING_REVIEW'
+            clientId: session.user.id,
+            name: name,
+            url: `/placeholder-secure-storage/${file.name}`, // Would be S3 URL in full prod
+            type: file.type,
+            uploadedBy: 'CLIENT', // Tracking the source of the document
+            isPrivate: false,
         }
     })
 
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
             userId: session.user.id,
             action: 'DOCUMENT_UPLOADED',
             category: 'CLINICAL_DOCUMENTATION',
-            metadata: { documentId: document.id, category },
+            metadata: { documentId: document.id, fileName: name },
         }
     })
 
