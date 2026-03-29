@@ -22,14 +22,14 @@ export async function POST(req: Request) {
     const startTime = new Date(event.start_time)
     const endTime = new Date(event.end_time)
     
-    // Find the practitioner by their calendly link (stored in OKU internally)
-    // We match by the user's Calendly profile URL or email
+    // Find the practitioner by their calendly link or email
     const profile = await prisma.practitionerProfile.findFirst({
         where: { 
             OR: [
                 { googleCalendarEmail: invitee.email },
                 { outlookCalendarEmail: invitee.email },
-                { calendlyLink: { contains: invitee.email.split('@')[0] } } // Heuristic match
+                { calendlyLink: { contains: invitee.email.split('@')[0] } },
+                { calendlyLink: { contains: event.uri.split('/').pop() } } // Direct URI match
             ]
         }
     })
