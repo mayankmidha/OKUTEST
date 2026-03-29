@@ -94,11 +94,11 @@ export async function POST(req: Request) {
         summary: aiResponse.summary,
         sentiment: aiResponse.sentiment,
         riskLevel: aiResponse.riskLevel,
-        keyInsights: aiResponse.keyInsights,
-        sentimentScores: aiResponse.sentimentScores,
+        keyInsights: aiResponse.keyInsights || aiResponse.clinicalSignals, // Supporting legacy
+        sentimentScores: aiResponse.sentimentScores || {},
         clinicalSignals: aiResponse.clinicalSignals,
-        adhdSignals: aiResponse.adhdSignals,
-        careRecommendations: aiResponse.careRecommendations,
+        adhdSignals: aiResponse.adhdSignals || [],
+        careRecommendations: aiResponse.treatmentRecommendations,
       },
       update: {
         content: transcriptContent,
@@ -106,20 +106,22 @@ export async function POST(req: Request) {
         summary: aiResponse.summary,
         sentiment: aiResponse.sentiment,
         riskLevel: aiResponse.riskLevel,
-        keyInsights: aiResponse.keyInsights,
-        sentimentScores: aiResponse.sentimentScores,
+        keyInsights: aiResponse.keyInsights || aiResponse.clinicalSignals,
         clinicalSignals: aiResponse.clinicalSignals,
-        adhdSignals: aiResponse.adhdSignals,
-        careRecommendations: aiResponse.careRecommendations,
+        careRecommendations: aiResponse.treatmentRecommendations,
       }
     });
 
-    // Handle high risk detection alerts
-    if (aiResponse.riskLevel === 'HIGH') {
+    // Handle high/critical risk detection alerts (Industrial Safety)
+    if (aiResponse.riskLevel === 'HIGH' || aiResponse.riskLevel === 'CRITICAL') {
         await triggerEmergencyAlert({
             appointmentId,
             riskLevel: aiResponse.riskLevel,
-            clinicalSignals: aiResponse.clinicalSignals
+            clinicalSignals: [
+                ...aiResponse.clinicalSignals, 
+                `SUICIDE_RISK: ${aiResponse.suicideRisk}`,
+                `VIOLENCE_RISK: ${aiResponse.violenceRisk}`
+            ]
         })
     }
 
