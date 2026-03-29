@@ -121,10 +121,10 @@ export default async function ClientDashboardPage() {
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         
         {/* Left Column: Core Activities */}
-        <div className="lg:col-span-8 space-y-10">
+        <div className="xl:col-span-8 space-y-10">
           
           {(hasIncompleteIntake || hasIncompleteConsent) && (
             <div className="bg-oku-navy p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
@@ -294,7 +294,7 @@ export default async function ClientDashboardPage() {
         </div>
 
         {/* Right Column: Insights & Recommendations */}
-        <div className="lg:col-span-4 space-y-10">
+        <div className="xl:col-span-4 space-y-10">
           
           <div className="card-navy group">
              <div className="relative z-10">

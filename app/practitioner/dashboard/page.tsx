@@ -430,8 +430,8 @@ export default async function PractitionerDashboardPage() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-10">
+      <div className="grid xl:grid-cols-12 gap-10">
+        <div className="xl:col-span-8 space-y-10">
           <section className="space-y-6">
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-3">
@@ -501,7 +501,7 @@ export default async function PractitionerDashboardPage() {
           </div>
         </div>
 
-        <div className="lg:col-span-4 space-y-10">
+        <div className="xl:col-span-4 space-y-10">
           <div className="h-[480px] card-glass overflow-hidden p-1 border-oku-rose-dark/5 bg-oku-rose/10">
             <TaskManager />
           </div>
