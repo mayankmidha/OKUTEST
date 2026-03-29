@@ -7,15 +7,22 @@ import {
   Settings, Heart, ClipboardCheck, 
   Shield, FileText, Bell, LogOut,
   ChevronRight, Activity, DollarSign,
-  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain
+  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
 
 export function DashboardSidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const role = session?.user?.role
+  const [isOpen, setIsOpen] = useState(false)
+
+  // Close sidebar on navigation
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
 
   const clientLinks = [
     { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
@@ -52,25 +59,27 @@ export function DashboardSidebar() {
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
 
-  return (
-    <aside className="w-80 bg-white/70 backdrop-blur-xl border-r border-white min-h-screen flex flex-col sticky top-0 z-40 p-5 gap-6">
-      <div className="px-4 py-5">
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
+      <div className="px-4 py-5 flex items-center justify-between">
         <Link href="/dashboard" className="block group">
           <motion.img 
             whileHover={{ scale: 1.05 }}
-            src="/uploads/2025/07/Logoo.png" 
+            src="/wp-content/uploads/2025/07/Logoo.png" 
             alt="OKU" 
             className="h-9 w-auto opacity-90"
           />
         </Link>
+        <button onClick={() => setIsOpen(false)} className="lg:hidden text-oku-taupe">
+            <X size={24} />
+        </button>
       </div>
 
-      <nav className="flex-1 space-y-2 px-2">
+      <nav className="flex-1 space-y-2 px-2 overflow-y-auto">
         <p className="text-[10px] font-medium uppercase tracking-[0.36em] text-oku-taupe/40 mb-6 ml-4">Workspace</p>
         <div className="space-y-1">
           {links.map((link) => {
             const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
-            const renderedIcon = link.icon
             return (
               <Link
                 key={link.href}
@@ -96,18 +105,11 @@ export function DashboardSidebar() {
                       : 'bg-white/40 group-hover:bg-white group-hover:shadow-md'
                     }`}>
                        <div className={active ? link.color : 'text-oku-taupe group-hover:text-oku-dark'}>
-                          {renderedIcon}
+                          {link.icon}
                        </div>
                     </div>
                     <span className={`text-[11px] uppercase tracking-[0.2em] font-medium ${active ? 'text-oku-dark' : ''}`}>{link.label}</span>
                   </div>
-                  {active && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="w-1.5 h-1.5 rounded-full bg-oku-purple" 
-                    />
-                  )}
                 </div>
               </Link>
             )
@@ -115,10 +117,10 @@ export function DashboardSidebar() {
         </div>
       </nav>
 
-      <div className="mt-auto space-y-6">
+      <div className="mt-auto p-5">
         <div className="p-6 rounded-[2rem] bg-white/90 shadow-lg shadow-oku-taupe/10 border border-white group transition-all duration-300 hover:shadow-oku-purple/5">
            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-oku-purple/30 to-oku-blue/30 flex items-center justify-center text-oku-dark font-display font-medium shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-oku-purple/30 to-oku-blue/30 flex items-center justify-center text-oku-dark font-display font-medium">
                  {session?.user?.name?.substring(0, 1)}
               </div>
               <div className="flex-1 min-w-0">
@@ -135,6 +137,48 @@ export function DashboardSidebar() {
            </button>
         </div>
       </div>
-    </aside>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Mobile Trigger */}
+      <div className="lg:hidden fixed top-4 left-4 z-[60]">
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-oku-taupe/10 shadow-xl text-oku-dark"
+        >
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Backdrop */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-oku-dark/20 backdrop-blur-sm z-50 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-80 bg-white/70 backdrop-blur-xl border-r border-white min-h-screen flex-col sticky top-0 z-40 p-5 gap-6">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer */}
+      <motion.aside 
+        initial={{ x: '-100%' }}
+        animate={{ x: isOpen ? 0 : '-100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] shadow-2xl lg:hidden"
+      >
+        {sidebarContent}
+      </motion.aside>
+    </>
   )
 }
