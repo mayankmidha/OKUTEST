@@ -6,6 +6,7 @@ import { AppointmentStatus, PaymentStatus, RecurringPattern } from '@prisma/clie
 import { sendSessionReminder } from '@/lib/notifications'
 import { sendInvoiceEmail } from '@/lib/invoicing'
 import { createRecurringSeries } from '@/lib/recurring-booking'
+import { syncAppointmentToExternalCalendar } from '@/lib/calendar-sync'
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -75,6 +76,13 @@ export async function POST(req: Request) {
             await sendInvoiceEmail(appointmentId)
         } catch (error) {
             console.error("Failed to send automated invoice:", error)
+        }
+
+        // 6. Sync to External Calendars (Google/Outlook/Calendly Bridge)
+        try {
+            await syncAppointmentToExternalCalendar(appointmentId)
+        } catch (error) {
+            console.error("Failed to sync to external calendar:", error)
         }
     }
   }

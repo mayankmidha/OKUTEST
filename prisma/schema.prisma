@@ -247,6 +247,15 @@ model PractitionerProfile {
   websiteUrl               String?
   stripeAccountId          String?
   baseCurrency             String                 @default("INR")
+  
+  // Universal Calendar Sync
+  calendlyLink             String?
+  googleCalendarEmail      String?
+  googleRefreshToken       String?
+  outlookCalendarEmail     String?
+  outlookRefreshToken      String?
+  syncEnabled              Boolean                @default(false)
+
   availability             Availability[]
   overrides                AvailabilityOverride[]
   blockedDates             BlockedDate[]
