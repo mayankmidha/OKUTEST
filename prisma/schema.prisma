@@ -311,6 +311,13 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum RecurringPattern {
+  NONE
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
 model Appointment {
   id               String              @id @default(cuid())
   clientId         String?
@@ -333,6 +340,12 @@ model Appointment {
   priceSnapshot    Float?
   pricingRegion    String?
 
+  // Recurring Session Logic
+  recurringPattern  RecurringPattern  @default(NONE)
+  parentAppointmentId String?
+  parentAppointment   Appointment?    @relation("RecurringSeries", fields: [parentAppointmentId], references: [id])
+  childAppointments   Appointment[]   @relation("RecurringSeries")
+
   // Group Therapy Support
   isGroupSession   Boolean             @default(false)
   maxParticipants  Int                 @default(1)
@@ -353,6 +366,7 @@ model Appointment {
   @@index([serviceId])
   @@index([status])
   @@index([startTime])
+  @@index([parentAppointmentId])
 }
 
 model GroupParticipant {

@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
-import { AppointmentStatus, PaymentStatus } from '@prisma/client'
+import { AppointmentStatus, PaymentStatus, RecurringPattern } from '@prisma/client'
 import { sendSessionReminder } from '@/lib/notifications'
 import { sendInvoiceEmail } from '@/lib/invoicing'
+import { createRecurringSeries } from '@/lib/recurring-booking'
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const appointmentId = session.metadata?.appointmentId
     const paymentId = session.metadata?.paymentId
+    const recurringPattern = (session.metadata?.recurringPattern as RecurringPattern) || RecurringPattern.NONE
 
     if (appointmentId && paymentId) {
         console.log(`[STRIPE_WEBHOOK] Payment successful for Appointment: ${appointmentId}`)
@@ -41,23 +43,34 @@ export async function POST(req: Request) {
             }
         })
 
-        // 2. Update Appointment Status
+        // 2. Update Appointment Status and Pattern
         await prisma.appointment.update({
             where: { id: appointmentId },
             data: { 
                 status: AppointmentStatus.SCHEDULED,
+                recurringPattern: recurringPattern,
                 updatedAt: new Date()
             }
         })
 
-        // 3. Trigger immediate notification
+        // 3. Trigger Recurring Series Generation (Phase 1 Industrialization)
+        if (recurringPattern !== RecurringPattern.NONE) {
+            try {
+                await createRecurringSeries(appointmentId)
+                console.log(`[RECURRING] Series generated for Parent: ${appointmentId} (${recurringPattern})`)
+            } catch (error) {
+                console.error("Failed to generate recurring series:", error)
+            }
+        }
+
+        // 4. Trigger immediate notification
         try {
             await sendSessionReminder(appointmentId)
         } catch (error) {
             console.error("Failed to send initial confirmation reminder:", error)
         }
 
-        // 4. Send Automated PDF Invoice (Industrial Requirement)
+        // 5. Send Automated PDF Invoice (Industrial Requirement)
         try {
             await sendInvoiceEmail(appointmentId)
         } catch (error) {

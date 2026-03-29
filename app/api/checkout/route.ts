@@ -17,6 +17,7 @@ export async function POST(req: Request) {
   const formData = await req.formData()
   const sessionId = formData.get('sessionId') as string // This is actually appointmentId based on frontend usage
   const method = formData.get('method') as string
+  const recurringPattern = (formData.get('recurringPattern') as string) || 'NONE'
 
   if (!sessionId) {
     return new NextResponse('Missing session ID', { status: 400 })
@@ -104,6 +105,7 @@ export async function POST(req: Request) {
                 appointmentId: appointment.id,
                 paymentId: payment.id,
                 userId: session.user.id,
+                recurringPattern: recurringPattern,
             },
         })
 
