@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
 import { AppointmentStatus, PaymentStatus } from '@prisma/client'
 import { sendSessionReminder } from '@/lib/notifications'
+import { sendInvoiceEmail } from '@/lib/invoicing'
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -44,16 +45,23 @@ export async function POST(req: Request) {
         await prisma.appointment.update({
             where: { id: appointmentId },
             data: { 
-                status: AppointmentStatus.SCHEDULED, // Or CONFIRMED
+                status: AppointmentStatus.SCHEDULED,
                 updatedAt: new Date()
             }
         })
 
-        // 3. Trigger immediate notification (optional, but good for UX)
+        // 3. Trigger immediate notification
         try {
             await sendSessionReminder(appointmentId)
         } catch (error) {
             console.error("Failed to send initial confirmation reminder:", error)
+        }
+
+        // 4. Send Automated PDF Invoice (Industrial Requirement)
+        try {
+            await sendInvoiceEmail(appointmentId)
+        } catch (error) {
+            console.error("Failed to send automated invoice:", error)
         }
     }
   }
