@@ -12,7 +12,7 @@ import {
   User
 } from '@stream-io/video-react-sdk'
 import '@stream-io/video-react-sdk/dist/css/styles.css'
-import { Loader2, Clock, RefreshCw, ShieldCheck, LogOut } from 'lucide-react'
+import { Loader2, Clock, RefreshCw, ShieldCheck, LogOut, AlertTriangle } from 'lucide-react'
 
 const MAX_JOIN_RETRIES = 3
 const RETRY_DELAYS_MS = [400, 1200]
@@ -215,6 +215,22 @@ export function VideoRoom({
     setRetryNonce((value) => value + 1)
   }
 
+  const handleEmergency = async () => {
+    if (!confirm("TRIGGER EMERGENCY PROTOCOL? This will instantly alert the care team and emergency contacts.")) return;
+    
+    try {
+        const res = await fetch('/api/clinical/emergency', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ appointmentId: sessionId })
+        });
+        if (res.ok) alert("EMERGENCY PROTOCOL ACTIVATED. Support is being notified.");
+        else alert("Failed to trigger alert. Please follow manual emergency procedures.");
+    } catch (e) {
+        alert("Fatal error triggering alert. Follow manual procedures.");
+    }
+  }
+
   const handleLeave = async () => {
     if (isLeaving) return
     setIsLeaving(true)
@@ -299,6 +315,14 @@ export function VideoRoom({
                   {role.toLowerCase()} connected
                 </div>
                 <div className="flex items-center gap-3">
+                  {role.toUpperCase() === 'PRACTITIONER' && (
+                    <button
+                        onClick={handleEmergency}
+                        className="px-4 py-3 rounded-full bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-700 transition-all flex items-center gap-2 shadow-lg shadow-red-900/40"
+                    >
+                        <AlertTriangle size={14} /> Emergency Alert
+                    </button>
+                  )}
                   <button
                     onClick={handleRetry}
                     disabled={isLeaving}
