@@ -25,7 +25,7 @@
         {
           "width": 100,
           "height": 101,
-          "url": "https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png",
+          "url": "/wp-content/uploads/2025/06/Frame-23-2.png",
           "type": "image/png"
         }
       ],
@@ -50,7 +50,7 @@
             "image": {
               "@id": "https://okutherapy.com/#primaryimage"
             },
-            "thumbnailUrl": "https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png",
+            "thumbnailUrl": "/wp-content/uploads/2025/06/Frame-23-2.png",
             "datePublished": "2025-06-28T09:13:56+00:00",
             "dateModified": "2026-03-17T07:38:15+00:00",
             "breadcrumb": {
@@ -70,8 +70,8 @@
             "@type": "ImageObject",
             "inLanguage": "en-US",
             "@id": "https://okutherapy.com/#primaryimage",
-            "url": "https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png",
-            "contentUrl": "https://okutherapy.com/wp-content/uploads/2025/06/Frame-23-2.png",
+            "url": "/wp-content/uploads/2025/06/Frame-23-2.png",
+            "contentUrl": "/wp-content/uploads/2025/06/Frame-23-2.png",
             "width": 100,
             "height": 101
           },
@@ -146,7 +146,7 @@
         {
           "width": 1440,
           "height": 731,
-          "url": "https://okutherapy.com/wp-content/uploads/2025/07/Group-21.png",
+          "url": "/wp-content/uploads/2025/07/Group-21.png",
           "type": "image/png"
         }
       ],
@@ -171,7 +171,7 @@
             "image": {
               "@id": "https://okutherapy.com/about-us/#primaryimage"
             },
-            "thumbnailUrl": "https://okutherapy.com/wp-content/uploads/2025/07/Group-21-1024x520.png",
+            "thumbnailUrl": "/wp-content/uploads/2025/07/Group-21-1024x520.png",
             "datePublished": "2025-07-05T03:23:47+00:00",
             "dateModified": "2025-07-13T20:34:38+00:00",
             "breadcrumb": {
@@ -191,8 +191,8 @@
             "@type": "ImageObject",
             "inLanguage": "en-US",
             "@id": "https://okutherapy.com/about-us/#primaryimage",
-            "url": "https://okutherapy.com/wp-content/uploads/2025/07/Group-21.png",
-            "contentUrl": "https://okutherapy.com/wp-content/uploads/2025/07/Group-21.png",
+            "url": "/wp-content/uploads/2025/07/Group-21.png",
+            "contentUrl": "/wp-content/uploads/2025/07/Group-21.png",
             "width": 1440,
             "height": 731
           },
@@ -267,7 +267,7 @@
         {
           "width": 443,
           "height": 470,
-          "url": "https://okutherapy.com/wp-content/uploads/2025/07/Frame-243.png",
+          "url": "/wp-content/uploads/2025/07/Frame-243.png",
           "type": "image/png"
         }
       ],
@@ -292,7 +292,7 @@
             "image": {
               "@id": "https://okutherapy.com/people/#primaryimage"
             },
-            "thumbnailUrl": "https://okutherapy.com/wp-content/uploads/2025/07/Frame-243.png",
+            "thumbnailUrl": "/wp-content/uploads/2025/07/Frame-243.png",
             "datePublished": "2025-06-28T22:26:02+00:00",
             "dateModified": "2025-07-13T20:35:15+00:00",
             "breadcrumb": {
@@ -312,8 +312,8 @@
             "@type": "ImageObject",
             "inLanguage": "en-US",
             "@id": "https://okutherapy.com/people/#primaryimage",
-            "url": "https://okutherapy.com/wp-content/uploads/2025/07/Frame-243.png",
-            "contentUrl": "https://okutherapy.com/wp-content/uploads/2025/07/Frame-243.png",
+            "url": "/wp-content/uploads/2025/07/Frame-243.png",
+            "contentUrl": "/wp-content/uploads/2025/07/Frame-243.png",
             "width": 443,
             "height": 470
           },

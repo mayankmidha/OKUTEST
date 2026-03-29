@@ -110,6 +110,7 @@ model User {
   referrals                  User[]               @relation("UserReferrals")
   earnedReferralRewards      ReferralReward[]     @relation("ReferralRewardReferrer")
   referralSourceRewards      ReferralReward[]     @relation("ReferralRewardReferredUser")
+  notificationPreferences    NotificationPreference[]
 
   @@index([email])
   @@index([role])
@@ -195,6 +196,7 @@ model Message {
   receiverId String
   content    String
   isRead     Boolean  @default(false)
+  readAt     DateTime?
   createdAt  DateTime @default(now())
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
@@ -259,6 +261,7 @@ model PractitionerProfile {
   availability             Availability[]
   overrides                AvailabilityOverride[]
   blockedDates             BlockedDate[]
+  services                 Service[]
   user                     User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -409,17 +412,24 @@ model Transcript {
   appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 }
 
-model SoapNote {
-  id            String      @id @default(cuid())
-  appointmentId String      @unique
-  subjective    String?
-  objective     String?
-  assessment    String?
-  plan          String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+enum SoapNoteStatus {
+  DRAFT
+  FINALIZED
 }
+
+model SoapNote {
+  id             String         @id @default(cuid())
+  appointmentId  String         @unique
+  subjective     String
+  objective      String
+  assessment     String
+  plan           String
+  status         SoapNoteStatus @default(DRAFT)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  appointment    Appointment    @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+}
+
 
 model Assessment {
   id            String               @id @default(cuid())
@@ -447,6 +457,7 @@ model Service {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   appointments Appointment[]
+  practitioners PractitionerProfile[]
 }
 
 model MoodEntry {
@@ -571,6 +582,27 @@ enum UserRole {
   CLIENT
   THERAPIST
   ADMIN
+}
+
+enum NotificationType {
+  SESSION_REMINDER
+  MESSAGE_RECEIVED
+  TREATMENT_UPDATE
+  PAYMENT_SUCCESS
+  CLINICAL_ALERT
+}
+
+model NotificationPreference {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  enabled   Boolean          @default(true)
+  channel   String           @default("EMAIL") // EMAIL, SMS, PUSH
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
 }
 
 enum AppointmentStatus {
