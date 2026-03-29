@@ -63,10 +63,7 @@ export default async function TherapistsPage() {
                        </div>
                     </div>
                     <span className="bg-white text-oku-dark px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">
-                        {(() => {
-                            const conv = autoConvert(3500); // Default or fetch from profile
-                            return formatCurrency(conv.amount, conv.currency);
-                        })()} / HR
+                        ₹3,500 / HR
                     </span>
                 </div>
               </div>

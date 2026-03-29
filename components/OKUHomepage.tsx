@@ -1838,58 +1838,6 @@ export default function OkuHomepage() {
           </div>
         </section>
 
-        {/* ── Visual Archive ── */}
-        <section className="section-lg" style={{ background: "linear-gradient(180deg, var(--warm) 0%, var(--cream) 100%)" }}>
-          <div className="max-w">
-            <SectionReveal>
-              <div className="visual-archive-shell">
-                <div className="visual-archive-intro">
-                  <div>
-                    <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Source Archive</span>
-                    <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", marginBottom: 16 }}>
-                      The original <strong>OKU visual world</strong>, restored into the homepage.
-                    </h2>
-                  </div>
-                  <p style={{ color: "rgba(45,45,45,0.68)", lineHeight: 1.85, maxWidth: 560 }}>
-                    We pulled the editorial imagery, note cards, care symbols, and illustrated therapy motifs from the source OKU project into this product homepage so the software carries the same emotional language as the brand itself.
-                  </p>
-                </div>
-
-                <div className="visual-archive-feature-grid">
-                  {SOURCE_ARCHIVE_FEATURED.map((item) => (
-                    <div key={item.image} className="visual-archive-card featured">
-                      <img src={item.image} alt={item.alt} loading="lazy" style={{ objectFit: item.fit || "contain" }} />
-                      <span className="visual-archive-label">{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <SectionReveal>
-                  <div className="visual-archive-strip" style={{ marginBottom: 18 }}>
-                    {SOURCE_ARCHIVE_SUPPORTING.map((item) => (
-                      <div key={item.image} className="visual-archive-card strip">
-                        <img src={item.image} alt={item.alt} loading="lazy" style={{ objectFit: item.fit || "contain" }} />
-                        <span className="visual-archive-label">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </SectionReveal>
-
-                <SectionReveal>
-                  <div className="visual-archive-strip">
-                    {SOURCE_ARCHIVE_STUDIO.map((item) => (
-                      <div key={item.image} className="visual-archive-card strip">
-                        <img src={item.image} alt={item.alt} loading="lazy" style={{ objectFit: item.fit || "contain" }} />
-                        <span className="visual-archive-label">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </SectionReveal>
-              </div>
-            </SectionReveal>
-          </div>
-        </section>
-
         {/* ── How It Works ── */}
         <section className="section" style={{ background: "var(--cream)" }}>
           <div className="max-w">

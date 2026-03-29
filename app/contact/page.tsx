@@ -11,7 +11,7 @@ export default function ContactPage() {
 
         <div className="grid md:grid-cols-2 gap-16">
            <div className="space-y-12">
-              <div className="flex items-start gap-8 bg-white/50 p-8 rounded-card border border-oku-taupe/10">
+              <div className="flex items-start gap-8 bg-white/50 p-8 rounded-[2.5rem] border border-oku-taupe/10">
                  <div className="bg-oku-purple/10 p-4 rounded-xl text-oku-purple"><Mail className="w-8 h-8" /></div>
                  <div>
                     <h3 className="text-xl font-bold text-oku-dark mb-2 uppercase tracking-widest">Email</h3>
@@ -19,15 +19,15 @@ export default function ContactPage() {
                  </div>
               </div>
 
-              <div className="flex items-start gap-8 bg-white/50 p-8 rounded-card border border-oku-taupe/10">
-                 <div className="bg-oku-blue/10 p-4 rounded-xl text-oku-blue"><Phone className="w-8 h-8" /></div>
+              <div className="flex items-start gap-8 bg-white/50 p-8 rounded-[2.5rem] border border-oku-taupe/10">
+                 <div className="bg-oku-ocean/10 p-4 rounded-xl text-oku-ocean"><Phone className="w-8 h-8" /></div>
                  <div>
-                    <h3 className="text-xl font-bold text-oku-dark mb-2 uppercase tracking-widest">Phone / WhatsApp</h3>
-                    <p className="text-lg text-oku-taupe">+91 99999 99999</p>
+                    <h3 className="text-xl font-bold text-oku-dark mb-2 uppercase tracking-widest">WhatsApp</h3>
+                    <p className="text-lg text-oku-taupe">+91 99538 79928</p>
                  </div>
               </div>
 
-              <div className="flex items-start gap-8 bg-white/50 p-8 rounded-card border border-oku-taupe/10">
+              <div className="flex items-start gap-8 bg-white/50 p-8 rounded-[2.5rem] border border-oku-taupe/10">
                  <div className="bg-oku-purple/10 p-4 rounded-xl text-oku-purple"><MapPin className="w-8 h-8" /></div>
                  <div>
                     <h3 className="text-xl font-bold text-oku-dark mb-2 uppercase tracking-widest">Location</h3>
@@ -36,7 +36,7 @@ export default function ContactPage() {
               </div>
            </div>
 
-           <div className="bg-oku-page-bg p-12 rounded-card shadow-2xl relative overflow-hidden">
+           <div className="bg-oku-page-bg p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
               <h3 className="text-3xl font-display font-bold text-oku-dark mb-8">Send us a message</h3>
               <form className="space-y-6">

@@ -2,8 +2,8 @@
 
 import { usePathname } from 'next/navigation'
 import { Suspense } from 'react'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import BrandedNav from '@/components/BrandedNav'
+import BrandedFooter from '@/components/BrandedFooter'
 import AuthProvider from '@/components/auth-provider'
 import { ActivityTracker } from '@/components/ActivityTracker'
 
@@ -25,11 +25,11 @@ export default function RootLayoutClient({
       <Suspense fallback={null}>
         <ActivityTracker />
       </Suspense>
-      {!isDashboard && <Header />}
+      {!isDashboard && <BrandedNav />}
       <main>
         {children}
       </main>
-      {!isDashboard && <Footer />}
+      {!isDashboard && <BrandedFooter />}
     </AuthProvider>
   )
 }

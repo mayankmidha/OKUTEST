@@ -148,7 +148,7 @@ export default function PractitionerSignupPage() {
                   name="phone"
                   type="tel"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91 99999 99999"
                   value={formData.phone}
                   onChange={handleChange}
                 />
@@ -162,7 +162,7 @@ export default function PractitionerSignupPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    License Number
+                    License / Registration Number
                   </label>
                   <input
                     id="licenseNumber"
@@ -170,7 +170,7 @@ export default function PractitionerSignupPage() {
                     type="text"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                    placeholder="LM-123456"
+                    placeholder="RCI Reg No. or Medical License"
                     value={formData.licenseNumber}
                     onChange={handleChange}
                   />
@@ -189,14 +189,13 @@ export default function PractitionerSignupPage() {
                     onChange={handleChange}
                   >
                     <option value="" disabled>Select a specialization</option>
-                    <option value="Psychiatry">Psychiatry</option>
-                    <option value="Medication Management">Medication Management</option>
-                    <option value="Clinical Psychology">Clinical Psychology</option>
+                    <option value="Queer Affirmative Therapy">Queer Affirmative Therapy</option>
+                    <option value="Trauma-Informed Care">Trauma-Informed Care</option>
+                    <option value="Caste-Aware Therapy">Caste-Aware Therapy</option>
+                    <option value="Neurodivergent Support">Neurodivergent Support (ADHD/Autism)</option>
                     <option value="Psychodynamic Psychotherapy">Psychodynamic Psychotherapy</option>
-                    <option value="Trauma & PTSD">Trauma & PTSD</option>
-                    <option value="Anxiety & OCD">Anxiety & OCD</option>
-                    <option value="Child & Adolescent Psychiatry">Child & Adolescent Psychiatry</option>
-                    <option value="Couples & Family Therapy">Couples & Family Therapy</option>
+                    <option value="Clinical Psychology">Clinical Psychology</option>
+                    <option value="Psychiatry">Psychiatry</option>
                   </select>
                 </div>
               </div>
@@ -263,7 +262,7 @@ export default function PractitionerSignupPage() {
                   step="0.01"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="150.00"
+                  placeholder="₹1500.00"
                   value={formData.consultationFee}
                   onChange={handleChange}
                 />
