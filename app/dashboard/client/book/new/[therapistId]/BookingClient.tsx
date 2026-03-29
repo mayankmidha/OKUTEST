@@ -190,7 +190,7 @@ export default function BookingClient({
                                                         : 'bg-white border-oku-taupe/20 text-oku-dark hover:border-oku-purple/50'
                                                     }`}
                                                 >
-                                                    {time}
+                                                    {new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                                                 </button>
                                             )
                                         })}
@@ -207,8 +207,7 @@ export default function BookingClient({
                                     <div>
                                         <p className="font-bold text-oku-dark text-lg">{activeService?.name}</p>
                                         <p className="text-sm text-oku-taupe">
-                                            {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric'}) : 'Select a date'} 
-                                            {selectedTime ? ` at ${selectedTime}` : ''}
+                                            {selectedTime ? new Date(selectedTime).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : 'Select a slot'} 
                                         </p>
                                     </div>
                                     <p className="text-2xl font-display font-bold text-oku-purple">

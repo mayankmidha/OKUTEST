@@ -20,20 +20,40 @@ export async function checkPractitionerAvailability({
   durationMinutes: number,
   bufferMinutes?: number
 }) {
-  const endTime = new Date(startTime.getTime() + (durationMinutes + bufferMinutes) * 60000)
-  const dayOfWeek = startTime.getUTCDay()
-  
-  // Format time as HH:mm
-  const timeStr = startTime.getUTCHours().toString().padStart(2, '0') + ':' + 
-                  startTime.getUTCMinutes().toString().padStart(2, '0')
+  const profile = await prisma.practitionerProfile.findUnique({
+    where: { id: practitionerProfileId },
+    select: { timezone: true }
+  })
+  const tz = profile?.timezone || 'UTC'
 
+  // Convert UTC startTime to Practitioner's Local Time
+  const localDateStr = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  }).format(startTime)
+
+  // Parse back to get local components for dayOfWeek and timeStr
+  // Format from Intl is MM/DD/YYYY, HH:mm:ss
+  const match = localDateStr.match(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}):(\d{2})/)
+  if (!match) return { available: false, reason: 'Timezone conversion error' }
+  
+  const [_, month, day, year, hour, minute] = match
+  const localObj = new Date(parseInt(year), parseInt(month)-1, parseInt(day), parseInt(hour), parseInt(minute))
+  
+  const dayOfWeek = localObj.getDay()
+  const timeStr = `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`
+
+  const endTime = new Date(startTime.getTime() + (durationMinutes + bufferMinutes) * 60000)
+  
   // 1. Check for Blocked Dates
   const isBlocked = await prisma.blockedDate.findFirst({
     where: {
       practitionerProfileId,
       date: {
-        gte: new Date(startTime.setUTCHours(0,0,0,0)),
-        lte: new Date(startTime.setUTCHours(23,59,59,999))
+        gte: new Date(new Date(startTime).setUTCHours(0,0,0,0)),
+        lte: new Date(new Date(startTime).setUTCHours(23,59,59,999))
       }
     }
   })

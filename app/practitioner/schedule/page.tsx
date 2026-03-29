@@ -40,7 +40,7 @@ export default async function PractitionerSchedulePage() {
       canPostBlogs={practitioner.canPostBlogs}
       heroActions={
         <div className="px-4 py-2 bg-oku-purple/10 text-oku-purple-dark rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-oku-purple/20">
-           <Clock size={14} /> Timezone: IST (UTC+5:30)
+           <Clock size={14} /> Timezone: {practitioner.timezone || 'UTC'}
         </div>
       }
     >

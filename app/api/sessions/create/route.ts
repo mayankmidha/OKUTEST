@@ -16,18 +16,15 @@ export async function POST(req: Request) {
     // Handle form data
     const formData = await req.formData()
     const practitionerProfileId = formData.get('therapistId') as string
-    const dateStr = formData.get('date') as string
-    const timeStr = formData.get('time') as string
+    const timeStr = formData.get('time') as string // This is now an ISO string from BookingClient
     const serviceId = formData.get('serviceId') as string
 
-    if (!practitionerProfileId || !dateStr || !timeStr) {
+    if (!practitionerProfileId || !timeStr) {
       return new NextResponse('Missing required fields', { status: 400 })
     }
 
-    // Combine date and time
-    const startTime = new Date(dateStr)
-    const [hours, minutes] = timeStr.split(':')
-    startTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+    // Use ISO string directly for UTC session start
+    const startTime = new Date(timeStr)
 
     // Calculate end time (default 1 hour or service duration)
     let duration = 60

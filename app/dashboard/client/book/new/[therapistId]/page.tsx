@@ -48,51 +48,65 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
       orderBy: { price: 'asc' }
   })
 
-  // Generate Slots
+  // Generate Slots (Timezone-Aware)
   const slots = []
   const today = new Date()
+  const tz = practitioner.timezone || 'UTC'
   
-  for(let i=0; i<=14; i++) { // Start from 0 (today) and go for 14 days
+  for(let i=0; i<=14; i++) {
+    // Generate date in practitioner's timezone
     const date = new Date(today)
     date.setDate(today.getDate() + i)
-    date.setHours(0,0,0,0)
     
-    const dayOfWeek = date.getDay()
-    // For testing: If no specific availability is set, provide a default 9-5 schedule
+    // Convert to local components to get correct dayOfWeek and start/end times
+    const localDateStr = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(date)
+    const [m, d, y] = localDateStr.split('/')
+    const dayOfWeek = new Date(parseInt(y), parseInt(m)-1, parseInt(d)).getDay()
+    
     let availability = practitioner.availability.find(a => a.dayOfWeek === dayOfWeek)
-    
-    // Default testing availability for weekends or unset days
     const effectiveAvailability = availability || { startTime: '09:00', endTime: '18:00' }
     
     const daySlots = []
     const [startH, startM] = effectiveAvailability.startTime.split(':').map(Number)
     const [endH, endM] = effectiveAvailability.endTime.split(':').map(Number)
-    
-    let current = new Date(date)
-    current.setHours(startH, startM, 0, 0)
-    
-    const endTime = new Date(date)
-    endTime.setHours(endH, endM, 0, 0)
 
-    // Don't show past times if the date is today
+    // Helper to get UTC from local components
+    const getUTC = (h: number, min: number) => {
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        })
+        let utc = Date.UTC(parseInt(y), parseInt(m)-1, parseInt(d), h, min)
+        const parts = formatter.formatToParts(new Date(utc))
+        const offsetH = parseInt(parts.find(p => p.type === 'hour')?.value || '0')
+        const diff = h - offsetH
+        return new Date(utc + diff * 3600000)
+    }
+
+    let currentUTC = getUTC(startH, startM)
+    const endUTC = getUTC(endH, endM)
     const now = new Date()
 
-    while (current < endTime) {
+    while (currentUTC < endUTC) {
         const isBooked = practitioner.user.practitionerAppointments.some(s => 
-            s.startTime.getTime() === current.getTime()
+            Math.abs(s.startTime.getTime() - currentUTC.getTime()) < 1000
         )
-        
-        const isPast = current < now
+        const isPast = currentUTC < now
         
         if (!isBooked && !isPast) {
-            daySlots.push(new Date(current).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }))
+            // Send as ISO string for client-side local conversion
+            daySlots.push(currentUTC.toISOString())
         }
         
-        current.setMinutes(current.getMinutes() + (practitioner.sessionDuration || 50) + (practitioner.bufferDuration || 10))
+        currentUTC = new Date(currentUTC.getTime() + (practitioner.sessionDuration || 50) * 60000 + (practitioner.bufferDuration || 10) * 60000)
     }
 
     if (daySlots.length > 0) {
-        slots.push({ date: new Date(date), times: daySlots })
+        slots.push({ date: new Date(date).toISOString(), times: daySlots })
     }
   }
 

@@ -18,6 +18,7 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
     experienceYears: initialData.experienceYears || 0,
     linkedinUrl: initialData.linkedinUrl || '',
     websiteUrl: initialData.websiteUrl || '',
+    timezone: initialData.timezone || 'UTC',
     googleCalendarEmail: initialData.googleCalendarEmail || '',
     outlookCalendarEmail: initialData.outlookCalendarEmail || '',
     appleCalendarEmail: initialData.appleCalendarEmail || '',
@@ -125,6 +126,23 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
                 <p className="text-xs text-oku-taupe/70 italic">
                   International clients see this amount converted into their local currency using live FX rates.
                 </p>
+            </div>
+            <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.2em] font-black text-oku-taupe">Clinical Timezone</label>
+                <select
+                    value={formData.timezone}
+                    onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+                    className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple transition-all appearance-none cursor-pointer"
+                >
+                    <option value="UTC">UTC (Universal)</option>
+                    <option value="Asia/Kolkata">IST (India Standard Time)</option>
+                    <option value="America/New_York">EST (Eastern Time)</option>
+                    <option value="America/Los_Angeles">PST (Pacific Time)</option>
+                    <option value="Europe/London">GMT (London)</option>
+                    <option value="Australia/Sydney">AEST (Sydney)</option>
+                    <option value="Singapore">SGT (Singapore)</option>
+                </select>
+                <p className="text-xs text-oku-taupe/70 italic">Crucial for global booking sync accuracy.</p>
             </div>
             <div className="md:col-span-2 rounded-[2rem] border border-oku-purple/10 bg-oku-purple/5 px-5 py-4 text-sm text-oku-dark">
                 <p className="font-bold text-oku-purple-dark">Billing Base: INR</p>

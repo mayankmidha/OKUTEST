@@ -22,6 +22,7 @@ export async function PATCH(req: Request) {
         experienceYears,
         linkedinUrl,
         websiteUrl,
+        timezone,
     } = await req.json()
 
     const parsedIndiaSessionRate = Number.parseFloat(String(indiaSessionRate ?? ''))
@@ -47,6 +48,7 @@ export async function PATCH(req: Request) {
           linkedinUrl,
           websiteUrl,
           baseCurrency: 'INR',
+          timezone: timezone || 'UTC',
         }
       })
     ])
