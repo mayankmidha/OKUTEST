@@ -94,7 +94,7 @@ export async function checkPractitionerAvailability({
       practitioner: {
         practitionerProfile: { id: practitionerProfileId }
       },
-      status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
+      status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED, AppointmentStatus.EXTERNAL_BLOCK] },
       OR: [
         {
           startTime: { lte: startTime },

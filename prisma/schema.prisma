@@ -622,6 +622,7 @@ enum AppointmentStatus {
   COMPLETED
   CANCELLED
   NO_SHOW
+  EXTERNAL_BLOCK
   RESCHEDULED
 }
 

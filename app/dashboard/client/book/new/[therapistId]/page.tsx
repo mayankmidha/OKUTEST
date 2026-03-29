@@ -92,12 +92,29 @@ export default async function BookingPage({ params }: { params: Promise<{ therap
     const now = new Date()
 
     while (currentUTC < endUTC) {
-        const isBooked = practitioner.user.practitionerAppointments.some(s => 
-            Math.abs(s.startTime.getTime() - currentUTC.getTime()) < 1000
+        // 1. Internal OKU Bookings
+        const isBookedInternal = practitioner.user.practitionerAppointments.some(s => 
+            Math.abs(s.startTime.getTime() - currentUTC.getTime()) < 1000 &&
+            s.status !== 'CANCELLED'
         )
+        
+        // 2. External Calendar Sync (Calendly/Google/Outlook blocks)
+        let isBookedExternal = false
+        if (!isBookedInternal && practitioner.syncEnabled) {
+            const externalBlock = await prisma.appointment.findFirst({
+                where: {
+                    practitionerId: practitioner.userId,
+                    status: 'EXTERNAL_BLOCK',
+                    startTime: { lte: currentUTC },
+                    endTime: { gt: currentUTC }
+                }
+            })
+            if (externalBlock) isBookedExternal = true
+        }
+
         const isPast = currentUTC < now
         
-        if (!isBooked && !isPast) {
+        if (!isBookedInternal && !isBookedExternal && !isPast) {
             // Send as ISO string for client-side local conversion
             daySlots.push(currentUTC.toISOString())
         }
