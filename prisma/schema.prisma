@@ -256,6 +256,9 @@ model PractitionerProfile {
   googleRefreshToken       String?
   outlookCalendarEmail     String?
   outlookRefreshToken      String?
+  appleCalendarEmail       String?
+  appleAppSpecificPassword String?
+  iCalSecret               String?                @default(cuid())
   syncEnabled              Boolean                @default(false)
 
   availability             Availability[]

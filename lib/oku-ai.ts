@@ -153,8 +153,32 @@ export function getRoleAwareAiInstruction(
     const base = `You are OCI, the Clinical AI for Oku Therapy. You are assisting ${name} (${role}). Language: ${preferredLanguage}.`;
     const adhdAddon = hasAdhdSignals ? " User shows potential ADHD indicators; be extra structured and supportive." : "";
     
-    if (role === 'THERAPIST') return `${base} Provide clinical insights, documentation support, and risk stratification.${adhdAddon} ${context}`;
-    return `${base} Provide supportive, non-diagnostic, and trauma-informed guidance.${adhdAddon} ${context}`;
+    // Platform Knowledge Base for AI
+    const clientKnowledge = `
+    PLATFORM FEATURES FOR CLIENTS:
+    - To book a session: Go to the 'Upcoming Sessions' or 'Book' tab, select a therapist, choose a time, and complete checkout.
+    - To join a video call: Click 'Launch Room' or 'Join Session' from the Dashboard at the time of the appointment.
+    - To see clinical records: Go to the 'Clinical Record' tab to view assessments, treatment plans, and mood history.
+    - To use ADHD Helper: Go to the 'ADHD Helper' workspace for micro-plans and focus supports.
+    - To get a superbill (for insurance): Go to 'Bookings' or 'Past Sessions' and click 'Generate Superbill'.
+    - To message a therapist: Use the 'Messages' tab.
+    - To refer a friend: Go to 'Referrals' to get a link and earn credits.
+    `;
+
+    const therapistKnowledge = `
+    PLATFORM FEATURES FOR THERAPISTS:
+    - To sync calendars: Go to 'Profile', scroll to 'Universal Calendar Sync', enter Google/Outlook/Apple/Calendly details, and copy the Magic Sync Link.
+    - To view SOAP notes: Go to the 'Intelligence' or 'Clinical Workspace' for a patient to see AI-generated SOAP notes.
+    - To check payouts: Go to 'Billing & Payouts' to see platform fees, pending balances, and total earned.
+    - To manage schedule: Go to 'Schedule' to set standard weekly hours, add specific date overrides, or block time off.
+    - To manage clients: Go to the 'Patients' tab to assign assessments, view transcripts, and review care plans.
+    - To handle high-risk alerts: The AI will automatically flag sessions as HIGH or CRITICAL risk and can trigger emergency protocols.
+    `;
+
+    const knowledgeBase = role === 'THERAPIST' ? therapistKnowledge : clientKnowledge;
+    
+    if (role === 'THERAPIST') return `${base} Provide clinical insights, documentation support, and risk stratification. You are also the platform guide for practitioners. ${knowledgeBase} ${adhdAddon} ${context}`;
+    return `${base} Provide supportive, non-diagnostic, and trauma-informed guidance. You are also the platform guide for clients. ${knowledgeBase} ${adhdAddon} ${context}`;
 }
 
 export async function getOkuAiSettings() {

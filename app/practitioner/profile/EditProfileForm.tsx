@@ -18,11 +18,20 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
     experienceYears: initialData.experienceYears || 0,
     linkedinUrl: initialData.linkedinUrl || '',
     websiteUrl: initialData.websiteUrl || '',
+    googleCalendarEmail: initialData.googleCalendarEmail || '',
+    outlookCalendarEmail: initialData.outlookCalendarEmail || '',
+    appleCalendarEmail: initialData.appleCalendarEmail || '',
+    appleAppSpecificPassword: initialData.appleAppSpecificPassword || '',
+    calendlyLink: initialData.calendlyLink || '',
+    syncEnabled: initialData.syncEnabled ?? false,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
   const [newSpecialty, setNewSpecialty] = useState('')
+
+  const [copied, setCopied] = useState(false)
+  const syncLink = initialData.id ? `${typeof window !== 'undefined' ? window.location.origin : ''}/api/practitioner/schedule/feed/${initialData.id}?secret=${initialData.iCalSecret}` : ''
 
   const handleAddSpecialty = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && newSpecialty.trim()) {

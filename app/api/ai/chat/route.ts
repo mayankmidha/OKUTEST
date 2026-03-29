@@ -174,7 +174,9 @@ export async function POST(req: Request) {
       preferredLanguage,
       hasAdhdSignals,
       context,
-    })}`
+    })}
+    
+    You are also the Platform Guide. If the user asks how to use a feature, navigate a menu, or perform an action (like syncing calendars, booking a session, finding a superbill, taking an assessment, using the ADHD helper, or reviewing SOAP notes), explain it clearly and concisely step-by-step based on standard OKU Therapy platform capabilities.`
 
     const fullPrompt = `
       CONTEXT: ${userRole} Dashboard
@@ -183,6 +185,7 @@ export async function POST(req: Request) {
       USER_QUERY: ${prompt}
 
       Respond with human warmth, real specificity, and actionable next steps.
+      If the user asks how to use the platform or a specific feature, provide clear, step-by-step instructions. 
       If the user is a client, do not diagnose. If the user is a practitioner or admin, be operationally sharp.
       When useful, use short sections with labels.
     `;
