@@ -22,7 +22,7 @@ export default function BrandedNav() {
         {/* Unified Logo */}
         <Link href="/" className="relative z-[110] group">
           <img 
-            src="/wp-content/uploads/2025/07/Logoo.png" 
+            src="/uploads/uploads/2025/07/Logoo.png" 
             alt="OKU Therapy" 
             className="h-8 md:h-10 w-auto opacity-90 group-hover:opacity-100 transition-opacity" 
           />

@@ -25,42 +25,42 @@ async function main() {
       email: 'suraj@okutherapy.com',
       title: 'Consultant Psychiatrist',
       specialization: ['Psychiatry', 'Medication Management', 'Mood Disorders', 'Clinical Assessment'],
-      avatar: '/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg'
+      avatar: '/uploads/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg'
     },
     {
       name: 'Tanisha Singh',
       email: 'tanisha@okutherapy.com',
       title: 'Clinical Psychologist & Psychodynamic Psychotherapist',
       specialization: ['Psychodynamic', 'Trauma-Informed', 'Depression', 'Clinical Psychology', 'Trauma-Informed Care'],
-      avatar: '/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg'
+      avatar: '/uploads/uploads/2025/07/Tanisha_-821x1024.jpg'
     },
     {
       name: 'Rananjay Singh',
       email: 'rananjay@okutherapy.com',
       title: 'Queer Affirmative & Family Therapist',
       specialization: ['Queer-Affirmative', 'Family Therapy', 'Relationships', 'Queer-Affirmative Therapy', 'Relationship Counseling'],
-      avatar: '/wp-content/uploads/2025/07/Rananjay--579x1024.jpg'
+      avatar: '/uploads/uploads/2025/07/Rananjay--579x1024.jpg'
     },
     {
       name: 'Amna Ansari',
       email: 'amna@okutherapy.com',
       title: 'Clinical Psychologist (A.)',
       specialization: ['Clinical Psychology', 'Anxiety', 'OCD', 'Cognitive Behavioral Therapy', 'Anxiety Treatment'],
-      avatar: '/wp-content/uploads/2025/07/Amna-670x1024.jpg'
+      avatar: '/uploads/uploads/2025/07/Amna-670x1024.jpg'
     },
     {
       name: 'Mohit Dudeja',
       email: 'mohit@okutherapy.com',
       title: 'Queer Affirmative Therapist',
       specialization: ['Queer-Affirmative', 'Individual Therapy', 'Grief', 'Gender Identity', 'LGBTQ+ Support'],
-      avatar: '/wp-content/uploads/2025/07/Mohit-911x1024.jpg'
+      avatar: '/uploads/uploads/2025/07/Mohit-911x1024.jpg'
     },
     {
       name: 'Gursheel Kaur',
       email: 'gursheel@okutherapy.com',
       title: 'Psychodynamic Psychotherapist',
       specialization: ['Psychodynamic', 'Relational Therapy', 'Self-Esteem', 'Depth Psychology', 'Trauma Work'],
-      avatar: '/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg'
+      avatar: '/uploads/uploads/2025/07/gursheel_pfp-1024x980.jpg'
     }
   ]
 

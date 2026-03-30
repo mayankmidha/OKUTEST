@@ -50,33 +50,33 @@ interface CommunityPanel {
 const CYCLING_WORDS = ["grief", "longing", "quiet", "becoming", "anger", "story"];
 
 const FEATURES = [
-  { icon: "/wp-content/uploads/2025/06/Frame-23-2.png", label: "Slow Healing", desc: "We move at the pace your story asks for—never rushed." },
-  { icon: "/wp-content/uploads/2025/06/Frame-23.png", label: "Depth Work", desc: "We meet what's beneath, not just what's visible." },
-  { icon: "/wp-content/uploads/2025/06/Frame-23-3.png", label: "Whole Self", desc: "Your culture, identity, body—all of you is held here." },
-  { icon: "/wp-content/uploads/2025/06/Frame-23-1.png", label: "Welcoming Space", desc: "A calm, non-clinical space designed for ease and safety." },
+  { icon: "/uploads/uploads/2025/06/Frame-23-2.png", label: "Slow Healing", desc: "We move at the pace your story asks for—never rushed." },
+  { icon: "/uploads/uploads/2025/06/Frame-23.png", label: "Depth Work", desc: "We meet what's beneath, not just what's visible." },
+  { icon: "/uploads/uploads/2025/06/Frame-23-3.png", label: "Whole Self", desc: "Your culture, identity, body—all of you is held here." },
+  { icon: "/uploads/uploads/2025/06/Frame-23-1.png", label: "Welcoming Space", desc: "A calm, non-clinical space designed for ease and safety." },
 ];
 
 const TEAM: TeamMember[] = [
-  { name: "Dr. Suraj Singh", role: "Consultant Psychiatrist", image: "/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" },
-  { name: "Tanisha Singh", role: "Clinical Psychologist (A.) & Psychodynamic Psychotherapist", image: "/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg" },
-  { name: "Rananjay Singh", role: "Queer Affirmative & Family Therapist", image: "/wp-content/uploads/2025/07/Rananjay--869x1536.jpg" },
-  { name: "Amna Ansari", role: "Clinical Psychologist (A.)", image: "/wp-content/uploads/2025/07/Amna-1006x1536.jpg" },
-  { name: "Mohit Dudeja", role: "Queer Affirmative Therapist", image: "/wp-content/uploads/2025/07/Mohit-911x1024.jpg" },
-  { name: "Gursheel Kaur", role: "Psychodynamic Psychotherapist", image: "/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg" },
+  { name: "Dr. Suraj Singh", role: "Consultant Psychiatrist", image: "/uploads/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" },
+  { name: "Tanisha Singh", role: "Clinical Psychologist (A.) & Psychodynamic Psychotherapist", image: "/uploads/uploads/2025/07/Tanisha_-821x1024.jpg" },
+  { name: "Rananjay Singh", role: "Queer Affirmative & Family Therapist", image: "/uploads/uploads/2025/07/Rananjay--869x1536.jpg" },
+  { name: "Amna Ansari", role: "Clinical Psychologist (A.)", image: "/uploads/uploads/2025/07/Amna-1006x1536.jpg" },
+  { name: "Mohit Dudeja", role: "Queer Affirmative Therapist", image: "/uploads/uploads/2025/07/Mohit-911x1024.jpg" },
+  { name: "Gursheel Kaur", role: "Psychodynamic Psychotherapist", image: "/uploads/uploads/2025/07/gursheel_pfp-1024x980.jpg" },
 ];
 
 const HERO_VISUALS = {
   primary: {
-    image: "/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg",
+    image: "/uploads/uploads/2025/07/Tanisha_-821x1024.jpg",
     alt: "Tanisha Singh portrait",
   },
   secondary: {
-    image: "/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg",
+    image: "/uploads/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg",
     alt: "Dr. Suraj Singh portrait",
   },
-  stickerOne: "/wp-content/uploads/2025/06/Group-28.png",
-  stickerTwo: "/wp-content/uploads/2025/06/Group-29.png",
-  stickerThree: "/wp-content/uploads/2025/06/Frame-137.png",
+  stickerOne: "/uploads/uploads/2025/06/Group-28.png",
+  stickerTwo: "/uploads/uploads/2025/06/Group-29.png",
+  stickerThree: "/uploads/uploads/2025/06/Frame-137.png",
 };
 
 const SERVICES: Service[] = [
@@ -122,7 +122,7 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "In many traditional spaces, therapy begins with a problem to solve and a diagnosis to name. You're often seen as something to treat.",
       "At Oku, we start by listening—not labeling. We sit beside your story, not above it.",
     ],
-    image: "/wp-content/uploads/2025/06/Group.png",
+    image: "/uploads/uploads/2025/06/Group.png",
     imageAlt: "Illustration representing listening",
   },
   {
@@ -131,7 +131,7 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "You won't find harsh lighting or stiff furniture here. Our space is designed to feel like somewhere you can exhale.",
       "We believe healing happens in relationship, not in procedure. The room matters as much as the therapist.",
     ],
-    image: "/wp-content/uploads/2025/06/x31_.png",
+    image: "/uploads/uploads/2025/06/x31_.png",
     imageAlt: "Warm relational space",
   },
   {
@@ -140,7 +140,7 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "Therapy isn't a checklist or 5-step solution. Real change doesn't fit into fixed frameworks.",
       "We allow things to unfold—slowly, organically. At Oku, therapy adapts as you do.",
     ],
-    image: "/wp-content/uploads/2025/06/Vector.png",
+    image: "/uploads/uploads/2025/06/Vector.png",
     imageAlt: "Process over plan",
   },
   {
@@ -149,21 +149,21 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "You shouldn't have to educate your therapist about your identity. Safety isn't created by neutrality—it's created by awareness.",
       "We're queer-affirmative, caste-aware, body-literate. Not just inclusive in words, but in every layer of our work.",
     ],
-    image: "/wp-content/uploads/2025/06/Frame-108.png",
+    image: "/uploads/uploads/2025/06/Frame-108.png",
     imageAlt: "Affirming and inclusive",
   },
 ];
 
 const FOR_YOU: ForYouCard[] = [
-  { icon: "/wp-content/uploads/2025/06/Frame-142.png", heading: "If you've felt like too much", subtext: "Or maybe not enough. This space holds both." },
-  { icon: "/wp-content/uploads/2025/06/heart.png", heading: "If your body remembers pain", subtext: "You can't quite name. This space speaks that language." },
-  { icon: "/wp-content/uploads/2025/06/Frame-135.png", heading: "If you've never seen yourself reflected", subtext: "In therapy rooms before. This space makes room for you." },
-  { icon: "/wp-content/uploads/2025/06/Frame-138.png", heading: "If you carry generational weight", subtext: "In blood, silence, or tradition. This space lets them breathe." },
-  { icon: "/wp-content/uploads/2025/06/Frame-137.png", heading: "If your queerness has been questioned", subtext: "Or erased in 'neutral' spaces. This space sees all of you." },
-  { icon: "/wp-content/uploads/2025/06/Frame-136.png", heading: "If you've lived between cultures", subtext: "And belonged to all, and none. This space honors the in-between." },
-  { icon: "/wp-content/uploads/2025/06/Frame-139.png", heading: "If your healing doesn't feel linear", subtext: "Or easy to explain. This space meets you where you are." },
-  { icon: "/wp-content/uploads/2025/06/leaf.png", heading: "If you're new to therapy", subtext: "And unsure what to expect. This space starts with ease." },
-  { icon: "/wp-content/uploads/2025/06/Frame-141.png", heading: "If you want more than coping tools", subtext: "More than surface advice. This space invites depth." },
+  { icon: "/uploads/uploads/2025/06/Frame-142.png", heading: "If you've felt like too much", subtext: "Or maybe not enough. This space holds both." },
+  { icon: "/uploads/uploads/2025/06/heart.png", heading: "If your body remembers pain", subtext: "You can't quite name. This space speaks that language." },
+  { icon: "/uploads/uploads/2025/06/Frame-135.png", heading: "If you've never seen yourself reflected", subtext: "In therapy rooms before. This space makes room for you." },
+  { icon: "/uploads/uploads/2025/06/Frame-138.png", heading: "If you carry generational weight", subtext: "In blood, silence, or tradition. This space lets them breathe." },
+  { icon: "/uploads/uploads/2025/06/Frame-137.png", heading: "If your queerness has been questioned", subtext: "Or erased in 'neutral' spaces. This space sees all of you." },
+  { icon: "/uploads/uploads/2025/06/Frame-136.png", heading: "If you've lived between cultures", subtext: "And belonged to all, and none. This space honors the in-between." },
+  { icon: "/uploads/uploads/2025/06/Frame-139.png", heading: "If your healing doesn't feel linear", subtext: "Or easy to explain. This space meets you where you are." },
+  { icon: "/uploads/uploads/2025/06/leaf.png", heading: "If you're new to therapy", subtext: "And unsure what to expect. This space starts with ease." },
+  { icon: "/uploads/uploads/2025/06/Frame-141.png", heading: "If you want more than coping tools", subtext: "More than surface advice. This space invites depth." },
 ];
 
 const HOW_IT_WORKS: HowItWorksStep[] = [
@@ -175,8 +175,8 @@ const HOW_IT_WORKS: HowItWorksStep[] = [
 
 const COMMUNITY_PANELS: CommunityPanel[] = [
   {
-    image: "/wp-content/uploads/2025/06/img.png",
-    sticker: "/wp-content/uploads/2025/06/Group-28.png",
+    image: "/uploads/uploads/2025/06/img.png",
+    sticker: "/uploads/uploads/2025/06/Group-28.png",
     alt: "Illustrated Oku community card",
     kicker: "Our Story",
     title: "A slower, softer way into therapy",
@@ -185,8 +185,8 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     cta: "Read our story",
   },
   {
-    image: "/wp-content/uploads/2025/06/img-1.png",
-    sticker: "/wp-content/uploads/2025/06/Group-29.png",
+    image: "/uploads/uploads/2025/06/img-1.png",
+    sticker: "/uploads/uploads/2025/06/Group-29.png",
     alt: "Illustrated Oku journal card",
     kicker: "The Journal",
     title: "Keep exploring at your own pace",
@@ -195,8 +195,8 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     cta: "Visit the journal",
   },
   {
-    image: "/wp-content/uploads/2025/06/img-2.png",
-    sticker: "/wp-content/uploads/2025/07/WApp.png",
+    image: "/uploads/uploads/2025/06/img-2.png",
+    sticker: "/uploads/uploads/2025/07/WApp.png",
     alt: "Illustrated therapist discovery card",
     kicker: "The Collective",
     title: "Find the therapist who feels right",
@@ -340,7 +340,7 @@ export default function OkuHomepage() {
         }
 
         .oku-page-public {
-          background: url('/wp-content/uploads/2025/06/BG.png') no-repeat center center fixed;
+          background: url('/uploads/uploads/2025/06/BG.png') no-repeat center center fixed;
           background-size: cover;
           color: var(--ink);
           font-family: 'DM Sans', sans-serif;
@@ -1566,18 +1566,18 @@ export default function OkuHomepage() {
                 </div>
                 <div className="community-collage">
                   <div className="community-collage-card primary shadow-2xl border-4 border-white/80">
-                    <img src="/wp-content/uploads/2025/06/img.png" alt="Oku illustrated community moment" loading="lazy" />
+                    <img src="/uploads/uploads/2025/06/img.png" alt="Oku illustrated community moment" loading="lazy" />
                   </div>
                   <div className="community-collage-card secondary shadow-2xl border-4 border-white/80">
-                    <img src="/wp-content/uploads/2025/06/img-1.png" alt="Oku illustrated journal moment" loading="lazy" />
+                    <img src="/uploads/uploads/2025/06/img-1.png" alt="Oku illustrated journal moment" loading="lazy" />
                   </div>
                   <div className="community-collage-card tertiary shadow-2xl border-4 border-white/80">
-                    <img src="/wp-content/uploads/2025/06/img-2.png" alt="Oku illustrated therapist discovery moment" loading="lazy" />
+                    <img src="/uploads/uploads/2025/06/img-2.png" alt="Oku illustrated therapist discovery moment" loading="lazy" />
                   </div>
-                  <img className="community-sticker one animate-float-3d" src="/wp-content/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker two animate-float-3d" style={{ animationDelay: '0.4s' }} src="/wp-content/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker three animate-float-3d" style={{ animationDelay: '0.8s' }} src="/wp-content/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker four animate-float-3d" style={{ animationDelay: '1.2s' }} src="/wp-content/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker one animate-float-3d" src="/uploads/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker two animate-float-3d" style={{ animationDelay: '0.4s' }} src="/uploads/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker three animate-float-3d" style={{ animationDelay: '0.8s' }} src="/uploads/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker four animate-float-3d" style={{ animationDelay: '1.2s' }} src="/uploads/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
                 </div>
               </div>
             </SectionReveal>

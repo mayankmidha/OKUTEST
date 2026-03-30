@@ -43,7 +43,7 @@ export default function V1LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-oku-lavender flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-oku-lavender flex items-center justify-center p-6 pt-32 relative overflow-hidden">
       {/* Animated Background Blobs */}
       <div className="absolute top-0 left-0 w-[100vw] h-[100vw] bg-oku-mint/20 rounded-full -translate-y-1/2 -translate-x-1/2 blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[60vw] h-[60vw] bg-oku-blush/30 rounded-full translate-y-1/2 translate-x-1/4 blur-[120px] pointer-events-none" />
@@ -56,9 +56,6 @@ export default function V1LoginPage() {
       >
         <div className="card-glass-3d !p-12 !bg-white/50 !rounded-[4rem] shadow-2xl">
             <div className="text-center mb-12">
-                <Link href="/" className="inline-block mb-10 animate-float-3d">
-                    <img src="/uploads/2025/07/Logoo.png" alt="OKU" className="h-10 w-auto opacity-80 mx-auto" />
-                </Link>
                 <h1 className="heading-display text-5xl text-oku-darkgrey mb-4 tracking-tighter">Welcome <span className="text-oku-purple-dark italic">back.</span></h1>
                 <p className="text-sm text-oku-darkgrey/50 font-bold uppercase tracking-widest">Access your sanctuary</p>
             </div>
