@@ -6,15 +6,10 @@ import Link from 'next/link'
 import { 
   Calendar, Clock, Users, FileText, Heart, 
   Video, Search, Sparkles, ClipboardCheck, BookOpen,
-  ArrowUpRight, Wind, ShieldCheck, AlertCircle, Pill, Shield, Gift
+  ArrowUpRight, Wind, ShieldCheck, AlertCircle, Shield, Gift, MessageSquare, Plus, Save, Moon
 } from 'lucide-react'
 import { AppointmentStatus } from '@prisma/client'
-import { DashboardHeader } from '@/components/DashboardHeader'
-import { DashboardCard } from '@/components/DashboardCard'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
-import { WellnessVisualizer } from '@/components/WellnessVisualizer'
-import { ReferralShareCard } from '@/components/ReferralShareCard'
-import { ensureUserReferralCode, getReferralSummaryForUser } from '@/lib/referrals'
 
 export default async function ClientDashboardPage() {
   const session = await auth()
@@ -31,24 +26,13 @@ export default async function ClientDashboardPage() {
       include: {
         clientProfile: true,
         intakeForm: true,
-        insurancePolicies: true,
         clientAppointments: {
-          where: {
-            startTime: { gte: new Date() },
-            status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] }
-          },
           include: { practitioner: true, service: true },
-          orderBy: { startTime: 'asc' },
-          take: 5
+          orderBy: { startTime: 'desc' },
         },
         assessmentAnswers: {
           include: { assessment: true },
           orderBy: { completedAt: 'desc' },
-          take: 3
-        },
-        moodEntries: {
-          orderBy: { createdAt: 'desc' },
-          take: 5
         }
       }
     })
@@ -58,195 +42,153 @@ export default async function ClientDashboardPage() {
 
   if (!user) {
     return (
-      <div className="py-20 px-10 bg-oku-cream min-h-screen flex items-center justify-center">
+      <div className="py-20 px-10 bg-oku-lavender min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Wind className="animate-float mx-auto text-oku-purple-dark mb-6" size={48} />
-          <h1 className="text-3xl font-display font-bold">Setting up your sanctuary...</h1>
-          <p className="text-oku-taupe italic mt-2">Finalizing your secure profile. Please refresh in a moment.</p>
+          <Wind className="animate-float-3d mx-auto text-oku-purple-dark mb-6" size={48} />
+          <h1 className="heading-display text-3xl">Setting up your sanctuary...</h1>
         </div>
       </div>
     )
   }
 
-  const upcomingAppointments = user.clientAppointments || []
+  const upcomingAppointments = user.clientAppointments.filter(a => 
+    new Date(a.startTime) >= new Date() && 
+    (a.status === AppointmentStatus.SCHEDULED || a.status === AppointmentStatus.CONFIRMED)
+  )
+  const completedAppointmentsCount = user.clientAppointments.filter(a => a.status === AppointmentStatus.COMPLETED).length
   const recentAssessments = user.assessmentAnswers || []
-  const hasAdhdAssessments = recentAssessments.some((answer) => {
-    const title = answer.assessment?.title?.toLowerCase() || ''
-    return title.includes('adhd') || title.includes('executive') || title.includes('asrs') || title.includes('conners') || title.includes('brief')
-  })
-  const hasIncompleteIntake = !user.intakeForm
-  const hasIncompleteConsent = !user.hasSignedConsent
-  const referralCode = await ensureUserReferralCode(user.id, user.name)
-  const referralSummary = await getReferralSummaryForUser(user.id)
-  const requestHeaders = await headers()
-  const host = requestHeaders.get('host') || 'localhost:3000'
-  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-  const inviteUrl = `${protocol}://${host}/auth/signup?ref=${referralCode}`
 
   const practitioners = await prisma.practitionerProfile.findMany({
     include: { user: true },
     where: { isVerified: true },
-    take: 3
+    take: 1
   })
+  const matchedTherapist = practitioners[0]
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3 mb-4">
-             <span className="bg-oku-navy text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-lg">Secure Space</span>
-             <span className="text-oku-taupe/40 text-[10px] font-black uppercase tracking-[0.3em]">Client Dashboard</span>
+    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+      {/* Redesign Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20 relative z-10">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+             <span className="chip bg-white/60 border-white/80">Sanctuary Alpha</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Client Experience</span>
           </div>
-          <h1 className="text-5xl lg:text-7xl font-display font-bold tracking-tight text-oku-dark">
-            Peace, {user.name?.split(' ')[0] || 'Seeker'}.
+          <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            Peace, <span className="text-oku-purple-dark italic">{user.name?.split(' ')[0] || 'Seeker'}.</span>
           </h1>
-          <p className="text-xl text-oku-taupe font-display italic opacity-80 max-w-xl">
-            A sanctuary for healing, reflection, and quiet growth.
+          <p className="text-2xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            Holding space for your journey of unfolding.
           </p>
         </div>
         
-        <div className="flex items-center gap-4">
-          {hasAdhdAssessments && (
-            <Link href="/dashboard/client/adhd" className="btn-sky hidden xl:flex items-center gap-2">
-               <Sparkles size={18} /> ADHD Helper
-            </Link>
-          )}
-          <Link href="/dashboard/client/therapists" className="btn-navy group flex items-center gap-3">
-             <Search size={18} className="group-hover:rotate-12 transition-transform" /> Browse Specialists
+        <div className="flex flex-wrap gap-4">
+          <Link href="/dashboard/client/therapists" className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-10">
+             <Search size={18} className="mr-3 text-oku-purple-dark" /> Browse Collective
           </Link>
-          <Link href="/dashboard/client/book" className="btn-sky hidden md:flex items-center gap-2">
-             <Calendar size={18} /> Schedule
+          <Link href="/dashboard/client/book" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-10 pulse-cta">
+             <Plus size={18} className="mr-3" /> New Session
           </Link>
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
-        
-        {/* Left Column: Core Activities */}
-        <div className="xl:col-span-8 space-y-10">
-          
-          {(hasIncompleteIntake || hasIncompleteConsent) && (
-            <div className="bg-oku-navy p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-               <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6">
-                     <AlertCircle size={20} className="text-oku-purple animate-pulse" />
-                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Action Required</span>
-                  </div>
-                  <h2 className="text-3xl font-display font-bold text-white mb-4 tracking-tight">Onboarding Incomplete</h2>
-                  <p className="text-white/60 italic font-display text-lg mb-8">Please finalize your secure credentials to unlock full clinical features.</p>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                     {hasIncompleteConsent && (
-                        <Link href="/consent" className="bg-oku-purple text-oku-dark p-6 rounded-3xl flex items-center justify-between group/btn hover:bg-white transition-all">
-                           <div>
-                              <p className="font-bold text-sm">Clinical Consent</p>
-                              <p className="text-[10px] uppercase tracking-widest opacity-60">Needs Signature</p>
-                           </div>
-                           <ArrowUpRight size={20} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                        </Link>
-                     )}
-                     {hasIncompleteIntake && (
-                        <Link href="/dashboard/client/intake" className="bg-white/10 backdrop-blur-md text-white p-6 rounded-3xl flex items-center justify-between group/btn hover:bg-white/20 transition-all border border-white/5">
-                           <div>
-                              <p className="font-bold text-sm text-white">Medical Intake</p>
-                              <p className="text-[10px] uppercase tracking-widest opacity-40">Incomplete</p>
-                           </div>
-                           <ArrowUpRight size={20} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                        </Link>
-                     )}
-                  </div>
-               </div>
-               <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+      {/* 1. 3D Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 relative z-10">
+        <div className="card-glass-3d !bg-oku-lavender/60 !p-10 flex flex-col justify-between group animate-float-3d">
+          <div className="flex justify-between items-start mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
+              <Calendar size={32} strokeWidth={1.5} />
             </div>
-          )}
-
-          {/* Stats Bar */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card-glass p-8 flex items-center justify-between group">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Upcoming</p>
-                <p className="text-4xl font-display font-bold text-oku-dark">{upcomingAppointments.length}</p>
-                <p className="text-xs text-oku-taupe font-medium mt-1">Scheduled Sessions</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-oku-purple/20 text-oku-purple-dark flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Calendar size={24} />
-              </div>
-            </div>
-
-            <div className="card-glass p-8 flex items-center justify-between group">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Recordings</p>
-                <p className="text-4xl font-display font-bold text-oku-dark">{recentAssessments.length}</p>
-                <p className="text-xs text-oku-taupe font-medium mt-1">Clinical Screenings</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-oku-ocean text-oku-navy-light flex items-center justify-center group-hover:scale-110 transition-transform">
-                <ClipboardCheck size={24} />
-              </div>
-            </div>
-
-            <div className="card-glass p-8 flex items-center justify-between group">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mb-2">Wellbeing</p>
-                <p className="text-4xl font-display font-bold text-oku-dark">{user.moodEntries?.[0] ? `Level ${user.moodEntries[0].mood}` : '---'}</p>
-                <p className="text-xs text-oku-taupe font-medium mt-1">Latest Mood Pulse</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-oku-pink/20 text-oku-pink-dark flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Sparkles size={24} />
-              </div>
-            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark/40">Active</span>
           </div>
+          <div>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{upcomingAppointments.length}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Upcoming Sessions</p>
+          </div>
+        </div>
 
-          {/* Primary Action: Active Sessions */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between px-2">
-              <h2 className="text-2xl font-display font-bold text-oku-dark">Session Windows</h2>
-              <Link href="/dashboard/client/book" className="text-[10px] font-black uppercase tracking-widest text-oku-navy hover:text-oku-purple-dark transition-colors flex items-center gap-1">Full Calendar <ArrowUpRight size={14} /></Link>
+        <div className="card-glass-3d !bg-oku-mint/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.2s' }}>
+          <div className="flex justify-between items-start mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
+              <ShieldCheck size={32} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Archive</span>
+          </div>
+          <div>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{completedAppointmentsCount}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Completed Care</p>
+          </div>
+        </div>
+
+        <div className="card-glass-3d !bg-oku-peach/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.4s' }}>
+          <div className="flex justify-between items-start mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
+              <ClipboardCheck size={32} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Clinical</span>
+          </div>
+          <div>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{recentAssessments.length}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Self-Checks Taken</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 relative z-10">
+        {/* Left Section */}
+        <div className="xl:col-span-8 space-y-12">
+          
+          {/* Upcoming Bookings Timeline */}
+          <section className="card-glass-3d !p-12 !bg-white/40">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Upcoming <span className="italic text-oku-purple-dark">Windows</span></h2>
+              <Link href="/dashboard/client/book" className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline flex items-center gap-2">Full History <ArrowUpRight size={14} /></Link>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               {upcomingAppointments.length === 0 ? (
-                <div className="card-glass py-24 text-center border-dashed">
-                  <p className="text-oku-taupe font-display italic text-2xl opacity-40">The schedule is open.</p>
-                  <Link href="/dashboard/client/therapists" className="text-oku-navy font-bold text-sm hover:underline mt-6 inline-block">Find a dedicated therapist →</Link>
+                <div className="py-20 text-center border-2 border-dashed border-oku-purple-dark/10 rounded-[3rem]">
+                  <Moon className="mx-auto text-oku-purple-dark/20 mb-6 animate-float-3d" size={48} />
+                  <p className="text-2xl font-display italic text-oku-darkgrey/30">The schedule is open.</p>
+                  <Link href="/dashboard/client/therapists" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !py-4 mt-8">Explore Collective</Link>
                 </div>
               ) : (
                 upcomingAppointments.map((appt) => (
-                  <div key={appt.id} className="card-glass p-1 group hover:border-oku-navy/20 transition-all">
-                    <div className="p-7 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                      <div className="flex items-center gap-6">
-                        <div className="relative">
-                          <div className="w-20 h-20 rounded-3xl bg-oku-ocean overflow-hidden border-4 border-white shadow-inner">
+                  <div key={appt.id} className="card-glass-3d !p-8 !bg-white/60 group hover:shadow-2xl transition-all duration-700">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
+                      <div className="flex items-center gap-8">
+                        <div className="relative tilt-card">
+                          <div className="w-24 h-24 rounded-[2rem] bg-oku-babyblue overflow-hidden border-4 border-white shadow-xl tilt-card-content">
                             {appt.practitioner?.avatar ? (
                               <img src={appt.practitioner.avatar} className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-3xl">🧘</div>
+                              <div className="w-full h-full flex items-center justify-center text-4xl bg-oku-babyblue/20">🧘</div>
                             )}
                           </div>
-                          <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-oku-navy text-white flex items-center justify-center border-4 border-oku-cream animate-pulse">
-                            <Video size={14} />
+                          <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-oku-darkgrey text-white flex items-center justify-center border-4 border-white animate-pulse shadow-lg">
+                            <Video size={16} />
                           </div>
                         </div>
                         <div>
-                          <p className="text-2xl font-display font-bold text-oku-dark leading-tight">{appt.practitioner?.name || 'Practitioner'}</p>
-                          <div className="flex items-center gap-3 mt-1.5">
-                             <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-oku-navy/5 text-oku-navy-light rounded-full border border-oku-navy/5">{appt.service?.name || 'Session'}</span>
-                             <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-1"><ShieldCheck size={10} /> Secure Video</span>
+                          <p className="text-3xl heading-display text-oku-darkgrey">{appt.practitioner?.name || 'Specialist'}</p>
+                          <div className="flex items-center gap-4 mt-2">
+                             <span className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 bg-oku-purple-dark/10 text-oku-purple-dark rounded-full border border-oku-purple-dark/10">{appt.service?.name || 'Session'}</span>
+                             <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 flex items-center gap-2"><ShieldCheck size={12} /> HIPAA Secure</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-8 pl-8 md:pl-0 border-t md:border-t-0 md:border-l border-oku-taupe/10 pt-8 md:pt-0">
-                        <div className="text-right">
-                          <p className="text-xl font-display font-bold text-oku-dark">
+                      <div className="flex items-center gap-10 border-t md:border-t-0 md:border-l border-oku-darkgrey/5 pt-8 md:pt-0 md:pl-10">
+                        <div className="text-right min-w-[120px]">
+                          <p className="text-2xl font-bold text-oku-darkgrey">
                              {new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </p>
-                          <p className="text-[10px] text-oku-taupe font-black uppercase tracking-widest mt-0.5">
+                          <p className="text-[10px] text-oku-darkgrey/40 font-black uppercase tracking-widest mt-1">
                              at {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
-                        <Link href={`/session/${appt.id}`} className="btn-navy min-w-[160px] text-center">
-                          Join Room
+                        <Link href={`/session/${appt.id}`} className="btn-pill-3d bg-oku-babyblue border-oku-babyblue text-oku-darkgrey min-w-[180px] pulse-cta">
+                          Join Session Room
                         </Link>
                       </div>
                     </div>
@@ -256,114 +198,119 @@ export default async function ClientDashboardPage() {
             </div>
           </section>
 
-          {/* New Insight Section */}
-          <WellnessVisualizer />
-
-          {/* Clinical Records: Insurance */}
-          <div className="pt-4">
-             <div className="card-glass p-8 group hover:border-oku-green/20 transition-all">
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 rounded-xl bg-oku-green/10 text-oku-green-dark flex items-center justify-center">
-                      <Shield size={18} />
-                   </div>
-                   <h3 className="font-bold text-oku-dark">Insurance & Billing</h3>
-                </div>
-                {(!user.insurancePolicies || user.insurancePolicies.length === 0) ? (
-                   <div className="text-center py-2">
-                     <p className="text-xs text-oku-taupe italic opacity-60 mb-4">No insurance on file.</p>
-                     <button className="text-[9px] font-black uppercase tracking-widest text-oku-navy bg-oku-navy/5 px-4 py-2 rounded-full hover:bg-oku-navy/10 transition-colors">Add Coverage</button>
-                   </div>
-                ) : (
-                   <div className="space-y-4">
-                      {user.insurancePolicies.map((policy: any) => (
-                         <div key={policy.id} className="pb-4 border-b border-oku-taupe/5 last:border-0 last:pb-0">
-                            <p className="font-bold text-oku-dark text-sm flex items-center justify-between">
-                               {policy.providerName}
-                               <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase tracking-widest ${policy.status === 'ACTIVE' ? 'bg-oku-green/10 text-oku-green-dark' : 'bg-oku-pink/10 text-oku-pink-dark'}`}>
-                                  {policy.status.replace('_', ' ')}
-                               </span>
-                            </p>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/60 mt-1">Policy: ••••{policy.policyNumber.slice(-4)}</p>
-                         </div>
-                      ))}
-                   </div>
-                )}
-             </div>
-          </div>
-
-        </div>
-
-        {/* Right Column: Insights & Recommendations */}
-        <div className="xl:col-span-4 space-y-10">
-          
-          <div className="card-navy group">
-             <div className="relative z-10">
-                <Sparkles className="text-oku-purple mb-6 animate-pulse" size={32} />
-                <h3 className="text-3xl font-display font-bold mb-4">Journey Reflection</h3>
-                <p className="text-white/70 italic font-display text-lg leading-relaxed mb-8">
-                  "The curve of healing is not a circle, but a spiral. Every return is a deeper understanding."
-                </p>
-                <Link href="/dashboard/client/mood" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple hover:text-white transition-all group-hover:translate-x-2">
-                   Log Today's Pulse <ArrowUpRight size={14} />
-                </Link>
-             </div>
-             {/* Decorative Elements */}
-             <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
-             <div className="absolute bottom-0 left-0 w-48 h-48 bg-oku-blue-dark/20 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />
-          </div>
-
-          <section className="card-glass p-10">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-display font-bold text-oku-dark">Clinical Vault</h2>
-              <BookOpen size={20} className="text-oku-taupe/30" />
-            </div>
-            <div className="space-y-8">
+          {/* Assessment History with Progress Bars */}
+          <section className="card-glass-3d !p-12 !bg-white/40">
+            <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-12">Recent <span className="italic text-oku-purple-dark">Insights</span></h2>
+            <div className="grid md:grid-cols-2 gap-8">
               {recentAssessments.length === 0 ? (
-                <p className="text-sm text-oku-taupe italic opacity-60">No screenings recorded yet.</p>
+                <p className="text-xl font-display italic text-oku-darkgrey/30 col-span-2 text-center py-10">No clinical recordings yet.</p>
               ) : (
-                recentAssessments.map((ans) => (
-                  <Link key={ans.id} href="/dashboard/client/clinical" className="group cursor-pointer block">
-                    <p className="text-[9px] uppercase tracking-widest font-black text-oku-taupe/40 group-hover:text-oku-navy-light transition-colors mb-1.5">{ans.assessment?.title}</p>
-                    <p className="font-bold text-lg text-oku-dark group-hover:text-oku-navy transition-colors">{ans.result}</p>
-                    <div className="flex items-center justify-between mt-2">
-                       <p className="text-[10px] opacity-40 uppercase tracking-widest font-black">{new Date(ans.completedAt).toLocaleDateString()}</p>
-                       <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-oku-ocean text-oku-navy-light rounded opacity-0 group-hover:opacity-100 transition-opacity">View Detail</span>
+                recentAssessments.slice(0, 4).map((ans, idx) => {
+                  const colors = ['bg-oku-lavender', 'bg-oku-mint', 'bg-oku-peach', 'bg-oku-babyblue']
+                  const score = parseInt(ans.result || '0') || 0
+                  const max = 27 // PHQ-9 max
+                  const percentage = Math.min((score / max) * 100, 100)
+                  return (
+                    <div key={ans.id} className="card-glass-3d !p-8 !bg-white/60">
+                      <div className="flex justify-between items-start mb-6">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mb-1">{ans.assessment?.title}</p>
+                          <p className="text-xl font-bold text-oku-darkgrey">{ans.result}</p>
+                        </div>
+                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30">{new Date(ans.completedAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="w-full h-3 bg-white rounded-full overflow-hidden border border-oku-darkgrey/5 shadow-inner">
+                        <div 
+                          className={`h-full ${colors[idx % colors.length]} transition-all duration-1000 shadow-sm`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
                     </div>
-                  </Link>
-                ))
+                  )
+                })
               )}
             </div>
-            <Link href="/dashboard/client/clinical" className="mt-10 btn-sky w-full block text-center py-4">New Screening</Link>
+          </section>
+        </div>
+
+        {/* Right Section */}
+        <div className="xl:col-span-4 space-y-12">
+          
+          {/* 4. Session Reflections (Butter Yellow) */}
+          <section className="card-glass-3d !bg-oku-butter !p-10 group relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-8">
+                <Sparkles className="text-oku-purple-dark/60 animate-float-3d" size={28} />
+                <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">Personal Space</span>
+              </div>
+              <h3 className="heading-display text-3xl text-oku-darkgrey mb-6">Session <span className="italic text-oku-purple-dark">Reflections</span></h3>
+              <textarea 
+                placeholder="What stayed with you after the last session?"
+                className="w-full h-40 bg-white/40 border border-white/60 rounded-[2rem] p-6 text-sm italic font-display focus:outline-none focus:ring-4 focus:ring-oku-lavender/50 transition-all shadow-sm placeholder:text-oku-darkgrey/30"
+              />
+              <button className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white w-full !py-4 mt-6 group">
+                <Save size={16} className="mr-3 group-hover:scale-110 transition-transform" /> Save Reflection
+              </button>
+            </div>
+            {/* Decoration */}
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl" />
           </section>
 
-          <section className="card-glass p-10 bg-oku-sage/20 border-oku-sage-dark/10">
+          {/* 5. Therapist Match Card (Lavender) */}
+          <section className="card-glass-3d !bg-oku-lavender/60 !p-10 group">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-display font-bold text-oku-dark">Aligned Care</h2>
-              <Heart size={20} className="text-oku-pink-dark" />
+              <h2 className="heading-display text-2xl text-oku-darkgrey tracking-tight">Your <span className="italic text-oku-purple-dark">Specialist</span></h2>
+              <Heart size={20} className="text-oku-purple-dark/40 animate-pulse" />
             </div>
-            <div className="space-y-6">
-              {practitioners.map(p => (
-                <Link key={p.id} href={`/dashboard/client/book/new/${p.id}/trial`} className="flex items-center gap-4 group">
-                  <div className="w-16 h-16 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
-                    {p.user?.avatar ? <img src={p.user.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl text-oku-purple bg-oku-purple/10">🧘</div>}
+            
+            {matchedTherapist ? (
+              <div className="space-y-8">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl">
+                    <img src={matchedTherapist.user.avatar || '/uploads/2025/07/placeholder.jpg'} className="w-full h-full object-cover" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-bold text-oku-dark group-hover:text-oku-navy transition-colors truncate">{p.user?.name || 'Specialist'}</p>
-                    <p className="text-[10px] uppercase tracking-widest font-black opacity-30 mt-1">Matched Specialization</p>
+                  <div>
+                    <p className="text-2xl font-bold text-oku-darkgrey">{matchedTherapist.user.name}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark/60">{matchedTherapist.specialization[0]}</p>
                   </div>
-                  <ArrowUpRight size={18} className="text-oku-taupe opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                </Link>
-              ))}
-            </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {matchedTherapist.specialization.slice(0, 3).map((spec, i) => (
+                    <span key={i} className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-white/60 rounded-full border border-white">
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Link href="/dashboard/client/messages" className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-4 !px-4 text-[9px]">
+                    <MessageSquare size={14} className="mr-2" /> Message
+                  </Link>
+                  <Link href={`/dashboard/client/book/new/${matchedTherapist.id}`} className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !py-4 !px-4 text-[9px]">
+                    Rebook
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <p className="text-oku-darkgrey/40 italic font-display">No matches yet. Browse the collective to find your path.</p>
+            )}
           </section>
+
+          {/* AI Insight Placeholder */}
+          <div className="card-glass-3d !p-10 !bg-oku-babyblue/40 border-dashed border-2">
+             <Wind size={24} className="text-oku-purple-dark/40 mb-6 animate-float-3d" />
+             <p className="text-sm font-bold text-oku-darkgrey/60 italic leading-relaxed">
+               "Healing is not a race. You are unfolding at the exact pace you need to."
+             </p>
+          </div>
 
         </div>
       </div>
       
-      {/* Footer Space AI */}
-      <div className="mt-20">
-         <AIAssistantWidget contextType={hasAdhdAssessments ? "adhd_helper" : "client_insight"} title={hasAdhdAssessments ? "ADHD Helper" : "Wellness Insights"} />
-      </div>
+      {/* 3D Background Objects */}
+      <div className="absolute top-[20%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
     </div>
   )
 }

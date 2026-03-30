@@ -25,59 +25,58 @@ export function DashboardSidebar() {
   }, [pathname])
 
   const clientLinks = [
-    { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
-    { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
-    { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} />, color: 'text-oku-peach-dark' },
-    { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
-    { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
-    { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
-    { label: 'Clinical', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
-    { label: 'Therapists', href: '/dashboard/client/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
-    { label: 'Support', href: '/dashboard/client/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
-    { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
+    { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Clinical', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Therapists', href: '/dashboard/client/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Support', href: '/dashboard/client/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
   ]
 
   const therapistLinks = [
-    { label: 'Center', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
-    { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Schedule', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Hours', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
-    { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
-    { label: 'Clinical', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
-    { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-taupe' },
-    { label: 'Support', href: '/practitioner/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
+    { label: 'Center', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Schedule', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Hours', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Clinical', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Support', href: '/practitioner/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
   ]
 
   const adminLinks = [
-    { label: 'Pulse', href: '/admin/dashboard', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple' },
-    { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} />, color: 'text-oku-blue' },
-    { label: 'Practitioners', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-green' },
-    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <FileText size={18} strokeWidth={1.5} />, color: 'text-oku-pink' },
-    { label: 'Services', href: '/admin/dashboard?tab=services', icon: <Briefcase size={18} strokeWidth={1.5} />, color: 'text-oku-sage' },
+    { label: 'Pulse', href: '/admin/dashboard', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Practitioners', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <FileText size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Services', href: '/admin/dashboard?tab=services', icon: <Briefcase size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
 
   const sidebarContent = (
-    <div className="flex flex-col h-full">
-      <div className="px-4 py-5 flex items-center justify-between">
-        <Link href="/dashboard" className="block group">
-          <motion.img 
-            whileHover={{ scale: 1.05 }}
-            src="/wp-content/uploads/2025/07/Logoo.png" 
+    <div className="flex flex-col h-full bg-gradient-to-b from-oku-lavender/80 to-oku-blush/80 backdrop-blur-3xl p-6 rounded-[3rem] border border-white/60 m-4 shadow-2xl">
+      <div className="px-4 py-8 flex items-center justify-between">
+        <Link href="/" className="block group animate-float-3d">
+          <img 
+            src="/uploads/2025/07/Logoo.png" 
             alt="OKU" 
-            className="h-9 w-auto opacity-90"
+            className="h-10 w-auto opacity-90"
           />
         </Link>
-        <button onClick={() => setIsOpen(false)} className="lg:hidden text-oku-taupe">
+        <button onClick={() => setIsOpen(false)} className="lg:hidden text-oku-darkgrey/40">
             <X size={24} />
         </button>
       </div>
 
-      <nav className="flex-1 space-y-2 px-2 overflow-y-auto">
-        <p className="text-[10px] font-medium uppercase tracking-[0.36em] text-oku-taupe/40 mb-6 ml-4">Workspace</p>
-        <div className="space-y-1">
+      <nav className="flex-1 space-y-3 px-2 overflow-y-auto mt-8">
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30 mb-8 ml-4">Sanctuary</p>
+        <div className="space-y-2">
           {links.map((link) => {
             const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
             return (
@@ -86,29 +85,22 @@ export function DashboardSidebar() {
                 href={link.href}
                 className="relative group block"
               >
-                {active && (
-                  <motion.div 
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 bg-white rounded-[1.75rem] shadow-lg shadow-oku-taupe/5 border border-oku-taupe/10"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <div className={`relative flex items-center justify-between p-3.5 rounded-[1.75rem] transition-all duration-300 ${
+                <div className={`relative flex items-center justify-between p-4 rounded-2xl transition-all duration-500 ${
                   active 
-                    ? 'text-oku-dark'
-                    : 'text-oku-taupe hover:text-oku-dark hover:translate-x-1'
+                    ? 'bg-white shadow-xl scale-[1.05] border border-white text-oku-darkgrey'
+                    : 'text-oku-darkgrey/50 hover:bg-white/40 hover:translate-x-2'
                 }`}>
                   <div className="flex items-center gap-5">
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${
                       active 
-                      ? 'bg-oku-page-bg shadow-inner border border-oku-taupe/5' 
-                      : 'bg-white/40 group-hover:bg-white group-hover:shadow-md'
+                      ? 'bg-oku-lavender shadow-inner' 
+                      : 'bg-white/40 group-hover:bg-white'
                     }`}>
-                       <div className={active ? link.color : 'text-oku-taupe group-hover:text-oku-dark'}>
+                       <div className={active ? 'text-oku-purple-dark' : 'text-oku-darkgrey/40 group-hover:text-oku-purple-dark'}>
                           {link.icon}
                        </div>
                     </div>
-                    <span className={`text-[11px] uppercase tracking-[0.2em] font-medium ${active ? 'text-oku-dark' : ''}`}>{link.label}</span>
+                    <span className={`text-[11px] uppercase tracking-[0.2em] font-black ${active ? 'text-oku-darkgrey' : ''}`}>{link.label}</span>
                   </div>
                 </div>
               </Link>
@@ -117,22 +109,22 @@ export function DashboardSidebar() {
         </div>
       </nav>
 
-      <div className="mt-auto p-5">
-        <div className="p-6 rounded-[2rem] bg-white/90 shadow-lg shadow-oku-taupe/10 border border-white group transition-all duration-300 hover:shadow-oku-purple/5">
+      <div className="mt-auto pt-8">
+        <div className="card-glass-3d !p-6 !bg-white/60 !rounded-[2.5rem] shadow-xl group transition-all duration-500 hover:scale-[1.02]">
            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-oku-purple/30 to-oku-blue/30 flex items-center justify-center text-oku-dark font-display font-medium">
+              <div className="w-14 h-14 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-darkgrey font-display font-black text-xl animate-float-3d shadow-sm">
                  {session?.user?.name?.substring(0, 1)}
               </div>
               <div className="flex-1 min-w-0">
-                 <p className="text-[11px] font-medium uppercase tracking-widest text-oku-dark truncate">{session?.user?.name}</p>
-                 <p className="text-[9px] uppercase tracking-widest text-oku-taupe/60 font-medium">{role?.toLowerCase()}</p>
+                 <p className="text-[11px] font-black uppercase tracking-widest text-oku-darkgrey truncate">{session?.user?.name}</p>
+                 <p className="text-[9px] uppercase tracking-widest text-oku-purple-dark font-black">{role?.toLowerCase()}</p>
               </div>
            </div>
            <button 
              onClick={() => signOut({ callbackUrl: '/' })}
-             className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-oku-page-bg hover:bg-red-50 hover:text-red-500 text-oku-taupe transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-medium border border-oku-taupe/5"
+             className="btn-pill-3d bg-white/80 border-oku-darkgrey/5 hover:bg-red-50 hover:text-red-500 transition-all w-full !py-4 text-[10px]"
            >
-             <LogOut size={14} strokeWidth={1.5} />
+             <LogOut size={14} strokeWidth={2} className="mr-2" />
              <span>Sign Out</span>
            </button>
         </div>
@@ -143,10 +135,10 @@ export function DashboardSidebar() {
   return (
     <>
       {/* Mobile Trigger */}
-      <div className="lg:hidden fixed top-4 left-4 z-[60]">
+      <div className="lg:hidden fixed top-6 left-6 z-[60]">
         <button 
           onClick={() => setIsOpen(true)}
-          className="p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-oku-taupe/10 shadow-xl text-oku-dark"
+          className="p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white shadow-2xl text-oku-darkgrey animate-float-3d"
         >
           <Menu size={24} />
         </button>
@@ -160,13 +152,13 @@ export function DashboardSidebar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-oku-dark/20 backdrop-blur-sm z-50 lg:hidden"
+            className="fixed inset-0 bg-oku-darkgrey/20 backdrop-blur-sm z-50 lg:hidden"
           />
         )}
       </AnimatePresence>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-80 bg-white/70 backdrop-blur-xl border-r border-white min-h-screen flex-col sticky top-0 z-40 p-5 gap-6">
+      <aside className="hidden lg:flex w-88 min-h-screen flex-col sticky top-0 z-40 p-2 overflow-hidden">
         {sidebarContent}
       </aside>
 
@@ -174,8 +166,8 @@ export function DashboardSidebar() {
       <motion.aside 
         initial={{ x: '-100%' }}
         animate={{ x: isOpen ? 0 : '-100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] shadow-2xl lg:hidden"
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        className="fixed inset-y-0 left-0 w-[320px] z-[70] lg:hidden"
       >
         {sidebarContent}
       </motion.aside>

@@ -15,44 +15,29 @@ export default function TherapistFilters({
   therapists,
   specialties,
   isFirstTime = false,
-  userLocation,
-  viewerCurrency,
-  exchangeRates,
 }: {
   therapists: any[]
   specialties: string[]
   isFirstTime?: boolean
-  userLocation?: string
-  viewerCurrency: string
-  exchangeRates: ExchangeRateTable
 }) {
   const getDisplayedSessionRate = (practitioner: any) => {
-    const pricing = resolvePractitionerSessionPrice(practitioner, userLocation)
-    return localizeAmount(
-      pricing.amountInInr,
-      userLocation,
-      'INR',
-      exchangeRates,
-      viewerCurrency
-    ).amount
+    const rate = practitioner.price || practitioner.consultationFee || practitioner.hourlyRate || practitioner.indiaSessionRate || 1500
+    return Math.max(rate, 1500)
   }
 
-  const allDisplayedPrices = therapists.map(getDisplayedSessionRate)
-  const sliderMax = Math.max(
-    viewerCurrency === 'INR' ? 3000 : 50,
-    Math.ceil((Math.max(...allDisplayedPrices, 0) || 0) / (viewerCurrency === 'INR' ? 250 : 10)) *
-      (viewerCurrency === 'INR' ? 250 : 10)
-  )
+  const sliderMin = 1500
+  const sliderMax = 5000
   const [search, setSearch] = useState('')
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
-  const [maxPrice, setMaxPrice] = useState<number>(sliderMax)
+  const [maxPrice, setMaxPrice] = useState<number>(sliderMin)
 
   const filtered = therapists.filter(t => {
-    const matchesSearch = t.user.name.toLowerCase().includes(search.toLowerCase()) || 
+    const matchesSearch = t.user?.name?.toLowerCase().includes(search.toLowerCase()) || 
+                          t.name?.toLowerCase().includes(search.toLowerCase()) ||
                           t.bio?.toLowerCase().includes(search.toLowerCase())
     
     const matchesSpecialty = selectedSpecialties.length === 0 || 
-                             selectedSpecialties.some(s => t.specialization?.includes(s))
+                             selectedSpecialties.some(s => t.specialization?.includes(s) || t.specialties?.includes(s))
     
     const matchesPrice = getDisplayedSessionRate(t) <= maxPrice
 
@@ -77,8 +62,8 @@ export default function TherapistFilters({
              <h3 className="text-sm font-black uppercase tracking-widest text-oku-dark flex items-center gap-2">
                 <Filter size={16} className="text-oku-purple" /> Filters
              </h3>
-             {(selectedSpecialties.length > 0 || search || maxPrice < sliderMax) && (
-                <button onClick={() => { setSearch(''); setSelectedSpecialties([]); setMaxPrice(sliderMax); }} className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Clear All</button>
+             {(selectedSpecialties.length > 0 || search || maxPrice > sliderMin) && (
+                <button onClick={() => { setSearch(''); setSelectedSpecialties([]); setMaxPrice(sliderMin); }} className="text-[10px] font-black uppercase tracking-widest text-oku-purple hover:underline">Clear All</button>
              )}
           </div>
 
@@ -102,15 +87,18 @@ export default function TherapistFilters({
             <div className="space-y-4">
                <div className="flex justify-between items-center">
                   <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60">Max Session Rate</label>
-                  <span className="text-sm font-bold text-oku-dark">{formatCurrency(maxPrice, viewerCurrency)}</span>
+                  <span className="text-sm font-bold text-oku-dark">₹{maxPrice}</span>
                </div>
                <input 
                  type="range" 
-                 min="0" max={sliderMax} step={viewerCurrency === 'INR' ? 250 : 10}
+                 min={sliderMin} max={sliderMax} step={250}
                  value={maxPrice}
                  onChange={(e) => setMaxPrice(parseInt(e.target.value))}
                  className="w-full accent-oku-purple"
                />
+               <p className="text-[9px] text-oku-taupe italic mt-2">
+                 Session prices start from ₹1500/hr · Prices shown in INR for India.
+               </p>
             </div>
 
             {/* Specialties */}
@@ -180,6 +168,11 @@ export default function TherapistFilters({
                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-oku-dark">Verified</span>
                         </div>
                      )}
+                     {practitioner.isIntroductory && (
+                        <div className="bg-oku-purple text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-xl border border-oku-purple w-fit">
+                           <span className="text-[8px] font-black uppercase tracking-[0.2em]">Introductory rate</span>
+                        </div>
+                     )}
                   </div>
 
                   <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center">
@@ -189,8 +182,9 @@ export default function TherapistFilters({
                          </div>
                       </div>
                       <span className="bg-white text-oku-dark px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">
-                          {formatCurrency(getDisplayedSessionRate(practitioner), viewerCurrency)} / SESSION
+                          {formatCurrency(getDisplayedSessionRate(practitioner), 'INR')} / SESSION
                       </span>
+
                   </div>
                 </div>
                 
@@ -245,21 +239,12 @@ export default function TherapistFilters({
                     >
                       Establish Care <ArrowRight size={14} />
                     </Link>
-                    {isFirstTime ? (
-                        <Link 
-                            href={`/dashboard/client/book/new/${practitioner.id}?type=trial`} 
-                            className="bg-oku-purple/20 text-oku-purple-dark py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-purple/30 transition-all text-center border border-oku-purple/10 active:scale-95"
-                        >
-                            Claim Free Intro
-                        </Link>
-                    ) : (
-                        <Link 
-                            href={`/dashboard/client/messages?with=${practitioner.userId}`} 
-                            className="bg-white text-oku-dark border border-oku-taupe/10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
-                        >
-                            Send Inquiry
-                        </Link>
-                    )}
+                    <Link 
+                        href={`/therapists/${practitioner.id}`} 
+                        className="bg-white text-oku-dark border border-oku-taupe/10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
+                    >
+                        View full profile →
+                    </Link>
                   </div>
                 </div>
               </motion.div>

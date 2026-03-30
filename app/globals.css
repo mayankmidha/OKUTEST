@@ -1,118 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 28, 27, 26;
-  --background-start-rgb: 250, 249, 246;
-  --background-end-rgb: 252, 250, 247;
+  --foreground-rgb: 74, 68, 88;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 249, 247, 228;
   
-  /* OKU Zen Pastel Palette */
-  --oku-lavender: #E0E7FF;
-  --oku-lavender-dark: #6366F1;
-  --oku-mint: #ECFDF5;
-  --oku-mint-dark: #10B981;
-  --oku-peach: #FFF7ED;
-  --oku-peach-dark: #F97316;
-  --oku-sky: #F0F9FF;
-  --oku-sky-dark: #0EA5E9;
-  --oku-cream: #FDFCF8;
-  --oku-cream-warm: #F7F4EF;
-  --oku-dark: #1A1A1A;
-  --oku-taupe: #706F6C;
-  --oku-purple: #A5B4FC;
-  --oku-purple-dark: #4F46E5;
-  --oku-ocean: #7DD3FC;
-  --oku-matcha: #D1FAE5;
-  --oku-matcha-dark: #059669;
+  --oku-lavender: #E8E4F9;
+  --oku-blush: #F9E4EE;
+  --oku-mint: #E4F9F0;
+  --oku-peach: #F9EDE4;
+  --oku-butter: #F9F7E4;
+  --oku-babyblue: #E4EEF9;
+  --oku-darkgrey: #4A4458;
+}
 
-  /* Pebble Design System */
-  --radius-pebble: 3rem;
-  --radius-card: 2.5rem;
-  --radius-button: 1.5rem;
-  
-  --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 232, 228, 249;
+    --background-start-rgb: 45, 38, 64;
+    --background-end-rgb: 61, 46, 58;
+  }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background:
-    radial-gradient(circle at top right, rgba(224, 231, 255, 0.4), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(209, 250, 229, 0.3), transparent 25%),
-    linear-gradient(to bottom, rgb(var(--background-end-rgb)), rgb(var(--background-start-rgb)));
-  min-height: 100vh;
-  line-height: 1.5;
+  color: var(--oku-darkgrey);
+  background: var(--background-start-rgb);
+  font-family: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
   @apply selection:bg-oku-lavender;
 }
 
 @layer components {
-  .btn-primary {
-    @apply bg-oku-dark text-white px-8 py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.24em] hover:bg-oku-purple-dark transition-all duration-500 shadow-xl active:scale-[0.98] flex items-center justify-center gap-3;
+  /* 3D Button Effect */
+  .btn-pill-3d {
+    @apply relative inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-lg border-b-4 active:border-b-0 active:translate-y-[4px];
   }
 
-  .btn-pebble {
-    @apply px-10 py-5 rounded-full font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-700 active:scale-95 shadow-premium hover:shadow-2xl flex items-center justify-center gap-3;
-  }
-  
-  .card-pebble {
-    @apply bg-white/80 backdrop-blur-xl rounded-[3.5rem] border border-white/50 shadow-premium p-12 hover:border-oku-purple/30 transition-all duration-1000;
+  /* Glassmorphism Card */
+  .card-glass-3d {
+    @apply bg-white/40 backdrop-blur-[12px] rounded-[3rem] border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02];
+    perspective: 1000px;
   }
 
-  .input-pebble {
-    @apply w-full bg-oku-cream-warm/50 border border-oku-taupe/10 rounded-[1.5rem] p-6 text-sm outline-none focus:border-oku-purple focus:bg-white transition-all duration-500 shadow-inner;
+  /* Input Fields */
+  .input-pastel {
+    @apply w-full rounded-2xl border border-white bg-white/50 px-6 py-4 text-sm outline-none transition-all placeholder:text-oku-darkgrey/40 focus:ring-4 focus:ring-oku-lavender/50;
   }
 
-  .btn-navy {
-    @apply bg-oku-dark text-white px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.24em] hover:bg-oku-purple-dark transition-all duration-300 shadow-premium active:scale-[0.98] flex items-center justify-center gap-3;
+  /* Section Reveal Animation */
+  .reveal-on-scroll {
+    @apply opacity-0 translate-y-8 transition-all duration-1000 ease-out;
   }
 
-  .btn-sky {
-    @apply bg-oku-sky text-oku-dark px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.24em] hover:bg-oku-ocean transition-all duration-300 border border-oku-ocean/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-3;
-  }
-
-  .card-glass {
-    @apply bg-white/75 backdrop-blur-xl border border-white/80 rounded-[3rem] shadow-premium transition-all duration-500;
-  }
-
-  .card-navy {
-    @apply bg-oku-dark text-white p-8 md:p-10 rounded-[3rem] shadow-premium relative overflow-hidden;
-  }
-
-  .input-soft {
-    @apply w-full rounded-2xl border border-oku-taupe/10 bg-white/80 px-5 py-3.5 text-sm text-oku-dark shadow-sm outline-none transition-all placeholder:text-oku-taupe/35 focus:border-oku-purple/20 focus:ring-4 focus:ring-oku-lavender/40;
-  }
-
-  .pill-soft {
-    @apply inline-flex items-center gap-2 rounded-full border border-white bg-white/80 px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-oku-taupe shadow-sm;
+  .reveal-on-scroll.visible {
+    @apply opacity-100 translate-y-0;
   }
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* 3D Float Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.animate-float-3d {
+  animation: float 3s ease-in-out infinite;
 }
 
-/* Custom Scrollbar for Premium Feel */
-::-webkit-scrollbar {
-  width: 6px;
+/* Soft Pulse Animation */
+@keyframes soft-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232, 228, 249, 0.4); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(232, 228, 249, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232, 228, 249, 0); }
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.pulse-cta {
+  animation: soft-pulse 2s infinite;
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-oku-taupe/10 rounded-full;
+/* 3D Card Tilt */
+.tilt-card {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-oku-taupe/20;
+.tilt-card:hover {
+  transform: rotateX(5deg) rotateY(5deg) scale(1.02);
 }
 
-.mirror {
-  transform: scaleX(-1);
+.tilt-card-content {
+  transform: translateZ(20px);
+}
+
+/* Dashboards Sidebar Gradient */
+.sidebar-gradient {
+  @apply bg-gradient-to-b from-oku-lavender to-oku-blush dark:from-oku-dark-lavender dark:to-oku-dark-blush;
 }
