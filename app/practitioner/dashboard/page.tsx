@@ -14,81 +14,18 @@ import {
   User as UserIcon,
   Users,
   Zap,
+  Calendar,
+  Activity,
+  Plus,
+  MessageSquare,
+  Save,
+  CheckCircle2,
+  Moon,
+  Sparkles
 } from 'lucide-react'
 import { AppointmentStatus, UserRole } from '@prisma/client'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
-import { TaskManager } from '@/components/TaskManager'
-import { PractitionerShell, PractitionerStatCard } from '@/components/practitioner-shell/practitioner-shell'
-import { autoConvert, formatCurrency } from '@/lib/currency'
-import { isPsychiatristProfile } from '@/lib/practitioner-type'
-import { getPractitionerFinanceSummary } from '@/lib/provider-finance'
-
-function formatMoney(amount: number) {
-  const converted = autoConvert(amount, undefined, 'INR')
-  return formatCurrency(converted.amount, converted.currency)
-}
-
-function formatSessionTime(date: Date) {
-  return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function formatSessionDate(date: Date) {
-  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function NotesPanel({ recentNotes }: { recentNotes: any[] }) {
-  return (
-    <section className="card-glass p-10 border-white">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-display font-bold text-oku-dark">Recent Notes</h2>
-        <FileText size={20} className="text-oku-lavender-dark opacity-40" />
-      </div>
-      <div className="space-y-8">
-        {recentNotes.length === 0 ? (
-          <p className="text-xs text-oku-taupe italic opacity-60 text-center py-10">No secure notes recorded.</p>
-        ) : (
-          recentNotes.map((note) => (
-            <div key={note.id} className="flex gap-5 group cursor-pointer border-b border-oku-taupe/5 pb-6 last:border-0">
-              <div className="w-12 h-12 rounded-2xl bg-oku-matcha flex items-center justify-center text-oku-matcha-dark shadow-inner group-hover:bg-oku-dark group-hover:text-white transition-all duration-500">
-                <FileText size={20} />
-              </div>
-              <div className="flex-1 min-w-0 text-left">
-                <p className="text-base font-bold text-oku-dark group-hover:text-oku-navy transition-colors truncate">
-                  {note.appointment.client?.name || 'Patient'}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-oku-taupe opacity-60 font-black mt-1">
-                  Finalized {new Date(note.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <ArrowUpRight size={16} className="text-oku-taupe opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all shrink-0 self-center" />
-            </div>
-          ))
-        )}
-      </div>
-      <Link href="/practitioner/clients" className="mt-10 btn-sky w-full block text-center py-4 bg-white/40 border-white hover:bg-white shadow-sm transition-all">
-        Clinical Archive
-      </Link>
-    </section>
-  )
-}
-
-function PatientPanel({ caseloadCount }: { caseloadCount: number }) {
-  return (
-    <div className="card-glass p-10 bg-oku-dark text-white border-none shadow-2xl relative overflow-hidden group">
-      <div className="relative z-10">
-        <Users size={32} className="text-oku-lavender mb-6" strokeWidth={1.5} />
-        <h3 className="text-xl font-bold mb-2">Patient Roster</h3>
-        <p className="text-xs text-white/40 mb-8 leading-relaxed font-display italic">
-          Manage patient records, documentation history, and ongoing clinical coordination.
-        </p>
-        <Link href="/practitioner/clients" className="btn-primary w-full bg-white text-oku-dark py-4 text-[9px] hover:bg-oku-lavender transition-all">
-          Manage {caseloadCount} Patients
-        </Link>
-      </div>
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-oku-lavender/5 rounded-full blur-2xl" />
-    </div>
-  )
-}
+import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
 export default async function PractitionerDashboardPage() {
   const session = await auth()
@@ -101,27 +38,12 @@ export default async function PractitionerDashboardPage() {
     practitioner,
     totalCompleted,
     caseloadCount,
-    pendingTasks,
     recentNotes,
-    activePrescriptions,
-    recentPrescriptions,
+    upcomingSessions,
   ] = await Promise.all([
     prisma.practitionerProfile.findUnique({
       where: { userId: session.user.id },
-      include: {
-        user: {
-          include: {
-            practitionerAppointments: {
-              where: {
-                startTime: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-                status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
-              },
-              include: { client: true, service: true },
-              orderBy: { startTime: 'asc' },
-            },
-          },
-        },
-      },
+      include: { user: true }
     }),
     prisma.appointment.count({
       where: { practitionerId: session.user.id, status: AppointmentStatus.COMPLETED },
@@ -130,353 +52,150 @@ export default async function PractitionerDashboardPage() {
       where: { practitionerId: session.user.id },
       distinct: ['clientId'],
     }).then((results) => results.length),
-    prisma.task.count({
-      where: { userId: session.user.id, isCompleted: false },
-    }),
     prisma.soapNote.findMany({
       where: { appointment: { practitionerId: session.user.id } },
       include: { appointment: { include: { client: true } } },
       orderBy: { createdAt: 'desc' },
       take: 3,
     }),
-    prisma.prescription.count({
-      where: { practitionerId: session.user.id, status: 'ACTIVE' },
-    }).catch(() => 0),
-    prisma.prescription.findMany({
-      where: { practitionerId: session.user.id },
-      include: {
-        client: {
-          select: { name: true },
-        },
+    prisma.appointment.findMany({
+      where: {
+        practitionerId: session.user.id,
+        startTime: { gte: new Date() },
+        status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
       },
-      orderBy: { createdAt: 'desc' },
-      take: 4,
-    }).catch(() => []),
+      include: { client: true, service: true },
+      orderBy: { startTime: 'asc' },
+      take: 5
+    }),
   ])
 
-  const finance = await getPractitionerFinanceSummary(session.user.id)
-
   if (!practitioner) {
-    await prisma.practitionerProfile.create({
-      data: { userId: session.user.id, bio: '', specialization: [] },
-    })
-    redirect('/practitioner/dashboard')
+    redirect('/auth/login')
   }
 
-  const today = new Date().setHours(0, 0, 0, 0)
-  const weekAhead = new Date()
-  weekAhead.setDate(weekAhead.getDate() + 7)
-
-  const scheduledAppointments = practitioner.user.practitionerAppointments || []
-  const todaySessions = scheduledAppointments.filter((appointment: any) => {
-    return new Date(appointment.startTime).setHours(0, 0, 0, 0) === today
-  })
-  const upcomingSessions = scheduledAppointments.filter((appointment: any) => {
-    return new Date(appointment.startTime) > new Date()
-  })
-  const followUpsNextWeek = upcomingSessions.filter((appointment: any) => {
-    return new Date(appointment.startTime) <= weekAhead
-  })
-  const earningsValue = finance.totalEarned
-  const earningsLabel = formatMoney(earningsValue)
-  const isPsychiatrist = isPsychiatristProfile(practitioner)
-
-  if (isPsychiatrist) {
-    return (
-      <PractitionerShell
-        title="Psychiatry Command"
-        description="Medication reviews, psychiatric follow-ups, and consult coordination in one focused workspace."
-        badge="Psychiatry Desk"
-        currentPath="/practitioner/dashboard"
-        canPostBlogs={practitioner.canPostBlogs}
-        heroActions={
-          <div className="flex items-center gap-4">
-            <Link href="/practitioner/appointments" className="btn-sky hidden md:flex items-center gap-2">
-              <Clock size={18} /> Review Queue
-            </Link>
-            <Link href="/practitioner/profile" className="btn-navy group flex items-center gap-2 shadow-2xl">
-              <UserIcon size={18} className="group-hover:rotate-12 transition-transform" /> Clinical Profile
-            </Link>
-          </div>
-        }
-      >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <PractitionerStatCard
-            label="Total Revenue"
-            value={earningsLabel}
-            detail="Sessions + assessments"
-            accent="bg-oku-matcha-dark"
-          />
-          <PractitionerStatCard
-            label="Active Caseload"
-            value={caseloadCount}
-            detail="Patients in Care"
-            accent="bg-oku-lavender-dark"
-          />
-          <PractitionerStatCard
-            label="Active Prescriptions"
-            value={activePrescriptions}
-            detail="Medication Plans"
-            accent="bg-oku-navy"
-          />
-          <div className="bg-oku-dark text-white rounded-[2.5rem] p-8 relative overflow-hidden group shadow-pastel">
-            <div className="relative z-10">
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Next Follow-Up</p>
-              <p className="text-xl font-bold truncate mb-1">
-                {upcomingSessions[0]?.client?.name?.split(' ')[0] || 'Queue Clear'}
-              </p>
-              {upcomingSessions[0] && (
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender animate-pulse">
-                  Starting at {formatSessionTime(upcomingSessions[0].startTime)}
-                </p>
-              )}
-            </div>
-            <Pill className="absolute bottom-[-10px] right-[-10px] text-oku-lavender opacity-10 group-hover:rotate-12 transition-transform" size={80} />
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-12 gap-10">
-          <div className="lg:col-span-8 space-y-10">
-            <section className="space-y-6">
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-oku-lavender-dark" />
-                  <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Today's Consult Queue</h2>
-                </div>
-                <Link href="/practitioner/appointments" className="text-[9px] font-black uppercase tracking-widest text-oku-navy-light hover:underline flex items-center gap-1">
-                  Full Ledger <ArrowUpRight size={14} />
-                </Link>
-              </div>
-
-              <div className="space-y-4">
-                {todaySessions.length === 0 ? (
-                  <div className="card-glass py-24 text-center border-dashed bg-oku-glacier/20 border-oku-glacier-dark/10">
-                    <p className="text-oku-taupe font-display italic text-2xl opacity-40">No consults scheduled today.</p>
-                  </div>
-                ) : (
-                  todaySessions.map((appointment: any) => (
-                    <div key={appointment.id} className="card-glass p-1 group hover:border-oku-lavender-dark/20 transition-all border-oku-taupe/5">
-                      <div className="p-7 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                        <div className="flex items-center gap-8">
-                          <div className="text-center min-w-[100px] p-4 bg-oku-lavender/30 rounded-2xl border border-oku-lavender-dark/10">
-                            <p className="text-2xl font-display font-bold text-oku-dark tracking-tighter">
-                              {new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                            </p>
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-oku-taupe opacity-60 mt-0.5">Start Time</p>
-                          </div>
-                          <div className="h-12 w-px bg-oku-taupe/10 hidden md:block" />
-                          <div>
-                            <p className="text-2xl font-display font-bold text-oku-dark leading-tight group-hover:text-oku-navy transition-colors">
-                              {appointment.client?.name || 'Patient'}
-                            </p>
-                            <div className="flex items-center gap-3 mt-1.5">
-                              <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-oku-glacier/50 text-oku-navy-light rounded-full border border-oku-glacier-dark/5">
-                                {appointment.service?.name || 'Consult'}
-                              </span>
-                              <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-1 opacity-60">
-                                <ShieldCheck size={10} /> Medication Review Ready
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <Link href={`/session/${appointment.id}`} className="btn-navy min-w-[160px] text-center shadow-pastel hover:scale-105 transition-transform">
-                          Launch Room
-                        </Link>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </section>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <section className="card-glass p-10 border-white">
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Medication Snapshot</h2>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-50 mt-2">Seven-Day Follow-Up Window</p>
-                  </div>
-                  <Pill size={22} className="text-oku-purple-dark opacity-60" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-[2rem] border border-oku-taupe/10 bg-white p-6">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe opacity-50">Follow-Ups</p>
-                    <p className="mt-3 text-4xl font-display font-bold text-oku-dark">{followUpsNextWeek.length}</p>
-                  </div>
-                  <div className="rounded-[2rem] border border-oku-taupe/10 bg-white p-6">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe opacity-50">Open Tasks</p>
-                    <p className="mt-3 text-4xl font-display font-bold text-oku-dark">{pendingTasks}</p>
-                  </div>
-                </div>
-                <p className="mt-6 text-sm text-oku-taupe font-display italic opacity-70">
-                  Stay ahead of adherence issues by using the next-week queue as your medication management touchpoint.
-                </p>
-              </section>
-
-              <section className="card-glass p-10 border-white">
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Recent Prescriptions</h2>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-50 mt-2">Most Recent Orders</p>
-                  </div>
-                  <Brain size={22} className="text-oku-purple-dark opacity-60" />
-                </div>
-                {recentPrescriptions.length === 0 ? (
-                  <p className="text-sm text-oku-taupe font-display italic opacity-70">No prescriptions have been recorded yet.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {recentPrescriptions.map((prescription: any) => (
-                      <div key={prescription.id} className="rounded-[1.75rem] border border-oku-taupe/10 bg-white p-5">
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="font-bold text-oku-dark">{prescription.medicationName}</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mt-1">
-                              {prescription.client?.name || 'Patient'} • {prescription.dosage}
-                            </p>
-                          </div>
-                          <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-oku-cream text-oku-dark border border-oku-taupe/10">
-                            {prescription.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-oku-taupe mt-3">{prescription.frequency}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </div>
-
-            <div className="bg-oku-lavender p-12 rounded-[3.5rem] relative overflow-hidden group shadow-premium border border-white">
-              <div className="relative z-10">
-                <Heart className="text-oku-lavender-dark mb-6 animate-pulse" size={32} />
-                <h3 className="text-3xl font-display font-bold text-oku-dark mb-4">Psychiatric Follow-Through</h3>
-                <p className="text-oku-taupe italic font-display text-xl leading-relaxed mb-8 max-w-2xl">
-                  "Consistency protects outcomes. Keep medication reviews, follow-up notes, and patient education tightly connected."
-                </p>
-                <div className="flex items-center gap-6">
-                  <Link href="/practitioner/clients" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-oku-dark hover:text-oku-navy-light transition-all group-hover:translate-x-2">
-                    Review Care Plans <ArrowUpRight size={14} />
-                  </Link>
-                </div>
-              </div>
-              <div className="absolute top-0 right-0 w-80 h-80 bg-white/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 space-y-10">
-            <div className="h-[480px] card-glass overflow-hidden p-1 border-oku-rose-dark/5 bg-oku-rose/10">
-              <TaskManager />
-            </div>
-            <NotesPanel recentNotes={recentNotes} />
-            <PatientPanel caseloadCount={caseloadCount} />
-          </div>
-        </div>
-
-        <AIAssistantWidget contextType="practitioner_summary" title="Psychiatry AI Intelligence" />
-      </PractitionerShell>
-    )
-  }
+  const todaySessionsCount = upcomingSessions.filter(s => 
+    new Date(s.startTime).setHours(0,0,0,0) === new Date().setHours(0,0,0,0)
+  ).length
 
   return (
-    <PractitionerShell
-      title="Clinical Command"
-      description="Refined practice management for deep clinical focus."
-      badge="Practitioner HQ"
-      currentPath="/practitioner/dashboard"
-      canPostBlogs={practitioner.canPostBlogs}
-      heroActions={
-        <div className="flex items-center gap-4">
-          <Link href="/practitioner/schedule" className="btn-sky hidden md:flex items-center gap-2">
-            <Clock size={18} /> Manage Hours
-          </Link>
-          <Link href="/practitioner/profile" className="btn-navy group flex items-center gap-2 shadow-2xl">
-            <UserIcon size={18} className="group-hover:rotate-12 transition-transform" /> Professional Profile
-          </Link>
-        </div>
-      }
-    >
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <PractitionerStatCard
-            label="Total Revenue"
-            value={earningsLabel}
-            detail="Sessions + assessments"
-            accent="bg-oku-matcha-dark"
-          />
-        <PractitionerStatCard
-          label="Active Caseload"
-          value={caseloadCount}
-          detail="Unique Patients"
-          accent="bg-oku-lavender-dark"
-        />
-        <PractitionerStatCard
-          label="Completed"
-          value={totalCompleted}
-          detail="Lifetime Sessions"
-          accent="bg-oku-glacier-dark"
-        />
-        <div className="bg-oku-dark text-white rounded-[2.5rem] p-8 relative overflow-hidden group shadow-pastel">
-          <div className="relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Next Session</p>
-            <p className="text-xl font-bold truncate mb-1">
-              {upcomingSessions[0]?.client?.name?.split(' ')[0] || 'Queue Clear'}
-            </p>
-            {upcomingSessions[0] && (
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender animate-pulse">
-                Starting at {formatSessionTime(upcomingSessions[0].startTime)}
-              </p>
-            )}
+    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-mint/10 relative overflow-hidden">
+      {/* Redesign Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20 relative z-10">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+             <span className="chip bg-white/60 border-white/80">Clinical Workspace</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Therapist Dashboard</span>
           </div>
-          <Zap className="absolute bottom-[-10px] right-[-10px] text-oku-lavender opacity-10 group-hover:rotate-12 transition-transform" size={80} />
+          <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            Presence, <span className="text-oku-purple-dark italic">{session.user.name?.split(' ')[0]}.</span>
+          </h1>
+          <p className="text-2xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            Holding space for clinical excellence and compassionate care.
+          </p>
+        </div>
+        
+        <div className="flex flex-wrap gap-4">
+          <Link href="/practitioner/schedule" className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-10">
+             <Clock size={18} className="mr-3 text-oku-purple-dark" /> Manage Hours
+          </Link>
+          <Link href="/practitioner/profile" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-10 pulse-cta">
+             <UserIcon size={18} className="mr-3" /> Edit Profile
+          </Link>
         </div>
       </div>
 
-      <div className="grid xl:grid-cols-12 gap-10">
-        <div className="xl:col-span-8 space-y-10">
-          <section className="space-y-6">
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-oku-lavender-dark" />
-                <h2 className="text-2xl font-display font-bold text-oku-dark tracking-tight">Active Schedule</h2>
-              </div>
-              <Link href="/practitioner/appointments" className="text-[9px] font-black uppercase tracking-widest text-oku-navy-light hover:underline flex items-center gap-1">
-                Full Ledger <ArrowUpRight size={14} />
-              </Link>
+      {/* 1. 3D Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 relative z-10">
+        <div className="card-glass-3d !bg-oku-lavender/60 !p-10 flex flex-col justify-between group animate-float-3d">
+          <div className="flex justify-between items-start mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
+              <Activity size={32} strokeWidth={1.5} />
             </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark/40">Today</span>
+          </div>
+          <div>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{todaySessionsCount}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Sessions Remaining</p>
+          </div>
+        </div>
 
-            <div className="space-y-4">
-              {todaySessions.length === 0 ? (
-                <div className="card-glass py-24 text-center border-dashed bg-oku-glacier/20 border-oku-glacier-dark/10">
-                  <p className="text-oku-taupe font-display italic text-2xl opacity-40">The space is quiet today.</p>
+        <div className="card-glass-3d !bg-oku-mint/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.2s' }}>
+          <div className="flex justify-between items-start mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
+              <Users size={32} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Active</span>
+          </div>
+          <div>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{caseloadCount}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Total Patient Roster</p>
+          </div>
+        </div>
+
+        <div className="card-glass-3d !bg-oku-peach/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.4s' }}>
+          <div className="flex justify-between items-start mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
+              <CheckCircle2 size={32} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Lifetime</span>
+          </div>
+          <div>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{totalCompleted}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Sessions Completed</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 relative z-10">
+        {/* Left Section */}
+        <div className="xl:col-span-8 space-y-12">
+          
+          {/* Active Schedule */}
+          <section className="card-glass-3d !p-12 !bg-white/40">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Active <span className="italic text-oku-purple-dark">Schedule</span></h2>
+              <Link href="/practitioner/appointments" className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline flex items-center gap-2">Full Ledger <ArrowUpRight size={14} /></Link>
+            </div>
+            
+            <div className="space-y-6">
+              {upcomingSessions.length === 0 ? (
+                <div className="py-20 text-center border-2 border-dashed border-oku-purple-dark/10 rounded-[3rem]">
+                  <Moon className="mx-auto text-oku-purple-dark/20 mb-6 animate-float-3d" size={48} />
+                  <p className="text-2xl font-display italic text-oku-darkgrey/30">The queue is clear.</p>
                 </div>
               ) : (
-                todaySessions.map((appointment: any) => (
-                  <div key={appointment.id} className="card-glass p-1 group hover:border-oku-lavender-dark/20 transition-all border-oku-taupe/5">
-                    <div className="p-7 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                upcomingSessions.map((appt) => (
+                  <div key={appt.id} className="card-glass-3d !p-8 !bg-white/60 group hover:shadow-2xl transition-all duration-700">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
                       <div className="flex items-center gap-8">
-                        <div className="text-center min-w-[100px] p-4 bg-oku-lavender/30 rounded-2xl border border-oku-lavender-dark/10">
-                          <p className="text-2xl font-display font-bold text-oku-dark tracking-tighter">
-                            {new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                          </p>
-                          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-oku-taupe opacity-60 mt-0.5">Start Time</p>
+                        <div className="relative tilt-card">
+                          <div className="w-20 h-20 rounded-[1.75rem] bg-oku-babyblue overflow-hidden border-4 border-white shadow-xl tilt-card-content flex items-center justify-center text-2xl font-bold text-oku-darkgrey/40">
+                            {appt.client?.name?.substring(0, 1)}
+                          </div>
                         </div>
-                        <div className="h-12 w-px bg-oku-taupe/10 hidden md:block" />
                         <div>
-                          <p className="text-2xl font-display font-bold text-oku-dark leading-tight group-hover:text-oku-navy transition-colors">
-                            {appointment.client?.name || 'Patient'}
-                          </p>
-                          <div className="flex items-center gap-3 mt-1.5">
-                            <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-oku-glacier/50 text-oku-navy-light rounded-full border border-oku-glacier-dark/5">
-                              {appointment.service?.name || 'Session'}
-                            </span>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe flex items-center gap-1 opacity-60">
-                              <ShieldCheck size={10} /> Secure Entry
-                            </span>
+                          <p className="text-3xl heading-display text-oku-darkgrey">{appt.client?.name || 'Patient Seeker'}</p>
+                          <div className="flex items-center gap-4 mt-2">
+                             <span className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 bg-oku-purple-dark/10 text-oku-purple-dark rounded-full border border-oku-purple-dark/10">{appt.service?.name || 'Session'}</span>
+                             <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 flex items-center gap-2"><ShieldCheck size={12} /> Video Ready</span>
                           </div>
                         </div>
                       </div>
-                      <Link href={`/session/${appointment.id}`} className="btn-navy min-w-[160px] text-center shadow-pastel hover:scale-105 transition-transform">
-                        Launch Room
-                      </Link>
+                      
+                      <div className="flex items-center gap-10 border-t md:border-t-0 md:border-l border-oku-darkgrey/5 pt-8 md:pt-0 md:pl-10">
+                        <div className="text-right min-w-[120px]">
+                          <p className="text-2xl font-bold text-oku-darkgrey">
+                             {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          <p className="text-[10px] text-oku-darkgrey/40 font-black uppercase tracking-widest mt-1">
+                             Today, {new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <Link href={`/session/${appt.id}`} className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white min-w-[180px] pulse-cta">
+                          Enter Care Room
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -484,33 +203,100 @@ export default async function PractitionerDashboardPage() {
             </div>
           </section>
 
-          <div className="bg-oku-lavender p-12 rounded-[3.5rem] relative overflow-hidden group shadow-premium border border-white">
-            <div className="relative z-10">
-              <Heart className="text-oku-lavender-dark mb-6 animate-pulse" size={32} />
-              <h3 className="text-3xl font-display font-bold text-oku-dark mb-4">Clinical Resilience</h3>
-              <p className="text-oku-taupe italic font-display text-xl leading-relaxed mb-8 max-w-2xl">
-                "Your capacity to hold space for others begins with your own gentle returning. Take a breath before your next session."
-              </p>
-              <div className="flex items-center gap-6">
-                <Link href="/practitioner/support" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-oku-dark hover:text-oku-navy-light transition-all group-hover:translate-x-2">
-                  Support Resources <ArrowUpRight size={14} />
-                </Link>
-              </div>
+          {/* Patient Roster / Glassmorphism Table */}
+          <section className="card-glass-3d !p-12 !bg-white/40">
+            <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-12">Patient <span className="italic text-oku-purple-dark">Roster</span></h2>
+            <div className="overflow-hidden rounded-[2rem] border border-white shadow-sm">
+               <table className="w-full text-left">
+                  <thead className="bg-oku-lavender/40">
+                     <tr>
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Client</th>
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Last Session</th>
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Status</th>
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Action</th>
+                     </tr>
+                  </thead>
+                  <tbody className="bg-white/20">
+                     {[1,2,3].map((_, i) => (
+                        <tr key={i} className="border-t border-white/40 hover:bg-white/40 transition-colors">
+                           <td className="px-8 py-6 flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-oku-blush flex items-center justify-center text-xs font-black text-oku-darkgrey/40">JS</div>
+                              <span className="font-bold text-oku-darkgrey text-sm">Patient Name</span>
+                           </td>
+                           <td className="px-8 py-6 text-sm text-oku-darkgrey/60 italic font-display">Mar 24, 2026</td>
+                           <td className="px-8 py-6">
+                              <span className="bg-oku-mint text-oku-darkgrey/60 text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Active</span>
+                           </td>
+                           <td className="px-8 py-6">
+                              <Link href="/practitioner/clients" className="text-oku-purple-dark hover:underline text-[10px] font-black uppercase tracking-widest">View History</Link>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
             </div>
-            <div className="absolute top-0 right-0 w-80 h-80 bg-white/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-all duration-1000" />
-          </div>
+          </section>
         </div>
 
-        <div className="xl:col-span-4 space-y-10">
-          <div className="h-[480px] card-glass overflow-hidden p-1 border-oku-rose-dark/5 bg-oku-rose/10">
-            <TaskManager />
+        {/* Right Section */}
+        <div className="xl:col-span-4 space-y-12">
+          
+          {/* Clinical Resilience / Notes (Butter Yellow) */}
+          <section className="card-glass-3d !bg-oku-butter !p-10 group relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-8">
+                <Sparkles className="text-oku-purple-dark/60 animate-float-3d" size={28} />
+                <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">Quick Note</span>
+              </div>
+              <h3 className="heading-display text-3xl text-oku-darkgrey mb-6">Clinical <span className="italic text-oku-purple-dark">Scratchpad</span></h3>
+              <textarea 
+                placeholder="Draft clinical insights or thoughts here..."
+                className="w-full h-40 bg-white/40 border border-white/60 rounded-[2rem] p-6 text-sm italic font-display focus:outline-none focus:ring-4 focus:ring-oku-lavender/50 transition-all shadow-sm placeholder:text-oku-darkgrey/30"
+              />
+              <button className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white w-full !py-4 mt-6 group">
+                <Save size={16} className="mr-3 group-hover:scale-110 transition-transform" /> Auto-Saving
+              </button>
+            </div>
+          </section>
+
+          {/* 5. Clinical Vault / Recent SOAP Notes (Lavender) */}
+          <section className="card-glass-3d !bg-oku-lavender/60 !p-10 group">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="heading-display text-2xl text-oku-darkgrey tracking-tight">Recent <span className="italic text-oku-purple-dark">SOAP Notes</span></h2>
+              <FileText size={20} className="text-oku-purple-dark/40 animate-float-3d" />
+            </div>
+            
+            <div className="space-y-6">
+              {recentNotes.length === 0 ? (
+                <p className="text-oku-darkgrey/40 italic font-display">No finalized notes yet.</p>
+              ) : (
+                recentNotes.map((note) => (
+                  <div key={note.id} className="p-6 bg-white/40 rounded-3xl border border-white hover:bg-white transition-all duration-500 cursor-pointer">
+                    <p className="font-bold text-oku-darkgrey text-sm">{note.appointment.client?.name}</p>
+                    <p className="text-[9px] uppercase tracking-widest text-oku-darkgrey/40 mt-1 font-black">{new Date(note.createdAt).toLocaleDateString()}</p>
+                  </div>
+                ))
+              )}
+              <Link href="/practitioner/clients" className="btn-pill-3d bg-white border-white text-oku-darkgrey w-full !py-4 text-[9px]">
+                Full Clinical Archive
+              </Link>
+            </div>
+          </section>
+
+          {/* AI Strategy Placeholder */}
+          <div className="card-glass-3d !p-10 !bg-oku-babyblue/40 border-dashed border-2">
+             <Brain size={24} className="text-oku-purple-dark/40 mb-6 animate-float-3d" />
+             <p className="text-sm font-bold text-oku-darkgrey/60 italic leading-relaxed">
+               "Focus on the relational patterns emerging in your caseload this week."
+             </p>
           </div>
-          <NotesPanel recentNotes={recentNotes} />
-          <PatientPanel caseloadCount={caseloadCount} />
+
         </div>
       </div>
-
-      <AIAssistantWidget contextType="practitioner_summary" title="Clinical AI Intelligence" />
-    </PractitionerShell>
+      
+      {/* 3D Background Objects */}
+      <div className="absolute top-[20%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
+    </div>
   )
 }

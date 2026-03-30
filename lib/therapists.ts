@@ -36,7 +36,7 @@ export const therapists = [
       saturday: true,
       sunday: false
     },
-    consultationFee: 1200,
+    consultationFee: 1500,
     languages: ['English', 'Hindi']
   },
   {
@@ -56,7 +56,7 @@ export const therapists = [
       saturday: true,
       sunday: true
     },
-    consultationFee: 1000,
+    consultationFee: 1500,
     languages: ['English', 'Hindi']
   },
   {
@@ -76,7 +76,7 @@ export const therapists = [
       saturday: false,
       sunday: false
     },
-    consultationFee: 800,
+    consultationFee: 1500,
     languages: ['English', 'Urdu']
   },
   {
@@ -96,7 +96,7 @@ export const therapists = [
       saturday: true,
       sunday: false
     },
-    consultationFee: 800,
+    consultationFee: 1500,
     languages: ['English', 'Hindi']
   },
   {
@@ -116,7 +116,8 @@ export const therapists = [
       saturday: false,
       sunday: false
     },
-    consultationFee: 1000,
+    consultationFee: 1500,
+    isIntroductory: true,
     languages: ['English', 'Punjabi', 'Hindi']
   }
 ]

@@ -55,9 +55,6 @@ export default async function ClientTherapistsDashboardPage() {
           therapists={practitioners}
           specialties={uniqueSpecialties}
           isFirstTime={isFirstTime}
-          userLocation={user?.location || undefined}
-          viewerCurrency={viewerCurrency}
-          exchangeRates={exchangeRates}
         />
       </div>
     </div>

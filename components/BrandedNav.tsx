@@ -30,11 +30,10 @@ export default function BrandedNav() {
 
         {/* High-End Pill Navigation */}
         <div className="hidden lg:flex items-center gap-2 bg-white/40 backdrop-blur-2xl border border-white/60 p-2 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-          <NavLink href="/therapists">Our Collective</NavLink>
-          <NavLink href="/services">Offerings</NavLink>
-          <NavLink href="/assessments">Screening</NavLink>
-          <NavLink href="/blog">Journal</NavLink>
-          <NavLink href="/about-us">Philosophy</NavLink>
+          <NavLink href="/services">Services</NavLink>
+          <NavLink href="/assessments">Assessments</NavLink>
+          <NavLink href="/therapists">Therapists</NavLink>
+          <NavLink href="/about-us">About Us</NavLink>
         </div>
 
         {/* Action Buttons */}
@@ -60,10 +59,10 @@ export default function BrandedNav() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 z-[105] bg-oku-cream pt-32 px-8 flex flex-col gap-8 lg:hidden"
           >
-            <MobileNavLink href="/therapists" onClick={() => setMobileMenuOpen(false)}>Our Collective</MobileNavLink>
-            <MobileNavLink href="/services" onClick={() => setMobileMenuOpen(false)}>Offerings</MobileNavLink>
-            <MobileNavLink href="/assessments" onClick={() => setMobileMenuOpen(false)}>Screening</MobileNavLink>
-            <MobileNavLink href="/about-us" onClick={() => setMobileMenuOpen(false)}>Philosophy</MobileNavLink>
+            <MobileNavLink href="/services" onClick={() => setMobileMenuOpen(false)}>Services</MobileNavLink>
+            <MobileNavLink href="/assessments" onClick={() => setMobileMenuOpen(false)}>Assessments</MobileNavLink>
+            <MobileNavLink href="/therapists" onClick={() => setMobileMenuOpen(false)}>Therapists</MobileNavLink>
+            <MobileNavLink href="/about-us" onClick={() => setMobileMenuOpen(false)}>About Us</MobileNavLink>
             <div className="mt-auto pb-12 flex flex-col gap-4">
                 <Link href="/auth/login" className="w-full py-6 rounded-3xl border border-oku-taupe/10 text-center font-black text-[10px] uppercase tracking-widest text-oku-dark">Sign In</Link>
                 <Link href="/auth/signup" className="w-full py-6 rounded-3xl bg-oku-dark text-white text-center font-black text-[10px] uppercase tracking-widest">Begin Journey</Link>

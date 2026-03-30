@@ -46,13 +46,6 @@ interface CommunityPanel {
   cta: string;
 }
 
-interface VisualArchiveItem {
-  image: string;
-  alt: string;
-  label: string;
-  fit?: "contain" | "cover";
-}
-
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const CYCLING_WORDS = ["grief", "longing", "quiet", "becoming", "anger", "story"];
 
@@ -210,160 +203,6 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     body: "Meet verified practitioners and move toward the kind of support that matches your story.",
     href: "/therapists",
     cta: "Meet the collective",
-  },
-];
-
-const SOURCE_ARCHIVE_FEATURED: VisualArchiveItem[] = [
-  {
-    image: "/wp-content/uploads/2025/07/Aboutt.png",
-    alt: "Pinned note inviting people to come as they are",
-    label: "Invitation",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/Frame-200.png",
-    alt: "Blue note about being understood in the room",
-    label: "Being understood",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/Frame-243.png",
-    alt: "Pinned note about healing together instead of in isolation",
-    label: "Healing together",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/b3.png",
-    alt: "Blurred portrait with note about the body holding unspoken stories",
-    label: "Embodied care",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/b32.png",
-    alt: "Portrait with note about being seen without conditions",
-    label: "Affirmation",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-57.png",
-    alt: "Portrait and note about wanting to be heard",
-    label: "Being heard",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-57-1.png",
-    alt: "Portrait and note about the body remembering trauma",
-    label: "Body memory",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-57-3.png",
-    alt: "Journal scene with note about understanding what is going on",
-    label: "Clarity",
-  },
-];
-
-const SOURCE_ARCHIVE_SUPPORTING: VisualArchiveItem[] = [
-  {
-    image: "/wp-content/uploads/2025/06/compassion.gif",
-    alt: "Compassion symbol animation",
-    label: "Compassion",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/inclusion.gif",
-    alt: "Inclusion symbol animation",
-    label: "Inclusion",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/soul.gif",
-    alt: "Soul symbol animation",
-    label: "Soul",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/Group-21.png",
-    alt: "Meditative sea illustration in a wave shape",
-    label: "Stillness",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/Group-33.png",
-    alt: "Illustration of two therapy chairs and a cup",
-    label: "Therapy room",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Group-31.png",
-    alt: "Line illustration of a mind full of questions",
-    label: "Questioning",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-247.png",
-    alt: "Line illustration of a person sitting in reflection",
-    label: "Reflection",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-247-1.png",
-    alt: "Line illustration of a person resting in calm",
-    label: "Grounding",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/Group-18-2.png",
-    alt: "Lavender pinned note shape",
-    label: "Note pin",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/Group-19.png",
-    alt: "Blue pinned note shape",
-    label: "Paper texture",
-  },
-];
-
-const SOURCE_ARCHIVE_STUDIO: VisualArchiveItem[] = [
-  {
-    image: "/wp-content/uploads/2025/06/BG.png",
-    alt: "Soft abstract OKU background texture",
-    label: "Backdrop",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/267202932_78107c9f-66b6-4fe1-9985-b9e858e1bdf9-1.png",
-    alt: "Illustrative OKU artwork from the original archive",
-    label: "Archive sketch",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/concept-mental-health-selfcare-self-development-vector-illustration-1.png",
-    alt: "Illustration about self-care and mental health",
-    label: "Self-care",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/video_call_using_the_doctor_s_laptop-1.png",
-    alt: "Illustration of a care session happening over video",
-    label: "Digital care",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/ChatGPT-Image-May-25-2025-01_59_55-PM-1.png",
-    alt: "Warm atmospheric OKU concept image",
-    label: "Warmth",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/ChatGPT-Image-May-25-2025-02_30_11-PM-1.png",
-    alt: "Soft pastel OKU concept image",
-    label: "Softness",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/ChatGPT-Image-May-25-2025-02_31_14-PM-1.png",
-    alt: "Calming OKU concept image",
-    label: "Calm",
-  },
-  {
-    image: "/wp-content/uploads/2025/07/ChatGPT-Image-May-22-2025-05_28_30-PM-1.png",
-    alt: "Gentle OKU concept image",
-    label: "Gentleness",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-235-scaled-e1751135861258.png",
-    alt: "Pastel OKU composition from the original archive",
-    label: "Moodboard",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-244.png",
-    alt: "Illustrative OKU design asset",
-    label: "Studio detail",
-  },
-  {
-    image: "/wp-content/uploads/2025/06/Frame-57-4.png",
-    alt: "Reflective note card from the original OKU archive",
-    label: "Inner voice",
   },
 ];
 
@@ -1363,102 +1202,6 @@ export default function OkuHomepage() {
           font-size: 0.9rem;
         }
 
-        .visual-archive-shell {
-          position: relative;
-          padding: 32px 20px;
-          border-radius: 36px;
-          overflow: hidden;
-          background:
-            linear-gradient(135deg, rgba(247,244,239,0.92), rgba(237,232,224,0.82)),
-            url('/wp-content/uploads/2025/06/BG.png');
-          background-size: cover;
-          border: 1px solid rgba(139,115,85,0.12);
-          box-shadow: 0 24px 52px rgba(0,0,0,0.05);
-        }
-        @media (min-width: 768px) {
-          .visual-archive-shell {
-            padding: 42px 34px;
-          }
-        }
-        .visual-archive-intro {
-          display: grid;
-          gap: 20px;
-          align-items: end;
-          margin-bottom: 28px;
-        }
-        @media (min-width: 980px) {
-          .visual-archive-intro {
-            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-            gap: 40px;
-          }
-        }
-        .visual-archive-feature-grid {
-          display: grid;
-          gap: 18px;
-          margin-bottom: 22px;
-        }
-        @media (min-width: 700px) {
-          .visual-archive-feature-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-        @media (min-width: 1200px) {
-          .visual-archive-feature-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-          }
-        }
-        .visual-archive-card {
-          position: relative;
-          min-height: 240px;
-          border-radius: 28px;
-          overflow: hidden;
-          background: rgba(255,255,255,0.62);
-          border: 1px solid rgba(139,115,85,0.12);
-          box-shadow: 0 18px 34px rgba(0,0,0,0.04);
-        }
-        .visual-archive-card img {
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
-        .visual-archive-card.featured img {
-          padding: 14px;
-          object-fit: contain;
-          background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(247,244,239,0.75));
-        }
-        .visual-archive-card.strip {
-          min-height: 170px;
-        }
-        .visual-archive-card.strip img {
-          padding: 12px;
-          object-fit: contain;
-        }
-        .visual-archive-label {
-          position: absolute;
-          left: 14px;
-          bottom: 14px;
-          padding: 8px 12px;
-          border-radius: 999px;
-          background: rgba(45,45,45,0.78);
-          color: white;
-          font-size: 0.68rem;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          backdrop-filter: blur(10px);
-        }
-        .visual-archive-strip {
-          display: grid;
-          grid-auto-flow: column;
-          grid-auto-columns: minmax(180px, 1fr);
-          gap: 16px;
-          overflow-x: auto;
-          padding-bottom: 8px;
-          scrollbar-width: none;
-        }
-        .visual-archive-strip::-webkit-scrollbar {
-          display: none;
-        }
-
         .assessment-shell {
           padding: 34px 28px;
           border-radius: 32px;
@@ -1503,119 +1246,142 @@ export default function OkuHomepage() {
         }
       `}</style>
 
-      <div className="oku-page-public">
+      <div className="oku-page-public relative">
+        
+        {/* ── Hero Animated Background ── */}
+        <div className="absolute top-0 left-0 w-full h-[100vh] overflow-hidden pointer-events-none z-0">
+           <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-oku-lavender/40 rounded-full blur-[120px] animate-pulse" />
+           <div className="absolute bottom-[20%] right-[-5%] w-[50%] h-[50%] bg-oku-blush/30 rounded-full blur-[100px] animate-bounce" style={{ animationDuration: '8s' }} />
+           <div className="absolute top-[40%] left-[30%] w-[40%] h-[40%] bg-oku-mint/20 rounded-full blur-[80px] animate-float-3d" />
+        </div>
 
         {/* ── Hero ── */}
-        <section className="section-lg" style={{ background: "var(--cream)" }}>
+        <section className="section-lg relative z-10" style={{ background: "transparent" }}>
           <div className="max-w">
             <SectionReveal>
               <div className="hero-grid">
-                <div className="hero-copy">
-                  <span className="chip" style={{ marginBottom: 28, display: "inline-block" }}>Psychotherapy Collective · New Delhi</span>
-                  <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
+                <div className="hero-copy relative">
+                  {/* Floating 3D Elements */}
+                  <div className="absolute -top-20 -left-10 w-16 h-16 bg-oku-blush/40 rounded-full blur-xl animate-float-3d" />
+                  <div className="absolute top-40 -right-10 w-12 h-12 bg-oku-babyblue/40 rounded-full blur-lg animate-float-3d" style={{ animationDelay: '1s' }} />
+                  
+                  <span className="chip bg-oku-lavender border-white/60 shadow-sm" style={{ marginBottom: 28, display: "inline-block" }}>Psychotherapy Collective · New Delhi</span>
+                  <h1 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
                     Come as you are.
                   </h1>
-                  <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
+                  <h1 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 0 }}>
                     We hold space for your
                   </h1>
-                  <h1 className="heading-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 40 }}>
+                  <h1 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", marginBottom: 40 }}>
                     <span className="hero-word-wrap">
-                      <span className={`cursive-word ${wordVisible ? "visible" : "hidden"}`}>
+                      <span className={`cursive-word ${wordVisible ? "visible" : "hidden"}`} style={{ color: '#A599E0' }}>
                         {CYCLING_WORDS[wordIdx]}
                       </span>
                     </span>
                   </h1>
-                  <p style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", maxWidth: 560, lineHeight: 1.7, marginBottom: 32, color: "rgba(45,45,45,0.75)" }}>
+                  <p className="text-oku-darkgrey/80" style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", maxWidth: 560, lineHeight: 1.7, marginBottom: 32 }}>
                     Oku is a psychotherapy collective offering <strong>inclusive, trauma-informed care</strong> for all parts of who you are. Start with a free consultation, a gentle self-check, or a closer look at our collective.
                   </p>
                   <div className="hero-actions">
-                    <DynamicButton href="/therapists" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
-                  </div>
-                  <div className="hero-secondary-links">
-                    <Link href="/assessments" className="hero-support-link">
-                      Take a gentle self-check
-                    </Link>
-                    <Link href="/auth/login" className="hero-support-link">
-                      Already with us? Sign in
+                    <Link href="/therapists" className="btn-pill-3d bg-oku-lavender border-oku-purple-dark/20 text-oku-darkgrey hover:scale-105 transition-transform pulse-cta">
+                       Book a free 1:1 consultation
                     </Link>
                   </div>
-                  <p className="hero-note">Free consultations · Secure video sessions · Inclusive, affirming care</p>
+                  <div className="hero-secondary-links mt-8">
+                    <Link href="/assessments" className="hero-support-link font-bold text-oku-darkgrey/60 hover:text-oku-darkgrey transition-colors flex items-center gap-2">
+                      Take a gentle self-check →
+                    </Link>
+                    <Link href="/auth/login" className="hero-support-link font-bold text-oku-darkgrey/60 hover:text-oku-darkgrey transition-colors flex items-center gap-2">
+                      Already with us? Sign in →
+                    </Link>
+                  </div>
                 </div>
 
-                <div className="hero-visual">
-                  <div className="hero-portrait-primary">
-                    <img src={HERO_VISUALS.primary.image} alt={HERO_VISUALS.primary.alt} />
+                <div className="hero-visual tilt-card">
+                  <div className="hero-portrait-primary shadow-2xl border-4 border-white/80 scale-105">
+                    <img src={HERO_VISUALS.primary.image} alt={HERO_VISUALS.primary.alt} className="tilt-card-content" />
                   </div>
-                  <div className="hero-portrait-secondary">
+                  <div className="hero-portrait-secondary border-8 border-white/90 shadow-xl">
                     <img src={HERO_VISUALS.secondary.image} alt={HERO_VISUALS.secondary.alt} />
                   </div>
-                  <div className="hero-floating-note">
-                    <span>Held with care</span>
-                    <h3>Therapy that begins with listening</h3>
-                    <p style={{ color: "rgba(45,45,45,0.7)", lineHeight: 1.6 }}>
+                  
+                  {/* Floating 3D Objects */}
+                  <div className="absolute -top-10 -right-10 w-24 h-24 bg-oku-mint/60 rounded-full blur-2xl animate-float-3d z-0" />
+                  <div className="absolute bottom-20 -left-20 w-32 h-32 bg-oku-butter/40 rounded-full blur-3xl animate-float-3d z-0" style={{ animationDelay: '1.5s' }} />
+
+                  <div className="hero-floating-note card-glass-3d p-8 !rounded-[2.5rem]">
+                    <span className="text-oku-purple-dark font-black">Held with care</span>
+                    <h3 className="text-2xl text-oku-darkgrey mt-2">Therapy that begins with listening</h3>
+                    <p className="text-oku-darkgrey/70 mt-2 text-sm leading-relaxed italic">
                       Start with questions, silence, or uncertainty. We make room for all of it.
                     </p>
                   </div>
-                  <img className="hero-sticker one" src={HERO_VISUALS.stickerOne} alt="" aria-hidden="true" />
-                  <img className="hero-sticker two" src={HERO_VISUALS.stickerTwo} alt="" aria-hidden="true" />
-                  <img className="hero-sticker three" src={HERO_VISUALS.stickerThree} alt="" aria-hidden="true" />
+                  <img className="hero-sticker one animate-float-3d" src={HERO_VISUALS.stickerOne} alt="" aria-hidden="true" />
+                  <img className="hero-sticker two animate-float-3d" style={{ animationDelay: '0.5s' }} src={HERO_VISUALS.stickerTwo} alt="" aria-hidden="true" />
+                  <img className="hero-sticker three animate-float-3d" style={{ animationDelay: '1s' }} src={HERO_VISUALS.stickerThree} alt="" aria-hidden="true" />
                 </div>
               </div>
             </SectionReveal>
 
-            <SectionReveal className="hero-bottom-band">
+            <SectionReveal className="hero-bottom-band pt-20">
               <div className="entry-grid">
-                {STARTING_POINTS.map((path) => (
-                  <Link key={path.title} href={path.href} className="entry-card">
+                {STARTING_POINTS.map((path, idx) => {
+                  const colors = ['bg-oku-lavender/40', 'bg-oku-mint/40', 'bg-oku-babyblue/40']
+                  return (
+                  <Link key={path.title} href={path.href} className={`entry-card card-glass-3d !p-10 ${colors[idx % colors.length]}`}>
                     <div>
-                      <span className="entry-kicker">{path.kicker}</span>
-                      <h3>{path.title}</h3>
-                      <p style={{ color: "rgba(45,45,45,0.68)", lineHeight: 1.7 }}>{path.description}</p>
+                      <span className="entry-kicker font-black text-oku-darkgrey/40">{path.kicker}</span>
+                      <h3 className="text-3xl text-oku-darkgrey mb-4">{path.title}</h3>
+                      <p className="text-oku-darkgrey/60 italic leading-relaxed">{path.description}</p>
                     </div>
-                    <span className="entry-arrow">Explore →</span>
+                    <span className="entry-arrow mt-6 font-black text-xs uppercase tracking-widest text-oku-darkgrey/40">Explore →</span>
                   </Link>
-                ))}
+                )})}
               </div>
               <div className="hero-trust-grid">
-                {TRUST_PILLARS.map((pillar) => (
-                  <div key={pillar.title} className="hero-trust-card">
-                    <span>{pillar.eyebrow}</span>
-                    <h3>{pillar.title}</h3>
-                    <p style={{ color: "rgba(45,45,45,0.68)", lineHeight: 1.6 }}>{pillar.description}</p>
+                {TRUST_PILLARS.map((pillar, idx) => {
+                  const colors = ['bg-oku-peach/30', 'bg-oku-butter/30', 'bg-oku-lavender/30']
+                  return (
+                  <div key={pillar.title} className={`hero-trust-card card-glass-3d !p-8 ${colors[idx % colors.length]}`}>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">{pillar.eyebrow}</span>
+                    <h3 className="text-xl text-oku-darkgrey mt-2">{pillar.title}</h3>
+                    <p className="text-oku-darkgrey/60 text-sm mt-2 leading-relaxed">{pillar.description}</p>
                   </div>
-                ))}
+                )})}
               </div>
             </SectionReveal>
           </div>
         </section>
 
         {/* ── Features ticker ── */}
-        <section style={{ background: "var(--warm)", padding: "60px 0" }}>
+        <section style={{ background: "var(--oku-butter)", padding: "80px 0" }}>
           <div style={{ padding: "0 24px 0 24px" }} className="max-w">
             <SectionReveal>
               <div className="feature-layout">
                 <div>
-                  <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>A Gentler Way In</span>
+                  <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>A Gentler Way In</span>
                   <div style={{ marginBottom: 20 }}>
-                    <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>
+                    <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>
                       A place to <em>explore,</em>
                     </h2>
-                    <h3 className="heading-display" style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)", color: "var(--accent)", fontStyle: "italic" }}>
+                    <h3 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)", fontStyle: "italic" }}>
                       not perform.
                     </h3>
                   </div>
-                  <p style={{ maxWidth: 520, color: "rgba(45,45,45,0.7)", lineHeight: 1.75 }}>
+                  <p className="text-oku-darkgrey/70" style={{ maxWidth: 520, lineHeight: 1.75 }}>
                     Oku was created as a gentle refuge for those <strong>who feel unseen</strong> in traditional therapy spaces. Whether you're unpacking generational pain, navigating identity, or simply seeking to <strong>reconnect with yourself</strong>, we invite you to explore without pressure or performance.
                   </p>
                 </div>
                 <div className="feature-grid">
-                  {FEATURES.map((f) => (
-                    <div key={f.label} className="feature-card">
-                      <img src={f.icon} alt={f.label} />
-                      <h4>{f.label}</h4>
-                      <p style={{ fontSize: "0.92rem", color: "rgba(45,45,45,0.65)", lineHeight: 1.7 }}>{f.desc}</p>
+                  {FEATURES.map((f, idx) => {
+                    const colors = ['bg-oku-lavender/60', 'bg-oku-mint/60', 'bg-oku-blush/60', 'bg-oku-babyblue/60']
+                    return (
+                    <div key={f.label} className={`feature-card card-glass-3d ${colors[idx % colors.length]}`}>
+                      <img src={f.icon} alt={f.label} className="animate-float-3d" style={{ animationDelay: `${idx * 0.2}s` }} />
+                      <h4 className="text-oku-darkgrey">{f.label}</h4>
+                      <p className="text-oku-darkgrey/60" style={{ fontSize: "0.92rem", lineHeight: 1.7 }}>{f.desc}</p>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </div>
             </SectionReveal>
@@ -1623,26 +1389,21 @@ export default function OkuHomepage() {
         </section>
 
         {/* ── Qualified & Ethical ── */}
-        <section className="section" style={{ background: "var(--cream)" }}>
+        <section className="section" style={{ background: "var(--oku-mint)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Our Practice</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", marginBottom: 8 }}>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>Our Practice</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", marginBottom: 8 }}>
                 We provide care that's<br /><strong>qualified and</strong>
               </h2>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 32 }}>
+              <h2 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontStyle: "italic", marginBottom: 32 }}>
                 ethical
               </h2>
-              <img
-                src="/wp-content/uploads/2025/06/Vector-1.png"
-                alt=""
-                className="wave-divider"
-                style={{ marginBottom: 32 }}
-              />
-              <p style={{ maxWidth: 640, lineHeight: 1.8, color: "rgba(45,45,45,0.75)", fontSize: "1.05rem" }}>
+              <div className="w-full h-px bg-oku-darkgrey/10 max-w-[820px] mb-12" />
+              <p className="text-oku-darkgrey/80" style={{ maxWidth: 640, lineHeight: 1.8, fontSize: "1.05rem" }}>
                 Every therapist at Oku is professionally trained and qualified including RCI Licensed Clinical Psychologists, psychodynamic therapists, queer affirmative therapists.
               </p>
-              <p style={{ maxWidth: 640, lineHeight: 1.8, color: "rgba(45,45,45,0.75)", fontSize: "1.05rem", marginTop: 16 }}>
+              <p className="text-oku-darkgrey/80" style={{ maxWidth: 640, lineHeight: 1.8, fontSize: "1.05rem", marginTop: 16 }}>
                 We combine clinical precision with cultural humility, ensuring your mental health is in grounded, ethical hands.
               </p>
             </SectionReveal>
@@ -1650,73 +1411,74 @@ export default function OkuHomepage() {
         </section>
 
         {/* ── Team ── */}
-        <section className="section" id="team" style={{ background: "var(--warm)" }}>
+        <section className="section" id="team" style={{ background: "var(--oku-lavender)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>The Team</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>Not just <strong>therapists,</strong></h2>
-              <h3 className="heading-display" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 16 }}>people first</h3>
-              <p style={{ maxWidth: 520, color: "rgba(45,45,45,0.65)", marginBottom: 56, lineHeight: 1.7 }}>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>The Team</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>Not just <strong>therapists,</strong></h2>
+              <h3 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)", fontStyle: "italic", marginBottom: 16 }}>people first</h3>
+              <p className="text-oku-darkgrey/60" style={{ maxWidth: 520, marginBottom: 56, lineHeight: 1.7 }}>
                 Meet our team of <strong>licensed therapists, facilitators, psychologists and listeners</strong>—bringing care, context, and presence into every session.
               </p>
-              <img
-                src="/wp-content/uploads/2025/06/Vector-1.png"
-                alt=""
-                className="wave-divider"
-                style={{ marginBottom: 40 }}
-              />
+              <div className="w-full h-px bg-oku-darkgrey/10 max-w-[820px] mb-12" />
             </SectionReveal>
             <div className="team-grid">
               {TEAM.map((member, i) => (
                 <SectionReveal key={member.name}>
-                  <div className="team-card" style={{ animationDelay: `${i * 80}ms` }}>
+                  <div className="team-card tilt-card" style={{ animationDelay: `${i * 80}ms` }}>
                     <div className="team-card-frame">
-                      <img src={member.image} alt={member.name} loading="lazy" />
-                      <div className="team-card-overlay">
-                        <h3>{member.name}</h3>
-                        <p>{member.role}</p>
+                      <img src={member.image} alt={member.name} loading="lazy" className="shadow-2xl border-4 border-white/80" />
+                      <div className="team-card-overlay card-glass-3d !p-6 !m-[-40px_18px_0]">
+                        <h3 className="text-oku-darkgrey">{member.name}</h3>
+                        <p className="text-oku-purple-dark/60">{member.role}</p>
                       </div>
                     </div>
                   </div>
                 </SectionReveal>
               ))}
             </div>
-            <div className="mt-16 flex justify-center">
-                <DynamicButton href="/therapists" isInternal={true} dark={false}>View Detailed Profiles</DynamicButton>
+            <div className="mt-24 flex justify-center">
+                <Link href="/therapists" className="btn-pill-3d bg-oku-mint border-white/60 text-oku-darkgrey">
+                   View Detailed Profiles
+                </Link>
             </div>
           </div>
         </section>
 
         {/* ── Services ── */}
-        <section className="section" id="services" style={{ background: "var(--cream)" }}>
+        <section className="section" id="services" style={{ background: "var(--oku-peach)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>What We Offer</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>Different ways</strong> to begin</h2>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 16 }}>healing</h2>
-              <p style={{ maxWidth: 520, color: "rgba(45,45,45,0.65)", marginBottom: 56, lineHeight: 1.7 }}>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>What We Offer</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>Different ways</strong> to begin</h2>
+              <h2 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontStyle: "italic", marginBottom: 16 }}>healing</h2>
+              <p className="text-oku-darkgrey/60" style={{ maxWidth: 520, marginBottom: 56, lineHeight: 1.7 }}>
                 Because healing <strong>isn't one-size-fits-all</strong>—and it doesn't have to start with words.
               </p>
             </SectionReveal>
-            {SERVICES.map((svc) => (
+            {SERVICES.map((svc, idx) => (
               <SectionReveal key={svc.title}>
-                <div className="service-block">
+                <div className="service-block border-oku-darkgrey/5">
                   <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 8 }}>
-                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", fontWeight: 300, color: "var(--blush)", lineHeight: 1 }}>{svc.number}</span>
-                    <h3 className="heading-display" style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}>{svc.title}</h3>
+                    <span className="text-oku-purple-dark/40" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", fontWeight: 300, lineHeight: 1 }}>{svc.number}</span>
+                    <h3 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}>{svc.title}</h3>
                   </div>
-                  <p style={{ maxWidth: 560, color: "rgba(45,45,45,0.7)", marginBottom: 8, lineHeight: 1.7 }}>{svc.description}</p>
+                  <p className="text-oku-darkgrey/70 italic leading-relaxed" style={{ maxWidth: 560, marginBottom: 32 }}>{svc.description}</p>
                   <div className="service-feature-grid">
-                    {svc.features.map((f) => (
-                      <div key={f.label} className="service-feature">
+                    {svc.features.map((f, fIdx) => {
+                      const colors = ['bg-oku-lavender/40', 'bg-oku-mint/40', 'bg-oku-blush/40', 'bg-oku-babyblue/40']
+                      return (
+                      <div key={f.label} className={`service-feature card-glass-3d !p-8 ${colors[fIdx % colors.length]}`}>
                         <div style={{ fontSize: "1.4rem", marginBottom: 8 }}>{f.icon}</div>
-                        <h4 style={{ fontSize: "0.9rem", fontWeight: 500, marginBottom: 4 }}>{f.label}</h4>
-                        <p style={{ fontSize: "0.8rem", color: "rgba(45,45,45,0.6)", lineHeight: 1.5 }}>{f.desc}</p>
+                        <h4 className="text-oku-darkgrey" style={{ fontSize: "0.9rem", fontWeight: 700, marginBottom: 4 }}>{f.label}</h4>
+                        <p className="text-oku-darkgrey/60" style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>{f.desc}</p>
                       </div>
-                    ))}
+                    )})}
                   </div>
-                  <div style={{ marginTop: 24 }}>
-                    <DynamicButton href="/therapists" isInternal={true}>Book a free 1:1 consultation</DynamicButton>
+                  <div style={{ marginTop: 40 }}>
+                    <Link href="/therapists" className="btn-pill-3d bg-white/60 border-white text-oku-darkgrey">
+                       Book a free 1:1 consultation
+                    </Link>
                   </div>
                 </div>
               </SectionReveal>
@@ -1725,30 +1487,30 @@ export default function OkuHomepage() {
         </section>
 
         {/* ── Philosophy ── */}
-        <section className="section" id="about" style={{ background: "var(--warm)" }}>
+        <section className="section" id="about" style={{ background: "var(--oku-babyblue)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Our Philosophy</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>Oku is<br /><strong>not your usual</strong></h2>
-              <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 16 }}>therapy.</h2>
-              <p style={{ maxWidth: 600, color: "rgba(45,45,45,0.7)", lineHeight: 1.8, marginBottom: 16 }}>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>Our Philosophy</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>Oku is<br /><strong>not your usual</strong></h2>
+              <h2 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontStyle: "italic", marginBottom: 16 }}>therapy.</h2>
+              <p className="text-oku-darkgrey/70" style={{ maxWidth: 600, lineHeight: 1.8, marginBottom: 16 }}>
                 <strong>We don't wear lab coats or hand you a fixed plan.</strong> Instead, we offer a slower, more spacious kind of care—relational, body-aware, and rooted in who you are.
               </p>
-              <p style={{ maxWidth: 600, color: "rgba(45,45,45,0.7)", lineHeight: 1.8, marginBottom: 60 }}>
+              <p className="text-oku-darkgrey/70" style={{ maxWidth: 600, lineHeight: 1.8, marginBottom: 60 }}>
                 Our sessions <strong>feel less like a prescription</strong> and more like a <strong>conversation that unfolds.</strong>
               </p>
             </SectionReveal>
             {PHILOSOPHY.map((block, i) => (
               <SectionReveal key={block.title}>
-                <div className={`philosophy-row ${i % 2 !== 0 ? "reverse" : ""}`}>
+                <div className={`philosophy-row border-oku-darkgrey/5 ${i % 2 !== 0 ? "reverse" : ""}`}>
                   <div>
-                    <h3 className="heading-display" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", marginBottom: 20 }}>{block.title}</h3>
+                    <h3 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", marginBottom: 20 }}>{block.title}</h3>
                     {block.body.map((p, j) => (
-                      <p key={j} style={{ color: "rgba(45,45,45,0.7)", lineHeight: 1.8, marginBottom: 12 }}>{p}</p>
+                      <p key={j} className="text-oku-darkgrey/70" style={{ lineHeight: 1.8, marginBottom: 12 }}>{p}</p>
                     ))}
                   </div>
-                  <div className="philosophy-img">
-                    <img src={block.image} alt={block.imageAlt} loading="lazy" />
+                  <div className="philosophy-img card-glass-3d !bg-white/40 !p-12">
+                    <img src={block.image} alt={block.imageAlt} loading="lazy" className="animate-float-3d" />
                   </div>
                 </div>
               </SectionReveal>
@@ -1757,110 +1519,114 @@ export default function OkuHomepage() {
         </section>
 
         {/* ── For You ── */}
-        <section className="section-lg" style={{ background: "var(--cream)" }}>
+        <section className="section-lg" style={{ background: "var(--oku-blush)" }}>
           <div className="max-w">
             <SectionReveal>
               <div className="for-you-intro">
                 <div>
-                  <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>This Space</span>
-                  <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>This space</strong> is </h2>
-                  <h3 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", color: "var(--accent)", fontStyle: "italic" }}>for you</h3>
+                  <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>This Space</span>
+                  <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>This space</strong> is </h2>
+                  <h3 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", fontStyle: "italic" }}>for you</h3>
                 </div>
-                <p style={{ maxWidth: 620, color: "rgba(45,45,45,0.68)", lineHeight: 1.8 }}>
+                <p className="text-oku-darkgrey/70" style={{ maxWidth: 620, lineHeight: 1.8 }}>
                   Whether you feel like too much, not enough, between worlds, or entirely new to therapy, this space is designed to feel more human than clinical. You do not have to edit yourself to be here.
                 </p>
               </div>
             </SectionReveal>
             <div className="for-you-grid">
-              {FOR_YOU.map((card, i) => (
+              {FOR_YOU.map((card, i) => {
+                const colors = ['bg-oku-lavender/60', 'bg-oku-mint/60', 'bg-oku-peach/60', 'bg-oku-babyblue/60', 'bg-oku-butter/60']
+                return (
                 <SectionReveal key={card.heading} className={i === 0 || i === 4 || i === 8 ? "for-you-span" : ""}>
-                  <div className="for-you-card">
-                    <img src={card.icon} alt="" loading="lazy" />
+                  <div className={`for-you-card card-glass-3d ${colors[i % colors.length]}`}>
+                    <img src={card.icon} alt="" loading="lazy" className="animate-float-3d" style={{ animationDelay: `${i * 0.15}s` }} />
                     <div>
-                      <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.55rem", fontWeight: 400, marginBottom: 10, lineHeight: 1.05 }}>{card.heading}</h4>
-                      <p style={{ fontSize: "0.92rem", color: "rgba(45,45,45,0.62)", lineHeight: 1.7 }}>{card.subtext}</p>
+                      <h4 className="text-oku-darkgrey" style={{ fontSize: "1.55rem", fontWeight: 700, marginBottom: 10, lineHeight: 1.05 }}>{card.heading}</h4>
+                      <p className="text-oku-darkgrey/60" style={{ fontSize: "0.92rem", lineHeight: 1.7 }}>{card.subtext}</p>
                     </div>
                   </div>
                 </SectionReveal>
-              ))}
+              )})}
             </div>
           </div>
         </section>
 
         {/* ── Community ── */}
-        <section className="section" id="community" style={{ background: "var(--warm)" }}>
+        <section className="section" id="community" style={{ background: "var(--oku-butter)" }}>
           <div className="max-w">
             <SectionReveal>
               <div className="community-layout">
                 <div>
-                  <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>Community</span>
-                  <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>A softer way to<br /><strong>keep exploring</strong></h2>
-                  <h2 className="heading-display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: "var(--accent)", fontStyle: "italic", marginBottom: 16 }}>beyond the first session.</h2>
-                  <p style={{ maxWidth: 540, color: "rgba(45,45,45,0.68)", lineHeight: 1.8 }}>
+                  <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>Community</span>
+                  <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>A softer way to<br /><strong>keep exploring</strong></h2>
+                  <h2 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontStyle: "italic", marginBottom: 16 }}>beyond the first session.</h2>
+                  <p className="text-oku-darkgrey/70" style={{ maxWidth: 540, lineHeight: 1.8 }}>
                     The homepage should not feel like a dead end. Whether you want to understand our philosophy, read something reflective, or move straight into therapist discovery, these are gentle next steps that stay inside the product experience.
                   </p>
                 </div>
                 <div className="community-collage">
-                  <div className="community-collage-card primary">
+                  <div className="community-collage-card primary shadow-2xl border-4 border-white/80">
                     <img src="/wp-content/uploads/2025/06/img.png" alt="Oku illustrated community moment" loading="lazy" />
                   </div>
-                  <div className="community-collage-card secondary">
+                  <div className="community-collage-card secondary shadow-2xl border-4 border-white/80">
                     <img src="/wp-content/uploads/2025/06/img-1.png" alt="Oku illustrated journal moment" loading="lazy" />
                   </div>
-                  <div className="community-collage-card tertiary">
+                  <div className="community-collage-card tertiary shadow-2xl border-4 border-white/80">
                     <img src="/wp-content/uploads/2025/06/img-2.png" alt="Oku illustrated therapist discovery moment" loading="lazy" />
                   </div>
-                  <img className="community-sticker one" src="/wp-content/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker two" src="/wp-content/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker three" src="/wp-content/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker four" src="/wp-content/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker one animate-float-3d" src="/wp-content/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker two animate-float-3d" style={{ animationDelay: '0.4s' }} src="/wp-content/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker three animate-float-3d" style={{ animationDelay: '0.8s' }} src="/wp-content/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker four animate-float-3d" style={{ animationDelay: '1.2s' }} src="/wp-content/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
                 </div>
               </div>
             </SectionReveal>
             <div className="community-panel-grid">
-              {COMMUNITY_PANELS.map((panel) => (
+              {COMMUNITY_PANELS.map((panel, idx) => {
+                const colors = ['bg-oku-lavender/60', 'bg-oku-mint/60', 'bg-oku-babyblue/60']
+                return (
                 <SectionReveal key={panel.title}>
-                  <Link href={panel.href} className="community-panel">
+                  <Link href={panel.href} className={`community-panel card-glass-3d ${colors[idx % colors.length]}`}>
                     <div>
-                      <div className="community-panel-figure">
+                      <div className="community-panel-figure !rounded-[2rem] border-4 border-white/60">
                         <img src={panel.image} alt={panel.alt} loading="lazy" />
-                        <img src={panel.sticker} alt="" aria-hidden="true" className="community-panel-sticker" />
+                        <img src={panel.sticker} alt="" aria-hidden="true" className="community-panel-sticker animate-float-3d" />
                       </div>
-                      <span className="community-panel-kicker">{panel.kicker}</span>
-                      <h3>{panel.title}</h3>
-                      <p style={{ color: "rgba(45,45,45,0.66)", lineHeight: 1.7 }}>{panel.body}</p>
+                      <span className="community-panel-kicker font-black text-oku-purple-dark/60">{panel.kicker}</span>
+                      <h3 className="text-oku-darkgrey">{panel.title}</h3>
+                      <p className="text-oku-darkgrey/60 italic" style={{ lineHeight: 1.7 }}>{panel.body}</p>
                     </div>
-                    <span className="community-panel-link">{panel.cta} →</span>
+                    <span className="community-panel-link font-black text-xs uppercase tracking-widest text-oku-purple-dark/80 mt-6">{panel.cta} →</span>
                   </Link>
                 </SectionReveal>
-              ))}
+              )})}
             </div>
           </div>
         </section>
 
         {/* ── How It Works ── */}
-        <section className="section" style={{ background: "var(--cream)" }}>
+        <section className="section" style={{ background: "var(--oku-mint)" }}>
           <div className="max-w">
             <SectionReveal>
-              <span className="chip" style={{ marginBottom: 24, display: "inline-block" }}>How It Works</span>
-              <h2 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", fontStyle: "italic", marginBottom: 8 }}>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>How It Works</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", fontStyle: "italic", marginBottom: 8 }}>
                 "It's okay to take your time."
               </h2>
-              <p style={{ maxWidth: 600, color: "rgba(45,45,45,0.7)", marginBottom: 16, lineHeight: 1.8 }}>
+              <p className="text-oku-darkgrey/70" style={{ maxWidth: 600, marginBottom: 16, lineHeight: 1.8 }}>
                 Every journey with us begins with listening—before advice, before direction. Whether you're reaching out with clarity or just a quiet "maybe," we meet you where you are.
               </p>
-              <p style={{ maxWidth: 600, color: "rgba(45,45,45,0.7)", marginBottom: 60, lineHeight: 1.8 }}>
+              <p className="text-oku-darkgrey/70" style={{ maxWidth: 600, marginBottom: 60, lineHeight: 1.8 }}>
                 There's no pressure to know exactly what you need. We move slowly, together, so safety and trust can unfold at your pace.
               </p>
             </SectionReveal>
             <div className="steps-list">
               {HOW_IT_WORKS.map((step, i) => (
                 <SectionReveal key={step.title}>
-                  <div className="step-row">
-                    <div className="step-number">{String(i + 1).padStart(2, "0")}</div>
+                  <div className="step-row border-oku-darkgrey/5">
+                    <div className="step-number text-oku-purple-dark/40">{String(i + 1).padStart(2, "0")}</div>
                     <div>
-                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 400, marginBottom: 6 }}>{step.title}</h3>
-                      <p style={{ color: "rgba(45,45,45,0.65)", lineHeight: 1.7, maxWidth: 540 }}>{step.desc}</p>
+                      <h3 className="text-oku-darkgrey" style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 6 }}>{step.title}</h3>
+                      <p className="text-oku-darkgrey/60 italic" style={{ lineHeight: 1.7, maxWidth: 540 }}>{step.desc}</p>
                     </div>
                   </div>
                 </SectionReveal>
@@ -1870,36 +1636,33 @@ export default function OkuHomepage() {
         </section>
 
         {/* ── Assessment CTA ── */}
-        <section className="section" style={{ background: "var(--warm)" }}>
+        <section className="section" style={{ background: "var(--oku-lavender)" }}>
           <div className="max-w">
             <SectionReveal>
-              <div className="assessment-shell">
-                <span className="chip" style={{ marginBottom: 18, display: "inline-block" }}>Gentle Self-Check</span>
-                <img
-                  src="/wp-content/uploads/2025/06/Vector-1.png"
-                  alt=""
-                  className="wave-divider"
-                  style={{ marginBottom: 28 }}
-                />
+              <div className="assessment-shell card-glass-3d !p-12 !bg-white/60">
+                <span className="chip bg-white border-white/80" style={{ marginBottom: 18, display: "inline-block" }}>Gentle Self-Check</span>
+                <div className="w-full h-px bg-oku-darkgrey/5 max-w-[820px] mb-12" />
                 <div className="assessment-layout">
                   <div>
-                    <h2 className="heading-display" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", marginBottom: 10 }}>
+                    <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(1.8rem, 3.5vw, 3rem)", marginBottom: 10 }}>
                       How have <strong>you been feeling</strong> lately?
                     </h2>
-                    <p style={{ color: "rgba(45,45,45,0.7)", maxWidth: 520, lineHeight: 1.8 }}>
+                    <p className="text-oku-darkgrey/70 italic" style={{ maxWidth: 520, lineHeight: 1.8 }}>
                       Just a few gentle questions to help us understand what you're carrying now. No pressure, no labels, and no need to know exactly what kind of support you need before you begin.
                     </p>
                   </div>
                   <div>
                     <div className="assessment-signals">
                       {ASSESSMENT_SIGNALS.map((signal) => (
-                        <div key={signal} className="assessment-signal">
-                          <span className="assessment-dot" />
-                          <p style={{ color: "rgba(45,45,45,0.72)" }}>{signal}</p>
+                        <div key={signal} className="assessment-signal border-oku-darkgrey/5">
+                          <span className="assessment-dot bg-oku-purple-dark/40" />
+                          <p className="text-oku-darkgrey/60 font-bold text-sm">{signal}</p>
                         </div>
                       ))}
                     </div>
-                    <DynamicButton href="/assessments" isInternal={true}>Begin the self-check</DynamicButton>
+                    <Link href="/assessments" className="btn-pill-3d bg-oku-dark text-white border-oku-darkgrey pulse-cta">
+                       Begin the self-check
+                    </Link>
                   </div>
                 </div>
               </div>
