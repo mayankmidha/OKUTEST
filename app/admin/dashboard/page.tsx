@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import AdminDashboardClient from './AdminDashboardClient'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminDashboardPage() {
   const session = await auth()
 
@@ -11,42 +14,96 @@ export default async function AdminDashboardPage() {
     redirect('/auth/login')
   }
 
-  // 1. Core Platform Data
-  const [therapists, clients, services, totalAppointments, completedPayments, auditLogs] = await Promise.all([
+  // Optimize: Batching ALL queries into one Promise.all for parallel execution
+  // Limits applied to secondary data to prevent payload bloat
+  const [
+    therapists, 
+    clients, 
+    services, 
+    totalAppointments, 
+    completedPayments, 
+    auditLogs,
+    dbSettings,
+    recentActivities,
+    allTranscripts,
+    allPosts
+  ] = await Promise.all([
+    // 1. Therapists
     prisma.user.findMany({
         where: { role: UserRole.THERAPIST },
         include: { practitionerProfile: true },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 100 // Optimization: reasonable limit
     }).catch(() => []),
     
+    // 2. Clients
     prisma.user.findMany({
         where: { role: UserRole.CLIENT },
         include: {
             clientProfile: true,
             intakeForm: { select: { id: true } },
             _count: { select: { clientAppointments: true } }
-        }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 100
     }).catch(() => []),
 
+    // 3. Services
     prisma.service.findMany({
         orderBy: { createdAt: 'asc' }
     }).catch(() => []),
 
+    // 4. Counts
     prisma.appointment.count().catch(() => 0),
 
+    // 5. Revenue
     prisma.payment.aggregate({
         where: { status: 'COMPLETED' },
         _sum: { amount: true }
     }).catch(() => ({ _sum: { amount: 0 } })),
 
+    // 6. Audit (Reduced limit for speed)
     prisma.auditLog.findMany({
         include: { user: { select: { name: true } } },
         orderBy: { createdAt: 'desc' },
-        take: 50
+        take: 20
+    }).catch(() => []),
+
+    // 7. Settings
+    prisma.platformSettings.findUnique({
+        where: { id: 'global' }
+    }).catch(() => null),
+
+    // 8. Activities (Reduced limit)
+    prisma.userActivity.findMany({
+        include: { user: { select: { name: true, email: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 30
+    }).catch(() => []),
+
+    // 9. Transcripts (Essential for clinical integrity but limited)
+    prisma.transcript.findMany({
+        include: { 
+            appointment: { 
+                include: { 
+                    client: { select: { name: true } }, 
+                    practitioner: { select: { name: true } },
+                    service: { select: { name: true } }
+                } 
+            } 
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 20
+    }).catch(() => []),
+
+    // 10. Posts
+    prisma.post.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20
     }).catch(() => [])
   ])
 
-  // 2. Settings with Graceful Fallback
+  // Default settings if DB fails
   let settings = {
     maintenanceMode: false,
     platformFeePercent: 20,
@@ -61,55 +118,9 @@ export default async function AdminDashboardPage() {
     requireConsentBeforeTranscription: true,
     transcriptRetentionDays: 365,
   }
-  try {
-    const dbSettings = await prisma.platformSettings.findUnique({
-        where: { id: 'global' }
-    })
-    if (dbSettings) settings = { ...settings, ...dbSettings } as any
-  } catch (e) {
-    console.warn("PlatformSettings table may not exist yet.")
-  }
-
-  // 3. Activity Tracking with Graceful Fallback
-  let recentActivities: any[] = []
-  try {
-    recentActivities = await prisma.userActivity.findMany({
-        include: { user: { select: { name: true, email: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 100
-    })
-  } catch (e) {
-    console.warn("UserActivity table may not exist yet.")
-  }
-
-  // 4. Clinical Integrity (Transcripts)
-  let allTranscripts: any[] = []
-  try {
-    allTranscripts = await prisma.transcript.findMany({
-        include: { 
-            appointment: { 
-                include: { 
-                    client: { select: { name: true } }, 
-                    practitioner: { select: { name: true } },
-                    service: { select: { name: true } }
-                } 
-            } 
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 50
-    })
-  } catch (e) {
-    console.warn("Transcript table may not exist yet.")
-  }
-
-  // 5. Blog Content
-  let allPosts: any[] = []
-  try {
-    allPosts = await prisma.post.findMany({
-        orderBy: { createdAt: 'desc' }
-    })
-  } catch (e) {
-    console.warn("Post table may not exist yet.")
+  
+  if (dbSettings) {
+    settings = { ...settings, ...(dbSettings as any) }
   }
 
   const stats = {
@@ -122,7 +133,7 @@ export default async function AdminDashboardPage() {
   }
 
   return (
-    <div className="bg-oku-cream min-h-screen">
+    <div className="bg-oku-lavender/5 min-h-screen">
       <AdminDashboardClient 
         stats={stats} 
         therapists={therapists || []} 

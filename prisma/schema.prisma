@@ -474,6 +474,34 @@ model Service {
   practitioners PractitionerProfile[]
 }
 
+model GroupSession {
+  id            String                  @id @default(cuid())
+  title         String
+  description   String?
+  startTime     DateTime
+  endTime       DateTime
+  maxCapacity   Int                     @default(10)
+  status        AppointmentStatus       @default(SCHEDULED)
+  price         Float                   @default(1500)
+  practitionerId String
+  practitioner  User                    @relation("FacilitatedGroups", fields: [practitionerId], references: [id])
+  participants  GroupSessionParticipant[]
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+}
+
+model GroupSessionParticipant {
+  id             String       @id @default(cuid())
+  sessionId      String
+  clientId       String
+  session        GroupSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  client         User         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  joinedAt       DateTime     @default(now())
+  hasPaid        Boolean      @default(false)
+
+  @@unique([sessionId, clientId])
+}
+
 model MoodEntry {
   id        String        @id @default(cuid())
   userId    String
