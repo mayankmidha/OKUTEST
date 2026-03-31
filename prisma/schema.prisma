@@ -76,6 +76,8 @@ model User {
   practitionerAppointments   Appointment[]        @relation("PractitionerAppointments")
   createdAssessments         Assessment[]         @relation("CreatedAssessments")
   payouts                    Payout[]             @relation("PractitionerPayouts")
+  facilitatedGroups          GroupSession[]       @relation("FacilitatedGroups")
+  joinedGroups               GroupSessionParticipant[]
   assessmentAnswers          AssessmentAnswer[]
   assignedTasks              AssignedAssessment[] @relation("ClientAssignments")
   managedTasks               AssignedAssessment[] @relation("PractitionerAssignments")
@@ -459,8 +461,6 @@ model Assessment {
   creator       User?                @relation("CreatedAssessments", fields: [creatorId], references: [id])
   answers       AssessmentAnswer[]
   assignedTasks AssignedAssessment[]
-  facilitatedGroups GroupSession[]      @relation("FacilitatedGroups")
-  joinedGroups      GroupSessionParticipant[]
 }
 
 model Service {
