@@ -67,7 +67,7 @@ export function PractitionerShell({
   const navLinks = getNavLinks(canPostBlogs)
 
   return (
-    <div className="min-h-screen bg-oku-lavender/5 relative overflow-hidden">
+    <div className="min-h-screen bg-oku-lavender/5 relative overflow-hidden text-oku-darkgrey">
       {/* 3D Background Objects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-oku-blush/10 rounded-full blur-[150px] animate-pulse" />
@@ -161,7 +161,7 @@ export function PractitionerShell({
             </div>
           </header>
 
-          <div className="p-10">
+          <div className="p-10 pt-0">
             <motion.section 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -172,7 +172,7 @@ export function PractitionerShell({
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                      <span className="chip bg-white/60 border-white/80">{badge}</span>
-                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Clinical Intelligence</span>
+                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Workspace Dashboard</span>
                   </div>
                   <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter leading-[0.85]">
                     {title.split(' ')[0]} <span className="text-oku-purple-dark italic">{title.split(' ').slice(1).join(' ')}</span>
@@ -240,5 +240,101 @@ export function PractitionerShell({
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+export function PractitionerSectionCard({
+  action,
+  actions,
+  children,
+  className = '',
+  description,
+  title,
+}: {
+  action?: ReactNode
+  actions?: ReactNode
+  children: ReactNode
+  className?: string
+  description?: string
+  title: string
+}) {
+  return (
+    <section className={`card-glass-3d !p-10 !bg-white/40 ${className}`}>
+      <div className="mb-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+        <div>
+          <h2 className="heading-display text-3xl text-oku-darkgrey tracking-tight">{title}</h2>
+          {description && <p className="mt-2 text-sm text-oku-darkgrey/60 font-display italic leading-relaxed">{description}</p>}
+        </div>
+        {(action || actions) && (
+          <div className="flex shrink-0 flex-wrap items-center gap-3">
+            {action}
+            {actions}
+          </div>
+        )}
+      </div>
+      {children}
+    </section>
+  )
+}
+
+export function PractitionerStatCard({ accent = 'bg-oku-purple-dark', detail, label, value }: { accent?: string, detail?: string, label: string, value: string | number }) {
+  return (
+    <div className="card-glass-3d !p-8 !bg-white/60 group animate-float-3d">
+      <div className={`h-1.5 w-12 rounded-full mb-8 opacity-40 group-hover:opacity-100 transition-all duration-500 ${accent}`} />
+      <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-2">{label}</p>
+      <p className="heading-display text-4xl text-oku-darkgrey">{value}</p>
+      {detail && <p className="mt-4 text-[9px] font-black uppercase tracking-widest text-oku-purple-dark opacity-60">{detail}</p>}
+    </div>
+  )
+}
+
+export function PractitionerActionTile({
+  description,
+  href,
+  icon,
+  title,
+}: {
+  description: string
+  href: string
+  icon: ReactNode
+  title: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="group card-glass-3d !p-8 md:!p-10 !bg-white/40 flex flex-col h-full"
+    >
+      <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-darkgrey group-hover:bg-oku-darkgrey group-hover:text-white transition-all duration-500 mb-8 md:mb-10 shadow-inner">
+        {icon}
+      </div>
+      <div className="flex-1">
+        <h3 className="heading-display text-2xl text-oku-darkgrey mb-2">{title}</h3>
+        <p className="text-sm text-oku-darkgrey/60 font-display italic leading-relaxed">{description}</p>
+      </div>
+      <div className="mt-8 md:mt-10 flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-oku-purple-dark opacity-40 group-hover:opacity-100 transition-all">
+        Open Workspace <ChevronRight size={12} />
+      </div>
+    </Link>
+  )
+}
+
+export function PractitionerPill({
+  children,
+  tone = 'purple',
+}: {
+  children: ReactNode
+  tone?: 'purple' | 'sage' | 'pink' | 'dark'
+}) {
+  const styles = {
+    purple: 'bg-oku-lavender text-oku-purple-dark border-white',
+    sage: 'bg-oku-mint text-oku-darkgrey/60 border-white',
+    pink: 'bg-oku-blush text-oku-darkgrey/60 border-white',
+    dark: 'bg-oku-darkgrey text-white border-oku-darkgrey',
+  }
+
+  return (
+    <span className={`inline-flex items-center rounded-full border px-4 py-1.5 text-[9px] font-black uppercase tracking-widest shadow-sm ${styles[tone]}`}>
+      {children}
+    </span>
   )
 }

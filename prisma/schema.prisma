@@ -459,6 +459,8 @@ model Assessment {
   creator       User?                @relation("CreatedAssessments", fields: [creatorId], references: [id])
   answers       AssessmentAnswer[]
   assignedTasks AssignedAssessment[]
+  facilitatedGroups GroupSession[]      @relation("FacilitatedGroups")
+  joinedGroups      GroupSessionParticipant[]
 }
 
 model Service {

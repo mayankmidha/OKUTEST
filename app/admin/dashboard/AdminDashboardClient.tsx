@@ -58,10 +58,10 @@ function AdminDashboardContent({
     router.push(`/admin/dashboard?tab=${tab}`, { scroll: false })
   }
 
-  const handleToggleVerification = async (id: string) => {
+  const handleToggleVerification = async (id: string, currentStatus: boolean) => {
     setIsUpdating(true)
     try {
-      await toggleTherapistVerification(id)
+      await toggleTherapistVerification(id, !currentStatus)
       router.refresh()
     } finally {
       setIsUpdating(false)
@@ -292,7 +292,7 @@ function AdminDashboardContent({
                         <td className="p-10">
                           <button 
                             disabled={isUpdating}
-                            onClick={() => handleToggleVerification(t.id)}
+                            onClick={() => handleToggleVerification(t.practitionerProfile?.id || '', t.practitionerProfile?.isVerified || false)}
                             className={`px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm transition-all ${t.practitionerProfile?.isVerified ? 'bg-oku-mint text-oku-darkgrey/60' : 'bg-oku-peach text-oku-darkgrey/60 hover:scale-105'}`}
                           >
                             {t.practitionerProfile?.isVerified ? 'Verified' : 'Verify Now'}

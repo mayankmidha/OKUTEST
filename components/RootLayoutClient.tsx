@@ -6,6 +6,7 @@ import BrandedNav from '@/components/BrandedNav'
 import BrandedFooter from '@/components/BrandedFooter'
 import AuthProvider from '@/components/auth-provider'
 import { ActivityTracker } from '@/components/ActivityTracker'
+import { CrisisChatWidget } from '@/components/CrisisChatWidget'
 
 export default function RootLayoutClient({
   children,
@@ -30,6 +31,7 @@ export default function RootLayoutClient({
         {children}
       </main>
       {!isDashboard && <BrandedFooter />}
+      <CrisisChatWidget />
     </AuthProvider>
   )
 }
