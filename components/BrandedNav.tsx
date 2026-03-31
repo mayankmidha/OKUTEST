@@ -31,6 +31,7 @@ export default function BrandedNav() {
         {/* High-End Pill Navigation */}
         <div className="hidden lg:flex items-center gap-2 bg-white/40 backdrop-blur-2xl border border-white/60 p-2 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
           <NavLink href="/services">Services</NavLink>
+          <NavLink href="/circles">Circles</NavLink>
           <NavLink href="/assessments">Assessments</NavLink>
           <NavLink href="/therapists">Therapists</NavLink>
           <NavLink href="/about-us">About Us</NavLink>
@@ -60,6 +61,7 @@ export default function BrandedNav() {
             className="fixed inset-0 z-[105] bg-oku-cream pt-32 px-8 flex flex-col gap-8 lg:hidden"
           >
             <MobileNavLink href="/services" onClick={() => setMobileMenuOpen(false)}>Services</MobileNavLink>
+            <MobileNavLink href="/circles" onClick={() => setMobileMenuOpen(false)}>Circles</MobileNavLink>
             <MobileNavLink href="/assessments" onClick={() => setMobileMenuOpen(false)}>Assessments</MobileNavLink>
             <MobileNavLink href="/therapists" onClick={() => setMobileMenuOpen(false)}>Therapists</MobileNavLink>
             <MobileNavLink href="/about-us" onClick={() => setMobileMenuOpen(false)}>About Us</MobileNavLink>
