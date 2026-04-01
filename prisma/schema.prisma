@@ -537,6 +537,7 @@ model Payment {
   platformFeeAmount Float       @default(0)
   practitionerPayoutAmount Float @default(0)
   stripePaymentId String?
+  razorpayOrderId String?
   processor       String?
   status          PaymentStatus @default(PENDING)
   createdAt       DateTime      @default(now())

@@ -322,3 +322,50 @@ export async function deleteCircle(appointmentId: string) {
   revalidatePath('/admin/dashboard')
   revalidatePath('/circles')
 }
+
+// ─── APPOINTMENT ACTIONS ──────────────────────────────────────────────────────
+
+export async function createManualAppointment(data: {
+  clientId: string,
+  practitionerId: string,
+  serviceId: string,
+  startTime: Date,
+  endTime: Date,
+  status?: AppointmentStatus
+}) {
+  await checkAdmin()
+  
+  await prisma.appointment.create({
+    data: {
+      ...data,
+      status: data.status || 'SCHEDULED'
+    }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
+export async function rescheduleAppointment(appointmentId: string, startTime: Date, endTime: Date) {
+  await checkAdmin()
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: { startTime, endTime }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
+export async function updateAppointmentStatus(appointmentId: string, status: AppointmentStatus) {
+  await checkAdmin()
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: { status }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
+export async function deleteAppointment(appointmentId: string) {
+  await checkAdmin()
+  await prisma.appointment.delete({
+    where: { id: appointmentId }
+  })
+  revalidatePath('/admin/dashboard')
+}

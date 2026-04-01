@@ -40,41 +40,42 @@ export default function BookingClient({
     const displaySessionPrice = formatCurrency(localizedSessionPrice.amount, localizedSessionPrice.currency)
     const baseSessionPrice = formatCurrency(sessionPriceInInr, 'INR')
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if(!selectedService || !selectedDate || !selectedTime) return;
         setIsSubmitting(true)
         
-        // create a form and submit it to use the existing server action
-        const form = document.createElement('form')
-        form.method = 'POST'
-        form.action = '/api/sessions/create'
+        try {
+            const res = await fetch('/api/sessions/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    therapistId: practitioner.id,
+                    date: new Date(selectedDate).toISOString(),
+                    time: selectedTime,
+                    serviceId: selectedService
+                })
+            })
 
-        const therapistIdInput = document.createElement('input')
-        therapistIdInput.type = 'hidden'
-        therapistIdInput.name = 'therapistId'
-        therapistIdInput.value = practitioner.id
-        form.appendChild(therapistIdInput)
-
-        const dateInput = document.createElement('input')
-        dateInput.type = 'hidden'
-        dateInput.name = 'date'
-        dateInput.value = new Date(selectedDate).toISOString()
-        form.appendChild(dateInput)
-
-        const timeInput = document.createElement('input')
-        timeInput.type = 'hidden'
-        timeInput.name = 'time'
-        timeInput.value = selectedTime
-        form.appendChild(timeInput)
-
-        const serviceIdInput = document.createElement('input')
-        serviceIdInput.type = 'hidden'
-        serviceIdInput.name = 'serviceId'
-        serviceIdInput.value = selectedService
-        form.appendChild(serviceIdInput)
-
-        document.body.appendChild(form)
-        form.submit()
+            if (res.ok) {
+                // Next.js redirect from the API will be followed if it returns a redirect header,
+                // but since we want to handle it manually to keep context:
+                const data = await res.json().catch(() => ({}))
+                if (data.url) {
+                    router.push(data.url)
+                } else if (res.url) {
+                    // Fallback to the response URL but strip the origin to use client-side navigation
+                    const url = new URL(res.url)
+                    router.push(url.pathname + url.search)
+                }
+            } else {
+                alert("Failed to create appointment. Please try again.")
+            }
+        } catch (e) {
+            console.error(e)
+            alert("Unexpected error occurred.")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (

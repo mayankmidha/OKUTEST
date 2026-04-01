@@ -124,17 +124,24 @@ export async function POST(req: Request) {
       }
     })
 
-    // LOG THE ACTION
+    // Log the change
     await createAuditLog({
         userId: session.user.id,
         action: 'APPOINTMENT_CREATED',
-        resourceType: 'Appointment',
+        resourceType: 'APPOINTMENT',
         resourceId: appointment.id,
         changes: JSON.stringify({ status: AppointmentStatus.SCHEDULED })
     })
 
-    // Redirect to payment page (using appointment ID as checkout session ID)
-    return NextResponse.redirect(new URL(`/dashboard/client/checkout/${appointment.id}`, req.url), 303)
+    const checkoutUrl = `/dashboard/client/checkout/${appointment.id}`
+
+    // If request has JSON header, return URL
+    if (req.headers.get('accept')?.includes('application/json') || req.headers.get('content-type')?.includes('application/json')) {
+        return NextResponse.json({ url: checkoutUrl })
+    }
+
+    // Default to redirect for form submissions
+    return NextResponse.redirect(new URL(checkoutUrl, req.url), 303)
 
   } catch (e) {
       console.error('Appointment creation error:', e)

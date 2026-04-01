@@ -42,20 +42,37 @@ export function BodyDoublePresence({ currentTask, isActive }: { currentTask?: st
     const interval = setInterval(fetchOthers, 10000) // Update list every 10s
     return () => clearInterval(interval)
   }, [])
-
-  return (
-    <section className="card-glass-3d !p-10 !bg-white/40 border-none shadow-xl !rounded-[3rem]">
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h3 className="heading-display text-2xl text-oku-darkgrey tracking-tight">Active <span className="italic text-oku-purple-dark">Sanctuary.</span></h3>
-          <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mt-1">Community Body Doubling</p>
-        </div>
-        <div className="w-10 h-10 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark">
-          <Users size={20} />
-        </div>
+return (
+  <section className="card-glass-3d !p-10 !bg-white/40 border-none shadow-xl !rounded-[3rem] overflow-hidden">
+    <div className="flex items-center justify-between mb-10">
+      <div>
+        <h3 className="heading-display text-2xl text-oku-darkgrey tracking-tight">Active <span className="italic text-oku-purple-dark">Sanctuary.</span></h3>
+        <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mt-1">Community Body Doubling</p>
       </div>
+      <div className="w-10 h-10 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark shadow-sm">
+        <Users size={20} />
+      </div>
+    </div>
 
-      <div className="space-y-4">
+    {/* Community Intent Reel */}
+    {others.length > 1 && (
+      <div className="mb-10 -mx-10 bg-oku-dark overflow-hidden py-3 transform -rotate-1 border-y border-white/10 shadow-2xl">
+          <m.div 
+              animate={{ x: [0, -1000] }}
+              transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+              className="flex gap-12 whitespace-nowrap px-10"
+          >
+              {Array(5).fill(others).flat().map((o, i) => (
+                  <span key={i} className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-lavender/60 flex items-center gap-4">
+                      <Zap size={12} className="text-oku-mint" /> {o.user.name.split(' ')[0]} is {o.context}
+                  </span>
+              ))}
+          </m.div>
+      </div>
+    )}
+
+    <div className="space-y-4">
+...
         {others.length <= 1 ? (
           <div className="py-10 text-center">
              <Wind className="mx-auto text-oku-darkgrey/10 mb-4 animate-pulse" size={32} />

@@ -24,6 +24,7 @@ import { getPractitionerDisciplineLabel } from '@/lib/practitioner-type'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CirclesManager } from './CirclesManager'
 import { AdminServicesManagement } from './AdminServicesManagement'
+import { AdminAppointmentsManagement } from './AdminAppointmentsManagement'
 
 function AdminDashboardContent({ 
   stats, 
@@ -31,6 +32,7 @@ function AdminDashboardContent({
   services,
   clients,
   circles,
+  allAppointments,
   settings: initialSettings
 }: { 
   stats: {
@@ -45,6 +47,7 @@ function AdminDashboardContent({
   services: any[],
   clients: any[],
   circles: any[],
+  allAppointments: any[],
   settings: any
 }) {
   const searchParams = useSearchParams()
@@ -171,6 +174,7 @@ function AdminDashboardContent({
         {[
           { id: 'overview', label: 'Pulse', icon: Activity },
           { id: 'users', label: 'Global Users', icon: Users },
+          { id: 'ledger', label: 'Clinical Ledger', icon: Calendar },
           { id: 'circles', label: 'Circles', icon: Users },
           { id: 'therapists', label: 'Network', icon: Shield },
           { id: 'clients', label: 'Roster', icon: Users },
@@ -211,24 +215,35 @@ function AdminDashboardContent({
                   </div>
                   <div className="grid grid-cols-4 gap-6">
                      {[
-                       { label: 'Pending', color: 'bg-oku-peach', count: 12 },
-                       { label: 'Confirmed', color: 'bg-oku-mint', count: 45 },
-                       { label: 'Completed', color: 'bg-oku-lavender', count: 128 },
-                       { label: 'Cancelled', color: 'bg-oku-blush', count: 8 }
-                     ].map((col) => (
+                       { label: 'Pending', status: 'PENDING', color: 'bg-oku-peach' },
+                       { label: 'Confirmed', status: 'CONFIRMED', color: 'bg-oku-mint' },
+                       { label: 'Completed', status: 'COMPLETED', color: 'bg-oku-lavender' },
+                       { label: 'Cancelled', status: 'CANCELLED', color: 'bg-oku-blush' }
+                     ].map((col) => {
+                       const columnApps = allAppointments.filter(a => a.status === col.status).slice(0, 5)
+                       return (
                        <div key={col.label} className="space-y-6">
                           <div className="flex items-center justify-between px-2">
                              <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">{col.label}</span>
-                             <span className="w-6 h-6 rounded-lg bg-white/60 flex items-center justify-center text-[10px] font-black text-oku-darkgrey shadow-sm">{col.count}</span>
+                             <span className="w-6 h-6 rounded-lg bg-white/60 flex items-center justify-center text-[10px] font-black text-oku-darkgrey shadow-sm">
+                                {allAppointments.filter(a => a.status === col.status).length}
+                             </span>
                           </div>
                           <div className={`${col.color}/20 rounded-[2rem] p-4 min-h-[350px] border-2 border-dashed border-white/60 flex flex-col gap-4`}>
-                             <div className="card-glass-3d !p-4 !bg-white/80 !rounded-2xl shadow-sm">
-                                <p className="text-[9px] font-bold text-oku-darkgrey">Client Session</p>
-                                <p className="text-[8px] opacity-40 uppercase tracking-widest mt-1">Mar 29, 10:00 AM</p>
-                             </div>
+                             {columnApps.map(appt => (
+                                <div key={appt.id} className="card-glass-3d !p-4 !bg-white/80 !rounded-2xl shadow-sm border-none group cursor-pointer hover:scale-105 transition-all">
+                                    <p className="text-[9px] font-bold text-oku-darkgrey truncate">{appt.client?.name || 'Anonymous'}</p>
+                                    <p className="text-[8px] opacity-40 uppercase tracking-widest mt-1">
+                                        {new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    </p>
+                                </div>
+                             ))}
+                             {columnApps.length === 0 && (
+                                <div className="flex-1 flex items-center justify-center italic text-[9px] text-oku-darkgrey/20">Empty</div>
+                             )}
                           </div>
                        </div>
-                     ))}
+                     )})}
                   </div>
                </div>
 
@@ -274,6 +289,22 @@ function AdminDashboardContent({
               exit={{ opacity: 0, y: -20 }}
             >
               <AdminUserManagement users={[...therapists, ...clients]} />
+            </motion.div>
+          )}
+
+          {activeTab === 'ledger' && (
+            <motion.div 
+              key="ledger"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <AdminAppointmentsManagement 
+                appointments={allAppointments}
+                therapists={therapists}
+                clients={clients}
+                services={services}
+              />
             </motion.div>
           )}
 

@@ -100,6 +100,17 @@ export default async function AdminDashboardPage() {
         },
         orderBy: { startTime: 'desc' },
         take: 50
+    }).catch(() => []),
+
+    // 12. All Recent Appointments
+    prisma.appointment.findMany({
+        include: {
+            client: { select: { name: true, email: true } },
+            practitioner: { select: { name: true } },
+            service: { select: { name: true } }
+        },
+        orderBy: { startTime: 'desc' },
+        take: 100
     }).catch(() => [])
   ])
 
@@ -114,7 +125,8 @@ export default async function AdminDashboardPage() {
     recentActivities,
     allTranscripts,
     allPosts,
-    circles
+    circles,
+    allAppointments
   ] = results as any[]
 
   // Default settings if DB fails
@@ -155,6 +167,7 @@ export default async function AdminDashboardPage() {
         clients={clients || []} 
         settings={settings}
         circles={circles || []}
+        allAppointments={allAppointments || []}
       />
     </div>
   )
