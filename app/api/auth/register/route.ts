@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       role,
       location: manualLocation,
       referralCode,
+      dateOfBirth,
     } = body
 
     // 1. SMART DETECTION: Get location/timezone from headers or client
@@ -64,7 +65,10 @@ export async function POST(req: Request) {
         location: finalLocation,
         // Auto-create profile with smart defaults
         clientProfile: userRole === UserRole.CLIENT ? { 
-            create: { timezone } 
+            create: { 
+                timezone,
+                dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null
+            } 
         } : undefined,
         practitionerProfile: userRole === UserRole.THERAPIST ? {
           create: {

@@ -25,11 +25,20 @@ export function InformedConsentViewer() {
         })
       })
       if (res.ok) {
+        // Critical: Refresh the session so the middleware sees hasSignedConsent = true
         await update({ hasSignedConsent: true })
-        window.location.href = '/dashboard'
+        
+        // Use a slight delay to ensure session update propagated
+        setTimeout(() => {
+            window.location.href = '/dashboard'
+        }, 500)
+      } else {
+        const errorData = await res.json().catch(() => ({}))
+        alert(`Error: ${errorData.message || 'Could not save consent. Please try again.'}`)
       }
     } catch (e) {
       console.error(e)
+      alert("A disruption occurred in the Oku neural link. Please check your connection.")
     } finally {
       setIsSubmitting(false)
     }
@@ -100,7 +109,7 @@ export function InformedConsentViewer() {
               <button 
                 disabled={!isAgreed || isSubmitting}
                 onClick={handleSign}
-                className="btn-navy py-5 px-12 flex items-center gap-3 disabled:opacity-30 shadow-2xl active:scale-95 transition-all"
+                className="btn-pill-3d bg-oku-darkgrey text-white !py-5 !px-12 flex items-center gap-3 disabled:opacity-30 shadow-2xl active:scale-95 transition-all"
               >
                 {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <>Finalize & Enter <ChevronRight size={18} /></>}
               </button>

@@ -42,9 +42,7 @@ export default async function CircleDetailPage({ params }: PageProps) {
   const isFull = spotsLeft <= 0
   const specialization = circle.practitioner?.practitionerProfile?.specialization ?? []
 
-  const joinHref = session
-    ? `/dashboard/client/circles`
-    : `/auth/signup?callbackUrl=/circles/${id}`
+  const joinHref = `/circles/${id}/join`
 
   return (
     <div className="oku-page-public min-h-screen bg-white relative overflow-hidden">

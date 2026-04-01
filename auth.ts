@@ -84,11 +84,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         return session;
     },
-    async jwt({ token, user }: { token: any, user?: any }) {
+    async jwt({ token, user, trigger, session }: { token: any, user?: any, trigger?: string, session?: any }) {
       if (user) {
         token.role = user.role;
         token.hasSignedConsent = user.hasSignedConsent;
       }
+      
+      // Handle session updates (e.g. after signing consent)
+      if (trigger === "update" && session) {
+        if (typeof session.hasSignedConsent === 'boolean') {
+          token.hasSignedConsent = session.hasSignedConsent;
+        }
+        if (session.role) {
+          token.role = session.role;
+        }
+      }
+      
       return token;
     }
   }

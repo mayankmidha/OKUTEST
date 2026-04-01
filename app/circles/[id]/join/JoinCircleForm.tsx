@@ -12,7 +12,8 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
   const [userDetails, setUserDetails] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    dateOfBirth: ''
   })
   const router = useRouter()
 
@@ -119,6 +120,16 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
             placeholder="jane@example.com"
             value={userDetails.email}
             onChange={e => setUserDetails({...userDetails, email: e.target.value})}
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 ml-4 text-left block">Date of Birth</label>
+          <input
+            required
+            type="date"
+            className="input-pastel"
+            value={userDetails.dateOfBirth}
+            onChange={e => setUserDetails({...userDetails, dateOfBirth: e.target.value})}
           />
         </div>
         <div className="space-y-1">

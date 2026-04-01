@@ -94,7 +94,7 @@ export default async function CirclesPage() {
                     </div>
 
                     <Link 
-                      href={session ? `/dashboard/client/circles/join/${circle.id}` : `/auth/signup?callbackUrl=/circles`}
+                      href={`/circles/${circle.id}/join`}
                       className={`btn-pill-3d w-full !py-5 ${isFull ? 'bg-oku-taupe/10 text-oku-taupe pointer-events-none' : 'bg-oku-darkgrey text-white pulse-cta'}`}
                     >
                       {isFull ? 'Waiting List Only' : 'Join this Circle'} <ArrowRight size={16} className="ml-3" />
