@@ -35,6 +35,8 @@ const config: Config = {
       fontFamily: {
         'display': ['Plus Jakarta Sans', 'DM Sans', 'sans-serif'],
         'body': ['Plus Jakarta Sans', 'DM Sans', 'sans-serif'],
+        'serif': ['Cormorant Garamond', 'serif'],
+        'cursive': ['Nothing You Could Do', 'cursive'],
       },
       borderRadius: {
         'button': '12px',
