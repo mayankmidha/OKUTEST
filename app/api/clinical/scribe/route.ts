@@ -50,13 +50,41 @@ export async function POST(req: Request) {
     })
 
     // 3. Save the intelligence back to the database for persistence
-    await prisma.appointment.update({
-      where: { id: appointmentId },
-      data: {
-        aiSummary: analysis.summary,
-        aiSentiment: analysis.sentiment,
-        aiRiskLevel: analysis.riskLevel,
-        soapNotes: JSON.stringify(analysis.soapNote)
+    // Use upsert for both related models to ensure they exist or are updated
+    await prisma.transcript.upsert({
+      where: { appointmentId: appointmentId },
+      update: {
+        summary: analysis.summary,
+        sentiment: analysis.sentiment,
+        riskLevel: analysis.riskLevel,
+        clinicalSignals: analysis.clinicalSignals as any,
+        detectedLanguage: analysis.detectedLanguage
+      },
+      create: {
+        appointmentId: appointmentId,
+        content: transcriptContent,
+        summary: analysis.summary,
+        sentiment: analysis.sentiment,
+        riskLevel: analysis.riskLevel,
+        clinicalSignals: analysis.clinicalSignals as any,
+        detectedLanguage: analysis.detectedLanguage
+      }
+    })
+
+    await prisma.soapNote.upsert({
+      where: { appointmentId: appointmentId },
+      update: {
+        subjective: analysis.soapNote.S,
+        objective: analysis.soapNote.O,
+        assessment: analysis.soapNote.A,
+        plan: analysis.soapNote.P,
+      },
+      create: {
+        appointmentId: appointmentId,
+        subjective: analysis.soapNote.S,
+        objective: analysis.soapNote.O,
+        assessment: analysis.soapNote.A,
+        plan: analysis.soapNote.P,
       }
     })
 
