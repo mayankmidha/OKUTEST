@@ -72,6 +72,8 @@ export function EnhancedVideoRoom({
   const [connectionLost, setConnectionLost] = useState(false)
   const [reconnectAttempts, setReconnectAttempts] = useState(0)
   const [isOnline, setIsOnline] = useState(true)
+  const lastConnectionTime = useRef<number>(Date.now())
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -86,14 +88,14 @@ export function EnhancedVideoRoom({
 
   const toggleMic = async () => {
     if (!call) return
-    const isMuted = call.state.isMute
+    const isMuted = call.microphone.state.status === 'disabled'
     if (isMuted) await call.microphone.enable()
     else await call.microphone.disable()
   }
 
   const toggleCamera = async () => {
     if (!call) return
-    const isCamOff = !call.state.camera.status
+    const isCamOff = call.camera.state.status === 'disabled'
     if (isCamOff) await call.camera.enable()
     else await call.camera.disable()
   }
@@ -101,7 +103,7 @@ export function EnhancedVideoRoom({
   const toggleScreenShare = async () => {
     if (!call) return
     try {
-      if (call.state.isScreenSharing) await call.screenShare.disable()
+      if (call.screenShare.state.status === 'enabled') await call.screenShare.disable()
       else await call.screenShare.enable()
     } catch (e) {
       console.error("Screen share failed", e)
@@ -321,7 +323,7 @@ export function EnhancedVideoRoom({
           'That\'s a really important insight.',
         ]
         const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)]
-        setTranscript(prev => [...prev.slice(-20), `[${new Date().toLocaleTimeString()}] ${role}: ${randomPhrase}`])
+        setTranscriptLines(prev => [...prev.slice(-20), `[${new Date().toLocaleTimeString()}] ${role}: ${randomPhrase}`])
       }, 8000)
       return () => clearInterval(interval)
     }
@@ -350,22 +352,6 @@ export function EnhancedVideoRoom({
     }
   }, [call, isRecording])
 
-  // AI Session Summary
-  const generateAiSummary = useCallback(async () => {
-    setIsAiThinking(true)
-    // Simulate AI processing
-    await new Promise(r => setTimeout(r, 2000))
-    
-    const summaries = [
-      'Session focused on anxiety management techniques. Client showed progress in recognizing triggers.',
-      'Explored relationship patterns and communication styles. Breakthrough moment mid-session.',
-      'Worked through grief processing. Client expressed feeling lighter by end of session.',
-      'CBT exercises for negative thought patterns. Homework: daily journaling assigned.'
-    ]
-    setAiSummary(summaries[Math.floor(Math.random() * summaries.length)])
-    setIsAiThinking(false)
-  }, [transcript])
-
   // Emergency alert
   const handleEmergency = async () => {
     if (!confirm("TRIGGER EMERGENCY PROTOCOL?\n\nThis will:\n• Alert crisis team immediately\n• Notify emergency contacts\n• Log incident securely\n\nContinue?")) return
@@ -378,7 +364,7 @@ export function EnhancedVideoRoom({
           appointmentId: sessionId,
           timestamp: new Date().toISOString(),
           triggeredBy: role,
-          transcript: transcript.slice(-10)
+          transcript: transcriptLines.slice(-10)
         })
       })
       if (res.ok) {
@@ -907,19 +893,19 @@ export function EnhancedVideoRoom({
               <div className="flex items-center gap-4">
                 <button 
                   onClick={toggleMic}
-                  className={`p-4 rounded-full transition-all ${call?.state.isMute ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                  className={`p-4 rounded-full transition-all ${call?.microphone.state.status === 'disabled' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white'}`}
                 >
-                  {call?.state.isMute ? <MicOff size={20} /> : <Mic size={20} />}
+                  {call?.microphone.state.status === 'disabled' ? <MicOff size={20} /> : <Mic size={20} />}
                 </button>
                 <button 
                   onClick={toggleCamera}
-                  className={`p-4 rounded-full transition-all ${!call?.state.camera.status ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                  className={`p-4 rounded-full transition-all ${call?.camera.state.status === 'disabled' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white'}`}
                 >
-                  {!call?.state.camera.status ? <VideoOff size={20} /> : <Video size={20} />}
+                  {call?.camera.state.status === 'disabled' ? <VideoOff size={20} /> : <Video size={20} />}
                 </button>
                 <button 
                   onClick={toggleScreenShare}
-                  className={`p-4 rounded-full transition-all ${call?.state.isScreenSharing ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                  className={`p-4 rounded-full transition-all ${call?.screenShare.state.status === 'enabled' ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
                 >
                   <ScreenShare size={20} />
                 </button>
