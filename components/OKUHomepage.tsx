@@ -10,6 +10,13 @@ interface TeamMember {
   image: string;
 }
 
+interface Service {
+  number: string;
+  title: string;
+  description: string;
+  features: { icon: string; label: string; desc: string }[];
+}
+
 interface PhilosophyBlock {
   title: string;
   body: string[];
@@ -71,6 +78,42 @@ const HERO_VISUALS = {
   stickerTwo: "/uploads/uploads/2025/06/Group-29.png",
   stickerThree: "/uploads/uploads/2025/06/Frame-137.png",
 };
+
+const SERVICES: Service[] = [
+  {
+    number: "1",
+    title: "Individual Therapy",
+    description: "One-on-one sessions to explore your thoughts, patterns, and inner world—held with compassion, curiosity, and care.",
+    features: [
+      { icon: "🌿", label: "Depth-Oriented", desc: "Explore your emotions beyond surface symptoms." },
+      { icon: "🌱", label: "Trauma-Informed", desc: "Your pace and safety come first—always." },
+      { icon: "🏳️‍🌈", label: "Queer-Affirmative", desc: "Therapy that welcomes your identity without explanation." },
+      { icon: "🧩", label: "Culturally Sensitive", desc: "Your context, language, and story matter." },
+    ],
+  },
+  {
+    number: "2",
+    title: "Trauma & EMDR",
+    description: "Support for processing trauma—using EMDR and safe practices to help your body and mind rest.",
+    features: [
+      { icon: "👁", label: "EMDR Therapy", desc: "Evidence-based processing for traumatic memory." },
+      { icon: "🫁", label: "Somatic Awareness", desc: "Connecting body signals to healing work." },
+      { icon: "🛡", label: "Paced & Safe", desc: "No pressure to move faster than you're ready." },
+      { icon: "🧠", label: "Nervous System-Led", desc: "Working with your body's natural rhythms." },
+    ],
+  },
+  {
+    number: "3",
+    title: "Movement Therapy",
+    description: "When words feel distant, movement speaks. This practice uses breath and flow to reconnect with you.",
+    features: [
+      { icon: "🌬", label: "Breath & Body-Led", desc: "Follow your body's pace and rhythm—nothing is forced." },
+      { icon: "🌀", label: "Somatic Integration", desc: "Gently process stored emotions through movement." },
+      { icon: "🌊", label: "Expressive & Safe", desc: "Move without judgment. No performance, no right way." },
+      { icon: "🤝", label: "Accessible to All", desc: "No experience needed—just curiosity and presence." },
+    ],
+  },
+];
 
 const PHILOSOPHY: PhilosophyBlock[] = [
   {
@@ -199,6 +242,12 @@ const STARTING_POINTS = [
     title: "Take a gentle self-check",
     description: "Use clinically grounded assessments to better understand what you might be carrying right now.",
     href: "/assessments",
+  },
+  {
+    kicker: "Start with options",
+    title: "See the care paths",
+    description: "Compare therapy, EMDR, movement work, and psychometric support before taking the next step.",
+    href: "/services",
   },
 ];
 
@@ -1393,6 +1442,47 @@ export default function OkuHomepage() {
                    View Detailed Profiles
                 </Link>
             </div>
+          </div>
+        </section>
+
+        {/* ── Services ── */}
+        <section className="section" id="services" style={{ background: "var(--oku-peach)" }}>
+          <div className="max-w">
+            <SectionReveal>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>What We Offer</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}><strong>Different ways</strong> to begin</h2>
+              <h2 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontStyle: "italic", marginBottom: 16 }}>healing</h2>
+              <p className="text-oku-darkgrey/60" style={{ maxWidth: 520, marginBottom: 56, lineHeight: 1.7 }}>
+                Because healing <strong>isn't one-size-fits-all</strong>—and it doesn't have to start with words.
+              </p>
+            </SectionReveal>
+            {SERVICES.map((svc, idx) => (
+              <SectionReveal key={svc.title}>
+                <div className="service-block border-oku-darkgrey/5">
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 8 }}>
+                    <span className="text-oku-purple-dark/40" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", fontWeight: 300, lineHeight: 1 }}>{svc.number}</span>
+                    <h3 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}>{svc.title}</h3>
+                  </div>
+                  <p className="text-oku-darkgrey/70 italic leading-relaxed" style={{ maxWidth: 560, marginBottom: 32 }}>{svc.description}</p>
+                  <div className="service-feature-grid">
+                    {svc.features.map((f, fIdx) => {
+                      const colors = ['bg-oku-lavender/40', 'bg-oku-mint/40', 'bg-oku-blush/40', 'bg-oku-babyblue/40']
+                      return (
+                      <div key={f.label} className={`service-feature card-glass-3d !p-8 ${colors[fIdx % colors.length]}`}>
+                        <div style={{ fontSize: "1.4rem", marginBottom: 8 }}>{f.icon}</div>
+                        <h4 className="text-oku-darkgrey" style={{ fontSize: "0.9rem", fontWeight: 700, marginBottom: 4 }}>{f.label}</h4>
+                        <p className="text-oku-darkgrey/60" style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>{f.desc}</p>
+                      </div>
+                    )})}
+                  </div>
+                  <div style={{ marginTop: 40 }}>
+                    <Link href="/therapists" className="btn-pill-3d bg-white/60 border-white text-oku-darkgrey">
+                       Book a free 1:1 consultation
+                    </Link>
+                  </div>
+                </div>
+              </SectionReveal>
+            ))}
           </div>
         </section>
 
