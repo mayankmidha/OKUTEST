@@ -23,6 +23,23 @@ export async function toggleTherapistVerification(practitionerId: string, isVeri
   revalidatePath('/admin/dashboard')
 }
 
+export async function updateUserRole(userId: string, role: UserRole) {
+  await checkAdmin()
+  await prisma.user.update({
+    where: { id: userId },
+    data: { role }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
+export async function deleteUser(userId: string) {
+  await checkAdmin()
+  await prisma.user.delete({
+    where: { id: userId }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
 export async function toggleTherapistBlogPower(practitionerId: string, canPostBlogs: boolean) {
   await checkAdmin()
   await prisma.practitionerProfile.update({

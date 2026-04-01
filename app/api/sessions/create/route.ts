@@ -134,7 +134,7 @@ export async function POST(req: Request) {
     })
 
     // Redirect to payment page (using appointment ID as checkout session ID)
-    return NextResponse.redirect(new URL(`/checkout/${appointment.id}`, req.url), 303)
+    return NextResponse.redirect(new URL(`/dashboard/client/checkout/${appointment.id}`, req.url), 303)
 
   } catch (e) {
       console.error('Appointment creation error:', e)

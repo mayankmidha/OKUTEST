@@ -78,7 +78,7 @@ export async function POST(req: Request) {
             where: { id: payment.id },
             data: { status: PaymentStatus.COMPLETED }
         })
-        return NextResponse.redirect(new URL(`/checkout/${sessionId}/success?method=referral-credit`, req.url), 303)
+        return NextResponse.redirect(new URL(`/dashboard/client/checkout/${sessionId}/success?method=referral-credit`, req.url), 303)
       }
 
       // 2. Handle Stripe
@@ -99,8 +99,8 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'payment',
-            success_url: `${origin}/checkout/${sessionId}/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${origin}/checkout/${sessionId}?cancelled=true`,
+            success_url: `${origin}/dashboard/client/checkout/${sessionId}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/dashboard/client/checkout/${sessionId}?cancelled=true`,
             metadata: {
                 appointmentId: appointment.id,
                 paymentId: payment.id,
@@ -127,7 +127,7 @@ export async function POST(req: Request) {
           // For a server-side redirect, we'd use Payment Links, but that's more complex.
           // For now, let's just log and redirect to a "waiting" or "instruction" page.
           console.log("Razorpay requested - implementing server-side redirect or client-side bridge required.")
-          return NextResponse.redirect(new URL(`/checkout/${sessionId}/success?method=razorpay&status=pending`, req.url), 303)
+          return NextResponse.redirect(new URL(`/dashboard/client/checkout/${sessionId}/success?method=razorpay&status=pending`, req.url), 303)
       }
       
       return new NextResponse('Unsupported payment processor', { status: 400 })

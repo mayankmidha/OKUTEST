@@ -23,6 +23,7 @@ import { formatCurrency, autoConvert } from '@/lib/currency'
 import { getPractitionerDisciplineLabel } from '@/lib/practitioner-type'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CirclesManager } from './CirclesManager'
+import { AdminServicesManagement } from './AdminServicesManagement'
 
 function AdminDashboardContent({ 
   stats, 
@@ -157,9 +158,11 @@ function AdminDashboardContent({
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-8 mb-16 relative z-10">
         {[
           { id: 'overview', label: 'Pulse', icon: Activity },
+          { id: 'users', label: 'Global Users', icon: Users },
           { id: 'circles', label: 'Circles', icon: Users },
           { id: 'therapists', label: 'Network', icon: Shield },
           { id: 'clients', label: 'Roster', icon: Users },
+          { id: 'services', label: 'Services', icon: FileText },
           { id: 'audit', label: 'Integrity', icon: Lock },
           { id: 'settings', label: 'Protocol', icon: Settings }
         ].map((tab) => (
@@ -248,6 +251,28 @@ function AdminDashboardContent({
                      </div>
                   </div>
                </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'users' && (
+            <motion.div 
+              key="users"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <AdminUserManagement users={[...therapists, ...clients]} />
+            </motion.div>
+          )}
+
+          {activeTab === 'services' && (
+            <motion.div 
+              key="services"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <AdminServicesManagement services={services} />
             </motion.div>
           )}
 

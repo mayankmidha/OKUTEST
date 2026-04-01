@@ -4,11 +4,13 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShieldCheck, FileText, ChevronRight, Loader2, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 export function InformedConsentViewer() {
   const [isAgreed, setIsAgreed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+  const { update } = useSession()
 
   const handleSign = async () => {
     if (!isAgreed) return
@@ -23,7 +25,7 @@ export function InformedConsentViewer() {
         })
       })
       if (res.ok) {
-        // Refresh session or just redirect
+        await update({ hasSignedConsent: true })
         window.location.href = '/dashboard'
       }
     } catch (e) {

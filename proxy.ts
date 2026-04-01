@@ -41,7 +41,7 @@ const PRACTITIONER_PREFIXES = ["/practitioner", "/api/practitioner"]
 
 /** Paths that never need auth — checked before anything else. */
 const PUBLIC_EXACT = ["/", "/about-us", "/faq", "/privacy", "/terms", "/contact", "/people", "/therapists"]
-const PUBLIC_PREFIXES = ["/auth", "/api/auth", "/api/therapists", "/circles", "/assessments", "/_next", "/public"]
+const PUBLIC_PREFIXES = ["/auth", "/api/auth", "/api/therapists", "/circles", "/assessments", "/_next", "/public", "/dashboard/client/assessments", "/dashboard/client/circles/join"]
 
 function isPublic(pathname: string): boolean {
   if (pathname === "/favicon.ico") return true
