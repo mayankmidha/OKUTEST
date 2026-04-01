@@ -22,17 +22,17 @@ export async function POST(req: Request) {
           include: {
             moodEntries: { orderBy: { createdAt: 'desc' }, take: 5 },
             assessmentAnswers: { include: { assessment: true }, orderBy: { completedAt: 'desc' }, take: 2 },
-            clientTreatmentPlans: { where: { status: 'ACTIVE' }, take: 1 },
-            transcripts: { where: { appointmentId: appointmentId }, take: 1 }
+            clientTreatmentPlans: { where: { status: 'ACTIVE' }, take: 1 }
           }
         },
-        service: true
+        service: true,
+        transcript: true
       }
     })
 
     if (!appointment || !appointment.client) return new NextResponse("Appointment or Client not found", { status: 404 })
 
-    const transcriptContent = incomingTranscript || appointment.client.transcripts[0]?.content || "No transcript provided."
+    const transcriptContent = incomingTranscript || appointment.transcript?.content || "No transcript provided."
     const settings = await getOkuAiSettings()
 
     if (!settings.okuAiEnabled) {
