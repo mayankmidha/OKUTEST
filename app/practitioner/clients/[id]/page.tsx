@@ -11,6 +11,8 @@ import { DocumentVault } from '@/components/DocumentVault'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
 import { ClinicalAITranscriptViewer } from '@/components/ClinicalAITranscriptViewer'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   const { id: clientId } = await params

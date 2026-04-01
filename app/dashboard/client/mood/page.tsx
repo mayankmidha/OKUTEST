@@ -2,119 +2,189 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { ArrowLeft, Smile, Heart, TrendingUp, History } from 'lucide-react'
+import { TrendingUp, Heart, ChevronLeft, Wind, Sparkles } from 'lucide-react'
 import MoodTrackerForm from './MoodTrackerForm'
+
+export const dynamic = 'force-dynamic'
+
+const moodMap: Record<number, { emoji: string; label: string; bg: string; bar: string }> = {
+  1: { emoji: '😫', label: 'Very Low', bg: 'bg-oku-peach/60',    bar: 'bg-oku-peach' },
+  2: { emoji: '😔', label: 'Low',      bg: 'bg-oku-blush/60',    bar: 'bg-oku-blush' },
+  3: { emoji: '😐', label: 'Neutral',  bg: 'bg-oku-babyblue/60', bar: 'bg-oku-babyblue' },
+  4: { emoji: '🙂', label: 'Good',     bg: 'bg-oku-mint/60',     bar: 'bg-oku-mint' },
+  5: { emoji: '😊', label: 'Great',    bg: 'bg-oku-lavender/60', bar: 'bg-oku-lavender' },
+}
 
 export default async function MoodTrackingPage() {
   const session = await auth()
-  
-  if (!session?.user) {
-    redirect('/auth/login')
-  }
+  if (!session?.user) redirect('/auth/login')
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      moodEntries: {
-        orderBy: { createdAt: 'desc' },
-        take: 10
-      }
-    }
-  })
+  let user: any = null
+  try {
+    user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        moodEntries: {
+          orderBy: { createdAt: 'desc' },
+          take: 30,
+        },
+      },
+    })
+  } catch (e) {
+    console.error('Mood fetch error:', e)
+  }
 
   if (!user) redirect('/auth/login')
 
-  const moodMap: Record<number, { emoji: string, label: string, color: string }> = {
-    1: { emoji: '😫', label: 'Very Low', color: 'text-red-600 bg-red-50' },
-    2: { emoji: '😔', label: 'Low', color: 'text-orange-600 bg-orange-50' },
-    3: { emoji: '😐', label: 'Neutral', color: 'text-yellow-600 bg-yellow-50' },
-    4: { emoji: '🙂', label: 'Good', color: 'text-green-600 bg-green-50' },
-    5: { emoji: '😊', label: 'Great', color: 'text-emerald-600 bg-emerald-50' },
-  }
+  const entries = user.moodEntries || []
+  const avgMood =
+    entries.length > 0
+      ? (entries.reduce((acc: number, e: any) => acc + e.mood, 0) / entries.length).toFixed(1)
+      : null
+
+  // Last 14 entries for the visual bar chart
+  const chartEntries = [...entries].reverse().slice(-14)
 
   return (
-    <div className="min-h-screen bg-oku-cream py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <Link href="/dashboard/client" className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-taupe hover:text-oku-dark flex items-center gap-2 mb-4">
-              <ArrowLeft size={12} /> Dashboard
-            </Link>
-            <h1 className="text-5xl font-display font-bold text-oku-dark tracking-tighter">Wellness Tracker</h1>
-            <p className="text-oku-taupe mt-2 font-display italic">"How are you holding space for yourself today?"</p>
+    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+      {/* Ambient blobs */}
+      <div className="absolute top-[10%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard/client"
+                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 hover:text-oku-darkgrey transition-colors bg-white/40 px-5 py-2.5 rounded-full border border-white/60 shadow-sm"
+              >
+                <ChevronLeft size={13} /> Dashboard
+              </Link>
+              <span className="chip bg-white/60 border-white/80">Wellness Tracker</span>
+            </div>
+            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+              Mood <span className="text-oku-purple-dark italic">Journal.</span>
+            </h1>
+            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+              &ldquo;How are you holding space for yourself today?&rdquo;
+            </p>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* New Entry */}
-          <div className="lg:col-span-1">
-            <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-xl sticky top-28">
-              <h2 className="text-2xl font-display font-bold text-oku-dark mb-6 flex items-center gap-3">
-                <Smile className="text-oku-purple" /> Daily Check-in
+        <div className="grid lg:grid-cols-12 gap-12">
+          {/* Left: Entry form */}
+          <div className="lg:col-span-4 space-y-10">
+            <div className="card-glass-3d !p-10 !bg-oku-butter sticky top-28">
+              <div className="flex items-center justify-between mb-8">
+                <Sparkles className="text-oku-purple-dark/60 animate-float-3d" size={26} />
+                <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">Daily Check-in</span>
+              </div>
+              <h2 className="heading-display text-3xl text-oku-darkgrey mb-8">
+                Today&rsquo;s <span className="italic text-oku-purple-dark">Feeling</span>
               </h2>
               <MoodTrackerForm />
             </div>
           </div>
 
-          {/* History & Insights */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Insights */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                  <div className="relative z-10">
-                    <TrendingUp className="text-oku-purple mb-4" />
-                    <p className="text-[10px] uppercase tracking-widest font-black opacity-60 mb-2">Weekly Average</p>
-                    <p className="text-4xl font-display font-bold">
-                        {user.moodEntries.length > 0 
-                            ? (user.moodEntries.reduce((acc, curr) => acc + curr.mood, 0) / user.moodEntries.length).toFixed(1) 
-                            : 'N/A'
-                        }
-                    </p>
-                  </div>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/20 rounded-full blur-3xl" />
-               </div>
-               <div className="bg-white p-8 rounded-[2.5rem] border border-oku-taupe/10 shadow-sm">
-                  <Heart className="text-oku-purple mb-4" />
-                  <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-2">Check-in Streak</p>
-                  <p className="text-4xl font-display font-bold text-oku-dark">{user.moodEntries.length} Days</p>
-               </div>
+          {/* Right: Stats + history */}
+          <div className="lg:col-span-8 space-y-10">
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="card-glass-3d !p-10 !bg-oku-darkgrey text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <TrendingUp className="mb-6 opacity-60" size={26} />
+                  <p className="text-[10px] uppercase tracking-[0.4em] font-black opacity-40 mb-2">Average Mood</p>
+                  <p className="text-6xl heading-display">
+                    {avgMood ?? 'N/A'}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-30 mt-2">out of 5.0</p>
+                </div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple-dark/20 rounded-full blur-3xl" />
+              </div>
+
+              <div className="card-glass-3d !p-10 !bg-oku-lavender/60">
+                <Heart className="text-oku-purple-dark/60 mb-6 animate-pulse" size={26} />
+                <p className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-darkgrey/40 mb-2">Check-in Streak</p>
+                <p className="text-6xl heading-display text-oku-darkgrey">{entries.length}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mt-2">Total Entries</p>
+              </div>
             </div>
 
-            {/* List */}
-            <div className="bg-white p-10 rounded-[3rem] border border-oku-taupe/10 shadow-sm">
-              <h2 className="text-2xl font-display font-bold text-oku-dark mb-8 flex items-center gap-3">
-                <History className="text-oku-purple" /> Recent Reflections
-              </h2>
-              
-              <div className="space-y-6">
-                {user.moodEntries.length === 0 ? (
-                  <p className="text-oku-taupe italic text-center py-12">No entries yet. Start tracking your journey above.</p>
-                ) : (
-                  user.moodEntries.map((entry) => {
-                    const mood = moodMap[entry.mood] || moodMap[3]
+            {/* Visual Mood Bar Chart */}
+            {chartEntries.length > 0 && (
+              <div className="card-glass-3d !p-10 !bg-white/40">
+                <h3 className="heading-display text-2xl text-oku-darkgrey mb-2">
+                  Recent <span className="italic text-oku-purple-dark">Pattern</span>
+                </h3>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/30 mb-10">Last {chartEntries.length} entries</p>
+                <div className="flex items-end gap-2 h-32">
+                  {chartEntries.map((entry: any, i: number) => {
+                    const m = moodMap[entry.mood] || moodMap[3]
+                    const heightPct = (entry.mood / 5) * 100
                     return (
-                      <div key={entry.id} className="group border-b border-oku-taupe/5 pb-6 last:border-0">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-center gap-4">
-                            <span className="text-3xl">{mood.emoji}</span>
-                            <div>
-                              <p className="font-bold text-oku-dark">{mood.label}</p>
-                              <p className="text-[10px] uppercase tracking-widest text-oku-taupe">
-                                {new Date(entry.createdAt).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                              </p>
-                            </div>
-                          </div>
+                      <div key={entry.id} className="flex-1 flex flex-col items-center gap-2 group">
+                        <div className="w-full relative" style={{ height: '6rem' }}>
+                          <div
+                            className={`absolute bottom-0 w-full rounded-t-xl ${m.bar} opacity-80 group-hover:opacity-100 transition-all duration-500`}
+                            style={{ height: `${heightPct}%` }}
+                          />
                         </div>
-                        {entry.notes && (
-                          <p className="text-sm text-oku-taupe leading-relaxed italic bg-oku-cream/30 p-4 rounded-2xl">
-                            "{entry.notes}"
-                          </p>
-                        )}
+                        <span className="text-base">{m.emoji}</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-oku-darkgrey/20 hidden sm:block">
+                          {new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}
+                        </span>
                       </div>
                     )
-                  })
-                )}
+                  })}
+                </div>
               </div>
+            )}
+
+            {/* History List */}
+            <div className="card-glass-3d !p-10 !bg-white/40">
+              <h3 className="heading-display text-2xl text-oku-darkgrey mb-10">
+                Recent <span className="italic text-oku-purple-dark">Reflections</span>
+              </h3>
+
+              {entries.length === 0 ? (
+                <div className="py-16 text-center border-2 border-dashed border-oku-purple-dark/10 rounded-[2rem]">
+                  <Wind className="mx-auto text-oku-purple-dark/20 mb-4 animate-float-3d" size={36} />
+                  <p className="text-lg font-display italic text-oku-darkgrey/30">
+                    No entries yet. Start tracking above.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {entries.map((entry: any) => {
+                    const mood = moodMap[entry.mood] || moodMap[3]
+                    return (
+                      <div
+                        key={entry.id}
+                        className={`flex items-start gap-6 p-6 rounded-[2rem] border border-white/60 ${mood.bg} transition-all duration-300`}
+                      >
+                        <div className="text-4xl flex-shrink-0 animate-float-3d">{mood.emoji}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-4 mb-2">
+                            <p className="font-black text-oku-darkgrey text-sm uppercase tracking-widest">{mood.label}</p>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30 flex-shrink-0">
+                              {new Date(entry.createdAt).toLocaleDateString('en-US', {
+                                weekday: 'short', month: 'short', day: 'numeric',
+                              })}
+                            </span>
+                          </div>
+                          {entry.notes && (
+                            <p className="text-sm text-oku-darkgrey/60 italic font-display leading-relaxed">
+                              &ldquo;{entry.notes}&rdquo;
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

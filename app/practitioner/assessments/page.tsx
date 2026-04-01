@@ -2,13 +2,15 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { 
-  Plus, ClipboardCheck, ArrowLeft, 
+import {
+  Plus, ClipboardCheck, ArrowLeft,
   ChevronRight, Activity, Clock, UserPlus
 } from 'lucide-react'
 import { UserRole } from '@prisma/client'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
+
+export const dynamic = 'force-dynamic'
 
 export default async function PractitionerAssessmentsPage() {
   const session = await auth()

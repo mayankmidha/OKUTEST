@@ -13,6 +13,8 @@ import { PasswordChangeForm } from '@/components/PasswordChangeForm'
 import { formatCurrency } from '@/lib/currency'
 import { resolvePractitionerPricing } from '@/lib/pricing'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PractitionerProfilePage() {
   const session = await auth()
   

@@ -27,6 +27,8 @@ import { AppointmentStatus, UserRole } from '@prisma/client'
 import { AIAssistantWidget } from '@/components/AIAssistantWidget'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PractitionerDashboardPage() {
   const session = await auth()
 
@@ -40,6 +42,7 @@ export default async function PractitionerDashboardPage() {
     caseloadCount,
     recentNotes,
     upcomingSessions,
+    allClientAppointments,
   ] = await Promise.all([
     prisma.practitionerProfile.findUnique({
       where: { userId: session.user.id },
@@ -68,6 +71,12 @@ export default async function PractitionerDashboardPage() {
       orderBy: { startTime: 'asc' },
       take: 10
     }),
+    // Fetch appointments to build real patient roster
+    prisma.appointment.findMany({
+      where: { practitionerId: session.user.id, clientId: { not: null } },
+      include: { client: true },
+      orderBy: { startTime: 'desc' },
+    }),
   ])
 
   if (!practitioner) {
@@ -77,9 +86,35 @@ export default async function PractitionerDashboardPage() {
   const facilitatedCircles = upcomingSessions.filter(s => s.isGroupSession)
   const individualSessions = upcomingSessions.filter(s => !s.isGroupSession)
 
-  const todaySessionsCount = upcomingSessions.filter(s => 
+  const todaySessionsCount = upcomingSessions.filter(s =>
     new Date(s.startTime).setHours(0,0,0,0) === new Date().setHours(0,0,0,0)
   ).length
+
+  // Build real patient roster from appointment history
+  const rosterMap = new Map<string, {
+    client: NonNullable<typeof allClientAppointments[0]['client']>
+    totalSessions: number
+    lastSession: Date
+    status: string
+  }>()
+  allClientAppointments.forEach(appt => {
+    if (!appt.clientId || !appt.client) return
+    if (!rosterMap.has(appt.clientId)) {
+      rosterMap.set(appt.clientId, {
+        client: appt.client,
+        totalSessions: 1,
+        lastSession: appt.startTime,
+        status: appt.status === AppointmentStatus.COMPLETED ? 'Active' : 'Scheduled',
+      })
+    } else {
+      const existing = rosterMap.get(appt.clientId)!
+      existing.totalSessions += 1
+      if (new Date(appt.startTime) > existing.lastSession) {
+        existing.lastSession = appt.startTime
+      }
+    }
+  })
+  const patientRoster = Array.from(rosterMap.values()).slice(0, 8)
 
   return (
     <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-mint/10 relative overflow-hidden">
@@ -248,36 +283,54 @@ export default async function PractitionerDashboardPage() {
 
           {/* Patient Roster / Glassmorphism Table */}
           <section className="card-glass-3d !p-12 !bg-white/40">
-            <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-12">Patient <span className="italic text-oku-purple-dark">Roster</span></h2>
-            <div className="overflow-hidden rounded-[2rem] border border-white shadow-sm">
-               <table className="w-full text-left">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Patient <span className="italic text-oku-purple-dark">Roster</span></h2>
+              <Link href="/practitioner/clients" className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline flex items-center gap-2">Full Roster <ArrowUpRight size={14} /></Link>
+            </div>
+            {patientRoster.length === 0 ? (
+              <div className="py-20 text-center border-2 border-dashed border-oku-purple-dark/10 rounded-[3rem]">
+                <Moon className="mx-auto text-oku-purple-dark/20 mb-6 animate-float-3d" size={48} />
+                <p className="text-2xl font-display italic text-oku-darkgrey/30">No clients yet.</p>
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-[2rem] border border-white shadow-sm">
+                <table className="w-full text-left">
                   <thead className="bg-oku-lavender/40">
-                     <tr>
-                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Client</th>
-                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Last Session</th>
-                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Status</th>
-                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Action</th>
-                     </tr>
+                    <tr>
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Client</th>
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Sessions</th>
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Last Session</th>
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Status</th>
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Action</th>
+                    </tr>
                   </thead>
                   <tbody className="bg-white/20">
-                     {[1,2,3].map((_, i) => (
-                        <tr key={i} className="border-t border-white/40 hover:bg-white/40 transition-colors">
-                           <td className="px-8 py-6 flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-xl bg-oku-blush flex items-center justify-center text-xs font-black text-oku-darkgrey/40">JS</div>
-                              <span className="font-bold text-oku-darkgrey text-sm">Patient Name</span>
-                           </td>
-                           <td className="px-8 py-6 text-sm text-oku-darkgrey/60 italic font-display">Mar 24, 2026</td>
-                           <td className="px-8 py-6">
-                              <span className="bg-oku-mint text-oku-darkgrey/60 text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Active</span>
-                           </td>
-                           <td className="px-8 py-6">
-                              <Link href="/practitioner/clients" className="text-oku-purple-dark hover:underline text-[10px] font-black uppercase tracking-widest">View History</Link>
-                           </td>
-                        </tr>
-                     ))}
+                    {patientRoster.map((entry) => (
+                      <tr key={entry.client.id} className="border-t border-white/40 hover:bg-white/40 transition-colors">
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-oku-blush flex items-center justify-center text-xs font-black text-oku-darkgrey/60">
+                              {entry.client.name?.substring(0, 2).toUpperCase() || '??'}
+                            </div>
+                            <span className="font-bold text-oku-darkgrey text-sm">{entry.client.name || 'Unknown'}</span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 text-sm font-bold text-oku-darkgrey/60">{entry.totalSessions}</td>
+                        <td className="px-8 py-6 text-sm text-oku-darkgrey/60 italic font-display">
+                          {new Date(entry.lastSession).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </td>
+                        <td className="px-8 py-6">
+                          <span className="bg-oku-mint text-oku-darkgrey/60 text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full">{entry.status}</span>
+                        </td>
+                        <td className="px-8 py-6">
+                          <Link href={`/practitioner/clients/${entry.client.id}`} className="text-oku-purple-dark hover:underline text-[10px] font-black uppercase tracking-widest">View File</Link>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
-               </table>
-            </div>
+                </table>
+              </div>
+            )}
           </section>
         </div>
 

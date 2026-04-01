@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { UserRole } from '@prisma/client'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PractitionerMessagesPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const session = await auth()
 

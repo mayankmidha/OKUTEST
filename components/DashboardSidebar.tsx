@@ -27,13 +27,15 @@ export function DashboardSidebar() {
   const clientLinks = [
     { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Sessions', href: '/dashboard/client/book', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Sessions', href: '/dashboard/client/sessions', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Circles', href: '/dashboard/client/circles', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Clinical', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Therapists', href: '/dashboard/client/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Profile', href: '/dashboard/client/profile', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Support', href: '/dashboard/client/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
   ]

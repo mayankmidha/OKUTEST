@@ -217,6 +217,107 @@ async function main() {
   }
 
   console.log('Assessments seeded successfully!')
+
+  // 5. Create Group Session Circles
+  // First ensure a "Group Circle" service exists
+  const groupCircleService = await prisma.service.upsert({
+    where: { name: 'Group Circle' },
+    update: {},
+    create: {
+      name: 'Group Circle',
+      description: 'Facilitated group therapy circle session',
+      duration: 90,
+      price: 1200,
+      isActive: true,
+    }
+  })
+
+  // Look up facilitators by email
+  const tanisha = await prisma.user.findUnique({ where: { email: 'tanisha@okutherapy.com' } })
+  const rananjay = await prisma.user.findUnique({ where: { email: 'rananjay@okutherapy.com' } })
+  const amna = await prisma.user.findUnique({ where: { email: 'amna@okutherapy.com' } })
+  const suraj = await prisma.user.findUnique({ where: { email: 'suraj@okutherapy.com' } })
+
+  const now = new Date()
+
+  const circleData = [
+    {
+      id: 'circle-grief-001',
+      practitioner: tanisha,
+      daysFromNow: 3,
+      maxParticipants: 8,
+      priceSnapshot: 1200,
+      recurringPattern: 'WEEKLY' as const,
+      notes: 'Grief & Loss Circle|A safe space for those navigating loss, whether of a person, relationship, identity, or sense of self.',
+    },
+    {
+      id: 'circle-queer-001',
+      practitioner: rananjay,
+      daysFromNow: 5,
+      maxParticipants: 10,
+      priceSnapshot: 1000,
+      recurringPattern: 'WEEKLY' as const,
+      notes: 'Queer Affirmative Circle|A community space for LGBTQ+ individuals to share, connect, and be witnessed without judgment.',
+    },
+    {
+      id: 'circle-anxiety-001',
+      practitioner: amna,
+      daysFromNow: 7,
+      maxParticipants: 8,
+      priceSnapshot: 1200,
+      recurringPattern: 'BIWEEKLY' as const,
+      notes: 'Anxiety & Overthinking Circle|Explore the anxious mind together. Learn collective tools, share patterns, and build resilience through shared understanding.',
+    },
+    {
+      id: 'circle-trauma-001',
+      practitioner: suraj,
+      daysFromNow: 10,
+      maxParticipants: 6,
+      priceSnapshot: 1500,
+      recurringPattern: 'BIWEEKLY' as const,
+      notes: 'Trauma-Informed Healing Circle|A carefully held space for trauma survivors to process, integrate, and reclaim their stories at their own pace.',
+    },
+  ]
+
+  for (const c of circleData) {
+    if (!c.practitioner) {
+      console.warn(`Skipping circle ${c.id}: practitioner not found`)
+      continue
+    }
+    const startTime = new Date(now)
+    startTime.setDate(startTime.getDate() + c.daysFromNow)
+    startTime.setHours(18, 0, 0, 0)
+    const endTime = new Date(startTime)
+    endTime.setMinutes(endTime.getMinutes() + 90)
+
+    await prisma.appointment.upsert({
+      where: { id: c.id },
+      update: {
+        startTime,
+        endTime,
+        notes: c.notes,
+        priceSnapshot: c.priceSnapshot,
+        maxParticipants: c.maxParticipants,
+        status: AppointmentStatus.CONFIRMED,
+        recurringPattern: c.recurringPattern,
+      },
+      create: {
+        id: c.id,
+        practitionerId: c.practitioner.id,
+        serviceId: groupCircleService.id,
+        startTime,
+        endTime,
+        status: AppointmentStatus.CONFIRMED,
+        isGroupSession: true,
+        maxParticipants: c.maxParticipants,
+        priceSnapshot: c.priceSnapshot,
+        notes: c.notes,
+        recurringPattern: c.recurringPattern,
+      }
+    })
+  }
+
+  console.log('Circles seeded successfully!')
 }
 
 main()

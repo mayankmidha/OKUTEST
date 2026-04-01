@@ -16,6 +16,8 @@ import { PractitionerShell, PractitionerSectionCard, PractitionerStatCard } from
 import { formatMoney, getPractitionerFinanceSummary } from '@/lib/provider-finance'
 import { requestPractitionerPayout } from '@/app/practitioner/actions'
 
+export const dynamic = 'force-dynamic'
+
 function statusTone(status: string) {
   const normalized = status.toUpperCase()
 

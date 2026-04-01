@@ -5,6 +5,8 @@ import { PractitionerShell } from '@/components/practitioner-shell/practitioner-
 import { BlogManager } from '@/components/BlogManager'
 import { UserRole } from '@prisma/client'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PractitionerBlogsPage() {
   const session = await auth()
   
