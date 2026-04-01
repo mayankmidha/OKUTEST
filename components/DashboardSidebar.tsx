@@ -54,7 +54,6 @@ export function DashboardSidebar() {
     { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Practitioners', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <FileText size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Services', href: '/admin/dashboard?tab=services', icon: <Briefcase size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks

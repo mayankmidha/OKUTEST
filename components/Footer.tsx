@@ -42,7 +42,6 @@ export default function Footer() {
               <ul className="space-y-4 text-[13px] tracking-wide text-oku-taupe">
                 <li><Link href="/about-us" className="hover:text-oku-purple transition-colors">Our Story</Link></li>
                 <li><Link href="/therapists" className="hover:text-oku-purple transition-colors">Our Collective</Link></li>
-                <li><Link href="/services" className="hover:text-oku-purple transition-colors">Services</Link></li>
                 <li><Link href="/blog" className="hover:text-oku-purple transition-colors">Blog</Link></li>
               </ul>
             </div>
