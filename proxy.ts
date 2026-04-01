@@ -72,6 +72,10 @@ export default auth(function proxy(req) {
 
   // 1. Allow public paths immediately
   if (isPublic(pathname)) {
+    // If already authenticated and trying to access auth pages, bounce to dashboard
+    if (isAuthenticated && pathname.startsWith("/auth")) {
+      return NextResponse.redirect(new URL(roleDashboard(role), nextUrl.origin))
+    }
     return NextResponse.next()
   }
 

@@ -5,15 +5,22 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ArrowRight } from 'lucide-react'
 
+import { useSession } from 'next-auth/react'
+
 export default function BrandedNav() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { data: session } = useSession()
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const dashboardHref = session?.user?.role === 'ADMIN' ? '/admin/dashboard' : 
+                        session?.user?.role === 'THERAPIST' ? '/practitioner/dashboard' : 
+                        '/dashboard/client'
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 ${isScrolled ? 'py-4' : 'py-8'}`}>
@@ -38,10 +45,18 @@ export default function BrandedNav() {
 
         {/* Action Buttons */}
         <div className="hidden lg:flex items-center gap-4">
-          <Link href="/auth/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-dark hover:text-oku-purple px-6 transition-all">Identity</Link>
-          <Link href="/auth/signup" className="bg-oku-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-oku-purple-dark hover:scale-105 transition-all flex items-center gap-3">
-            Book Consult <ArrowRight size={14} />
-          </Link>
+          {session ? (
+            <Link href={dashboardHref} className="bg-oku-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-oku-purple-dark hover:scale-105 transition-all flex items-center gap-3">
+              Go to Dashboard <ArrowRight size={14} />
+            </Link>
+          ) : (
+            <>
+              <Link href="/auth/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-dark hover:text-oku-purple px-6 transition-all">Identity</Link>
+              <Link href="/auth/signup" className="bg-oku-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-oku-purple-dark hover:scale-105 transition-all flex items-center gap-3">
+                Book Consult <ArrowRight size={14} />
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -64,8 +79,14 @@ export default function BrandedNav() {
             <MobileNavLink href="/therapists" onClick={() => setMobileMenuOpen(false)}>Therapists</MobileNavLink>
             <MobileNavLink href="/about-us" onClick={() => setMobileMenuOpen(false)}>About Us</MobileNavLink>
             <div className="mt-auto pb-12 flex flex-col gap-4">
-                <Link href="/auth/login" className="w-full py-6 rounded-3xl border border-oku-taupe/10 text-center font-black text-[10px] uppercase tracking-widest text-oku-dark">Sign In</Link>
-                <Link href="/auth/signup" className="w-full py-6 rounded-3xl bg-oku-dark text-white text-center font-black text-[10px] uppercase tracking-widest">Begin Journey</Link>
+                {session ? (
+                  <Link href={dashboardHref} onClick={() => setMobileMenuOpen(false)} className="w-full py-6 rounded-3xl bg-oku-dark text-white text-center font-black text-[10px] uppercase tracking-widest">My Dashboard</Link>
+                ) : (
+                  <>
+                    <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-6 rounded-3xl border border-oku-taupe/10 text-center font-black text-[10px] uppercase tracking-widest text-oku-dark">Sign In</Link>
+                    <Link href="/auth/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-6 rounded-3xl bg-oku-dark text-white text-center font-black text-[10px] uppercase tracking-widest">Begin Journey</Link>
+                  </>
+                )}
             </div>
           </motion.div>
         )}
