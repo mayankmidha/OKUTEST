@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Sparkles, ArrowRight } from 'lucide-react'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import confetti from 'canvas-confetti'
 
 export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string, isAuthenticated: boolean }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { update } = useSession()
   const [userDetails, setUserDetails] = useState({
     name: '',
     email: '',
@@ -44,6 +45,9 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
         })
 
         if (loginRes?.error) throw new Error("Account created but login failed.")
+
+        // 2.1 Refresh local session
+        await update()
       }
 
       // 3. Join the Circle (API call)

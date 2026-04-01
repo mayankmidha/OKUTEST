@@ -15,12 +15,22 @@ import {
 } from 'lucide-react'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { ADHDWorkspace } from './ADHDWorkspace'
+import { ADHDUnlockGate } from './ADHDUnlockGate'
 
 export default async function ADHDHelperPage() {
   const session = await auth()
   
   if (!session?.user?.id) {
     redirect('/auth/login')
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { clientProfile: true }
+  })
+
+  if (!user?.clientProfile?.adhdDiagnosed) {
+    return <ADHDUnlockGate />
   }
 
   const tasks = await prisma.task.findMany({

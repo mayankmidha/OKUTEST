@@ -1,13 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Calendar, Users, DollarSign, Loader2, Sparkles, Clock } from 'lucide-react'
-import { createCircle, deleteCircle } from '../actions'
+import { Plus, Trash2, Calendar, Users, DollarSign, Loader2, Sparkles, Clock, X, UserPlus, Edit2 } from 'lucide-react'
+import { createCircle, deleteCircle, addParticipantToCircle, removeParticipantFromCircle } from '../actions'
 import { useRouter } from 'next/navigation'
 
-export function CirclesManager({ practitioners, existingCircles }: { practitioners: any[], existingCircles: any[] }) {
-  const [isCreating, setIsUpdating] = useState(false)
+export function CirclesManager({ practitioners, existingCircles, allClients }: { practitioners: any[], existingCircles: any[], allClients: any[] }) {
+  const [isUpdating, setIsUpdating] = useState<string | null>(null)
+  const [isCreating, setIsCreating] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [selectedClientToAdd, setSelectedClientToAdd] = useState('')
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -19,10 +23,34 @@ export function CirclesManager({ practitioners, existingCircles }: { practitione
   })
   const router = useRouter()
 
+  const handleAddParticipant = async (circleId: string) => {
+    if (!selectedClientToAdd) return
+    setIsUpdating(`add-${circleId}`)
+    try {
+      await addParticipantToCircle(circleId, selectedClientToAdd)
+      setSelectedClientToAdd('')
+    } finally {
+      setIsUpdating(null)
+    }
+  }
+
+  const handleRemoveParticipant = async (participantId: string) => {
+    if (!confirm('Remove seeker from this circle?')) return
+    setIsUpdating(`remove-${participantId}`)
+    try {
+      await removeParticipantFromCircle(participantId)
+    } finally {
+      setIsUpdating(null)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsUpdating(true)
+    setIsCreating(true)
+    setIsUpdating('form')
     try {
+      // In a real app we'd have an updateCircle action too, 
+      // but for now let's focus on creation and the participant power.
       await createCircle({
         ...formData,
         startTime: new Date(formData.startTime),
@@ -41,7 +69,8 @@ export function CirclesManager({ practitioners, existingCircles }: { practitione
       })
       router.refresh()
     } finally {
-      setIsUpdating(false)
+      setIsCreating(false)
+      setIsUpdating(null)
     }
   }
 
@@ -170,16 +199,55 @@ export function CirclesManager({ practitioners, existingCircles }: { practitione
               <h3 className="text-xl font-bold text-oku-darkgrey mb-2">{title || 'Untitled Circle'}</h3>
               <p className="text-xs text-oku-darkgrey/60 line-clamp-2 mb-6 italic font-display">{desc}</p>
               
-              <div className="space-y-3 pt-6 border-t border-oku-darkgrey/5">
-                <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40">
+              <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40">
                   <div className="flex items-center gap-2"><Calendar size={12} /> {new Date(circle.startTime).toLocaleDateString()}</div>
                   <div className="flex items-center gap-2"><Clock size={12} /> {new Date(circle.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                 </div>
-                <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest">
-                  <span className="text-oku-purple-dark">Lead: {circle.practitioner?.name?.split(' ')[0]}</span>
-                  <span className="bg-oku-mint px-2 py-1 rounded-lg text-oku-darkgrey/60">{circle.participants?.length || 0} / {circle.maxParticipants} Full</span>
+
+                {/* Participant Management */}
+                <div className="pt-6 border-t border-oku-darkgrey/5">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-oku-darkgrey/30 mb-4 flex justify-between">
+                        Roster ({circle.participants?.length || 0} / {circle.maxParticipants})
+                    </p>
+                    <div className="space-y-2 mb-6">
+                        {(circle.participants || []).map((p: any) => (
+                            <div key={p.id} className="flex items-center justify-between bg-white/40 p-2 rounded-xl border border-white/60">
+                                <span className="text-[10px] font-bold truncate max-w-[120px]">{p.user?.name || 'Unknown'}</span>
+                                <button 
+                                    onClick={() => handleRemoveParticipant(p.id)}
+                                    disabled={isUpdating === `remove-${p.id}`}
+                                    className="text-oku-taupe/40 hover:text-red-500 transition-colors"
+                                >
+                                    {isUpdating === `remove-${p.id}` ? <Loader2 size={10} className="animate-spin" /> : <X size={10} />}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <div className="flex gap-2">
+                        <select 
+                            value={selectedClientToAdd}
+                            onChange={(e) => setSelectedClientToAdd(e.target.value)}
+                            className="flex-1 bg-white/60 border border-white rounded-lg text-[9px] px-2 outline-none"
+                        >
+                            <option value="">Add Seeker...</option>
+                            {allClients.filter(c => !circle.participants.some((p:any) => p.userId === c.id)).map((c:any) => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                        </select>
+                        <button 
+                            onClick={() => handleAddParticipant(circle.id)}
+                            disabled={!selectedClientToAdd || isUpdating === `add-${circle.id}`}
+                            className="bg-oku-darkgrey text-white p-2 rounded-lg hover:bg-oku-purple-dark transition-all disabled:opacity-20"
+                        >
+                            {isUpdating === `add-${circle.id}` ? <Loader2 size={12} className="animate-spin" /> : <UserPlus size={12} />}
+                        </button>
+                    </div>
                 </div>
-              </div>
+
+                <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest pt-4 mt-auto">
+                  <span className="text-oku-purple-dark">Lead: {circle.practitioner?.name?.split(' ')[0]}</span>
+                </div>
               
               {/* Decorative Glow */}
               <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-oku-lavender/20 rounded-full blur-3xl group-hover:bg-oku-lavender/40 transition-all" />

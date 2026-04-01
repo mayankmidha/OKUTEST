@@ -1,18 +1,24 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, ChevronRight, Loader2, Save, Sparkles } from 'lucide-react'
+import { CheckCircle2, ChevronRight, Loader2, Save, Sparkles, CreditCard } from 'lucide-react'
 import confetti from 'canvas-confetti'
 
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 
 export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment: any, isAuthenticated: boolean }) {
+  const { update } = useSession()
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
+  
+  const searchParams = useSearchParams()
+  const assignmentId = searchParams.get('assignmentId')
+  const fee = Number(searchParams.get('fee') || 0)
+  const billingStatus = searchParams.get('billing')
   
   // Anonymous account details
   const [userDetails, setUserDetails] = useState({
@@ -46,12 +52,23 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 assessmentId: assessment.id,
-                answers
+                answers,
+                assignmentId
             })
         })
+        
         if (res.ok) {
+            const data = await res.json()
             confetti({ particleCount: 150, spread: 70 })
-            router.push('/dashboard/client/clinical?success=true')
+            
+            // If there's a fee and it's not paid yet, go to checkout
+            if (fee > 0 && billingStatus === 'PENDING') {
+               // Redirect to a specific assessment checkout or session checkout bridge
+               // For now, redirect to clinical dashboard with a payment prompt
+               router.push(`/dashboard/client/clinical?paymentRequired=true&assessmentId=${assessment.id}&amount=${fee}`)
+            } else {
+               router.push('/dashboard/client/clinical?success=true')
+            }
         }
     } finally {
         setIsSubmitting(false)
@@ -84,6 +101,9 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
         })
 
         if (loginRes?.error) throw new Error("Account created but login failed. Please sign in.")
+
+        // 2.1 Refresh local session
+        await update()
 
         // 3. Submit Assessment
         await fetch('/api/assessments', {

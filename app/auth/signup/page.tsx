@@ -30,6 +30,7 @@ function SignupContent() {
     phone: '',
     role: 'CLIENT',
     location: 'India',
+    dateOfBirth: '',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     referralCode: '',
   })
@@ -229,19 +230,35 @@ function SignupContent() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-darkgrey/40 ml-4">Location</label>
-                  <select
-                    value={formData.location}
-                    onChange={(e) => handleChange('location', e.target.value)}
-                    className="input-pastel !bg-white/60 !py-5 appearance-none"
-                  >
-                    <option value="India">India</option>
-                    <option value="USA">United States</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Other">Other</option>
-                  </select>
+                  <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-darkgrey/40 ml-4">Date of Birth</label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.dateOfBirth}
+                    onChange={(e) => handleChange('dateOfBirth', e.target.value)}
+                    className="input-pastel !bg-white/60 !py-5"
+                  />
                 </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-[0.4em] font-black text-oku-darkgrey/40 ml-4">Location</label>
+                <select
+                  value={formData.location}
+                  onChange={(e) => handleChange('location', e.target.value)}
+                  className="input-pastel !bg-white/60 !py-5 appearance-none"
+                >
+                  <option value="India">India</option>
+                  <option value="USA">United States</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="UAE">United Arab Emirates</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
               <button

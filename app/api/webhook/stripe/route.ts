@@ -7,10 +7,12 @@ import { sendSessionReminder } from '@/lib/notifications'
 import { sendInvoiceEmail } from '@/lib/invoicing'
 import { createRecurringSeries } from '@/lib/recurring-booking'
 import { syncAppointmentToExternalCalendar } from '@/lib/calendar-sync'
+import { awardReferralRewardForAppointment } from '@/lib/referrals'
 
 export async function POST(req: Request) {
   const body = await req.text()
-  const signature = (await headers()).get('Stripe-Signature') as string
+  const headersList = await headers()
+  const signature = headersList.get('Stripe-Signature') as string
 
   let event
 
@@ -53,6 +55,13 @@ export async function POST(req: Request) {
                 updatedAt: new Date()
             }
         })
+
+        // Trigger Referral Reward
+        try {
+            await awardReferralRewardForAppointment(appointmentId);
+        } catch (e) {
+            console.error('Failed to award referral reward', e);
+        }
 
         // 3. Trigger Recurring Series Generation (Phase 1 Industrialization)
         if (recurringPattern !== RecurringPattern.NONE) {

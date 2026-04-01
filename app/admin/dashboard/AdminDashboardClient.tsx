@@ -329,6 +329,7 @@ function AdminDashboardContent({
                <CirclesManager 
                  practitioners={therapists} 
                  existingCircles={circles} 
+                 allClients={clients}
                />
             </motion.div>
           )}
@@ -444,7 +445,12 @@ function AdminDashboardContent({
                            )}
                         </td>
                         <td className="p-10 text-right">
-                          <button className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-3 !px-6 text-[9px]">Clinical View</button>
+                          <Link 
+                            href={`/admin/dashboard?tab=users&userId=${c.id}`}
+                            className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-3 !px-6 text-[9px]"
+                          >
+                            Audit Profile
+                          </Link>
                         </td>
                       </tr>
                     ))}
@@ -524,16 +530,31 @@ function AdminDashboardContent({
                         Commit Protocols
                      </button>
                   </div>
+               <div className="card-glass-3d !p-12 !bg-oku-mint/30">
+                  <h3 className="heading-display text-3xl text-oku-darkgrey mb-10 flex items-center gap-4">
+                    <DollarSign size={28} className="text-oku-purple-dark" /> Economical Integrity
+                  </h3>
+                  <div className="space-y-6">
+                     {[
+                       { label: 'Therapy Session Fee (%)', key: 'therapySessionPlatformFeePercent' },
+                       { label: 'Psychiatry Session Fee (%)', key: 'psychiatrySessionPlatformFeePercent' },
+                       { label: 'Assessment Fee (%)', key: 'assessmentPlatformFeePercent' },
+                       { label: 'Min. Payout Amount (INR)', key: 'minimumPayoutAmount' }
+                     ].map((f) => (
+                       <div key={f.key} className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 ml-4">{f.label}</label>
+                          <input 
+                            type="number"
+                            className="input-pastel !py-3 !px-6"
+                            value={platformSettings[f.key as keyof typeof platformSettings]}
+                            onChange={(e) => setPlatformSettings({...platformSettings, [f.key]: parseFloat(e.target.value)})}
+                          />
+                       </div>
+                     ))}
+                  </div>
                </div>
 
                <div className="card-glass-3d !p-12 !bg-oku-babyblue/30">
-                  <h3 className="heading-display text-3xl text-oku-darkgrey mb-10 flex items-center gap-4">
-                    <Brain size={28} className="text-oku-purple-dark" /> AI Governance
-                  </h3>
-                  <div className="bg-white/40 p-8 rounded-[2rem] border border-white italic font-display text-oku-darkgrey/60 leading-relaxed">
-                    "AI safety protocols are active. All clinical summaries are reviewed against HIPAA compliance standards before storage."
-                  </div>
-                  <div className="mt-12 space-y-6">
                      <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Retained Intelligence</p>
                      <div className="flex items-center justify-between text-oku-darkgrey">
                         <span className="text-4xl font-bold">365</span>

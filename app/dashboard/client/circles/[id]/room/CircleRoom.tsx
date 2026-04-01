@@ -1,0 +1,164 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import {
+  StreamVideoClient,
+  StreamVideo,
+  StreamCall,
+  StreamTheme,
+  PaginatedGridLayout,
+  CallControls,
+  Call,
+  SpeakerLayout,
+  useCallStateHooks
+} from '@stream-io/video-react-sdk'
+import '@stream-io/video-react-sdk/dist/css/styles.css'
+import { Loader2, ShieldCheck, Users } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
+interface CircleRoomProps {
+  circleId: string
+  user: { id: string, name: string, image?: string }
+  circleName: string
+}
+
+export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
+  const [client, setClient] = useState<StreamVideoClient | null>(null)
+  const [call, setCall] = useState<Call | null>(null)
+  const [joinError, setJoinError] = useState<string | null>(null)
+  const [joinStatus, setJoinStatus] = useState<'connecting' | 'ready' | 'error'>('connecting')
+  const router = useRouter()
+
+  const clientRef = useRef<StreamVideoClient | null>(null)
+  const callRef = useRef<Call | null>(null)
+
+  const cleanupStream = async () => {
+    try {
+      await (callRef.current as any)?.leave?.()
+    } catch (error) {
+      console.debug('Stream call leave cleanup failed', error)
+    }
+
+    try {
+      await (clientRef.current as any)?.disconnectUser?.()
+    } catch (error) {
+      console.debug('Stream client disconnect cleanup failed', error)
+    }
+  }
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    const setupMedia = async () => {
+      try {
+        const res = await fetch('/api/video/token', { signal: controller.signal })
+        if (!res.ok) throw new Error('Failed to fetch video token')
+        
+        const payload = await res.json()
+        if (!payload.token || !payload.apiKey) throw new Error('Invalid token payload')
+
+        // Anonymize the name if needed (can be customized further)
+        const anonymizedUser = {
+          ...user,
+          name: user.name?.split(' ')[0] || 'Anonymous' // First name only
+        }
+
+        const newClient = new StreamVideoClient({
+          apiKey: payload.apiKey,
+          user: anonymizedUser,
+          token: payload.token,
+        })
+
+        const cleanCircleId = circleId.replace(/[^a-zA-Z0-9]/g, '')
+        const newCall = newClient.call('default', cleanCircleId)
+
+        clientRef.current = newClient
+        callRef.current = newCall
+
+        if (controller.signal.aborted) {
+          await cleanupStream()
+          return
+        }
+
+        await newCall.join({ create: true })
+
+        if (controller.signal.aborted) {
+          await cleanupStream()
+          return
+        }
+
+        setClient(newClient)
+        setCall(newCall)
+        setJoinStatus('ready')
+
+      } catch (error: any) {
+        if (error.name === 'AbortError') return
+        console.error('Media setup error:', error)
+        setJoinError(error.message)
+        setJoinStatus('error')
+      }
+    }
+
+    setupMedia()
+
+    return () => {
+      controller.abort()
+      cleanupStream()
+    }
+  }, [circleId, user])
+
+  const handleLeave = async () => {
+    await cleanupStream()
+    router.push('/dashboard/client/circles')
+  }
+
+  if (joinStatus === 'error') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] bg-oku-red/10 rounded-3xl border border-oku-red/20 p-8 text-center">
+        <p className="text-oku-red font-display text-lg mb-4">{joinError}</p>
+        <button onClick={() => window.location.reload()} className="btn-pill-3d bg-oku-darkgrey text-white">Retry Connection</button>
+      </div>
+    )
+  }
+
+  if (joinStatus === 'connecting' || !client || !call) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] bg-oku-background rounded-[3rem]">
+        <Loader2 className="animate-spin text-oku-purple mb-6" size={40} />
+        <p className="text-oku-dark font-display text-xl animate-pulse">Connecting to Circle...</p>
+        <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/50 mt-4 flex items-center gap-2">
+            <ShieldCheck size={14} /> End-to-end encrypted
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <StreamVideo client={client}>
+      <StreamTheme>
+        <StreamCall call={call}>
+          <div className="flex flex-col h-[calc(100vh-100px)] rounded-[2rem] overflow-hidden bg-oku-dark relative shadow-2xl">
+            {/* Header overlay */}
+            <div className="absolute top-0 left-0 w-full p-6 z-10 flex justify-between items-center pointer-events-none">
+              <div className="bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 pointer-events-auto flex items-center gap-3">
+                 <Users className="text-oku-lavender" size={18} />
+                 <span className="text-white font-display text-sm tracking-wide">{circleName}</span>
+                 <div className="w-1.5 h-1.5 rounded-full bg-oku-green animate-pulse ml-2"></div>
+              </div>
+            </div>
+
+            {/* Video Grid */}
+            <div className="flex-1 p-6 pt-24 pb-28">
+              <PaginatedGridLayout groupSize={6} />
+            </div>
+
+            {/* Controls */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-xl px-8 py-4 rounded-[2rem] border border-white/10">
+              <CallControls onLeave={handleLeave} />
+            </div>
+          </div>
+        </StreamCall>
+      </StreamTheme>
+    </StreamVideo>
+  )
+}

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { createAuditLog } from '@/lib/audit'
 import { AppointmentStatus, UserRole } from '@prisma/client'
 import { resolvePractitionerSessionPrice } from '@/lib/pricing'
+import { sendBookingConfirmation } from '@/lib/notifications'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -132,6 +133,9 @@ export async function POST(req: Request) {
         resourceId: appointment.id,
         changes: JSON.stringify({ status: AppointmentStatus.SCHEDULED })
     })
+
+    // Send booking confirmation (non-blocking)
+    sendBookingConfirmation(appointment.id).catch((e) => console.error('[SESSION_BOOKING_CONFIRMATION_ERROR]', e))
 
     const checkoutUrl = `/dashboard/client/checkout/${appointment.id}`
 

@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, Calendar, Users, 
-  Settings, Heart, ClipboardCheck, 
+import {
+  LayoutDashboard, Calendar, Users,
+  Settings, Heart, ClipboardCheck,
   Shield, FileText, Bell, LogOut,
   ChevronRight, Activity, DollarSign,
-  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X
+  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -30,6 +30,7 @@ export function DashboardSidebar() {
     { label: 'Sessions', href: '/dashboard/client/sessions', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Circles', href: '/dashboard/client/circles', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Progress', href: '/dashboard/client/progress', icon: <TrendingUp size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
     { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },

@@ -65,7 +65,7 @@ function roleDashboard(role: string | undefined): string {
 // Proxy function (Next.js 16 equivalent of middleware)
 // ---------------------------------------------------------------------------
 
-export default auth(function proxy(req) {
+export default auth(async function proxy(req) {
   const session = req.auth
   const { nextUrl } = req as NextRequest & { auth: typeof session }
   const { pathname } = nextUrl
@@ -85,7 +85,7 @@ export default auth(function proxy(req) {
   // 2. Global API rate limiting (skip auth endpoints)
   if (isApiRoute(pathname) && !pathname.startsWith("/api/auth")) {
     const id = (req as any).ip ?? "anonymous"
-    const { isRateLimited } = limiter.check(60, id)
+    const { isRateLimited } = await limiter.check(60, id)
     if (isRateLimited) {
       return NextResponse.json(
         { error: "Too many requests. Please take a breath." },

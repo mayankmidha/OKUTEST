@@ -2,6 +2,7 @@ import NextAuth, { DefaultSession } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
+import speakeasy from "speakeasy"
 
 declare module "next-auth" {
   interface Session {
@@ -25,6 +26,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        twoFactorCode: { label: "2FA Code", type: "text" },
       },
       authorize: async (credentials) => {
         if (!credentials?.email || !credentials?.password) {
@@ -33,6 +35,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const email = credentials.email as string
         const password = credentials.password as string
+        const twoFactorCode = credentials.twoFactorCode as string | undefined
 
         try {
           const user = await prisma.user.findUnique({
@@ -49,6 +52,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null
           }
 
+          if (user.twoFactorEnabled) {
+            if (!twoFactorCode) {
+              throw new Error("2FA code required")
+            }
+            if (!user.twoFactorSecret) {
+              throw new Error("2FA is enabled but no secret is configured")
+            }
+            
+            const isValidToken = speakeasy.totp.verify({
+              secret: user.twoFactorSecret,
+              encoding: 'base32',
+              token: twoFactorCode
+            })
+
+            if (!isValidToken) {
+              throw new Error("Invalid 2FA code")
+            }
+          }
+
           return {
             id: user.id,
             email: user.email,
@@ -58,7 +80,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         } catch (error) {
           console.error("Auth error:", error)
-          return null
+          throw error // Throw the error so the client can handle specific messages like "2FA code required"
         }
       },
     }),

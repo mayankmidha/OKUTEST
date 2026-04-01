@@ -26,6 +26,8 @@ import {
 import { motion as m, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import { BodyDoublePresence } from './BodyDoublePresence'
+import { DopamineMenu } from './DopamineMenu'
+import { BrainDump } from './BrainDump'
 
 export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   const [tasks, setTasks] = useState(initialTasks)
@@ -109,6 +111,14 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   const addTask = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newTaskTitle.trim()) return
+    
+    // 3-task max rule (Vision: "Focus: 3-task max rule")
+    const activeTasks = tasks.filter(t => !t.isCompleted)
+    if (activeTasks.length >= 3) {
+      alert("Sanctuary Focus Rule: You already have 3 active tasks. Break the cycle by finishing or deleting one before adding more. This protects your working memory from overwhelm. 💜")
+      return
+    }
+
     const res = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -360,6 +370,11 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                 </AnimatePresence>
              </div>
           </section>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <DopamineMenu />
+            <BrainDump />
+          </div>
         </div>
 
         {/* 2. SIDECAR: SENSORY & ENERGY */}

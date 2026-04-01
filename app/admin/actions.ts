@@ -369,3 +369,23 @@ export async function deleteAppointment(appointmentId: string) {
   })
   revalidatePath('/admin/dashboard')
 }
+
+export async function addParticipantToCircle(appointmentId: string, userId: string) {
+  await checkAdmin()
+  await prisma.groupParticipant.upsert({
+    where: {
+      appointmentId_userId: { appointmentId, userId }
+    },
+    update: {},
+    create: { appointmentId, userId }
+  })
+  revalidatePath('/admin/dashboard')
+}
+
+export async function removeParticipantFromCircle(participantId: string) {
+  await checkAdmin()
+  await prisma.groupParticipant.delete({
+    where: { id: participantId }
+  })
+  revalidatePath('/admin/dashboard')
+}

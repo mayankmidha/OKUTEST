@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import { UserRole } from '@prisma/client'
 import { createReferralCode, findReferralReferrer } from '@/lib/referrals'
 import { detectCurrency } from '@/lib/currency'
+import { sendWelcomeEmail } from '@/lib/notifications'
 
 export async function POST(req: Request) {
   try {
@@ -99,6 +100,9 @@ export async function POST(req: Request) {
         }),
       }
     })
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(user.id).catch((e) => console.error('[WELCOME_EMAIL_ERROR]', e))
 
     return NextResponse.json(
       { message: 'User created successfully', userId: user.id },

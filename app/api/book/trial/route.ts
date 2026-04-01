@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { AppointmentStatus } from "@prisma/client"
 import { checkPractitionerAvailability } from "@/lib/availability"
+import { sendBookingConfirmation } from "@/lib/notifications"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -66,6 +67,10 @@ export async function POST(req: Request) {
         trialDuration: 10
       }
     })
+
+    // Send booking confirmation (non-blocking)
+    sendBookingConfirmation(appointment.id).catch((e) => console.error('[TRIAL_BOOKING_CONFIRMATION_ERROR]', e))
+
     return NextResponse.json(appointment)
   }
 
