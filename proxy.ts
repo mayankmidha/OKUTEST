@@ -112,7 +112,9 @@ export default auth(function proxy(req) {
   // 4. Consent gate — authenticated users who haven't signed consent
   // EXEMPT ADMINS from clinical consent
   const isConsentExempt = ["/consent", "/auth"].some((p) => pathname.startsWith(p))
-  if (isAuthenticated && !isConsentExempt && role !== "ADMIN" && !session?.user?.hasSignedConsent) {
+  const needsConsent = (role === "THERAPIST" || role === "CLIENT") && !session?.user?.hasSignedConsent
+  
+  if (isAuthenticated && !isConsentExempt && needsConsent) {
     if (isApiRoute(pathname)) {
       return NextResponse.json({ error: "Consent required" }, { status: 403 })
     }

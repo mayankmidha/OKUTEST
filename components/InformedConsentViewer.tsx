@@ -10,10 +10,16 @@ export function InformedConsentViewer() {
   const [isAgreed, setIsAgreed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  const { update } = useSession()
+  const { data: session, update, status } = useSession()
 
   const handleSign = async () => {
     if (!isAgreed) return
+    if (status === 'unauthenticated') {
+        alert("You must be logged in to sign the clinical consent.")
+        router.push('/auth/login')
+        return
+    }
+
     setIsSubmitting(true)
     try {
       const res = await fetch('/api/user/consent', {
@@ -24,21 +30,27 @@ export function InformedConsentViewer() {
             version: "1.0"
         })
       })
-      if (res.ok) {
+      
+      const data = await res.json().catch(() => ({}))
+
+      if (res.ok && data.success) {
         // Critical: Refresh the session so the middleware sees hasSignedConsent = true
         await update({ hasSignedConsent: true })
         
-        // Use a slight delay to ensure session update propagated
+        // Refresh router state
+        router.refresh()
+
+        // Slight delay to ensure update propagated
         setTimeout(() => {
             window.location.href = '/dashboard'
-        }, 500)
+        }, 800)
       } else {
-        const errorData = await res.json().catch(() => ({}))
-        alert(`Error: ${errorData.message || 'Could not save consent. Please try again.'}`)
+        const msg = data.message || data.error || 'Could not save consent. Please try again.'
+        alert(`Error: ${msg}`)
       }
     } catch (e) {
       console.error(e)
-      alert("A disruption occurred in the Oku neural link. Please check your connection.")
+      alert("A disruption occurred in the Oku neural link. Please check your connection and try again.")
     } finally {
       setIsSubmitting(false)
     }
