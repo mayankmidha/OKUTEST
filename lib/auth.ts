@@ -1,3 +1,13 @@
+/**
+ * @deprecated This file contains a mock localStorage-based auth system that
+ * predates the NextAuth v5 integration in auth.ts. It is no longer used for
+ * authentication. Do NOT import from here for any auth checks — use the
+ * `auth()` helper from "@/auth" or the session returned by `useSession()`
+ * from "next-auth/react" instead.
+ *
+ * Safe to delete once all legacy call-sites have been migrated.
+ */
+
 export interface User {
   id: string
   email: string
