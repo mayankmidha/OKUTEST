@@ -106,7 +106,7 @@ export default async function ClientClinicalHub() {
                            </span>
                         </div>
                         <h3 className="text-xl font-display font-bold mb-2 leading-tight">{task.assessment.title}</h3>
-                        <p className="text-xs text-white/60 mb-8 italic">Requested by {task.practitioner.name}</p>
+                        <p className="text-xs text-white/60 mb-8 italic">Requested by {task.practitioner?.name || 'Practitioner'}</p>
                         <div className="mb-8 rounded-3xl bg-white/10 border border-white/10 p-4">
                           <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">Assessment Fee</p>
                           <p className="text-lg font-display font-bold">
@@ -158,7 +158,7 @@ export default async function ClientClinicalHub() {
                        <div className="flex justify-between items-start border-b border-oku-taupe/5 pb-4">
                           <div>
                              <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe">Practitioner</p>
-                             <p className="font-bold text-oku-dark text-lg">{plan.practitioner.name}</p>
+                             <p className="font-bold text-oku-dark text-lg">{plan.practitioner?.name || 'Practitioner'}</p>
                           </div>
                           <div className="text-right">
                              <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe">Last Updated</p>

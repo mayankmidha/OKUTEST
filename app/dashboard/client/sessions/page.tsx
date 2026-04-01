@@ -142,7 +142,7 @@ export default async function ClientSessionsPage() {
                         <div className="relative">
                           <div className="w-20 h-20 rounded-[1.5rem] bg-oku-babyblue overflow-hidden border-4 border-white shadow-xl">
                             {appt.practitioner?.avatar ? (
-                              <img src={appt.practitioner.avatar} className="w-full h-full object-cover" alt={appt.practitioner.name} />
+                              <img src={appt.practitioner?.avatar || ''} className="w-full h-full object-cover" alt={appt.practitioner?.name || 'Practitioner'} />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-3xl bg-oku-lavender/40">🧘</div>
                             )}
@@ -218,7 +218,7 @@ export default async function ClientSessionsPage() {
                     <div className="flex items-center gap-6">
                       <div className="w-14 h-14 rounded-[1rem] bg-oku-lavender/40 overflow-hidden border-2 border-white shadow-md flex-shrink-0">
                         {appt.practitioner?.avatar ? (
-                          <img src={appt.practitioner.avatar} className="w-full h-full object-cover" alt={appt.practitioner.name} />
+                          <img src={appt.practitioner?.avatar || ''} className="w-full h-full object-cover" alt={appt.practitioner?.name || 'Practitioner'} />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-xl">🧘</div>
                         )}

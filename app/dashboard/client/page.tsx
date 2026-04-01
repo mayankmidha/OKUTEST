@@ -205,7 +205,7 @@ export default async function ClientDashboardPage() {
                         <div className="relative tilt-card">
                           <div className="w-24 h-24 rounded-[2rem] bg-oku-babyblue overflow-hidden border-4 border-white shadow-xl tilt-card-content">
                             {appt.practitioner?.avatar ? (
-                              <img src={appt.practitioner.avatar} className="w-full h-full object-cover" alt={appt.practitioner.name} />
+                              <img src={appt.practitioner.avatar || ''} className="w-full h-full object-cover" alt={appt.practitioner.name || 'Practitioner'} />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-4xl bg-oku-babyblue/20">🧘</div>
                             )}
@@ -379,10 +379,10 @@ export default async function ClientDashboardPage() {
               <div className="space-y-8">
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl">
-                    <img src={matchedTherapist.user.avatar || '/uploads/2025/07/placeholder.jpg'} className="w-full h-full object-cover" alt={matchedTherapist.user.name} />
+                    <img src={matchedTherapist.user.avatar || '/uploads/2025/07/placeholder.jpg'} className="w-full h-full object-cover" alt={matchedTherapist.user.name || 'Therapist'} />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-oku-darkgrey">{matchedTherapist.user.name}</p>
+                    <p className="text-2xl font-bold text-oku-darkgrey">{matchedTherapist.user.name || 'Therapist'}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark/60">{matchedTherapist.specialization[0]}</p>
                   </div>
                 </div>

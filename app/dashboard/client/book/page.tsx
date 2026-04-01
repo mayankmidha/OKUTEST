@@ -57,7 +57,7 @@ export default async function ClientSessionsPage() {
                         <Video size={28} />
                       </div>
                       <div>
-                        <p className="font-bold text-oku-dark text-xl">{appt.practitioner.name}</p>
+                        <p className="font-bold text-oku-dark text-xl">{appt.practitioner?.name || 'Practitioner'}</p>
                         <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service.name}</p>
                       </div>
                     </div>

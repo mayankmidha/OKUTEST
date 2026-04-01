@@ -102,8 +102,8 @@ export default function TelehealthSessionPage() {
     return (
       <WaitingRoom 
         onJoin={() => setHasJoined(true)}
-        userName={currentUser.name}
-        practitionerName={sessionData.practitioner.name}
+        userName={currentUser.name || 'User'}
+        practitionerName={sessionData.practitioner.name || 'Practitioner'}
         isClient={isClient}
       />
     )
@@ -121,7 +121,7 @@ export default function TelehealthSessionPage() {
                   </span>
                 </div>
                 <h1 className="text-white/90 font-display font-bold text-lg tracking-wide hidden sm:block">
-                    {isClient ? `With ${sessionData.practitioner.name}` : `Patient: ${sessionData.client.name}`}
+                    {isClient ? `With ${sessionData.practitioner.name || 'Practitioner'}` : `Patient: ${sessionData.client?.name || 'Client'}`}
                 </h1>
             </div>
             <div className="flex items-center gap-6">
