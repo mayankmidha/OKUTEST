@@ -34,8 +34,11 @@ export async function POST(_req: Request, { params }: RouteContext) {
       return new NextResponse('Circle is not open for joining', { status: 409 })
     }
 
-    if (circle.startTime < new Date()) {
-      return new NextResponse('Circle has already started', { status: 409 })
+    const gracePeriod = 15 * 60 * 1000 // 15 minutes grace
+    const cutOffTime = new Date(circle.startTime.getTime() + gracePeriod)
+    
+    if (new Date() > cutOffTime) {
+      return new NextResponse('Circle session has ended or grace period expired', { status: 409 })
     }
 
     // Check capacity

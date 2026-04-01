@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { motion as m, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
+import { BodyDoublePresence } from './BodyDoublePresence'
 
 export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   const [tasks, setTasks] = useState(initialTasks)
@@ -363,6 +364,11 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
         {/* 2. SIDECAR: SENSORY & ENERGY */}
         <div className="lg:col-span-4 space-y-12">
           
+          <BodyDoublePresence 
+            isActive={isActive && timerMode === 'work'} 
+            currentTask={tasks.find(t => !t.isCompleted)?.title} 
+          />
+
           {/* Spons (Energy) Tracker */}
           <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="card-glass-3d !p-12 !bg-white/60 border-none shadow-xl !rounded-[3rem]">
               <div className="flex items-center justify-between mb-10">

@@ -13,15 +13,24 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { type, responses, assignmentId } = await req.json()
+    const body = await req.json()
+    const { type, responses, answers, assessmentId, assignmentId } = body
+    
+    const finalResponses = responses || answers
+    const finalId = assessmentId
 
-    // 1. Find assessment by title
+    // 1. Find assessment by ID or title
     const assessmentDef = await prisma.assessment.findFirst({
-      where: { title: type }
+      where: {
+        OR: [
+          { id: finalId },
+          { title: type }
+        ]
+      }
     })
 
     if (!assessmentDef) {
-      return new NextResponse("Assessment type not found in database", { status: 404 })
+      return new NextResponse("Assessment not found in database", { status: 404 })
     }
 
     // 2. Industrial-grade Server-side Scoring (Protects data integrity)
@@ -33,8 +42,8 @@ export async function POST(req: Request) {
     let calculatedScore = null
     let calculatedResult = "Completed"
 
-    if (assessmentIdForLogic) {
-        const clinicalResult = calculateAssessmentResult(assessmentIdForLogic, responses)
+    if (assessmentIdForLogic && finalResponses) {
+        const clinicalResult = calculateAssessmentResult(assessmentIdForLogic, finalResponses)
         if (clinicalResult) {
             calculatedScore = clinicalResult.score
             calculatedResult = clinicalResult.result
@@ -62,7 +71,7 @@ export async function POST(req: Request) {
       data: {
         userId: session.user.id,
         assessmentId: assessmentDef.id,
-        answers: responses,
+        answers: finalResponses as any,
         score: calculatedScore,
         result: calculatedResult,
       }
