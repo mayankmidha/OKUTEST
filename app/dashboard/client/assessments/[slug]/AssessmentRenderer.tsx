@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, ChevronRight, Loader2, Save } from 'lucide-react'
+import { CheckCircle2, ChevronRight, Loader2, Save, Sparkles } from 'lucide-react'
 import confetti from 'canvas-confetti'
 
 import { signIn } from 'next-auth/react'
