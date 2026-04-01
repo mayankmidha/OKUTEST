@@ -41,7 +41,7 @@ const PRACTITIONER_PREFIXES = ["/practitioner", "/api/practitioner"]
 
 /** Paths that never need auth — checked before anything else. */
 const PUBLIC_EXACT = ["/", "/about-us", "/faq", "/privacy", "/terms", "/contact", "/people", "/therapists"]
-const PUBLIC_PREFIXES = ["/auth", "/api/auth", "/api/therapists", "/_next", "/public"]
+const PUBLIC_PREFIXES = ["/auth", "/api/auth", "/api/therapists", "/circles", "/assessments", "/_next", "/public"]
 
 function isPublic(pathname: string): boolean {
   if (pathname === "/favicon.ico") return true
@@ -57,6 +57,7 @@ function isApiRoute(pathname: string): boolean {
 function roleDashboard(role: string | undefined): string {
   if (role === "CLIENT") return "/dashboard/client"
   if (role === "THERAPIST") return "/practitioner/dashboard"
+  if (role === "ADMIN") return "/admin/dashboard"
   return "/auth/login"
 }
 
@@ -87,6 +88,7 @@ export default auth(function proxy(req) {
   }
 
   const isAuthenticated = !!session
+  const role: string | undefined = session?.user?.role
 
   // 3. Unauthenticated — bounce to login or return 401 for API calls
   const isProtected =
@@ -103,11 +105,10 @@ export default auth(function proxy(req) {
     return NextResponse.redirect(loginUrl)
   }
 
-  const role: string | undefined = session?.user?.role
-
   // 4. Consent gate — authenticated users who haven't signed consent
+  // EXEMPT ADMINS from clinical consent
   const isConsentExempt = ["/consent", "/auth"].some((p) => pathname.startsWith(p))
-  if (isAuthenticated && !isConsentExempt && !session?.user?.hasSignedConsent) {
+  if (isAuthenticated && !isConsentExempt && role !== "ADMIN" && !session?.user?.hasSignedConsent) {
     if (isApiRoute(pathname)) {
       return NextResponse.json({ error: "Consent required" }, { status: 403 })
     }

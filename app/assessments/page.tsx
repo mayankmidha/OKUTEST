@@ -7,11 +7,32 @@ import { ClipboardCheck, ArrowRight, Shield, Zap, Heart } from 'lucide-react'
 
 const assessments = [
   {
+    slug: 'adhd-screening',
+    title: 'ADHD Screening (ASRS)',
+    description: 'Understand your focus, organization, and executive function patterns.',
+    time: '6 mins',
+    questions: 18
+  },
+  {
+    slug: 'depression-check',
+    title: 'PHQ-9 Depression',
+    description: 'A clinical standard for measuring your recent mood and energy levels.',
+    time: '5 mins',
+    questions: 9
+  },
+  {
     slug: 'anxiety-check',
-    title: 'Anxiety Assessment',
+    title: 'GAD-7 Anxiety',
     description: 'A gentle look at your recent feelings of worry and tension.',
     time: '5 mins',
     questions: 7
+  },
+  {
+    slug: 'burnout-audit',
+    title: 'Burnout Audit',
+    description: 'Measure the impact of chronic stress on your work and creative life.',
+    time: '8 mins',
+    questions: 12
   },
   {
     slug: 'mood-landscape',
@@ -34,12 +55,10 @@ export default function AssessmentsPage() {
   const router = useRouter()
 
   const handleBegin = (slug: string) => {
-    const destination = `/dashboard/client/assessments/${slug}`
-    if (!session) {
-      router.push(`/auth/signup?redirect=${destination}&message=Create a free account to begin and save your results.`)
-    } else {
-      router.push(destination)
-    }
+    // Enable anonymous flow: allow users to take the assessment first, 
+    // then prompt for details at the end to "see results".
+    const destination = `/dashboard/client/assessments/${slug}?mode=anonymous`
+    router.push(destination)
   }
 
   return (

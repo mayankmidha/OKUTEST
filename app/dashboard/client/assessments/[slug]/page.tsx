@@ -4,16 +4,24 @@ import { prisma } from '@/lib/prisma'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { AssessmentRenderer } from './AssessmentRenderer'
 
-export default async function DynamicAssessmentPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DynamicAssessmentPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ slug: string }>,
+  searchParams: Promise<{ mode?: string }>
+}) {
   const session = await auth()
   const { slug } = await params
+  const { mode } = await searchParams
   
-  if (!session?.user?.id) {
+  const isAnonymousMode = mode === 'anonymous'
+
+  if (!session?.user?.id && !isAnonymousMode) {
     redirect('/auth/login')
   }
 
   // Fetch the assessment based on the slug
-  // We match by a slug or title-to-slug mapping
   const assessments = await prisma.assessment.findMany({ where: { isActive: true } })
   const assessment = assessments.find(a => 
     a.title.toLowerCase().replace(/\s+/g, '-') === slug || 
@@ -37,7 +45,7 @@ export default async function DynamicAssessmentPage({ params }: { params: Promis
       />
 
       <div className="mt-12">
-        <AssessmentRenderer assessment={assessment} />
+        <AssessmentRenderer assessment={assessment} isAuthenticated={!!session} />
       </div>
     </div>
   )
