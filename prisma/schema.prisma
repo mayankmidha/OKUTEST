@@ -191,6 +191,7 @@ model Task {
   title       String
   isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
   
   // ADHD Atomization Support
   parentId    String?
@@ -624,9 +625,12 @@ model Document {
 
 model AiCareSession {
   id            String   @id @default(cuid())
-  userId        String
+  userId        String   @unique
   startTime     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   summary       String?  @db.Text
+  context       String?  // Added for body doubling context
+  type          String?  // Added for session type (e.g. FOCUSING)
   dominantMood  String?
   riskDetected  Boolean  @default(false)
   careInsights  Json?    // Structured clinical insights for the human therapist

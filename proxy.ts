@@ -70,6 +70,9 @@ export default auth(function proxy(req) {
   const { nextUrl } = req as NextRequest & { auth: typeof session }
   const { pathname } = nextUrl
 
+  const isAuthenticated = !!session
+  const role: string | undefined = session?.user?.role
+
   // 1. Allow public paths immediately
   if (isPublic(pathname)) {
     // If already authenticated and trying to access auth pages, bounce to dashboard
@@ -90,9 +93,6 @@ export default auth(function proxy(req) {
       )
     }
   }
-
-  const isAuthenticated = !!session
-  const role: string | undefined = session?.user?.role
 
   // 3. Unauthenticated — bounce to login or return 401 for API calls
   const isProtected =
