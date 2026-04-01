@@ -52,6 +52,7 @@ function AdminDashboardContent({
   const currentTab = searchParams.get('tab') || 'overview'
   const [activeTab, setActiveTab] = useState(currentTab)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [platformSettings, setPlatformSettings] = useState(initialSettings)
   
   useEffect(() => {
     setActiveTab(currentTab)
@@ -66,6 +67,17 @@ function AdminDashboardContent({
     setIsUpdating(true)
     try {
       await toggleTherapistVerification(id, !currentStatus)
+      router.refresh()
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleCommitProtocols = async () => {
+    setIsUpdating(true)
+    try {
+      await updatePlatformSettings(platformSettings)
+      alert("✅ Protocols committed successfully.")
       router.refresh()
     } finally {
       setIsUpdating(false)
@@ -460,12 +472,26 @@ function AdminDashboardContent({
                      ].map((s) => (
                        <div key={s.key} className="flex items-center justify-between p-6 bg-white/60 rounded-[2rem] border border-white">
                           <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">{s.label}</span>
-                          <div className="w-14 h-8 bg-oku-mint rounded-full relative p-1 cursor-pointer">
-                             <div className="w-6 h-6 bg-white rounded-full shadow-md float-right" />
+                          <div 
+                            onClick={() => setPlatformSettings({...platformSettings, [s.key]: !platformSettings[s.key as keyof typeof platformSettings]})}
+                            className={`w-14 h-8 rounded-full relative p-1 cursor-pointer transition-colors duration-500 ${platformSettings[s.key as keyof typeof platformSettings] ? 'bg-oku-mint' : 'bg-oku-peach'}`}
+                          >
+                             <motion.div 
+                                layout
+                                className="w-6 h-6 bg-white rounded-full shadow-md" 
+                                animate={{ x: platformSettings[s.key as keyof typeof platformSettings] ? 24 : 0 }}
+                             />
                           </div>
                        </div>
                      ))}
-                     <button className="btn-pill-3d bg-oku-darkgrey text-white w-full !py-5 mt-4"><Save size={18} className="mr-3" /> Commit Protocols</button>
+                     <button 
+                        onClick={handleCommitProtocols}
+                        disabled={isUpdating}
+                        className="btn-pill-3d bg-oku-darkgrey text-white w-full !py-5 mt-4"
+                     >
+                        {isUpdating ? <Loader2 size={18} className="animate-spin mr-3" /> : <Save size={18} className="mr-3" />} 
+                        Commit Protocols
+                     </button>
                   </div>
                </div>
 

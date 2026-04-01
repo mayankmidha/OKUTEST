@@ -38,6 +38,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   const [aiStrategy, setAiStrategy] = useState<any>(null)
   const [isGeneratingStrategy, setIsGeneratingStrategy] = useState(false)
   const [soundscape, setSoundscape] = useState('none') // 'white', 'rain', 'forest'
+  const [isSignalingFocus, setIsSignalingFocus] = useState(false)
   
   // Pomodoro State
   const [timerMode, setTimerMode] = useState<'work' | 'break' | 'transition'>('work')
@@ -364,10 +365,18 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
         {/* 2. SIDECAR: SENSORY & ENERGY */}
         <div className="lg:col-span-4 space-y-12">
           
-          <BodyDoublePresence 
-            isActive={isActive && timerMode === 'work'} 
-            currentTask={tasks.find(t => !t.isCompleted)?.title} 
-          />
+          <div className="relative group">
+            <BodyDoublePresence 
+              isActive={isSignalingFocus || (isActive && timerMode === 'work')} 
+              currentTask={tasks.find(t => !t.isCompleted)?.title} 
+            />
+            <button 
+                onClick={() => setIsSignalingFocus(!isSignalingFocus)}
+                className={`absolute top-10 right-10 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all shadow-sm ${isSignalingFocus ? 'bg-oku-matcha text-white' : 'bg-oku-lavender text-oku-purple-dark hover:bg-white border border-oku-lavender'}`}
+            >
+                {isSignalingFocus ? 'Focus Signaling Active' : 'Signal Focus'}
+            </button>
+          </div>
 
           {/* Spons (Energy) Tracker */}
           <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="card-glass-3d !p-12 !bg-white/60 border-none shadow-xl !rounded-[3rem]">
