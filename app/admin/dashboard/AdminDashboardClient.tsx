@@ -22,12 +22,14 @@ import { BlogManager } from '@/components/BlogManager'
 import { formatCurrency, autoConvert } from '@/lib/currency'
 import { getPractitionerDisciplineLabel } from '@/lib/practitioner-type'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CirclesManager } from './CirclesManager'
 
 function AdminDashboardContent({ 
   stats, 
   therapists, 
   services,
   clients,
+  circles,
   settings: initialSettings
 }: { 
   stats: {
@@ -41,6 +43,7 @@ function AdminDashboardContent({
   therapists: any[], 
   services: any[],
   clients: any[],
+  circles: any[],
   settings: any
 }) {
   const searchParams = useSearchParams()
@@ -111,13 +114,13 @@ function AdminDashboardContent({
         <div className="card-glass-3d !bg-oku-mint/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.2s' }}>
           <div className="flex justify-between items-start mb-12">
             <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Shield size={32} strokeWidth={1.5} />
+              <Users size={32} strokeWidth={1.5} />
             </div>
-            <TrendingUp size={20} className="text-oku-purple-dark/20" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Circles</span>
           </div>
           <div>
-            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{therapists.length}</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Verified Specialists</p>
+            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{circles.length}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Active Groups</p>
           </div>
         </div>
 
@@ -154,6 +157,7 @@ function AdminDashboardContent({
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-8 mb-16 relative z-10">
         {[
           { id: 'overview', label: 'Pulse', icon: Activity },
+          { id: 'circles', label: 'Circles', icon: Users },
           { id: 'therapists', label: 'Network', icon: Shield },
           { id: 'clients', label: 'Roster', icon: Users },
           { id: 'audit', label: 'Integrity', icon: Lock },
@@ -244,6 +248,20 @@ function AdminDashboardContent({
                      </div>
                   </div>
                </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'circles' && (
+            <motion.div 
+              key="circles"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+               <CirclesManager 
+                 practitioners={therapists} 
+                 existingCircles={circles} 
+               />
             </motion.div>
           )}
 

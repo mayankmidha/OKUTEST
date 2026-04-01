@@ -16,24 +16,13 @@ export default async function AdminDashboardPage() {
 
   // Optimize: Batching ALL queries into one Promise.all for parallel execution
   // Limits applied to secondary data to prevent payload bloat
-  const [
-    therapists, 
-    clients, 
-    services, 
-    totalAppointments, 
-    completedPayments, 
-    auditLogs,
-    dbSettings,
-    recentActivities,
-    allTranscripts,
-    allPosts
-  ] = await Promise.all([
+  const results = await Promise.all([
     // 1. Therapists
     prisma.user.findMany({
         where: { role: UserRole.THERAPIST },
         include: { practitionerProfile: true },
         orderBy: { createdAt: 'desc' },
-        take: 100 // Optimization: reasonable limit
+        take: 100
     }).catch(() => []),
     
     // 2. Clients
@@ -62,7 +51,7 @@ export default async function AdminDashboardPage() {
         _sum: { amount: true }
     }).catch(() => ({ _sum: { amount: 0 } })),
 
-    // 6. Audit (Reduced limit for speed)
+    // 6. Audit
     prisma.auditLog.findMany({
         include: { user: { select: { name: true } } },
         orderBy: { createdAt: 'desc' },
@@ -74,14 +63,14 @@ export default async function AdminDashboardPage() {
         where: { id: 'global' }
     }).catch(() => null),
 
-    // 8. Activities (Reduced limit)
+    // 8. Activities
     prisma.userActivity.findMany({
         include: { user: { select: { name: true, email: true } } },
         orderBy: { createdAt: 'desc' },
         take: 30
     }).catch(() => []),
 
-    // 9. Transcripts (Essential for clinical integrity but limited)
+    // 9. Transcripts
     prisma.transcript.findMany({
         include: { 
             appointment: { 
@@ -100,8 +89,33 @@ export default async function AdminDashboardPage() {
     prisma.post.findMany({
         orderBy: { createdAt: 'desc' },
         take: 20
+    }).catch(() => []),
+
+    // 11. Circles
+    prisma.appointment.findMany({
+        where: { isGroupSession: true },
+        include: { 
+            practitioner: { select: { name: true } },
+            participants: { include: { user: { select: { name: true } } } }
+        },
+        orderBy: { startTime: 'desc' },
+        take: 50
     }).catch(() => [])
   ])
+
+  const [
+    therapists,
+    clients,
+    services,
+    totalAppointments,
+    completedPayments,
+    auditLogs,
+    dbSettings,
+    recentActivities,
+    allTranscripts,
+    allPosts,
+    circles
+  ] = results as any[]
 
   // Default settings if DB fails
   let settings = {
@@ -124,7 +138,7 @@ export default async function AdminDashboardPage() {
   }
 
   const stats = {
-    totalRevenue: completedPayments._sum?.amount || 0,
+    totalRevenue: (completedPayments as any)?._sum?.amount || 0,
     totalAppointments: totalAppointments,
     auditLogs: auditLogs || [],
     recentActivities: recentActivities || [],
@@ -140,6 +154,7 @@ export default async function AdminDashboardPage() {
         services={services || []} 
         clients={clients || []} 
         settings={settings}
+        circles={circles || []}
       />
     </div>
   )

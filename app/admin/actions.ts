@@ -250,3 +250,58 @@ export async function markAsPaid(practitionerId: string, amount: number, payoutI
   revalidatePath('/practitioner/billing')
   revalidatePath('/practitioner/dashboard')
 }
+
+// ─── CIRCLE ACTIONS ──────────────────────────────────────────────────────────
+
+export async function createCircle(data: {
+  title: string,
+  description?: string,
+  startTime: Date,
+  endTime: Date,
+  maxCapacity: number,
+  price: number,
+  practitionerId: string
+}) {
+  await checkAdmin()
+  
+  // Create a Service entry for this Circle if it doesn't exist
+  // Or just use a generic 'Circle' service. 
+  // Let's ensure a 'Group Circle' service exists.
+  let circleService = await prisma.service.findUnique({ where: { name: 'Group Circle' } })
+  if (!circleService) {
+    circleService = await prisma.service.create({
+      data: {
+        name: 'Group Circle',
+        duration: 60,
+        price: data.price,
+        description: 'Collaborative group therapy session'
+      }
+    })
+  }
+
+  await prisma.appointment.create({
+    data: {
+      practitionerId: data.practitionerId,
+      serviceId: circleService.id,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      isGroupSession: true,
+      maxParticipants: data.maxCapacity,
+      notes: data.description,
+      status: 'CONFIRMED',
+      priceSnapshot: data.price
+    }
+  })
+
+  revalidatePath('/admin/dashboard')
+  revalidatePath('/circles')
+}
+
+export async function deleteCircle(appointmentId: string) {
+  await checkAdmin()
+  await prisma.appointment.delete({
+    where: { id: appointmentId }
+  })
+  revalidatePath('/admin/dashboard')
+  revalidatePath('/circles')
+}

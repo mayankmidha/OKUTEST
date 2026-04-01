@@ -64,15 +64,18 @@ export default async function PractitionerDashboardPage() {
         startTime: { gte: new Date() },
         status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
       },
-      include: { client: true, service: true },
+      include: { client: true, service: true, participants: { include: { user: true } } },
       orderBy: { startTime: 'asc' },
-      take: 5
+      take: 10
     }),
   ])
 
   if (!practitioner) {
     redirect('/auth/login')
   }
+
+  const facilitatedCircles = upcomingSessions.filter(s => s.isGroupSession)
+  const individualSessions = upcomingSessions.filter(s => !s.isGroupSession)
 
   const todaySessionsCount = upcomingSessions.filter(s => 
     new Date(s.startTime).setHours(0,0,0,0) === new Date().setHours(0,0,0,0)
@@ -151,6 +154,46 @@ export default async function PractitionerDashboardPage() {
         {/* Left Section */}
         <div className="xl:col-span-8 space-y-12">
           
+          {/* Facilitated Circles */}
+          {facilitatedCircles.length > 0 && (
+            <section className="card-glass-3d !p-12 !bg-oku-lavender/30 border-oku-purple/20">
+              <div className="flex items-center justify-between mb-12">
+                <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Facilitated <span className="italic text-oku-purple-dark">Circles</span></h2>
+                <span className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark px-4 py-2 bg-white rounded-full shadow-sm">Group Therapy Host</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {facilitatedCircles.map(circle => {
+                  const [title, desc] = (circle.notes || '|').split('|')
+                  return (
+                    <div key={circle.id} className="card-glass-3d !p-8 !bg-white/60 group">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark">
+                          <Users size={20} />
+                        </div>
+                        <Link href={`/session/${circle.id}`} className="btn-pill-3d bg-oku-darkgrey text-white !py-2 !px-6 text-[8px]">Enter Room</Link>
+                      </div>
+                      <h3 className="text-xl font-bold text-oku-darkgrey mb-2">{title || 'Untitled Circle'}</h3>
+                      <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40">
+                        <span>{new Date(circle.startTime).toLocaleDateString()}</span>
+                        <span>{new Date(circle.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                      <div className="mt-6 pt-6 border-t border-oku-darkgrey/5 flex justify-between items-center">
+                        <span className="text-[9px] font-black uppercase text-oku-purple-dark">{circle.participants.length} Seeker(s) Joined</span>
+                        <div className="flex -space-x-2">
+                          {circle.participants.slice(0,3).map((p: any) => (
+                            <div key={p.id} className="w-6 h-6 rounded-full bg-oku-blush border-2 border-white flex items-center justify-center text-[8px] font-bold text-oku-darkgrey/40">
+                              {p.user?.name?.substring(0,1)}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
           {/* Active Schedule */}
           <section className="card-glass-3d !p-12 !bg-white/40">
             <div className="flex items-center justify-between mb-12">
@@ -159,7 +202,7 @@ export default async function PractitionerDashboardPage() {
             </div>
             
             <div className="space-y-6">
-              {upcomingSessions.length === 0 ? (
+              {individualSessions.length === 0 ? (
                 <div className="py-20 text-center border-2 border-dashed border-oku-purple-dark/10 rounded-[3rem]">
                   <Moon className="mx-auto text-oku-purple-dark/20 mb-6 animate-float-3d" size={48} />
                   <p className="text-2xl font-display italic text-oku-darkgrey/30">The queue is clear.</p>

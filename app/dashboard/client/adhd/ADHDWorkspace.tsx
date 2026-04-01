@@ -33,6 +33,23 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   const [streak, setStreak] = useState(0)
   const [energy, setEnergy] = useState(80) // "Spoons" tracking
   
+  // Fetch initial energy
+  useEffect(() => {
+    fetch('/api/adhd/energy')
+      .then(res => res.json())
+      .then(data => setEnergy(data.energy))
+      .catch(e => console.error("Could not fetch energy", e))
+  }, [])
+
+  const updateEnergy = async (val: number) => {
+    setEnergy(val)
+    await fetch('/api/adhd/energy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ energy: val })
+    })
+  }
+  
   // Pomodoro State
   const [timerMode, setTimerMode] = useState<'work' | 'break' | 'transition'>('work')
   const [timeLeft, setTimeLeft] = useState(25 * 60)
@@ -94,6 +111,21 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, isCompleted: !currentStatus })
     })
+  }
+
+  const deleteTask = async (id: string) => {
+    const res = await fetch(`/api/tasks?id=${id}`, {
+        method: 'DELETE'
+    })
+    if (res.ok) {
+        const removeById = (list: any[]): any[] => {
+            return list.filter(t => t.id !== id).map(t => ({
+                ...t,
+                subTasks: t.subTasks ? removeById(t.subTasks) : []
+            }))
+        }
+        setTasks(removeById(tasks))
+    }
   }
 
   const atomizeTask = async (taskId: string, title: string) => {
@@ -211,7 +243,12 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                                 Atomize
                              </button>
                           )}
-                          <button className="p-3 text-oku-taupe/30 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+                          <button 
+                            onClick={() => deleteTask(task.id)}
+                            className="p-3 text-oku-taupe/30 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={18} />
+                          </button>
                        </div>
                     </div>
 
@@ -222,7 +259,13 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                                     <button onClick={() => toggleTask(sub.id, sub.isCompleted)} className={`transition-transform duration-500 ${sub.isCompleted ? 'text-oku-matcha-dark' : 'text-oku-ocean hover:scale-125'}`}>
                                         {sub.isCompleted ? <CheckCircle2 size={20} /> : <Circle size={20} />}
                                     </button>
-                                    <span className={`text-lg ${sub.isCompleted ? 'line-through text-oku-taupe opacity-50' : 'text-oku-dark font-medium'}`}>{sub.title}</span>
+                                    <span className={`text-lg flex-1 ${sub.isCompleted ? 'line-through text-oku-taupe opacity-50' : 'text-oku-dark font-medium'}`}>{sub.title}</span>
+                                    <button 
+                                        onClick={() => deleteTask(sub.id)}
+                                        className="opacity-0 group-hover:opacity-100 p-2 text-oku-taupe/30 hover:text-red-500 transition-all"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -255,7 +298,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                     {[20, 40, 60, 80, 100].map(val => (
                         <button 
                             key={val} 
-                            onClick={() => setEnergy(val)}
+                            onClick={() => updateEnergy(val)}
                             className={`w-10 h-10 rounded-full text-[10px] font-black transition-all ${energy === val ? 'bg-oku-dark text-white scale-110 shadow-xl' : 'bg-oku-cream-warm text-oku-taupe hover:bg-oku-lavender'}`}
                         >
                             {val}%

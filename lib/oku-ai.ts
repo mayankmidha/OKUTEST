@@ -189,3 +189,38 @@ export async function getOkuAiSettings() {
     requireConsentBeforeTranscription: settings?.requireConsentBeforeTranscription ?? true
   }
 }
+
+/**
+ * ADHD Task Atomizer
+ * Breaks a large, overwhelming task into small, manageable "atoms"
+ */
+export async function atomizeTask(taskTitle: string): Promise<string[]> {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  
+  const prompt = `
+    You are an expert ADHD Productivity Coach. Your goal is to help a user who is feeling overwhelmed.
+    The user has a task: "${taskTitle}".
+    
+    TASK:
+    Break this task down into 3-5 tiny, concrete, and manageable "Atoms".
+    Each atom should take less than 10 minutes and feel "too small to fail".
+    Use gentle, encouraging language.
+    
+    FORMAT:
+    Return ONLY a JSON array of strings.
+    Example: ["Open the document", "Write just the first sentence", "Save and close"]
+  `
+
+  try {
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
+    const jsonMatch = text.match(/\[.*\]/s)
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0])
+    }
+    return ["Start the first step", "Keep going", "Finish up"]
+  } catch (error) {
+    console.error("[OCI_ATOMIZE_ERROR]", error)
+    return ["Break it down", "Take a breath", "Start small"]
+  }
+}
