@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
-import { UserRole } from '@prisma/client'
+import { UserRole, AppointmentStatus } from '@prisma/client'
 
 // Helper to check admin access
 async function checkAdmin() {

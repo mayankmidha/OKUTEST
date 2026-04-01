@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Calendar, Clock, ArrowRight, CheckCircle2, Loader2, Info } from 'lucide-react'
 import Link from 'next/link'
@@ -23,6 +24,7 @@ export default function BookingClient({
   viewerCurrency: string
   exchangeRates: ExchangeRateTable
 }) {
+    const router = useRouter()
     const [selectedService, setSelectedService] = useState(services[0]?.id)
     const [selectedDate, setSelectedDate] = useState(availableSlots[0]?.date)
     const [selectedTime, setSelectedTime] = useState<string | null>(null)

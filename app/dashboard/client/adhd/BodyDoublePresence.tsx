@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion as m, AnimatePresence } from 'framer-motion'
 import { Users, Zap, Heart, Wind } from 'lucide-react'
 
 export function BodyDoublePresence({ currentTask, isActive }: { currentTask?: string, isActive: boolean }) {
@@ -80,7 +80,7 @@ return (
           </div>
         ) : (
           others.map((other, i) => (
-            <motion.div 
+            <m.div 
               key={other.id}
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -94,7 +94,7 @@ return (
                 <p className="text-sm font-bold text-oku-darkgrey truncate italic font-display">{other.context}</p>
               </div>
               <div className="w-2 h-2 rounded-full bg-oku-matcha animate-pulse shadow-[0_0_8px_rgba(124,140,116,0.6)]" />
-            </motion.div>
+            </m.div>
           ))
         )}
       </div>

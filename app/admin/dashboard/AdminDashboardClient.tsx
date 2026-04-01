@@ -10,7 +10,7 @@ import {
   Search, Filter, MoreVertical, ExternalLink,
   Calendar, FileText, Zap, AlertTriangle, Megaphone, Sparkles, Brain,
   ArrowUpRight, Globe, Lock, MessageSquare, Pill, Trash2, TrendingDown,
-  Layout, Save, ShieldCheck
+  Layout, Save, ShieldCheck, Loader2
 } from 'lucide-react'
 import { 
   toggleTherapistVerification, 
