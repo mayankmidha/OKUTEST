@@ -7,7 +7,7 @@ import {
   ArrowRight, ArrowLeft, ClipboardCheck, 
   Sparkles, ShieldCheck, Lock, 
   ChevronDown, ChevronUp, Loader2,
-  CornerDownLeft
+  CornerDownLeft, Wind, CheckCircle2
 } from 'lucide-react'
 import Link from 'next/link'
 import { ASSESSMENTS } from '@/lib/assessments'

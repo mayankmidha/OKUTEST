@@ -108,7 +108,7 @@ export default async function ClientDashboardPage() {
           <SanctuaryGarden state={{
               sessionCount: totalSessions,
               moodCount: moodCount,
-              lastMoodColor: latestMoods[0]?.mood === 'GREAT' ? 'text-oku-mint-dark' : latestMoods[0]?.mood === 'POOR' ? 'text-oku-peach-dark' : 'text-oku-purple-dark',
+              lastMoodColor: latestMoods[0]?.mood >= 4 ? 'text-oku-mint-dark' : latestMoods[0]?.mood <= 2 ? 'text-oku-peach-dark' : 'text-oku-purple-dark',
               assessmentCount: user.assessmentAnswers.length
           }} />
       </div>

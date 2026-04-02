@@ -11,6 +11,7 @@ import {
   Video,
   CheckCircle2,
   WifiOff,
+  MessageSquare,
 } from 'lucide-react'
 import { JoinCircleButton } from '../JoinCircleButton'
 import { AnonymousPreChat } from '@/components/AnonymousPreChat'
