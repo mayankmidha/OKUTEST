@@ -45,7 +45,7 @@ export default function BrandedNav() {
         {/* Logo */}
         <Link href="/" className="relative z-[110] group shrink-0">
           <motion.img
-            src="/uploads/uploads/2025/07/Logoo.png"
+            src="/wp-content/uploads/2025/07/Logoo.png"
             alt="OKU Therapy"
             className="h-8 md:h-9 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
             whileHover={{ scale: 1.03 }}

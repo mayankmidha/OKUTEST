@@ -11,7 +11,7 @@ export default function BrandedFooter() {
           
           {/* Brand Block */}
           <div className="md:col-span-1 space-y-10">
-            <img src="/uploads/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 opacity-80" />
+            <img src="/wp-content/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 opacity-80" />
             <p className="text-sm text-oku-taupe leading-relaxed">
               Holding space for what's beneath the surface. An inclusive, trauma-informed clinical collective.
             </p>
