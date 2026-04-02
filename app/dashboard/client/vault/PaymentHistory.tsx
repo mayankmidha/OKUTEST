@@ -85,12 +85,14 @@ export function PaymentHistory() {
                     <p className="text-xl font-display font-bold text-oku-dark">{formatCurrency(payment.amount, 'INR')}</p>
                     <p className="text-[9px] text-oku-taupe uppercase tracking-widest font-black opacity-40">{payment.processor}</p>
                  </div>
-                 <button 
-                   onClick={() => window.alert("Downloading Invoice...")}
-                   className="p-4 bg-oku-dark text-white rounded-full hover:bg-oku-purple transition-all shadow-xl"
+                 <a 
+                   href={`/api/payments/${payment.id}/invoice`}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="p-4 bg-oku-dark text-white rounded-full hover:bg-oku-purple transition-all shadow-xl flex items-center justify-center"
                  >
                    <Download size={18} />
-                 </button>
+                 </a>
               </div>
             </motion.div>
           ))}
