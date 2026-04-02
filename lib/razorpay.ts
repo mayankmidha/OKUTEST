@@ -14,6 +14,10 @@ export const razorpay = IS_RAZORPAY_ENABLED
   : null;
 
 export const createRazorpayOrder = async (amount: number, currency: string = 'INR') => {
+  if (!razorpay) {
+    throw new Error('Razorpay is not initialized. Please check your environment variables.');
+  }
+
   try {
     const options = {
       amount: Math.round(amount * 100), // Razorpay expects amount in paise
