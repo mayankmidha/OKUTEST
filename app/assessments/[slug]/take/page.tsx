@@ -79,6 +79,7 @@ export default function TypeformAssessmentPlayer() {
   }, [currentStep, isFinished, isSyncing, assessment, handleNext, handleBack])
 
   const finishAssessment = async () => {
+    if (!assessment) return
     setIsSyncing(true)
     
     // If Authenticated: Submit directly
