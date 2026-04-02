@@ -23,7 +23,7 @@ export default async function ClientDashboardPage() {
     redirect('/auth/login')
   }
 
-  const [user, intakeForm, totalSessions, moodCount, latestMoods] = await Promise.all([
+  const [user, intakeForm] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       include: {
@@ -38,21 +38,27 @@ export default async function ClientDashboardPage() {
           orderBy: { completedAt: 'desc' },
           take: 5,
         },
+        _count: {
+          select: {
+            clientAppointments: { where: { status: 'COMPLETED' } },
+            moodEntries: true,
+          }
+        },
+        moodEntries: {
+          orderBy: { createdAt: 'desc' },
+          take: 1
+        }
       },
     }),
     prisma.intakeForm.findUnique({ where: { userId: session.user.id }, select: { id: true } }),
-    prisma.appointment.count({ where: { clientId: session.user.id, status: 'COMPLETED' } }),
-    prisma.moodEntry.count({ where: { userId: session.user.id } }),
-    prisma.moodEntry.findMany({ 
-      where: { userId: session.user.id }, 
-      orderBy: { createdAt: 'desc' }, 
-      take: 1 
-    }),
   ])
 
   if (!user) redirect('/auth/login')
 
   const nextSession = user.clientAppointments[0]
+  const totalSessions = user._count.clientAppointments
+  const moodCount = user._count.moodEntries
+  const latestMoods = user.moodEntries
   const referralCredit = user.clientProfile?.referralCreditBalance || 0
   const hasIntake = !!intakeForm
   const isNewUser = totalSessions === 0 && !nextSession

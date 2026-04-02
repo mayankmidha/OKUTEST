@@ -156,53 +156,82 @@ export default function TypeformAssessmentPlayer() {
                 </div>
               ) : (
                 /* QUESTIONS */
-                <div className="space-y-12">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4 text-oku-purple-dark">
-                        <span className="text-lg font-bold">{currentStep + 1}</span>
-                        <ArrowRight size={18} />
-                        <h2 className="text-2xl md:text-4xl text-oku-darkgrey font-bold tracking-tight leading-tight">
+                <div className="space-y-16">
+                  <div className="space-y-10">
+                    <motion.div 
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="flex items-center gap-6"
+                    >
+                        <div className="w-14 h-14 rounded-2xl bg-oku-purple/10 border border-oku-purple/20 flex items-center justify-center text-oku-purple-dark text-xl font-black shadow-inner">
+                            {currentStep + 1}
+                        </div>
+                        <div className="h-px flex-1 bg-oku-darkgrey/5" />
+                    </motion.div>
+
+                    <div className="space-y-6">
+                        <h2 className="heading-display text-4xl md:text-6xl text-oku-darkgrey tracking-tighter leading-[1.1] selection:bg-oku-lavender">
                           {assessment.questions[currentStep].text}
                         </h2>
+                        <p className="text-xl text-oku-darkgrey/30 font-display italic">
+                            {assessment.timeframe}
+                        </p>
                     </div>
-                    <p className="text-sm text-oku-darkgrey/40 italic font-display ml-12">
-                        {assessment.timeframe}
-                    </p>
                   </div>
 
-                  <div className="space-y-3 ml-12">
+                  <div className="grid gap-4 w-full">
                     {assessment.options.map((option, idx) => {
                       const isSelected = answers[assessment.questions[currentStep].id] === option.value;
+                      const keyboardKey = idx + 1;
+                      
                       return (
-                        <button
+                        <motion.button
                           key={option.value}
+                          whileHover={{ x: 10 }}
+                          whileTap={{ scale: 0.98 }}
                           onClick={() => selectOption(assessment.questions[currentStep].id, option.value)}
-                          className={`w-full group p-5 rounded-2xl border-2 transition-all flex items-center gap-4 text-left relative ${
+                          className={`w-full group p-8 rounded-[2.5rem] border-2 transition-all flex items-center gap-6 text-left relative overflow-hidden ${
                             isSelected 
-                              ? 'bg-oku-purple/10 border-oku-purple text-oku-purple-dark ring-4 ring-oku-purple/5' 
-                              : 'bg-white/60 border-white hover:border-oku-purple/30 text-oku-darkgrey'
+                              ? 'bg-white border-oku-purple text-oku-darkgrey shadow-[0_20px_50px_-15px_rgba(110,89,165,0.2)] scale-[1.02]' 
+                              : 'bg-white/40 border-white/60 hover:bg-white/80 hover:border-white text-oku-darkgrey/60'
                           }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center text-[10px] font-black transition-all ${
-                            isSelected ? 'bg-oku-purple border-oku-purple text-white' : 'bg-white border-oku-darkgrey/10 text-oku-darkgrey/40 group-hover:border-oku-purple/40'
+                          <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-[11px] font-black transition-all ${
+                            isSelected ? 'bg-oku-purple border-oku-purple text-white shadow-lg' : 'bg-white border-oku-darkgrey/5 text-oku-darkgrey/20 group-hover:border-oku-purple/30'
                           }`}>
-                            {idx + 1}
+                            {keyboardKey}
                           </div>
-                          <span className="text-lg font-bold">{option.label}</span>
-                          {isSelected && <Sparkles size={16} className="ml-auto text-oku-purple animate-pulse" />}
-                        </button>
+                          
+                          <span className={`text-xl font-bold tracking-tight transition-colors ${isSelected ? 'text-oku-darkgrey' : 'text-oku-darkgrey/70'}`}>
+                            {option.label}
+                          </span>
+
+                          {isSelected && (
+                              <motion.div 
+                                layoutId="active-indicator"
+                                className="ml-auto w-10 h-10 rounded-full bg-oku-purple/10 flex items-center justify-center text-oku-purple"
+                              >
+                                  <CheckCircle2 size={20} strokeWidth={3} />
+                              </motion.div>
+                          )}
+
+                          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </motion.button>
                       )
                     })}
                   </div>
                   
-                  <div className="ml-12 pt-4 flex items-center gap-4">
+                  <div className="flex items-center gap-6 pt-10">
                       <button 
                         onClick={handleNext}
-                        className="bg-oku-darkgrey text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-oku-dark transition-all"
+                        className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-12 !py-5 flex items-center gap-3 hover:bg-oku-purple-dark transition-all"
                       >
-                          OK <CornerDownLeft size={14} />
+                          OK <CornerDownLeft size={16} />
                       </button>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/20 italic">Press Enter</span>
+                      <div className="flex flex-col">
+                          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/20">Quick Navigation</span>
+                          <span className="text-[10px] font-bold text-oku-darkgrey/40 italic">Press Enter ↵</span>
+                      </div>
                   </div>
                 </div>
               )}
