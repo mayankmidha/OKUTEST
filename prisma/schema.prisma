@@ -122,6 +122,8 @@ model User {
   safetyPlan                 SafetyPlan?
   circleWaitlist             CircleWaitlist[]
   circleReports              CircleReport[]       @relation("CircleReporter")
+  routines                   Routine[]
+  adhdDailyLogs              AdhdDailyLog[]
   deletionRequestedAt        DateTime?
 
   @@index([email])
@@ -921,4 +923,37 @@ model SafetyPlan {
   updatedAt         DateTime @updatedAt
 
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Routine {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  items       Json     // List of tasks/checkpoints
+  type        String   // MORNING, EVENING, CUSTOM
+  isDaily     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AdhdDailyLog {
+  id             String   @id @default(cuid())
+  userId         String
+  date           DateTime @default(now())
+  energyLevel    Int      // 0-100
+  medicationTaken Boolean @default(false)
+  medicationName String?
+  moodScore      Int?     // 1-10
+  sleepHours     Float?
+  notes          String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
 }

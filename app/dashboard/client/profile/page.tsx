@@ -6,6 +6,7 @@ import {
   ChevronLeft, User, Phone, MapPin, Shield, Calendar,
   Globe, Clock, Heart, CheckCircle2, AlertCircle
 } from 'lucide-react'
+import { SafetyPlanForm } from './SafetyPlanForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +22,7 @@ export default async function ClientProfilePage() {
         clientProfile: true,
         intakeForm: true,
         informedConsents: { orderBy: { signedAt: 'desc' }, take: 1 },
+        safetyPlan: true,
       },
     })
   } catch (e) {
@@ -31,6 +33,7 @@ export default async function ClientProfilePage() {
 
   const profile = user.clientProfile
   const intake = user.intakeForm
+  const safetyPlan = user.safetyPlan
   const hasConsent = user.informedConsents.length > 0
 
   const fields = [
@@ -162,6 +165,9 @@ export default async function ClientProfilePage() {
                 </div>
               )}
             </section>
+
+            {/* Safety Plan Form */}
+            <SafetyPlanForm initialPlan={safetyPlan} />
           </div>
 
           {/* Right column: Status cards */}

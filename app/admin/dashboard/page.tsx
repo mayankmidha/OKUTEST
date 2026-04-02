@@ -111,6 +111,15 @@ export default async function AdminDashboardPage() {
         },
         orderBy: { startTime: 'desc' },
         take: 100
+    }).catch(() => []),
+    // 13. Circle Reports
+    prisma.circleReport.findMany({
+        include: { 
+            reporter: { select: { name: true } },
+            appointment: { include: { service: { select: { name: true } } } }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 50
     }).catch(() => [])
   ])
 
@@ -126,7 +135,8 @@ export default async function AdminDashboardPage() {
     allTranscripts,
     allPosts,
     circles,
-    allAppointments
+    allAppointments,
+    allCircleReports
   ] = results as any[]
 
   // Default settings if DB fails
@@ -155,7 +165,8 @@ export default async function AdminDashboardPage() {
     auditLogs: auditLogs || [],
     recentActivities: recentActivities || [],
     allTranscripts: allTranscripts || [],
-    allPosts: allPosts || []
+    allPosts: allPosts || [],
+    circleReports: allCircleReports || []
   }
 
   return (

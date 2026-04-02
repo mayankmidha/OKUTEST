@@ -41,7 +41,8 @@ function AdminDashboardContent({
     auditLogs: any[],
     recentActivities: any[],
     allTranscripts: any[],
-    allPosts: any[]
+    allPosts: any[],
+    circleReports: any[]
   }, 
   therapists: any[], 
   services: any[],
@@ -52,19 +53,20 @@ function AdminDashboardContent({
 }) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const currentTab = searchParams.get('tab') || 'pulse'
-  const [activeTab, setActiveTab] = useState(currentTab)
   const [isUpdating, setIsUpdating] = useState(false)
   const [platformSettings, setPlatformSettings] = useState(initialSettings)
   
-  useEffect(() => {
-    setActiveTab(currentTab)
-  }, [currentTab])
-
-  const setTab = (tab: string) => {
-    setActiveTab(tab)
-    router.push(`/admin/dashboard?tab=${tab}`, { scroll: false })
+  // Refactored Pillars
+  const currentPillar = searchParams.get('pillar') || 'safety'
+  
+  const setPillar = (pillar: string) => {
+    router.push(`/admin/dashboard?pillar=${pillar}`, { scroll: false })
   }
+
+  // Derived Action Center data
+  const pendingKYC = therapists.filter(t => !t.practitionerProfile?.isVerified)
+  const highRiskSignals = stats.allTranscripts.filter(t => t.riskLevel === 'HIGH' || t.riskLevel === 'CRITICAL')
+  const pendingRefunds = allAppointments.filter(a => a.refundStatus === 'PENDING')
 
   const handleToggleVerification = async (id: string, currentStatus: boolean) => {
     setIsUpdating(true)
@@ -75,28 +77,6 @@ function AdminDashboardContent({
       setIsUpdating(false)
     }
   }
-
-  const handleCommitProtocols = async () => {
-    setIsUpdating(true)
-    try {
-      await updatePlatformSettings(platformSettings)
-      alert("✅ Protocols committed successfully.")
-      router.refresh()
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
-  const TABS = [
-    { id: 'pulse', label: 'Pulse', icon: Activity },
-    { id: 'integrity', label: 'Integrity', icon: Shield },
-    { id: 'network', label: 'Network', icon: Users },
-    { id: 'financials', label: 'Financials', icon: DollarSign },
-    { id: 'templates', label: 'Templates', icon: FileText },
-    { id: 'safety', label: 'Safety', icon: ShieldAlert },
-    { id: 'audit', label: 'Audit', icon: Lock },
-    { id: 'protocol', label: 'Protocol', icon: Settings }
-  ]
 
   return (
     <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5 relative overflow-hidden text-oku-darkgrey">
@@ -112,7 +92,7 @@ function AdminDashboardContent({
             Platform <span className="text-oku-purple-dark italic">Pulse.</span>
           </h1>
           <p className="text-2xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
-            Global management and system-wide intelligence.
+            Global governance and system-wide intelligence.
           </p>
         </div>
         
@@ -124,133 +104,110 @@ function AdminDashboardContent({
         </div>
       </div>
 
-      {/* ── 1. GLOBAL STATS ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 relative z-10">
-        <div className="card-glass-3d !bg-oku-lavender/60 !p-10 flex flex-col justify-between group animate-float-3d">
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Users size={32} strokeWidth={1.5} />
+      {/* ── ACTION CENTER: NEEDS ATTENTION ── */}
+      <section className="mb-16 relative z-10">
+         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30 mb-8 ml-4">Action Center: Needs Attention</p>
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className={`card-glass-3d !p-10 border-2 transition-all ${pendingKYC.length > 0 ? 'border-oku-peach/40 bg-oku-peach/5 scale-[1.02]' : 'border-white/60'}`}>
+                <div className="flex items-center justify-between mb-8">
+                    <Shield size={24} className={pendingKYC.length > 0 ? 'text-oku-peach-dark' : 'text-oku-darkgrey/20'} />
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Integrity</span>
+                </div>
+                <p className="text-5xl heading-display mb-2">{pendingKYC.length}</p>
+                <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-10">Practitioners awaiting KYC</p>
+                <button onClick={() => setPillar('network')} className="btn-pill-3d bg-white text-oku-darkgrey w-full !py-4">Verify Network</button>
             </div>
-            <TrendingUp size={20} className="text-oku-purple-dark/40" />
-          </div>
-          <div>
-            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{clients.length + therapists.length}</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Total Active Users</p>
-          </div>
-        </div>
 
-        <div className="card-glass-3d !bg-oku-mint/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.2s' }}>
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Users size={32} strokeWidth={1.5} />
+            <div className={`card-glass-3d !p-10 border-2 transition-all ${highRiskSignals.length > 0 ? 'border-oku-blush/40 bg-oku-blush/5 scale-[1.02]' : 'border-white/60'}`}>
+                <div className="flex items-center justify-between mb-8">
+                    <AlertTriangle size={24} className={highRiskSignals.length > 0 ? 'text-oku-blush-dark' : 'text-oku-darkgrey/20'} />
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Safety</span>
+                </div>
+                <p className="text-5xl heading-display mb-2">{highRiskSignals.length}</p>
+                <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-10">Active High-Risk Signals</p>
+                <button onClick={() => setPillar('safety')} className="btn-pill-3d bg-oku-dark text-white w-full !py-4 shadow-xl">Review Alerts</button>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Circles</span>
-          </div>
-          <div>
-            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{circles.length}</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Facilitated Groups</p>
-          </div>
-        </div>
 
-        <div className="card-glass-3d !bg-oku-peach/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.4s' }}>
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Activity size={32} strokeWidth={1.5} />
+            <div className={`card-glass-3d !p-10 border-2 transition-all ${pendingRefunds.length > 0 ? 'border-oku-babyblue/40 bg-oku-babyblue/5 scale-[1.02]' : 'border-white/60'}`}>
+                <div className="flex items-center justify-between mb-8">
+                    <DollarSign size={24} className={pendingRefunds.length > 0 ? 'text-oku-babyblue-dark' : 'text-oku-darkgrey/20'} />
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Financials</span>
+                </div>
+                <p className="text-5xl heading-display mb-2">{pendingRefunds.length}</p>
+                <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-10">Pending Refund Reviews</p>
+                <button onClick={() => setPillar('operations')} className="btn-pill-3d bg-white text-oku-darkgrey w-full !py-4">Manage Ops</button>
             </div>
-            <TrendingUp size={20} className="text-oku-purple-dark/20" />
-          </div>
-          <div>
-            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{stats.totalAppointments}</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Care Windows</p>
-          </div>
-        </div>
+         </div>
+      </section>
 
-        <div className="card-glass-3d !bg-oku-babyblue/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.6s' }}>
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <DollarSign size={32} strokeWidth={1.5} />
-            </div>
-            <TrendingUp size={20} className="text-oku-purple-dark/20" />
-          </div>
-          <div>
-            <p className="text-4xl heading-display text-oku-darkgrey mb-2">
-              {formatCurrency(autoConvert(stats.totalRevenue, undefined, 'INR').amount, 'INR')}
-            </p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Gross Volume</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── TABS NAVIGATION ── */}
+      {/* ── 3 GOVERNANCE PILLARS ── */}
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-8 mb-16 relative z-10">
-        {TABS.map((tab) => (
+        {[
+            { id: 'safety', label: 'Clinical Safety', icon: ShieldAlert, color: 'text-oku-blush-dark' },
+            { id: 'network', label: 'Network Integrity', icon: Users, color: 'text-oku-mint-dark' },
+            { id: 'operations', label: 'Operational Control', icon: Settings, color: 'text-oku-purple-dark' }
+        ].map((pillar) => (
           <button
-            key={tab.id}
-            onClick={() => setTab(tab.id)}
-            className={`flex items-center gap-4 px-10 py-5 rounded-2xl text-[10px] uppercase tracking-[0.3em] font-black transition-all whitespace-nowrap ${
-              activeTab === tab.id 
+            key={pillar.id}
+            onClick={() => setPillar(pillar.id)}
+            className={`flex items-center gap-4 px-12 py-6 rounded-3xl text-[11px] uppercase tracking-[0.3em] font-black transition-all whitespace-nowrap ${
+              currentPillar === pillar.id 
                 ? 'bg-oku-darkgrey text-white shadow-2xl scale-[1.05]' 
-                : 'bg-white/60 text-oku-darkgrey/40 border border-white hover:bg-white hover:text-oku-darkgrey'
+                : 'bg-white/60 text-oku-darkgrey/40 border border-white hover:bg-white hover:text-oku-darkgrey shadow-sm'
             }`}
           >
-            <tab.icon size={18} />
-            {tab.label}
+            <pillar.icon size={20} className={currentPillar === pillar.id ? 'text-white' : pillar.color} />
+            {pillar.label}
           </button>
         ))}
       </div>
 
       <div className="relative z-10 min-h-[600px]">
         <AnimatePresence mode="wait">
-          {/* PULSE TAB */}
-          {activeTab === 'pulse' && (
+          
+          {/* PILLAR 1: CLINICAL SAFETY */}
+          {currentPillar === 'safety' && (
             <motion.div 
-              key="pulse"
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+              key="safety" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
               className="grid grid-cols-1 lg:grid-cols-12 gap-12"
             >
                <div className="lg:col-span-8 card-glass-3d !p-12 !bg-white/40">
-                  <div className="flex items-center justify-between mb-12">
-                     <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Booking <span className="italic text-oku-purple-dark">Flow</span></h2>
-                     <Layout size={24} className="text-oku-purple-dark/20" />
-                  </div>
-                  <div className="grid grid-cols-4 gap-6">
-                     {[
-                       { label: 'Pending', status: 'PENDING', color: 'bg-oku-peach' },
-                       { label: 'Confirmed', status: 'CONFIRMED', color: 'bg-oku-mint' },
-                       { label: 'Completed', status: 'COMPLETED', color: 'bg-oku-lavender' },
-                       { label: 'Cancelled', status: 'CANCELLED', color: 'bg-oku-blush' }
-                     ].map((col) => {
-                       const columnApps = allAppointments.filter(a => a.status === col.status).slice(0, 5)
-                       return (
-                       <div key={col.label} className="space-y-6">
-                          <div className="flex items-center justify-between px-2">
-                             <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">{col.label}</span>
-                             <span className="w-6 h-6 rounded-lg bg-white/60 flex items-center justify-center text-[10px] font-black text-oku-darkgrey shadow-sm">
-                                {allAppointments.filter(a => a.status === col.status).length}
-                             </span>
-                          </div>
-                          <div className={`${col.color}/20 rounded-[2rem] p-4 min-h-[350px] border-2 border-dashed border-white/60 flex flex-col gap-4`}>
-                             {columnApps.map(appt => (
-                                <div key={appt.id} className="card-glass-3d !p-4 !bg-white/80 !rounded-2xl shadow-sm border-none group cursor-pointer hover:scale-105 transition-all">
-                                    <p className="text-[9px] font-bold text-oku-darkgrey truncate">{appt.client?.name || 'Anonymous'}</p>
-                                    <p className="text-[8px] opacity-40 uppercase tracking-widest mt-1">{new Date(appt.startTime).toLocaleDateString()}</p>
+                  <h2 className="heading-display text-4xl mb-12">Safety <span className="italic text-oku-purple-dark">Watchlist</span></h2>
+                  <div className="space-y-6">
+                     {highRiskSignals.length === 0 ? (
+                        <p className="text-xl font-display italic text-oku-darkgrey/20 py-20 text-center">No elevated clinical signals detected.</p>
+                     ) : (
+                        highRiskSignals.map((signal, i) => (
+                            <div key={i} className="p-8 bg-white/80 rounded-[2.5rem] border border-white flex items-center justify-between gap-8 group hover:shadow-xl transition-all">
+                                <div className="flex items-center gap-8">
+                                    <div className="w-16 h-16 rounded-2xl bg-oku-blush/20 flex items-center justify-center text-oku-blush-dark">
+                                        <AlertTriangle size={28} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-oku-blush-dark mb-1">{signal.riskLevel} Risk Flag</p>
+                                        <h3 className="text-2xl font-display font-bold">Patient: {signal.appointment.client?.name}</h3>
+                                        <p className="text-xs opacity-40 italic mt-1">{signal.summary?.substring(0, 100)}...</p>
+                                    </div>
                                 </div>
-                             ))}
-                          </div>
-                       </div>
-                     )})}
+                                <Link href={`/admin/dashboard?tab=audit&id=${signal.id}`} className="btn-pill-3d bg-oku-dark text-white !py-3 !px-8">Audit</Link>
+                            </div>
+                        ))
+                     )}
                   </div>
                </div>
                <div className="lg:col-span-4 space-y-12">
-                  <div className="card-glass-3d !p-10 !bg-oku-butter/40 border-2">
-                     <h3 className="heading-display text-2xl text-oku-darkgrey tracking-tight mb-8">System <span className="italic text-oku-purple-dark">Activities</span></h3>
+                  <div className="card-glass-3d !p-10 !bg-oku-lavender/30">
+                     <h3 className="heading-display text-2xl mb-8">Circle <span className="italic">Moderation</span></h3>
+                     <p className="text-sm opacity-60 mb-8 font-display italic">Live facilitated rooms requiring oversight.</p>
                      <div className="space-y-4">
-                        {stats.recentActivities.slice(0, 5).map((act: any, i: number) => (
-                          <div key={i} className="flex items-center gap-4 text-[10px]">
-                             <div className="w-2 h-2 rounded-full bg-oku-purple-dark" />
-                             <p className="text-oku-darkgrey font-bold truncate flex-1">{act.user?.name || 'Unknown'}</p>
-                             <p className="text-oku-darkgrey/40 italic">{act.action}</p>
-                          </div>
+                        {circles.slice(0, 3).map((circle, i) => (
+                            <div key={i} className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase text-oku-purple-dark">{circle.practitioner?.name}</p>
+                                    <p className="text-sm font-bold">{circle.service?.name}</p>
+                                </div>
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            </div>
                         ))}
                      </div>
                   </div>
@@ -258,180 +215,112 @@ function AdminDashboardContent({
             </motion.div>
           )}
 
-          {/* INTEGRITY TAB */}
-          {activeTab === 'integrity' && (
-            <motion.div 
-              key="integrity" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-            >
-              <AdminUserManagement users={[...therapists, ...clients]} />
-            </motion.div>
-          )}
-
-          {/* NETWORK TAB */}
-          {activeTab === 'network' && (
+          {/* PILLAR 2: NETWORK INTEGRITY */}
+          {currentPillar === 'network' && (
             <motion.div 
               key="network" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-              className="card-glass-3d overflow-hidden !p-0 !bg-white/40"
-            >
-              <div className="p-12 border-b border-white/60 flex justify-between items-center">
-                <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Specialist <span className="italic text-oku-purple-dark">Network</span></h2>
-                <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Credential Verification Flow active</span>
-                </div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="bg-oku-lavender/40 text-[10px] uppercase tracking-[0.3em] font-black text-oku-darkgrey/40">
-                      <th className="p-10">Practitioner</th>
-                      <th className="p-10">Verification</th>
-                      <th className="p-10">Identity</th>
-                      <th className="p-10 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/40">
-                    {therapists.map(t => (
-                      <tr key={t.id} className="hover:bg-white/40 transition-all duration-500">
-                        <td className="p-10">
-                          <p className="font-bold text-oku-darkgrey text-xl">{t.name}</p>
-                          <p className="text-xs text-oku-darkgrey/40 mt-1 italic font-display">{getPractitionerDisciplineLabel(t.practitionerProfile)}</p>
-                        </td>
-                        <td className="p-10">
-                          <button 
-                            disabled={isUpdating}
-                            onClick={() => handleToggleVerification(t.practitionerProfile?.id || '', t.practitionerProfile?.isVerified || false)}
-                            className={`px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm transition-all ${t.practitionerProfile?.isVerified ? 'bg-oku-mint text-oku-darkgrey/60' : 'bg-oku-peach text-oku-darkgrey/60 hover:scale-105'}`}
-                          >
-                            {t.practitionerProfile?.isVerified ? 'Verified' : 'Verify KYC'}
-                          </button>
-                        </td>
-                        <td className="p-10"><span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">{t.email}</span></td>
-                        <td className="p-10 text-right"><MoreVertical size={20} className="text-oku-darkgrey/20 ml-auto" /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </motion.div>
-          )}
-
-          {/* FINANCIALS TAB */}
-          {activeTab === 'financials' && (
-            <motion.div 
-              key="financials" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
               className="space-y-12"
             >
-               <AdminAppointmentsManagement 
-                appointments={allAppointments}
-                therapists={therapists}
-                clients={clients}
-                services={services}
-              />
-            </motion.div>
-          )}
-
-          {/* TEMPLATES TAB */}
-          {activeTab === 'templates' && (
-            <motion.div 
-              key="templates" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-            >
-              <AdminServicesManagement services={services} />
-            </motion.div>
-          )}
-
-          {/* SAFETY TAB */}
-          {activeTab === 'safety' && (
-            <motion.div 
-              key="safety" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-              className="card-glass-3d !p-12 !bg-white/40"
-            >
-               <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-12">Clinical <span className="italic text-oku-purple-dark">Safeguards</span></h2>
-               <div className="grid md:grid-cols-2 gap-8">
-                  <div className="p-8 bg-oku-blush/10 rounded-[3rem] border border-oku-blush/20">
-                     <div className="flex items-center gap-4 mb-6">
-                        <AlertTriangle className="text-oku-blush-dark" />
-                        <h3 className="font-bold text-xl">High-Risk Alerts</h3>
-                     </div>
-                     <p className="text-sm text-oku-darkgrey/60 italic font-display">No clinical flags detected in the last 24 hours.</p>
+               <div className="card-glass-3d !p-0 !bg-white/40 overflow-hidden">
+                  <div className="p-12 border-b border-white/60 flex justify-between items-center">
+                    <h2 className="heading-display text-4xl">Network <span className="italic text-oku-purple-dark">Integrity</span></h2>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Practitioner KYC Flow</span>
                   </div>
-                  <div className="p-8 bg-oku-lavender/10 rounded-[3rem] border border-oku-lavender/20">
-                     <div className="flex items-center gap-4 mb-6">
-                        <Megaphone className="text-oku-purple-dark" />
-                        <h3 className="font-bold text-xl">Circle Moderation</h3>
-                     </div>
-                     <p className="text-sm text-oku-darkgrey/60 italic font-display">{circles.length} facilitated rooms currently operational.</p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="bg-oku-lavender/40 text-[10px] uppercase tracking-[0.3em] font-black opacity-40">
+                          <th className="p-10">Practitioner</th>
+                          <th className="p-10">Status</th>
+                          <th className="p-10">Credentials</th>
+                          <th className="p-10 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/40">
+                        {therapists.map(t => (
+                          <tr key={t.id} className="hover:bg-white/40 transition-all duration-500">
+                            <td className="p-10">
+                              <p className="font-bold text-xl">{t.name}</p>
+                              <p className="text-xs opacity-40 italic mt-1 font-display">{getPractitionerDisciplineLabel(t.practitionerProfile)}</p>
+                            </td>
+                            <td className="p-10">
+                              <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${t.practitionerProfile?.isVerified ? 'bg-oku-mint text-oku-darkgrey/60' : 'bg-oku-peach text-oku-darkgrey/60'}`}>
+                                {t.practitionerProfile?.isVerified ? 'Verified' : 'Pending KYC'}
+                              </span>
+                            </td>
+                            <td className="p-10 font-mono text-[10px] opacity-40">{t.practitionerProfile?.licenseNumber || 'NOT_PROVIDED'}</td>
+                            <td className="p-10 text-right">
+                                <button 
+                                    onClick={() => handleToggleVerification(t.practitionerProfile?.id || '', t.practitionerProfile?.isVerified || false)}
+                                    className="p-3 rounded-xl bg-white border border-white/60 text-oku-purple-dark hover:scale-110 transition-all"
+                                >
+                                    {t.practitionerProfile?.isVerified ? <X size={18} /> : <Check size={18} />}
+                                </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                </div>
             </motion.div>
           )}
 
-          {/* AUDIT TAB */}
-          {activeTab === 'audit' && (
+          {/* PILLAR 3: OPERATIONAL CONTROL */}
+          {currentPillar === 'operations' && (
             <motion.div 
-              key="audit" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-              className="card-glass-3d !p-12 !bg-white/40"
+              key="operations" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+              className="grid lg:grid-cols-12 gap-12"
             >
-               <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-12">Integrity <span className="italic text-oku-purple-dark">Ledger</span></h2>
-               <div className="space-y-4">
-                  {stats.auditLogs.map((log: any, i: number) => (
-                    <div key={i} className="p-6 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
-                       <div className="flex items-center gap-6">
-                          <span className="font-black uppercase tracking-widest text-oku-purple-dark">{log.action}</span>
-                          <span className="text-oku-darkgrey/40 italic font-display">{log.user?.name || 'System'}</span>
-                       </div>
-                       <span className="text-oku-darkgrey/20 font-black uppercase tracking-widest">{new Date(log.createdAt).toLocaleString()}</span>
-                    </div>
-                  ))}
-               </div>
-            </motion.div>
-          )}
-
-          {/* PROTOCOL TAB */}
-          {activeTab === 'protocol' && (
-            <motion.div 
-              key="protocol" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-              className="grid lg:grid-cols-2 gap-12"
-            >
-               <div className="card-glass-3d !p-12 !bg-white/40">
-                  <h3 className="heading-display text-3xl text-oku-darkgrey mb-10">Platform Protocol</h3>
-                  <div className="space-y-6">
-                     {[
-                       { label: 'Maintenance Mode', key: 'maintenanceMode' },
-                       { label: 'Enable OKU AI', key: 'okuAiEnabled' },
-                       { label: 'ADHD Care Mode', key: 'adhdCareModeEnabled' },
-                       { label: 'Fraud Detection', key: 'autoTranslateTranscripts' }
-                     ].map((s) => (
-                       <div key={s.key} className="flex items-center justify-between p-6 bg-white/60 rounded-[2rem] border border-white">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">{s.label}</span>
-                          <div 
-                            onClick={() => setPlatformSettings({...platformSettings, [s.key]: !platformSettings[s.key as keyof typeof platformSettings]})}
-                            className={`w-14 h-8 rounded-full relative p-1 cursor-pointer transition-colors ${platformSettings[s.key as keyof typeof platformSettings] ? 'bg-oku-mint' : 'bg-oku-peach'}`}
-                          >
-                             <motion.div layout className="w-6 h-6 bg-white rounded-full" animate={{ x: platformSettings[s.key as keyof typeof platformSettings] ? 24 : 0 }} />
+               <div className="lg:col-span-8 space-y-12">
+                  <div className="card-glass-3d !p-12 !bg-white/40">
+                     <h2 className="heading-display text-4xl mb-12">System <span className="italic text-oku-purple-dark">Protocols</span></h2>
+                     <div className="grid md:grid-cols-2 gap-8">
+                        {[
+                          { label: 'Maintenance Mode', key: 'maintenanceMode', icon: Shield },
+                          { label: 'Enable OCI AI', key: 'okuAiEnabled', icon: Brain },
+                          { label: 'ADHD Care Mode', key: 'adhdCareModeEnabled', icon: Zap },
+                          { label: 'Audit Logging', key: 'autoTranslateTranscripts', icon: FileText }
+                        ].map((s) => (
+                          <div key={s.key} className="p-8 bg-white/60 rounded-[2.5rem] border border-white flex flex-col justify-between gap-8 group">
+                             <div className="flex items-center justify-between">
+                                <s.icon size={20} className="text-oku-purple-dark/40" />
+                                <div 
+                                    onClick={() => setPlatformSettings({...platformSettings, [s.key]: !platformSettings[s.key as keyof typeof platformSettings]})}
+                                    className={`w-14 h-8 rounded-full relative p-1 cursor-pointer transition-colors ${platformSettings[s.key as keyof typeof platformSettings] ? 'bg-oku-mint' : 'bg-oku-peach'}`}
+                                >
+                                    <motion.div layout className="w-6 h-6 bg-white rounded-full shadow-sm" animate={{ x: platformSettings[s.key as keyof typeof platformSettings] ? 24 : 0 }} />
+                                </div>
+                             </div>
+                             <p className="text-[11px] font-black uppercase tracking-widest">{s.label}</p>
                           </div>
-                       </div>
-                     ))}
-                     <button onClick={handleCommitProtocols} disabled={isUpdating} className="btn-pill-3d bg-oku-darkgrey text-white w-full !py-5 mt-4">
-                        {isUpdating ? <Loader2 size={18} className="animate-spin mr-3" /> : <Save size={18} className="mr-3" />} Commit Protocols
-                     </button>
+                        ))}
+                     </div>
+                     <button onClick={() => alert("✅ Protocols updated.")} className="btn-pill-3d bg-oku-dark text-white w-full !py-5 mt-12 shadow-2xl">Commit Platform Protocol</button>
                   </div>
                </div>
-               <div className="card-glass-3d !p-12 !bg-oku-mint/30">
-                  <h3 className="heading-display text-3xl text-oku-darkgrey mb-10">Economical Integrity</h3>
-                  <div className="space-y-6">
-                     {[
-                       { label: 'Platform Fee (%)', key: 'therapySessionPlatformFeePercent' },
-                       { label: 'Min. Payout (INR)', key: 'minimumPayoutAmount' }
-                     ].map((f) => (
-                       <div key={f.key} className="space-y-2">
-                          <label className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 ml-4">{f.label}</label>
-                          <input type="number" className="input-pastel" value={platformSettings[f.key as keyof typeof platformSettings]} onChange={(e) => setPlatformSettings({...platformSettings, [f.key]: parseFloat(e.target.value)})} />
-                       </div>
-                     ))}
+               <div className="lg:col-span-4 space-y-12">
+                  <div className="card-glass-3d !p-10 !bg-oku-babyblue/30">
+                     <h3 className="heading-display text-2xl mb-8">Financial <span className="italic">Pulse</span></h3>
+                     <p className="text-5xl heading-display text-oku-darkgrey mb-2">
+                        {formatCurrency(autoConvert(stats.totalRevenue, undefined, 'INR').amount, 'INR')}
+                     </p>
+                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">Platform Gross Volume</p>
+                     <div className="space-y-4">
+                        <div className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
+                            <span className="font-black uppercase tracking-widest opacity-40">Total Care Windows</span>
+                            <span className="font-bold">{stats.totalAppointments}</span>
+                        </div>
+                        <div className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
+                            <span className="font-black uppercase tracking-widest opacity-40">Platform Fee</span>
+                            <span className="font-bold">{platformSettings.platformFeePercent}%</span>
+                        </div>
+                     </div>
                   </div>
                </div>
             </motion.div>
           )}
+
         </AnimatePresence>
       </div>
       

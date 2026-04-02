@@ -1,14 +1,14 @@
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+'use client'
+
 import Link from 'next/link'
-import { ChevronLeft, Shield } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronLeft, Shield, FileText, CreditCard } from 'lucide-react'
 import { DocumentVault } from '@/components/DocumentVault'
+import { PaymentHistory } from './PaymentHistory'
+import { motion, AnimatePresence } from 'framer-motion'
 
-export const dynamic = 'force-dynamic'
-
-export default async function ClientVaultPage() {
-  const session = await auth()
-  if (!session?.user?.id) redirect('/auth/login')
+export default function ClientVaultPage() {
+  const [activeTab, setActiveTab] = useState<'clinical' | 'financials'>('clinical')
 
   return (
     <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
@@ -27,13 +27,13 @@ export default async function ClientVaultPage() {
               >
                 <ChevronLeft size={13} /> Dashboard
               </Link>
-              <span className="chip bg-white/60 border-white/80">Encrypted Storage</span>
+              <span className="chip bg-white/60 border-white/80">The Vault</span>
             </div>
             <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
-              Clinical <span className="text-oku-purple-dark italic">Vault.</span>
+              Secure <span className="text-oku-purple-dark italic">Ledger.</span>
             </h1>
             <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
-              Your documents, held safely in confidence.
+              Your clinical and financial history, held in confidence.
             </p>
           </div>
 
@@ -46,8 +46,33 @@ export default async function ClientVaultPage() {
           </div>
         </div>
 
-        {/* Document Vault Component */}
-        <DocumentVault />
+        {/* Tabs */}
+        <div className="flex gap-4 mb-12">
+            {[
+                { id: 'clinical', label: 'Clinical Records', icon: <FileText size={16} /> },
+                { id: 'financials', label: 'Invoices & Payments', icon: <CreditCard size={16} /> }
+            ].map(tab => (
+                <button 
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-oku-dark text-white shadow-xl scale-105' : 'bg-white/60 text-oku-darkgrey/40 hover:bg-white border border-white'}`}
+                >
+                    {tab.icon}
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+
+        <AnimatePresence mode="wait">
+            <motion.div 
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+            >
+                {activeTab === 'clinical' ? <DocumentVault /> : <PaymentHistory />}
+            </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )

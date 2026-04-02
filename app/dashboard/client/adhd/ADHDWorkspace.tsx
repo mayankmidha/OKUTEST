@@ -21,13 +21,16 @@ import {
     Volume2,
     Coffee,
     ArrowRight,
-    TrendingUp
+    TrendingUp,
+    ChevronRight
 } from 'lucide-react'
 import { motion as m, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import { BodyDoublePresence } from './BodyDoublePresence'
 import { DopamineMenu } from './DopamineMenu'
 import { BrainDump } from './BrainDump'
+import { RoutineManager } from './RoutineManager'
+import { DailyTracker } from './DailyTracker'
 
 export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   const [tasks, setTasks] = useState(initialTasks)
@@ -177,6 +180,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
         if (res.ok) {
             const subtasks = await res.json()
             setTasks(tasks.map(t => t.id === taskId ? { ...t, subTasks: subtasks } : t))
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
         }
     } finally {
         setIsAtomizing(null)
@@ -237,134 +241,109 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                         <Brain className="text-oku-lavender" size={28} />
                         Smart Strategy
                     </h2>
-                    {aiStrategy ? (
-                        <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 max-w-xl">
-                            <p className="text-sm text-white/70 italic leading-relaxed">"{aiStrategy.strategy}"</p>
-                            <div className="flex items-center gap-4">
-                                <span className="text-[10px] font-black uppercase tracking-widest bg-oku-purple/20 px-3 py-1 rounded-full border border-oku-purple/30">Next Win: {aiStrategy.focusTask}</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full">{aiStrategy.tip}</span>
-                            </div>
-                        </m.div>
-                    ) : (
-                        <p className="text-sm text-white/50">Feeling stuck? Let Oku Core analyze your list and energy levels.</p>
-                    )}
+                    <p className="text-sm text-white/40 italic font-display">Let AI align your energy with your goals.</p>
                 </div>
                 <button 
                     onClick={generateStrategy}
-                    disabled={isGeneratingStrategy || tasks.length === 0}
-                    className="btn-pill-3d bg-white text-oku-dark hover:bg-oku-lavender hover:scale-105 transition-all !py-4 !px-10"
+                    disabled={isGeneratingStrategy}
+                    className="btn-pill-3d bg-white text-oku-dark !py-4 !px-10 flex items-center gap-3 hover:scale-105 transition-all"
                 >
-                    {isGeneratingStrategy ? <Loader2 className="animate-spin" size={20} /> : <><Sparkles className="mr-2" size={18} /> Plan My Day</>}
+                    {isGeneratingStrategy ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} className="text-oku-purple" />}
+                    Generate Daily Path
                 </button>
              </div>
+             {aiStrategy && (
+                <m.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-8 pt-8 border-t border-white/10">
+                    <p className="text-sm text-oku-lavender font-display leading-relaxed italic">{aiStrategy.advice}</p>
+                </m.div>
+             )}
              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px]" />
           </m.section>
 
-          {/* Task Ledger */}
-          <section className="card-glass-3d !p-16 !bg-white/60 border-none shadow-xl !rounded-[4rem]">
-             <div className="flex items-center justify-between mb-16">
-                <div>
-                  <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">Today's <span className="italic text-oku-purple-dark">Atoms.</span></h2>
-                  <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/30 mt-2">Executive Load Tracker</p>
-                </div>
-                <form onSubmit={addTask} className="flex-1 max-w-md ml-12 relative group">
-                    <input 
-                        type="text" 
-                        value={newTaskTitle}
-                        onChange={(e) => setNewTaskTitle(e.target.value)}
-                        placeholder="What's weighing on you?"
-                        className="w-full bg-white/80 border border-white rounded-full px-8 py-5 text-lg outline-none focus:ring-4 focus:ring-oku-lavender/50 shadow-sm group-hover:shadow-lg transition-all pr-20 font-display italic"
-                    />
-                    <button type="submit" className="absolute right-2 top-2 bottom-2 bg-oku-dark text-white px-6 rounded-full hover:bg-oku-purple transition-all shadow-xl active:scale-95">
-                        <Plus size={24} />
-                    </button>
-                </form>
+          {/* TASK PLANNER (The 3-Task Rule) */}
+          <section className="space-y-8">
+             <div className="flex items-center justify-between px-4">
+                <h2 className="heading-display text-3xl tracking-tight">Today&apos;s <span className="italic">Focus</span></h2>
+                <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">{tasks.filter(t => !t.isCompleted).length}/3 Slots Used</span>
              </div>
 
-             <div className="space-y-8">
-                <AnimatePresence>
-                  {tasks.length === 0 ? (
-                    <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-24 text-center border-2 border-dashed border-oku-purple-dark/5 rounded-[3rem]">
-                        <Wind className="mx-auto text-oku-purple-dark/10 mb-6 animate-float-3d" size={48} />
-                        <p className="text-2xl font-display italic text-oku-darkgrey/20">The horizon is clear. Add a task to begin.</p>
-                    </m.div>
-                  ) : tasks.map(task => (
-                    <m.div 
-                      key={task.id} 
-                      layout
-                      initial={{ opacity: 0, y: 10 }} 
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`p-10 rounded-[3rem] border-2 transition-all duration-700 ${task.isCompleted ? 'bg-oku-cream-warm/20 border-transparent opacity-40' : 'bg-white border-white shadow-premium hover:shadow-2xl hover:border-oku-lavender'}`}
-                    >
-                      <div className="flex items-center justify-between gap-8">
-                         <div className="flex items-center gap-10 flex-1">
-                            <button onClick={() => toggleTask(task.id, task.isCompleted)} className={`transition-all duration-500 scale-[1.8] ${task.isCompleted ? 'text-oku-matcha-dark' : 'text-oku-lavender-dark hover:scale-[2]'}`}>
-                               {task.isCompleted ? <CheckCircle2 size={24} /> : <Circle size={24} />}
-                            </button>
-                            <div>
-                              <p className={`text-3xl font-display font-bold tracking-tight ${task.isCompleted ? 'line-through text-oku-taupe font-medium' : 'text-oku-darkgrey'}`}>{task.title}</p>
-                              {task.subTasks?.length > 0 && (
-                                  <div className="mt-4 flex items-center gap-4">
-                                      <div className="w-48 h-1.5 bg-oku-lavender/20 rounded-full overflow-hidden border border-white/10">
-                                          <m.div 
-                                              className="h-full bg-oku-purple-dark shadow-[0_0_10px_rgba(157,133,179,0.5)]" 
-                                              initial={{ width: 0 }}
-                                              animate={{ width: `${(task.subTasks.filter((s:any) => s.isCompleted).length / task.subTasks.length) * 100}%` }}
-                                              transition={{ duration: 1 }}
-                                          />
-                                      </div>
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">
-                                          {task.subTasks.filter((s:any) => s.isCompleted).length} / {task.subTasks.length} ATOMS DONE
-                                      </span>
-                                  </div>
-                              )}
-                            </div>
-                         </div>
-                         
-                         <div className="flex items-center gap-4">
-                            {!task.isCompleted && task.subTasks?.length === 0 && (
-                               <button 
-                                 onClick={() => atomizeTask(task.id, task.title)}
-                                 disabled={isAtomizing === task.id}
-                                 className="btn-pill-3d bg-oku-lavender/40 border-oku-lavender text-oku-purple-dark !py-3 !px-8 !text-[9px]"
-                               >
-                                  {isAtomizing === task.id ? <Loader2 size={14} className="animate-spin" /> : <Split size={14} className="mr-2" />}
-                                  Atomize
-                               </button>
-                            )}
-                            <button 
-                              onClick={() => deleteTask(task.id)}
-                              className="p-4 text-oku-darkgrey/10 hover:text-red-500 transition-all hover:bg-red-50 rounded-full"
-                            >
-                              <Trash2 size={20} />
-                            </button>
-                         </div>
-                      </div>
+             <form onSubmit={addTask} className="relative group">
+                <input 
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    placeholder="Enter a task (Remember: 3 items max)..."
+                    className="w-full bg-white/60 backdrop-blur-md border-2 border-white rounded-[2.5rem] p-8 pr-32 text-xl font-display italic focus:outline-none focus:border-oku-purple/30 transition-all shadow-xl placeholder:text-oku-darkgrey/20"
+                />
+                <button className="absolute right-4 top-4 p-4 rounded-2xl bg-oku-darkgrey text-white hover:bg-oku-dark transition-all">
+                    <Plus size={24} />
+                </button>
+             </form>
 
-                      <AnimatePresence>
-                        {task.subTasks?.length > 0 && (
-                            <m.div 
-                                initial={{ height: 0, opacity: 0 }} 
-                                animate={{ height: 'auto', opacity: 1 }}
-                                className="mt-10 ml-20 space-y-6 pt-10 border-t border-oku-darkgrey/5"
-                            >
-                                {task.subTasks.map((sub: any) => (
-                                    <div key={sub.id} className="flex items-center gap-8 group">
-                                        <button onClick={() => toggleTask(sub.id, sub.isCompleted)} className={`transition-all duration-500 scale-[1.4] ${sub.isCompleted ? 'text-oku-matcha-dark' : 'text-oku-babyblue-dark hover:scale-[1.6]'}`}>
-                                            {sub.isCompleted ? <CheckCircle2 size={20} /> : <Circle size={20} />}
-                                        </button>
-                                        <span className={`text-xl font-display italic flex-1 ${sub.isCompleted ? 'line-through text-oku-taupe opacity-50' : 'text-oku-darkgrey/80'}`}>{sub.title}</span>
+             <div className="space-y-6">
+                <AnimatePresence>
+                  {tasks.map((task) => (
+                    <m.div 
+                        key={task.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className={`group p-8 rounded-[2.5rem] border-2 transition-all duration-500 ${task.isCompleted ? 'bg-oku-lavender/10 border-transparent opacity-60' : 'bg-white border-white/60 hover:border-oku-purple/30 shadow-sm'}`}
+                    >
+                        <div className="flex items-center justify-between gap-8">
+                            <div className="flex items-center gap-8">
+                                <button onClick={() => toggleTask(task.id, task.isCompleted)} className="transition-transform active:scale-90">
+                                    {task.isCompleted ? <CheckCircle2 size={32} className="text-oku-purple" /> : <Circle size={32} className="text-oku-darkgrey/10 group-hover:text-oku-purple/40" />}
+                                </button>
+                                <div>
+                                    <h3 className={`text-2xl font-display font-bold tracking-tight ${task.isCompleted ? 'line-through text-oku-darkgrey/40' : ''}`}>{task.title}</h3>
+                                    {task.subTasks?.length > 0 && (
+                                        <div className="mt-4 flex items-center gap-4">
+                                            <div className="w-48 h-1.5 bg-oku-lavender/20 rounded-full overflow-hidden border border-white/10">
+                                                <m.div 
+                                                    className="h-full bg-oku-purple shadow-[0_0_8px_rgba(157,133,179,0.5)]" 
+                                                    animate={{ width: `${(task.subTasks.filter((st:any) => st.isCompleted).length / task.subTasks.length) * 100}%` }} 
+                                                />
+                                            </div>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">
+                                                {task.subTasks.filter((st:any) => st.isCompleted).length}/{task.subTasks.length} Atoms
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button 
+                                    onClick={() => atomizeTask(task.id, task.title)}
+                                    disabled={isAtomizing === task.id}
+                                    className="p-4 rounded-2xl bg-oku-lavender/40 text-oku-purple-dark hover:bg-oku-lavender transition-all flex items-center gap-3 text-[10px] font-black uppercase tracking-widest"
+                                >
+                                    {isAtomizing === task.id ? <Loader2 size={16} className="animate-spin" /> : <Split size={16} />} 
+                                    Atomize
+                                </button>
+                                <button onClick={() => deleteTask(task.id)} className="p-4 rounded-2xl hover:bg-oku-blush/20 text-oku-darkgrey/20 hover:text-oku-blush-dark transition-all">
+                                    <Trash2 size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* SUBTASKS */}
+                        <AnimatePresence>
+                            {task.subTasks?.length > 0 && (
+                                <m.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-8 pt-8 border-t border-oku-darkgrey/5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {task.subTasks.map((st: any) => (
                                         <button 
-                                            onClick={() => deleteTask(sub.id)}
-                                            className="opacity-0 group-hover:opacity-100 p-2 text-oku-darkgrey/10 hover:text-red-500 transition-all"
+                                            key={st.id}
+                                            onClick={() => toggleTask(st.id, st.isCompleted)}
+                                            className={`p-4 rounded-2xl border transition-all flex items-center gap-4 text-left ${st.isCompleted ? 'bg-oku-lavender/5 border-transparent opacity-50' : 'bg-white/40 border-white hover:bg-white hover:shadow-sm'}`}
                                         >
-                                            <Trash2 size={16} />
+                                            {st.isCompleted ? <CheckCircle2 size={16} className="text-oku-purple" /> : <Circle size={16} className="text-oku-darkgrey/20" />}
+                                            <span className={`text-xs font-bold ${st.isCompleted ? 'line-through' : ''}`}>{st.title}</span>
                                         </button>
-                                    </div>
-                                ))}
-                            </m.div>
-                        )}
-                      </AnimatePresence>
+                                    ))}
+                                </m.div>
+                            )}
+                        </AnimatePresence>
                     </m.div>
                   ))}
                 </AnimatePresence>
@@ -375,11 +354,15 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
             <DopamineMenu />
             <BrainDump />
           </div>
+
+          <RoutineManager />
         </div>
 
         {/* 2. SIDECAR: SENSORY & ENERGY */}
         <div className="lg:col-span-4 space-y-12">
           
+          <DailyTracker />
+
           <div className="relative group">
             <BodyDoublePresence 
               isActive={isSignalingFocus || (isActive && timerMode === 'work')} 
@@ -392,39 +375,6 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                 {isSignalingFocus ? 'Focus Signaling Active' : 'Signal Focus'}
             </button>
           </div>
-
-          {/* Spons (Energy) Tracker */}
-          <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="card-glass-3d !p-12 !bg-white/60 border-none shadow-xl !rounded-[3rem]">
-              <div className="flex items-center justify-between mb-10">
-                  <h3 className="font-black text-oku-darkgrey/40 uppercase tracking-[0.3em] text-[10px]">Spoon Reserves</h3>
-                  <Battery size={24} className={energy < 30 ? 'text-red-500' : 'text-oku-purple-dark animate-pulse'} />
-              </div>
-              <div className="space-y-10">
-                  <div className="h-6 bg-oku-lavender/20 rounded-full overflow-hidden border-2 border-white shadow-inner">
-                      <m.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${energy}%` }}
-                          className={`h-full transition-all duration-1000 ${energy < 30 ? 'bg-gradient-to-r from-red-400 to-rose-500' : 'bg-gradient-to-r from-oku-purple-dark to-oku-lavender-dark'} shadow-[0_0_20px_rgba(157,133,179,0.3)]`}
-                      />
-                  </div>
-                  <div className="flex justify-between gap-2">
-                      {[20, 40, 60, 80, 100].map(val => (
-                          <button 
-                              key={val} 
-                              onClick={() => updateEnergy(val)}
-                              className={`flex-1 py-4 rounded-2xl text-[10px] font-black transition-all border ${energy === val ? 'bg-oku-dark text-white border-oku-dark shadow-2xl scale-110 z-10' : 'bg-white/40 text-oku-darkgrey/40 border-white hover:bg-white'}`}
-                          >
-                              {val}%
-                          </button>
-                      ))}
-                  </div>
-                  <div className="p-6 bg-oku-lavender/20 rounded-[2rem] border border-oku-lavender/40">
-                    <p className="text-xs text-oku-darkgrey/60 italic text-center leading-relaxed font-display">
-                        {energy < 40 ? "Energy is quiet. Move slowly. Stick to 'Atoms' only." : "Dopamine is high. A rare window for deep unfolding."}
-                    </p>
-                  </div>
-              </div>
-          </m.section>
 
           {/* Pomodoro Protocol */}
           <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-oku-dark text-white p-12 rounded-[4rem] shadow-2xl relative overflow-hidden group">
@@ -445,7 +395,6 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                    </button>
                 </div>
              </div>
-             {/* Animated Progress Ring Background */}
              <m.div 
                 className="absolute bottom-0 left-0 w-full h-2 bg-oku-purple-dark" 
                 initial={{ width: '0%' }} 
@@ -477,37 +426,12 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
              </div>
           </m.section>
 
-          {/* Transition Support */}
-          <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="card-glass-3d !p-12 !bg-oku-peach/30 border-none !rounded-[3rem]">
-             <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center text-orange-400">
-                    <Wind size={24} />
-                </div>
-                <div>
-                    <h3 className="font-bold text-oku-darkgrey tracking-tight">Gear Shift</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">Transition Support</p>
-                </div>
-             </div>
-             <p className="text-xs italic text-oku-darkgrey/60 font-display leading-relaxed mb-8">
-                "Transitions take more dopamine than we realize. Shift gears gently."
-             </p>
-             <div className="flex flex-col gap-3">
-                <button 
-                    onClick={() => { setTimerMode('break'); setTimeLeft(5*60); setIsActive(true); }}
-                    className="w-full py-5 rounded-2xl bg-white/60 border border-white text-[10px] font-black uppercase tracking-widest text-oku-darkgrey hover:bg-white transition-all shadow-sm"
-                >
-                    5 Min Mind Exhale
-                </button>
-                <button 
-                    onClick={() => { setTimerMode('transition'); setTimeLeft(15*60); setIsActive(true); }}
-                    className="w-full py-5 rounded-2xl bg-white/60 border border-white text-[10px] font-black uppercase tracking-widest text-oku-darkgrey hover:bg-white transition-all shadow-sm"
-                >
-                    15 Min Reality Shift
-                </button>
-             </div>
-          </m.section>
         </div>
       </div>
+
+      {/* AMBIENT BLOBS */}
+      <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-oku-lavender/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
     </div>
   )
 }
