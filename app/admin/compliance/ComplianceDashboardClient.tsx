@@ -44,7 +44,7 @@ export default function ComplianceDashboardClient() {
         />
         <ComplianceStat 
           title="Consent Rate" 
-          value={`${data?.summary?.consentRate}%`} 
+          value={`${data?.summary?.consentRate || 0}%`} 
           sub="Users with signed forms" 
           icon={<UserCheck size={28} />}
           color="bg-oku-lavender text-oku-purple-dark"

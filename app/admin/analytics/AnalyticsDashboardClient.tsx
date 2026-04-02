@@ -62,7 +62,7 @@ export default function AnalyticsDashboardClient() {
         />
         <AnalyticsStat 
           title="Growth Velocity" 
-          value={`${((data?.funnel?.bookings / data?.funnel?.signups) * 100 || 0).toFixed(1)}%`} 
+          value={`${((data?.funnel?.bookings || 0) / (data?.funnel?.signups || 1) * 100).toFixed(1)}%`} 
           sub="Signup to booking rate"
           icon={<TrendingUp size={28} />}
           color="bg-oku-purple-light/40"
@@ -80,20 +80,20 @@ export default function AnalyticsDashboardClient() {
            <div className="space-y-10">
               <FunnelStep 
                 label="New Signups" 
-                value={data?.funnel?.signups} 
+                value={data?.funnel?.signups || 0} 
                 percent={100}
                 color="bg-oku-darkgrey/10"
               />
               <FunnelStep 
                 label="Onboarded" 
-                value={data?.funnel?.onboarded} 
-                percent={(data?.funnel?.onboarded / data?.funnel?.signups) * 100}
+                value={data?.funnel?.onboarded || 0} 
+                percent={((data?.funnel?.onboarded || 0) / (data?.funnel?.signups || 1)) * 100}
                 color="bg-oku-lavender"
               />
               <FunnelStep 
                 label="First Booking" 
-                value={data?.funnel?.bookings} 
-                percent={(data?.funnel?.bookings / data?.funnel?.signups) * 100}
+                value={data?.funnel?.bookings || 0} 
+                percent={((data?.funnel?.bookings || 0) / (data?.funnel?.signups || 1)) * 100}
                 color="bg-oku-purple-dark text-white"
               />
            </div>
@@ -101,7 +101,7 @@ export default function AnalyticsDashboardClient() {
            <div className="mt-12 p-8 bg-white/40 border border-white rounded-[2rem]">
               <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-2">Insight</p>
               <p className="text-sm font-medium text-oku-darkgrey leading-relaxed">
-                {(data?.funnel?.onboarded / data?.funnel?.signups * 100).toFixed(0)}% of users complete intake within 24 hours.
+                {((data?.funnel?.onboarded || 0) / (data?.funnel?.signups || 1) * 100).toFixed(0)}% of users complete intake within 24 hours.
               </p>
            </div>
         </div>

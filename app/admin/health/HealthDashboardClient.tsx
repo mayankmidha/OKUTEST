@@ -120,8 +120,8 @@ export default function HealthDashboardClient() {
         />
         <MetricCard 
           title="Memory Load" 
-          value={`${data?.system.memory.usagePercent}%`} 
-          sub={`${(data?.system.memory.free / (1024**3)).toFixed(1)}GB Free`} 
+          value={`${data?.system.memory.usagePercent || '0'}%`} 
+          sub={`${((data?.system.memory.free || 0) / (1024**3)).toFixed(1)}GB Free`} 
           icon={<HardDrive size={28} />}
           color="bg-oku-lavender/60"
         />
