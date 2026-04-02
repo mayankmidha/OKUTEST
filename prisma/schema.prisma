@@ -959,3 +959,16 @@ model AdhdDailyLog {
   @@unique([userId, date])
   @@index([userId])
 }
+
+model Exercise {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  content     String   @db.Text
+  category    String   // Meditation, Focus, Physical, CBT
+  duration    Int?     // mins
+  image       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

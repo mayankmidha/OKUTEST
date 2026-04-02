@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { processDailyReminders } from '@/lib/notifications'
+import { processNoShows } from '@/lib/no-show-automation'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -16,11 +17,19 @@ export async function GET(req: Request) {
 
   try {
     console.log('[CRON_DAILY] Starting daily reminder processing...')
-    const processed = await processDailyReminders()
-    const timestamp = new Date().toISOString()
-    console.log(`[CRON_DAILY] Processed ${processed} reminders at ${timestamp}`)
+    const reminderCount = await processDailyReminders()
+    
+    console.log('[CRON_DAILY] Starting no-show processing...')
+    const noShowCount = await processNoShows()
 
-    return NextResponse.json({ processed, timestamp })
+    const timestamp = new Date().toISOString()
+    console.log(`[CRON_DAILY] Processed ${reminderCount} reminders and ${noShowCount} no-shows at ${timestamp}`)
+
+    return NextResponse.json({ 
+        reminders: reminderCount, 
+        noShows: noShowCount,
+        timestamp 
+    })
   } catch (error) {
     console.error('[CRON_DAILY_ERROR]', error)
     return new NextResponse('Internal Server Error', { status: 500 })

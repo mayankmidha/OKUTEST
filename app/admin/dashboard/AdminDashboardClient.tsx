@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CirclesManager } from './CirclesManager'
 import { AdminServicesManagement } from './AdminServicesManagement'
 import { AdminAppointmentsManagement } from './AdminAppointmentsManagement'
+import { AssessmentTemplateManager } from './AssessmentTemplateManager'
 
 function AdminDashboardContent({ 
   stats, 
@@ -270,67 +271,106 @@ function AdminDashboardContent({
           {currentPillar === 'operations' && (
             <motion.div 
               key="operations" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-              className="grid lg:grid-cols-12 gap-12"
+              className="space-y-12"
             >
-               <div className="lg:col-span-8 space-y-12">
-                  <div className="card-glass-3d !p-12 !bg-white/40">
-                     <h2 className="heading-display text-4xl mb-12">System <span className="italic text-oku-purple-dark">Protocols</span></h2>
-                     <div className="grid md:grid-cols-2 gap-8">
-                        {[
-                          { label: 'Maintenance Mode', key: 'maintenanceMode', icon: Shield },
-                          { label: 'Enable OCI AI', key: 'okuAiEnabled', icon: Brain },
-                          { label: 'ADHD Care Mode', key: 'adhdCareModeEnabled', icon: Zap },
-                          { label: 'Audit Logging', key: 'autoTranslateTranscripts', icon: FileText }
-                        ].map((s) => (
-                          <div key={s.key} className="p-8 bg-white/60 rounded-[2.5rem] border border-white flex flex-col justify-between gap-8 group">
-                             <div className="flex items-center justify-between">
-                                <s.icon size={20} className="text-oku-purple-dark/40" />
-                                <div 
-                                    onClick={() => setPlatformSettings({...platformSettings, [s.key]: !platformSettings[s.key as keyof typeof platformSettings]})}
-                                    className={`w-14 h-8 rounded-full relative p-1 cursor-pointer transition-colors ${platformSettings[s.key as keyof typeof platformSettings] ? 'bg-oku-mint' : 'bg-oku-peach'}`}
-                                >
-                                    <motion.div layout className="w-6 h-6 bg-white rounded-full shadow-sm" animate={{ x: platformSettings[s.key as keyof typeof platformSettings] ? 24 : 0 }} />
-                                </div>
-                             </div>
-                             <p className="text-[11px] font-black uppercase tracking-widest">{s.label}</p>
-                          </div>
-                        ))}
-                     </div>
-                     <button onClick={() => alert("✅ Protocols updated.")} className="btn-pill-3d bg-oku-dark text-white w-full !py-5 mt-12 shadow-2xl">Commit Platform Protocol</button>
-                  </div>
+               {/* Sub-navigation for Ops */}
+               <div className="flex gap-4 mb-12">
+                  {[
+                    { id: 'protocols', label: 'System Protocols' },
+                    { id: 'templates', label: 'Assessment Templates' },
+                    { id: 'finance', label: 'Financial Pulse' }
+                  ].map(sub => (
+                    <button 
+                        key={sub.id}
+                        onClick={() => router.push(`/admin/dashboard?pillar=operations&sub=${sub.id}`, { scroll: false })}
+                        className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${searchParams.get('sub') === sub.id || (!searchParams.get('sub') && sub.id === 'protocols') ? 'bg-oku-dark text-white' : 'bg-white/40 text-oku-darkgrey/40 hover:bg-white'}`}
+                    >
+                        {sub.label}
+                    </button>
+                  ))}
                </div>
-               <div className="lg:col-span-4 space-y-12">
-                  <div className="card-glass-3d !p-10 !bg-oku-babyblue/30">
-                     <h3 className="heading-display text-2xl mb-8">Financial <span className="italic">Pulse</span></h3>
-                     <p className="text-5xl heading-display text-oku-darkgrey mb-2">
-                        {formatCurrency(autoConvert(stats.totalRevenue, undefined, 'INR').amount, 'INR')}
-                     </p>
-                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">Platform Gross Volume</p>
-                     <div className="space-y-4">
-                        <div className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
-                            <span className="font-black uppercase tracking-widest opacity-40">Total Care Windows</span>
-                            <span className="font-bold">{stats.totalAppointments}</span>
-                        </div>
-                        <div className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
-                            <span className="font-black uppercase tracking-widest opacity-40">Platform Fee</span>
-                            <span className="font-bold">{platformSettings.platformFeePercent}%</span>
-                        </div>
-                        <div className="p-5 bg-white/60 rounded-2xl border border-white flex flex-col gap-4 text-[10px]">
-                            <span className="font-black uppercase tracking-widest opacity-40">Referral Settings</span>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-[8px] opacity-40 uppercase">Reward (%)</p>
-                                    <input type="number" className="bg-transparent font-bold w-full" value={platformSettings.referralRewardPercent} onChange={(e) => setPlatformSettings({...platformSettings, referralRewardPercent: parseFloat(e.target.value)})} />
+
+               {(searchParams.get('sub') === 'protocols' || !searchParams.get('sub')) && (
+                <div className="grid lg:grid-cols-12 gap-12">
+                    <div className="lg:col-span-8 space-y-12">
+                        <div className="card-glass-3d !p-12 !bg-white/40">
+                            <h2 className="heading-display text-4xl mb-12">System <span className="italic text-oku-purple-dark">Protocols</span></h2>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {[
+                                { label: 'Maintenance Mode', key: 'maintenanceMode', icon: Shield },
+                                { label: 'Enable OCI AI', key: 'okuAiEnabled', icon: Brain },
+                                { label: 'ADHD Care Mode', key: 'adhdCareModeEnabled', icon: Zap },
+                                { label: 'Audit Logging', key: 'autoTranslateTranscripts', icon: FileText }
+                                ].map((s) => (
+                                <div key={s.key} className="p-8 bg-white/60 rounded-[2.5rem] border border-white flex flex-col justify-between gap-8 group">
+                                    <div className="flex items-center justify-between">
+                                        <s.icon size={20} className="text-oku-purple-dark/40" />
+                                        <div 
+                                            onClick={() => setPlatformSettings({...platformSettings, [s.key]: !platformSettings[s.key as keyof typeof platformSettings]})}
+                                            className={`w-14 h-8 rounded-full relative p-1 cursor-pointer transition-colors ${platformSettings[s.key as keyof typeof platformSettings] ? 'bg-oku-mint' : 'bg-oku-peach'}`}
+                                        >
+                                            <motion.div layout className="w-6 h-6 bg-white rounded-full shadow-sm" animate={{ x: platformSettings[s.key as keyof typeof platformSettings] ? 24 : 0 }} />
+                                        </div>
+                                    </div>
+                                    <p className="text-[11px] font-black uppercase tracking-widest">{s.label}</p>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-[8px] opacity-40 uppercase">Max Sessions</p>
-                                    <input type="number" className="bg-transparent font-bold w-full" value={platformSettings.maxReferralRewards} onChange={(e) => setPlatformSettings({...platformSettings, maxReferralRewards: parseInt(e.target.value)})} />
+                                ))}
+                            </div>
+                            <button onClick={() => alert("✅ Protocols updated.")} className="btn-pill-3d bg-oku-dark text-white w-full !py-5 mt-12 shadow-2xl">Commit Platform Protocol</button>
+                        </div>
+                    </div>
+                    <div className="lg:col-span-4 space-y-12">
+                        <div className="card-glass-3d !p-10 !bg-oku-babyblue/30">
+                            <h3 className="heading-display text-2xl mb-8">Financial <span className="italic">Pulse</span></h3>
+                            <p className="text-5xl heading-display text-oku-darkgrey mb-2">
+                                {formatCurrency(autoConvert(stats.totalRevenue, undefined, 'INR').amount, 'INR')}
+                            </p>
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">Platform Gross Volume</p>
+                            <div className="space-y-4">
+                                <div className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
+                                    <span className="font-black uppercase tracking-widest opacity-40">Total Care Windows</span>
+                                    <span className="font-bold">{stats.totalAppointments}</span>
+                                </div>
+                                <div className="p-5 bg-white/60 rounded-2xl border border-white flex justify-between items-center text-[10px]">
+                                    <span className="font-black uppercase tracking-widest opacity-40">Platform Fee</span>
+                                    <span className="font-bold">{platformSettings.platformFeePercent}%</span>
+                                </div>
+                                <div className="p-5 bg-white/60 rounded-2xl border border-white flex flex-col gap-4 text-[10px]">
+                                    <span className="font-black uppercase tracking-widest opacity-40">Referral Settings</span>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[8px] opacity-40 uppercase">Reward (%)</p>
+                                            <input type="number" className="bg-transparent font-bold w-full" value={platformSettings.referralRewardPercent} onChange={(e) => setPlatformSettings({...platformSettings, referralRewardPercent: parseFloat(e.target.value)})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[8px] opacity-40 uppercase">Max Sessions</p>
+                                            <input type="number" className="bg-transparent font-bold w-full" value={platformSettings.maxReferralRewards} onChange={(e) => setPlatformSettings({...platformSettings, maxReferralRewards: parseInt(e.target.value)})} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
+               )}
+
+               {searchParams.get('sub') === 'templates' && (
+                   <AssessmentTemplateManager assessments={services} />
+               )}
+
+               {searchParams.get('sub') === 'finance' && (
+                   <div className="space-y-12">
+                        <div className="card-glass-3d !p-12 !bg-white/40">
+                            <h2 className="heading-display text-4xl mb-12">Global <span className="italic text-oku-purple-dark">Ledger</span></h2>
+                            <AdminAppointmentsManagement 
+                                appointments={allAppointments}
+                                therapists={therapists}
+                                clients={clients}
+                                services={services}
+                            />
+                        </div>
+                   </div>
+               )}
             </motion.div>
           )}
 

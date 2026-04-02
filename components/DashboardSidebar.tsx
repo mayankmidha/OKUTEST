@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Calendar, Users,
   Settings, Heart, ClipboardCheck,
   Shield, FileText, Bell, LogOut,
-  ChevronRight, Activity, DollarSign, ShieldCheck,
+  ChevronRight, Activity, DollarSign, ShieldCheck, BookOpen,
   Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
@@ -31,6 +31,7 @@ export function DashboardSidebar() {
     { label: 'Circles', href: '/dashboard/client/circles', icon: <Users size={18} strokeWidth={1.5} /> },
     { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} /> },
     { label: 'Assessment Hub', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Library', href: '/dashboard/client/resources', icon: <BookOpen size={18} strokeWidth={1.5} /> },
     { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
     { label: 'The Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} /> },
     { label: 'Safety Net', href: '/dashboard/client/profile', icon: <Activity size={18} strokeWidth={1.5} /> },

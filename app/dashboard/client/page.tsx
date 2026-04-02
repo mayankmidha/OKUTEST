@@ -194,6 +194,18 @@ export default async function ClientDashboardPage() {
                 <h3 className="heading-display text-3xl text-oku-darkgrey mb-3">Messages</h3>
                 <p className="text-sm text-oku-darkgrey/50 italic font-display">Secure, direct channel to your care provider.</p>
             </Link>
+
+            {/* LIBRARY */}
+            <Link href="/dashboard/client/resources" className="card-glass-3d !p-10 !bg-oku-cream/20 hover:shadow-2xl transition-all duration-500 group border-oku-cream/10">
+                <div className="flex justify-between items-start mb-10">
+                    <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-oku-taupe shadow-sm">
+                        <BookOpen size={28} />
+                    </div>
+                    <ChevronRight size={20} className="text-oku-darkgrey/20 group-hover:translate-x-2 transition-transform" />
+                </div>
+                <h3 className="heading-display text-3xl text-oku-darkgrey mb-3">Library</h3>
+                <p className="text-sm text-oku-darkgrey/50 italic font-display">Therapeutic exercises and clinical resources.</p>
+            </Link>
           </div>
         </div>
 
@@ -215,9 +227,14 @@ export default async function ClientDashboardPage() {
                     </button>
                 ))}
               </div>
-              <Link href="/dashboard/client/mood" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white w-full !py-4 group">
-                Log Wellness Data
-              </Link>
+              <div className="flex flex-col gap-3">
+                <Link href="/dashboard/client/mood" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white w-full !py-4 text-center">
+                    Log Wellness Data
+                </Link>
+                <Link href="/dashboard/client/mood/history" className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 text-center hover:text-oku-purple-dark transition-colors">
+                    View Vitality Ledger →
+                </Link>
+              </div>
             </div>
           </section>
 
