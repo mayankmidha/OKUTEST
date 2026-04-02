@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { 
   Activity, Cpu, Database, Server, 
   Zap, TrendingUp, AlertTriangle, CheckCircle,
-  Clock, RefreshCw, BarChart3, HardDrive
+  Clock, RefreshCw, BarChart3, HardDrive, Sparkles
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 

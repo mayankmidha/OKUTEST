@@ -7,7 +7,7 @@ import {
   Settings, Heart, ClipboardCheck,
   Shield, FileText, Bell, LogOut,
   ChevronRight, Activity, DollarSign, ShieldCheck, BookOpen, Search, Video,
-  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp
+  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp, Zap
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
