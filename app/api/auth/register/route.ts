@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client'
 import { createReferralCode, findReferralReferrer } from '@/lib/referrals'
 import { detectCurrency } from '@/lib/currency'
 import { sendWelcomeEmail } from '@/lib/notifications'
+import { generateAnonymousAlias } from '@/lib/aliases'
 
 export async function POST(req: Request) {
   try {
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
         clientProfile: userRole === UserRole.CLIENT ? { 
             create: { 
                 timezone,
+                anonymousAlias: generateAnonymousAlias(),
                 dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null
             } 
         } : undefined,

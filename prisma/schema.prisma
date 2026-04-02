@@ -249,6 +249,7 @@ model ClientProfile {
   adhdDiagnosed         Boolean            @default(false)
   adhdDiagnosedAt       DateTime?
   adhdDiagnosedBy       String?
+  anonymousAlias        String?
   user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -479,6 +480,7 @@ model Assessment {
   description   String?
   questions     Json
   isActive      Boolean              @default(true)
+  isPublic      Boolean              @default(true)
   price         Float                @default(0)
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt

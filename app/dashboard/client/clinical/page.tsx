@@ -1,132 +1,155 @@
-import { auth } from '@/auth'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
 import { 
   ClipboardCheck, FileText, Target, 
   ShieldCheck, ArrowRight, History, 
-  Sparkles, Activity, Brain
+  Sparkles, Activity, Brain, Loader2, Eye
 } from 'lucide-react'
 import Link from 'next/link'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { DashboardCard } from '@/components/DashboardCard'
 import { ASSESSMENTS } from '@/lib/assessments'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
-import { getAdhdSupportPlan } from '@/lib/adhd-support'
+import { AssessmentAiCurationModal } from '@/components/AssessmentAiCurationModal'
 
-export default async function ClientClinicalHub() {
-  const session = await auth()
-  
-  if (!session?.user?.id) {
-    redirect('/auth/login')
+export default function ClientClinicalHub() {
+  const { data: session, status } = useSession()
+  const [data, setData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedAssessment, setSelectedAssessment] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      redirect('/auth/login')
+    }
+
+    if (status === 'authenticated') {
+      fetchClinicalData()
+    }
+  }, [status])
+
+  async function fetchClinicalData() {
+    try {
+      const response = await fetch('/api/client/clinical-data')
+      const json = await response.json()
+      setData(json)
+    } catch (error) {
+      console.error("Failed to fetch clinical data", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  // Fetch all clinical data for this client
-  const [intake, assessmentAnswers, treatmentPlans, assignedTasks] = await Promise.all([
-    prisma.intakeForm.findUnique({ where: { userId: session.user.id } }),
-    prisma.assessmentAnswer.findMany({
-      where: { userId: session.user.id },
-      include: { assessment: true },
-      orderBy: { completedAt: 'desc' }
-    }),
-    prisma.treatmentPlan.findMany({
-      where: { clientId: session.user.id },
-      orderBy: { createdAt: 'desc' },
-      include: { practitioner: { select: { name: true } } }
-    }),
-    prisma.assignedAssessment.findMany({
-      where: { clientId: session.user.id, status: 'PENDING' },
-      include: { 
-        assessment: {
-          select: {
-            id: true,
-            title: true,
-            price: true,
-          }
-        },
-        practitioner: { select: { name: true } }
-      }
-    })
-  ])
+  const openAiAnalysis = (assessment: any) => {
+    setSelectedAssessment(assessment)
+    setIsModalOpen(true)
+  }
 
-  const billableAssignedTasks = assignedTasks.filter((task) => (task.chargeAmount || task.assessment?.price || 0) > 0)
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-oku-cream/20">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 animate-spin text-oku-purple mx-auto" />
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-taupe">Accessing Sanctuary Records...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const { intake, assessmentAnswers, treatmentPlans, assignedTasks, adhdSupportPlan } = data || {
+    intake: null,
+    assessmentAnswers: [],
+    treatmentPlans: [],
+    assignedTasks: [],
+    adhdSupportPlan: null
+  }
+
+  const billableAssignedTasks = assignedTasks.filter((task: any) => (task.chargeAmount || task.assessment?.price || 0) > 0)
   const totalAssignedAssessmentCharge = assignedTasks.reduce(
-    (sum, task) => sum + (task.chargeAmount || task.assessment?.price || 0),
+    (sum: number, task: any) => sum + (task.chargeAmount || task.assessment?.price || 0),
     0
   )
-  const adhdSupportPlan = getAdhdSupportPlan(assessmentAnswers as any)
 
   return (
-    <div className="py-12 px-10">
+    <div className="py-12 px-10 min-h-screen bg-oku-lavender/5">
       <DashboardHeader 
         title="Clinical Record" 
         description="A secure overview of your therapeutic journey, assessments, and clinical documentation."
         actions={
-          <Link href="/dashboard/client/therapists" className="btn-primary py-4 px-8 flex items-center gap-2 shadow-xl">
-            <ClipboardCheck size={18} /> New Clinical Assessment
+          <Link href="/assessments" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-10 !py-4 flex items-center gap-2 shadow-xl hover:scale-105 transition-transform">
+            <ClipboardCheck size={18} /> Take New Assessment
           </Link>
         }
       />
 
       {/* 0. Pending Clinical Assignments */}
       {assignedTasks.length > 0 && (
-        <section className="mb-12">
-           <div className="mb-6 grid gap-4 md:grid-cols-3">
+        <section className="mb-16">
+           <div className="mb-8 grid gap-6 md:grid-cols-3">
              <DashboardCard title="Assigned Assessments" variant="lavender">
-               <p className="text-3xl font-display font-bold text-oku-dark">{assignedTasks.length}</p>
-               <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe">Pending clinical tasks</p>
+               <p className="text-4xl font-display font-bold text-oku-dark">{assignedTasks.length}</p>
+               <p className="mt-2 text-[9px] font-black uppercase tracking-widest text-oku-taupe opacity-60">Pending clinical tasks</p>
              </DashboardCard>
-             <DashboardCard title="Billable Queue" variant="matcha">
-               <p className="text-3xl font-display font-bold text-oku-dark">{billableAssignedTasks.length}</p>
-               <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe">Assessments with a fee</p>
+             <DashboardCard title="Billable Queue" variant="white">
+               <p className="text-4xl font-display font-bold text-oku-dark">{billableAssignedTasks.length}</p>
+               <p className="mt-2 text-[9px] font-black uppercase tracking-widest text-oku-taupe opacity-60">Assessments with a fee</p>
              </DashboardCard>
              <DashboardCard title="Assessment Charges" variant="white">
-               <p className="text-3xl font-display font-bold text-oku-dark">${totalAssignedAssessmentCharge.toFixed(2)}</p>
-               <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe">Collected on completion</p>
+               <p className="text-4xl font-display font-bold text-oku-dark">${totalAssignedAssessmentCharge.toFixed(2)}</p>
+               <p className="mt-2 text-[9px] font-black uppercase tracking-widest text-oku-taupe opacity-60">Collected on completion</p>
              </DashboardCard>
            </div>
-           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mb-6 ml-2">Clinical Actions Required</h2>
-           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {assignedTasks.map(task => {
-                const slug = ASSESSMENTS.find(a => a.title === task.assessment.title)?.slug
+           
+           <div className="flex items-center gap-3 mb-8 ml-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-oku-purple animate-pulse" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple">Clinical Actions Required</h2>
+           </div>
+
+           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {assignedTasks.map((task: any) => {
+                const assessmentInfo = ASSESSMENTS.find(a => a.title === task.assessment.title)
+                const slug = assessmentInfo?.slug
                 const chargeAmount = task.chargeAmount || task.assessment?.price || 0
-                const billingLabel = task.billingStatus === 'COMPLETED'
-                  ? 'Billed'
-                  : task.billingStatus === 'PENDING' && chargeAmount > 0
-                    ? 'Bill on completion'
-                    : 'Included'
+                const isPaid = chargeAmount > 0
+                
                 return (
-                  <div key={task.id} className="bg-oku-purple text-white p-8 rounded-[2.5rem] shadow-xl shadow-oku-purple/20 relative overflow-hidden group">
+                  <div key={task.id} className={`card-glass-3d !p-10 ${isPaid ? '!bg-oku-dark text-white shadow-2xl' : '!bg-white'} relative overflow-hidden group`}>
                      <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-6">
-                           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                              <Sparkles size={20} />
+                        <div className="flex justify-between items-start mb-10">
+                           <div className={`w-14 h-14 rounded-2xl ${isPaid ? 'bg-white/10 border-white/20' : 'bg-oku-lavender/20 border-oku-lavender/30'} flex items-center justify-center border`}>
+                              <Sparkles size={24} className={isPaid ? "text-oku-lavender" : "text-oku-purple-dark"} />
                            </div>
-                           <span className="text-[9px] font-black uppercase tracking-widest bg-white/10 px-2 py-1 rounded-full border border-white/10">
-                             {billingLabel}
-                           </span>
+                           <div className="text-right">
+                              <p className={`text-[9px] font-black uppercase tracking-widest ${isPaid ? 'text-white/40' : 'text-oku-darkgrey/30'} mb-1`}>{isPaid ? 'Premium Assessment' : 'Care Included'}</p>
+                              <p className={`text-lg font-bold ${isPaid ? 'text-white' : 'text-oku-darkgrey'}`}>
+                                {isPaid ? `$${Number(chargeAmount).toFixed(2)}` : 'FREE'}
+                              </p>
+                           </div>
                         </div>
-                        <h3 className="text-xl font-display font-bold mb-2 leading-tight">{task.assessment.title}</h3>
-                        <p className="text-xs text-white/60 mb-8 italic">Requested by {task.practitioner?.name || 'Practitioner'}</p>
-                        <div className="mb-8 rounded-3xl bg-white/10 border border-white/10 p-4">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">Assessment Fee</p>
-                          <p className="text-lg font-display font-bold">
-                            {chargeAmount > 0 ? `$${Number(chargeAmount).toFixed(2)}` : 'Included in care'}
-                          </p>
-                          <p className="mt-1 text-[10px] text-white/60 leading-relaxed">
-                            {chargeAmount > 0
-                              ? 'This fee is charged only after you complete the screening.'
-                              : 'No separate charge is attached to this assessment.'}
-                          </p>
-                        </div>
+                        <h3 className={`heading-display text-3xl mb-2 leading-tight ${isPaid ? 'text-white' : 'text-oku-darkgrey'}`}>{task.assessment.title}</h3>
+                        <p className={`text-sm ${isPaid ? 'text-white/50' : 'text-oku-darkgrey/40'} mb-10 italic font-display`}>Requested by {task.practitioner?.name}</p>
                         
-                        <Link 
-                          href={slug ? `/assessments/${slug}?assignmentId=${task.id}&fee=${encodeURIComponent(String(chargeAmount))}&billing=${encodeURIComponent(task.billingStatus || 'PENDING')}` : `/assessments?assignmentId=${task.id}&fee=${encodeURIComponent(String(chargeAmount))}&billing=${encodeURIComponent(task.billingStatus || 'PENDING')}`}
-                          className="w-full py-4 bg-white text-oku-purple rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-oku-cream transition-all shadow-lg"
-                        >
-                          Complete Now <ArrowRight size={14} />
-                        </Link>
+                        {isPaid ? (
+                          <Link 
+                            href={`/dashboard/client/checkout?type=assessment&id=${task.id}`}
+                            className="w-full py-5 bg-white text-oku-dark rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-oku-lavender transition-all shadow-lg group"
+                          >
+                            Pay & Unlock <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                          </Link>
+                        ) : (
+                          <Link 
+                            href={slug ? `/assessments/${slug}?assignmentId=${task.id}` : `/assessments`}
+                            className="w-full py-5 bg-oku-dark text-white rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-oku-darkgrey transition-all shadow-lg group"
+                          >
+                            Begin Screening <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                          </Link>
+                        )}
                      </div>
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+                     {isPaid && <div className="absolute top-0 right-0 w-48 h-48 bg-oku-purple/10 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2" />}
                   </div>
                 )
               })}
@@ -134,50 +157,56 @@ export default async function ClientClinicalHub() {
         </section>
       )}
 
-      <div className="mb-12">
+      <div className="mb-20">
          <WellnessVisualizer />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-12">
+      <div className="grid lg:grid-cols-3 gap-16">
+        <div className="lg:col-span-2 space-y-20">
           
           {/* 1. Active Treatment Plans */}
           <section>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-2">Active Therapeutic Strategy</h2>
+            <div className="flex items-center gap-3 mb-8 ml-2">
+                <Target size={18} className="text-oku-taupe/40" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe">Active Therapeutic Strategy</h2>
+            </div>
             {treatmentPlans.length === 0 ? (
-              <DashboardCard className="border-dashed py-16 text-center">
-                 <Target size={32} className="mx-auto text-oku-taupe/20 mb-4" strokeWidth={1} />
-                 <p className="text-oku-taupe font-display italic text-lg">No treatment plan initialized yet.</p>
-                 <p className="text-xs text-oku-taupe opacity-60 mt-2">Your practitioner will collaborate with you to build this.</p>
-              </DashboardCard>
+              <div className="card-glass-3d !p-20 text-center border-dashed !bg-transparent opacity-40">
+                 <Target size={48} className="mx-auto text-oku-taupe/20 mb-6" strokeWidth={1} />
+                 <p className="text-oku-taupe font-display italic text-xl">No treatment plan initialized yet.</p>
+                 <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mt-4">Your practitioner will collaborate with you to build this.</p>
+              </div>
             ) : (
-              <div className="space-y-6">
-                {treatmentPlans.map(plan => (
-                  <DashboardCard key={plan.id} variant={plan.status === 'ACTIVE' ? 'lavender' : 'white'} title={plan.status === 'ACTIVE' ? 'Active Clinical Plan' : 'Revised Plan'}>
-                    <div className="mt-4 space-y-6">
-                       <div className="flex justify-between items-start border-b border-oku-taupe/5 pb-4">
-                          <div>
-                             <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe">Practitioner</p>
-                             <p className="font-bold text-oku-dark text-lg">{plan.practitioner?.name || 'Practitioner'}</p>
+              <div className="space-y-8">
+                {treatmentPlans.map((plan: any) => (
+                  <div key={plan.id} className={`card-glass-3d !p-12 ${plan.status === 'ACTIVE' ? '!bg-white/80' : '!bg-white/40 opacity-60'} border-white/60`}>
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-oku-darkgrey/5 pb-10 mb-10">
+                       <div className="flex items-center gap-5">
+                          <div className="w-14 h-14 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark shadow-sm">
+                             <ShieldCheck size={28} />
                           </div>
-                          <div className="text-right">
-                             <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe">Last Updated</p>
-                             <p className="text-sm font-medium">{new Date(plan.updatedAt).toLocaleDateString()}</p>
+                          <div>
+                             <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/30">Primary Clinician</p>
+                             <p className="heading-display text-3xl text-oku-darkgrey">{plan.practitioner?.name}</p>
                           </div>
                        </div>
-                       
-                       <div className="grid md:grid-cols-2 gap-8">
-                          <div>
-                             <p className="text-[10px] uppercase tracking-widest font-black text-oku-purple mb-2">Focus Goals</p>
-                             <p className="text-sm italic text-oku-taupe leading-relaxed">{plan.goals}</p>
-                          </div>
-                          <div>
-                             <p className="text-[10px] uppercase tracking-widest font-black text-oku-purple mb-2">Key Objectives</p>
-                             <p className="text-sm italic text-oku-taupe leading-relaxed">{plan.objectives}</p>
-                          </div>
+                       <div className="bg-oku-darkgrey/5 px-6 py-3 rounded-2xl border border-white/40">
+                          <p className="text-[9px] uppercase tracking-widest font-black text-oku-darkgrey/30 mb-1 text-center">Effective Since</p>
+                          <p className="text-sm font-bold text-oku-darkgrey text-center">{new Date(plan.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                        </div>
                     </div>
-                  </DashboardCard>
+                    
+                    <div className="grid md:grid-cols-2 gap-12">
+                       <div className="space-y-4 p-8 bg-oku-lavender/10 rounded-[2rem] border border-oku-lavender/20">
+                          <h4 className="text-[10px] uppercase tracking-widest font-black text-oku-purple-dark">Care Focus</h4>
+                          <p className="text-lg text-oku-darkgrey/70 italic font-display leading-relaxed">{plan.goals}</p>
+                       </div>
+                       <div className="space-y-4 p-8 bg-oku-mint/10 rounded-[2rem] border border-oku-mint/20">
+                          <h4 className="text-[10px] uppercase tracking-widest font-black text-oku-mint-dark">Methodology</h4>
+                          <p className="text-lg text-oku-darkgrey/70 italic font-display leading-relaxed">{plan.objectives}</p>
+                       </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -185,48 +214,55 @@ export default async function ClientClinicalHub() {
 
           {/* 2. Assessment History */}
           <section>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe mb-6 ml-2">Diagnostic Timeline</h2>
-            <div className="bg-white rounded-[3rem] border border-oku-taupe/10 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 mb-8 ml-2">
+                <History size={18} className="text-oku-taupe/40" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-taupe">Diagnostic Timeline</h2>
+            </div>
+            <div className="card-glass-3d !p-0 !bg-white/60 overflow-hidden shadow-sm">
               {assessmentAnswers.length === 0 ? (
-                <div className="p-20 text-center">
-                   <p className="text-oku-taupe italic opacity-60">No completed assessments recorded.</p>
+                <div className="py-32 text-center opacity-40 italic font-display text-xl">
+                   No completed assessments recorded.
                 </div>
               ) : (
                 <table className="w-full text-left">
-                  <thead className="bg-oku-cream/30 text-[10px] uppercase tracking-widest font-black text-oku-taupe">
+                  <thead className="bg-oku-darkgrey/5 text-[10px] uppercase tracking-[0.3em] font-black text-oku-darkgrey/40">
                     <tr>
-                      <th className="p-8">Assessment</th>
-                      <th className="p-8">Clinical State</th>
-                      <th className="p-8">Date</th>
-                      <th className="p-8 text-right">Action</th>
+                      <th className="px-10 py-8">Clinical Assessment</th>
+                      <th className="px-10 py-8">Interpretation</th>
+                      <th className="px-10 py-8">Date</th>
+                      <th className="px-10 py-8 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-oku-taupe/5">
-                    {assessmentAnswers.map((ans) => {
-                      const slug = ASSESSMENTS.find(a => a.title === ans.assessment.title)?.slug
-                      return (
-                        <tr key={ans.id} className="hover:bg-oku-cream/20 transition-all group">
-                          <td className="p-8">
-                            <p className="font-bold text-oku-dark">{ans.assessment.title}</p>
-                          </td>
-                          <td className="p-8">
-                            <span className="bg-oku-purple/10 text-oku-purple-dark text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
-                              {ans.result}
-                            </span>
-                          </td>
-                          <td className="p-8 text-sm text-oku-taupe">
-                            {new Date(ans.completedAt).toLocaleDateString()}
-                          </td>
-                          <td className="p-8 text-right">
-                             {slug ? (
-                               <Link href={`/assessments/${slug}`} className="text-oku-purple hover:underline text-[10px] font-black uppercase tracking-widest">Retake</Link>
-                             ) : (
-                               <Link href="/assessments" className="text-oku-taupe hover:underline text-[10px] font-black uppercase tracking-widest">View Hub</Link>
-                             )}
-                          </td>
-                        </tr>
-                      )
-                    })}
+                  <tbody className="divide-y divide-oku-darkgrey/5">
+                    {assessmentAnswers.map((ans: any) => (
+                      <tr key={ans.id} className="hover:bg-white/60 transition-all group">
+                        <td className="px-10 py-10">
+                          <p className="text-xl font-bold text-oku-darkgrey">{ans.assessment.title}</p>
+                        </td>
+                        <td className="px-10 py-10">
+                          <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                            ans.result?.toLowerCase().includes('severe') || ans.result?.toLowerCase().includes('high')
+                              ? 'bg-red-50 text-red-600 border border-red-100'
+                              : 'bg-oku-purple/10 text-oku-purple-dark border border-oku-purple/20'
+                          }`}>
+                            {ans.result || "Completed"}
+                          </span>
+                        </td>
+                        <td className="px-10 py-10">
+                          <p className="text-sm font-bold text-oku-darkgrey/40">
+                             {new Date(ans.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </p>
+                        </td>
+                        <td className="px-10 py-10 text-right">
+                           <button 
+                             onClick={() => openAiAnalysis(ans)}
+                             className="btn-pill-3d !bg-white !border-white !text-oku-purple-dark !px-6 !py-3 flex items-center gap-2 ml-auto shadow-sm hover:scale-105 transition-transform"
+                           >
+                             <Sparkles size={14} /> AI Insights
+                           </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               )}
@@ -234,77 +270,53 @@ export default async function ClientClinicalHub() {
           </section>
         </div>
 
-        {/* Sidebar: Compliance & Info */}
-        <div className="space-y-8">
+        {/* Sidebar */}
+        <div className="space-y-12">
           {adhdSupportPlan && (
-            <DashboardCard title="ADHD Helper" icon={<Brain size={20} strokeWidth={1.5} />} variant="lavender">
-              <div className="mt-4 space-y-5">
-                <div className="rounded-[1.75rem] border border-oku-purple/10 bg-white/70 p-5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple">Latest Support Signal</p>
-                  <p className="mt-2 text-lg font-display font-bold text-oku-dark">{adhdSupportPlan.latestAssessmentTitle}</p>
-                  <p className="mt-1 text-sm text-oku-taupe">{adhdSupportPlan.latestAssessmentResult}</p>
-                  <p className="mt-3 text-sm text-oku-dark leading-relaxed">{adhdSupportPlan.summary}</p>
-                </div>
-
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Support Moves</p>
-                  <div className="space-y-2">
-                    {adhdSupportPlan.strategies.map((strategy) => (
-                      <div key={strategy} className="rounded-2xl bg-white px-4 py-3 text-sm text-oku-dark border border-oku-taupe/5">
-                        {strategy}
-                      </div>
-                    ))}
+            <div className="card-glass-3d !p-10 !bg-oku-lavender/30 border-oku-lavender/30">
+               <div className="flex items-center gap-3 mb-8">
+                  <Brain size={24} className="text-oku-purple-dark" />
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple-dark">ADHD Sanctuary Plan</h3>
+               </div>
+               <div className="space-y-8">
+                  <div className="bg-white/80 p-8 rounded-[2rem] border border-white">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30 mb-3">Core Trajectory</p>
+                      <p className="text-xl font-display font-bold text-oku-darkgrey mb-1">{adhdSupportPlan.latestAssessmentTitle}</p>
+                      <p className="text-sm text-oku-darkgrey/60 italic mb-6 leading-relaxed">{adhdSupportPlan.summary}</p>
                   </div>
-                </div>
-
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe mb-3">Bring To Session</p>
-                  <div className="space-y-2">
-                    {adhdSupportPlan.sessionPrepPrompts.map((prompt) => (
-                      <div key={prompt} className="rounded-2xl border border-dashed border-oku-purple/20 px-4 py-3 text-sm text-oku-dark bg-oku-cream/40">
-                        {prompt}
-                      </div>
-                    ))}
+                  
+                  <div className="space-y-3">
+                     <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30 ml-4">Daily Strategies</p>
+                     {adhdSupportPlan.strategies.map((s: string, i: number) => (
+                        <div key={i} className="bg-white/40 p-4 rounded-2xl border border-white/60 text-sm font-bold text-oku-darkgrey/70">
+                           {s}
+                        </div>
+                     ))}
                   </div>
-                </div>
-              </div>
-            </DashboardCard>
+               </div>
+            </div>
           )}
 
-          <DashboardCard title="Onboarding Status" icon={<ShieldCheck size={20} strokeWidth={1.5} />}>
-             <div className="space-y-6 mt-4">
-                <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-oku-taupe/5">
-                   <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Informed Consent</span>
-                   {intake?.hasSignedConsent ? (
-                     <span className="text-[9px] font-black uppercase text-oku-success flex items-center gap-1"><ShieldCheck size={12}/> Verified</span>
-                   ) : (
-                     <Link href="/dashboard/client/intake" className="text-[9px] font-black uppercase text-oku-danger hover:underline">Needs Signature</Link>
-                   )}
-                </div>
-                <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-oku-taupe/5">
-                   <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Medical Intake</span>
-                   {intake?.medicalHistory ? (
-                     <span className="text-[9px] font-black uppercase text-oku-success flex items-center gap-1"><ShieldCheck size={12}/> Complete</span>
-                   ) : (
-                     <Link href="/dashboard/client/intake" className="text-[9px] font-black uppercase text-oku-danger hover:underline">Incomplete</Link>
-                   )}
-                </div>
-             </div>
-          </DashboardCard>
-
-          <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+          <div className="card-glass-3d !p-10 !bg-oku-dark text-white relative overflow-hidden">
              <div className="relative z-10">
-                <h3 className="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                   <Sparkles size={16} className="text-oku-purple" /> Privacy First
-                </h3>
-                <p className="text-xs opacity-60 leading-relaxed italic">
-                   Your clinical record is encrypted and only accessible by you and your designated practitioner. We never share this data with third parties.
+                <div className="flex items-center gap-3 mb-8">
+                    <ShieldCheck size={24} className="text-oku-mint" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-mint">Vault Protection</h3>
+                </div>
+                <p className="text-sm text-white/60 italic font-display leading-relaxed">
+                   Your clinical data is protected by AES-256 application-level encryption. Access is restricted exclusively to you and your clinical team.
                 </p>
              </div>
-             <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+             <div className="absolute top-0 right-0 w-48 h-48 bg-oku-mint/5 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2" />
           </div>
         </div>
       </div>
+
+      <AssessmentAiCurationModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        assessment={selectedAssessment}
+      />
     </div>
   )
 }

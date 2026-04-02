@@ -40,6 +40,7 @@ export default async function CircleDetailPage({ params }: PageProps) {
   const [title, desc] = (circle.notes || '|').split('|')
   const spotsLeft = (circle.maxParticipants || 10) - (circle.participants?.length || 0)
   const isFull = spotsLeft <= 0
+  const isJoined = session?.user ? circle.participants?.some(p => p.userId === session.user.id) : false
   const specialization = circle.practitioner?.practitionerProfile?.specialization ?? []
 
   const joinHref = `/circles/${id}/join`
@@ -201,16 +202,28 @@ export default async function CircleDetailPage({ params }: PageProps) {
 
               {/* CTA */}
               <Link
-                href={isFull ? '#' : joinHref}
+                href={isJoined ? `/dashboard/client/circles/${id}` : isFull ? '#' : joinHref}
                 className={`btn-pill-3d w-full !py-6 flex items-center justify-center gap-4 text-xs ${
-                  isFull
-                    ? 'bg-oku-taupe/10 text-oku-taupe pointer-events-none'
-                    : 'bg-oku-darkgrey border-oku-darkgrey text-white pulse-cta'
+                  isJoined 
+                    ? 'bg-oku-mint text-oku-mint-dark border-oku-mint shadow-inner'
+                    : isFull
+                      ? 'bg-oku-taupe/10 text-oku-taupe pointer-events-none'
+                      : 'bg-oku-darkgrey border-oku-darkgrey text-white pulse-cta'
                 }`}
               >
-                {isFull ? 'At Capacity' : (session ? 'Join this Circle' : 'Sign up to Join')}
-                {!isFull && <ArrowRight size={16} />}
-                {!isFull && !session && <Lock size={14} />}
+                {isJoined ? (
+                  <>
+                    <CheckCircle2 size={18} /> Already Enrolled
+                  </>
+                ) : isFull ? (
+                  'At Capacity'
+                ) : (
+                  <>
+                    {session ? 'Join this Circle' : 'Sign up to Join'}
+                    <ArrowRight size={16} />
+                    {!session && <Lock size={14} />}
+                  </>
+                )}
               </Link>
 
               <div className="mt-8 flex justify-center items-center gap-2 opacity-30 hover:opacity-70 transition-all duration-700">

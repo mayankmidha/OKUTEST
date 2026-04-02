@@ -3,6 +3,29 @@ import { prisma } from '@/lib/prisma'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
+/**
+ * PII Scrubber (The Privacy Shield)
+ * Removes names, emails, and phone numbers before sending data to LLMs.
+ */
+export function scrubPII(text: string, patientName?: string | null): string {
+  if (!text) return text;
+  let scrubbed = text;
+  
+  // Remove specific patient name if provided
+  if (patientName) {
+    const nameRegex = new RegExp(patientName, 'gi');
+    scrubbed = scrubbed.replace(nameRegex, '[PATIENT]');
+  }
+
+  // Remove generic email patterns
+  scrubbed = scrubbed.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL]');
+  
+  // Remove phone numbers (basic pattern)
+  scrubbed = scrubbed.replace(/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, '[PHONE]');
+
+  return scrubbed;
+}
+
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 
 export interface ClinicalIntelligence {
@@ -58,11 +81,11 @@ export async function analyzeClinicalTranscript({
     CONTEXT:
     - Session Type: ${sessionType}
     - Recent Assessments: ${JSON.stringify(recentAssessments)}
-    - ADHD Care Mode: ${settings.adhdCareModeEnabled ? 'ENABLED' : 'DISABLED'}
+    ADHD Care Mode: ${settings.adhdCareModeEnabled ? 'ENABLED' : 'DISABLED'}
 
-    TRANSCRIPT:
+    TRANSCRIPT (SCRUBBED FOR PRIVACY):
     """
-    ${transcriptContent}
+    ${scrubPII(transcriptContent, patientName)}
     """
 
     TASK:
@@ -293,7 +316,7 @@ export async function analyzeAssessmentResult(params: {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
   const prompt = `
-    You are OKU AI, a clinical intelligence assistant. You are analyzing the results of a ${params.assessmentTitle} assessment for ${params.patientName}.
+    You are OKU AI, a clinical intelligence assistant. You are analyzing the results of a ${params.assessmentTitle} assessment for ${scrubPII(params.patientName, params.patientName)}.
     
     DATA:
     - Assessment: ${params.assessmentTitle}
@@ -305,7 +328,7 @@ export async function analyzeAssessmentResult(params: {
     Provide a multi-layered curation of this result:
     1. "aiInterpretation": A gentle, patient-facing explanation of what this result might mean for their daily life. Avoid being diagnostic; use phrases like "This suggests..." or "You might be experiencing...".
     2. "clinicalCuration": A deeper, data-driven analysis of their specific answer patterns (e.g. if they scored particularly high on specific items).
-    3. "personalizedRecommendations": 3-4 actionable "Next Steps" for the user (e.g. mindfulness, sleep hygiene, or specific questions to ask their therapist).
+    3. "personalized Recommendations": 3-4 actionable "Next Steps" for the user (e.g. mindfulness, sleep hygiene, or specific questions to ask their therapist).
     4. "therapistNotes": A concise 1-2 sentence briefing for their therapist to read before the next session.
 
     FORMAT:

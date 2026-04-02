@@ -208,17 +208,33 @@ export default async function ClientDashboardPage() {
 
           {/* VISION MODULES GRID */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* ADHD MANAGER */}
-            <Link href="/dashboard/client/adhd" className="card-glass-3d !p-10 !bg-oku-peach/20 hover:shadow-2xl transition-all duration-500 group border-oku-peach/10">
-                <div className="flex justify-between items-start mb-10">
-                    <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-oku-peach-dark shadow-sm">
-                        <Brain size={28} />
-                    </div>
-                    <ChevronRight size={20} className="text-oku-darkgrey/20 group-hover:translate-x-2 transition-transform" />
-                </div>
-                <h3 className="heading-display text-3xl text-oku-darkgrey mb-3">ADHD Manager</h3>
-                <p className="text-sm text-oku-darkgrey/50 italic font-display">Body doubling, focus tools, and dopamine menus.</p>
-            </Link>
+            {/* ADHD MANAGER (Conditional Unlock) */}
+            {user.clientProfile?.adhdDiagnosed ? (
+              <Link href="/dashboard/client/adhd" className="card-glass-3d !p-10 !bg-oku-peach/20 hover:shadow-2xl transition-all duration-500 group border-oku-peach/10">
+                  <div className="flex justify-between items-start mb-10">
+                      <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-oku-peach-dark shadow-sm">
+                          <Brain size={28} />
+                      </div>
+                      <ChevronRight size={20} className="text-oku-darkgrey/20 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                  <h3 className="heading-display text-3xl text-oku-darkgrey mb-3">ADHD Manager</h3>
+                  <p className="text-sm text-oku-darkgrey/50 italic font-display">Body doubling, focus tools, and dopamine menus.</p>
+              </Link>
+            ) : (
+              <div className="card-glass-3d !p-10 !bg-oku-darkgrey/5 border-dashed border-oku-darkgrey/10 relative overflow-hidden group">
+                  <div className="flex justify-between items-start mb-10">
+                      <div className="w-14 h-14 rounded-2xl bg-white/40 flex items-center justify-center text-oku-darkgrey/20">
+                          <Brain size={28} />
+                      </div>
+                      <Lock size={18} className="text-oku-darkgrey/20" />
+                  </div>
+                  <h3 className="heading-display text-3xl text-oku-darkgrey/30 mb-3">ADHD Manager</h3>
+                  <p className="text-sm text-oku-darkgrey/30 italic font-display mb-8">Unlocked after clinical ADHD confirmation.</p>
+                  <Link href="/dashboard/client/clinical" className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline flex items-center gap-2">
+                    Get Screened to Unlock <ArrowRight size={14} />
+                  </Link>
+              </div>
+            )}
 
             {/* CIRCLES */}
             <Link href="/dashboard/client/circles" className="card-glass-3d !p-10 !bg-oku-mint/20 hover:shadow-2xl transition-all duration-500 group border-oku-mint/10">
