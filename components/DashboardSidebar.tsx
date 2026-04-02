@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Calendar, Users,
   Settings, Heart, ClipboardCheck,
   Shield, FileText, Bell, LogOut,
-  ChevronRight, Activity, DollarSign,
+  ChevronRight, Activity, DollarSign, ShieldCheck,
   Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
@@ -25,38 +25,36 @@ export function DashboardSidebar() {
   }, [pathname])
 
   const clientLinks = [
-    { label: 'Overview', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Sessions', href: '/dashboard/client/sessions', icon: <History size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Circles', href: '/dashboard/client/circles', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Progress', href: '/dashboard/client/progress', icon: <TrendingUp size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Wellness', href: '/dashboard/client/mood', icon: <Heart size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Clinical', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Therapists', href: '/dashboard/client/therapists', icon: <Sparkles size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Profile', href: '/dashboard/client/profile', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Support', href: '/dashboard/client/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Settings', href: '/dashboard/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Sanctuary', href: '/dashboard/client', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
+    { label: 'Care Path', href: '/dashboard/client/therapists', icon: <Sparkles size={18} strokeWidth={1.5} /> },
+    { label: 'Sessions', href: '/dashboard/client/sessions', icon: <Calendar size={18} strokeWidth={1.5} /> },
+    { label: 'Circles', href: '/dashboard/client/circles', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} /> },
+    { label: 'Assessment Hub', href: '/dashboard/client/clinical', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Messages', href: '/dashboard/client/messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
+    { label: 'The Vault', href: '/dashboard/client/vault', icon: <Shield size={18} strokeWidth={1.5} /> },
+    { label: 'Safety Net', href: '/dashboard/client/profile', icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Referrals', href: '/dashboard/client/referrals', icon: <Gift size={18} strokeWidth={1.5} /> },
   ]
 
   const therapistLinks = [
-    { label: 'Center', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Schedule', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Hours', href: '/practitioner/schedule', icon: <Clock size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Patients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Clinical', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Support', href: '/practitioner/support', icon: <HelpCircle size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Pulse', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Caseload', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Schedule', href: '/practitioner/appointments', icon: <Calendar size={18} strokeWidth={1.5} /> },
+    { label: 'Circles Host', href: '/practitioner/dashboard?tab=circles', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Clinical Tools', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
+    { label: 'Financials', href: '/practitioner/billing', icon: <DollarSign size={18} strokeWidth={1.5} /> },
+    { label: 'Settings', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} /> },
   ]
 
   const adminLinks = [
-    { label: 'Pulse', href: '/admin/dashboard', icon: <Shield size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Practitioners', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
-    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <FileText size={18} strokeWidth={1.5} />, color: 'text-oku-purple-dark' },
+    { label: 'Pulse', href: '/admin/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Integrity', href: '/admin/dashboard?tab=users', icon: <Shield size={18} strokeWidth={1.5} /> },
+    { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} /> },
+    { label: 'Network', href: '/admin/dashboard?tab=therapists', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Templates', href: '/admin/dashboard?tab=services', icon: <FileText size={18} strokeWidth={1.5} /> },
+    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
