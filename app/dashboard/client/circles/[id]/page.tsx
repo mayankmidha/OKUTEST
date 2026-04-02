@@ -13,6 +13,7 @@ import {
   WifiOff,
 } from 'lucide-react'
 import { JoinCircleButton } from '../JoinCircleButton'
+import { AnonymousPreChat } from '@/components/AnonymousPreChat'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,22 +31,28 @@ export default async function CircleDetailPage({ params }: PageProps) {
   const { id } = await params
   const userId = session.user.id
 
-  // Fetch appointment with all needed relations
-  const appointment = await prisma.appointment.findUnique({
-    where: { id },
-    include: {
-      practitioner: {
-        select: {
-          name: true,
-          avatar: true,
-          practitionerProfile: { select: { specialization: true } },
+  // Fetch appointment with all needed relations + User Profile for Alias
+  const [appointment, userProfile] = await Promise.all([
+    prisma.appointment.findUnique({
+        where: { id },
+        include: {
+          practitioner: {
+            select: {
+              name: true,
+              avatar: true,
+              practitionerProfile: { select: { specialization: true } },
+            },
+          },
+          service: { select: { name: true } },
+          participants: { select: { id: true, userId: true, joinedAt: true } },
+          circleWaitlist: { select: { id: true, userId: true } },
         },
-      },
-      service: { select: { name: true } },
-      participants: { select: { id: true, userId: true, joinedAt: true } },
-      circleWaitlist: { select: { id: true, userId: true } },
-    },
-  })
+    }),
+    prisma.clientProfile.findUnique({
+        where: { userId },
+        select: { anonymousAlias: true }
+    })
+  ])
 
   if (!appointment || !appointment.isGroupSession) {
     redirect('/dashboard/client/circles')
@@ -167,6 +174,20 @@ export default async function CircleDetailPage({ params }: PageProps) {
                 </div>
               </div>
             </div>
+
+            {/* Anonymous Pre-Chat (Only for Members) */}
+            {isMember && (
+              <div className="pt-10">
+                <div className="flex items-center gap-3 mb-8 ml-2">
+                    <MessageSquare size={18} className="text-oku-purple-dark opacity-40" />
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple-dark">Community Safe-Space Chat</h2>
+                </div>
+                <AnonymousPreChat 
+                  circleId={id} 
+                  userAlias={userProfile?.anonymousAlias || 'Quiet Seeker'} 
+                />
+              </div>
+            )}
           </div>
 
           {/* Sidebar — right 1/3 */}

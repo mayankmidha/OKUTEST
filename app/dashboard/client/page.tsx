@@ -12,6 +12,7 @@ import { AppointmentStatus } from '@prisma/client'
 import { formatCurrency } from '@/lib/currency'
 import { AnimatedDashboardStats } from '@/components/AnimatedDashboardStats'
 import { LottieWellness } from '@/components/LottieWellness'
+import { SanctuaryGarden } from '@/components/SanctuaryGarden'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,7 +23,7 @@ export default async function ClientDashboardPage() {
     redirect('/auth/login')
   }
 
-  const [user, intakeForm, totalSessions] = await Promise.all([
+  const [user, intakeForm, totalSessions, moodCount, latestMoods] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       include: {
@@ -41,6 +42,12 @@ export default async function ClientDashboardPage() {
     }),
     prisma.intakeForm.findUnique({ where: { userId: session.user.id }, select: { id: true } }),
     prisma.appointment.count({ where: { clientId: session.user.id, status: 'COMPLETED' } }),
+    prisma.moodEntry.count({ where: { userId: session.user.id } }),
+    prisma.moodEntry.findMany({ 
+      where: { userId: session.user.id }, 
+      orderBy: { createdAt: 'desc' }, 
+      take: 1 
+    }),
   ])
 
   if (!user) redirect('/auth/login')
@@ -88,6 +95,16 @@ export default async function ClientDashboardPage() {
              <Plus size={18} className="mr-3" /> Book Session
           </Link>
         </div>
+      </div>
+
+      {/* ── SANCTUARY GARDEN (Growth Visualization) ── */}
+      <div className="mb-12 relative z-10">
+          <SanctuaryGarden state={{
+              sessionCount: totalSessions,
+              moodCount: moodCount,
+              lastMoodColor: latestMoods[0]?.mood === 'GREAT' ? 'text-oku-mint-dark' : latestMoods[0]?.mood === 'POOR' ? 'text-oku-peach-dark' : 'text-oku-purple-dark',
+              assessmentCount: user.assessmentAnswers.length
+          }} />
       </div>
 
       {/* ── ONBOARDING BANNER (only for truly incomplete new users) ── */}

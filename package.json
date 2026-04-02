@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
+    "fix-circles": "tsx prisma/update-circle-prices.ts",
     "test": "vitest run"
   },
   "dependencies": {
