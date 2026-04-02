@@ -8,6 +8,7 @@ import { Calendar, Video, Clock, CheckCircle2, FileText, AlertTriangle, Search, 
 import { AppointmentStatus, UserRole } from '@prisma/client'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { NoShowButton } from '@/components/NoShowButton'
+import { AiCareBriefingButton } from '@/components/AiCareBriefingButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -100,6 +101,8 @@ export default async function PractitionerAppointmentsPage() {
                           <p className="font-bold text-oku-darkgrey text-xl">{appt.client?.name || 'Unknown Patient'}</p>
                           <div className="flex items-center gap-3 mt-1">
                             <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">{appt.service.name}</span>
+                            <span className="text-oku-darkgrey/10">•</span>
+                            <AiCareBriefingButton appointmentId={appt.id} />
                             {isNow && <span className="text-[9px] bg-oku-purple-dark text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest animate-pulse">Live Now</span>}
                           </div>
                         </div>

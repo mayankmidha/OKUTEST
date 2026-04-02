@@ -137,7 +137,7 @@ export async function transcribeClinicalAudio(arg1: string | { audioBase64: stri
 }
 
 export async function draftClinicalScribe(arg1: string | any, arg2: string = ''): Promise<string> {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
     let prompt = ''
     
     if (typeof arg1 === 'object') {
@@ -313,7 +313,7 @@ export async function analyzeAssessmentResult(params: {
   personalizedRecommendations: string[]
   therapistNotes: string
 }> {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
 
   const prompt = `
     You are OKU AI, a clinical intelligence assistant. You are analyzing the results of a ${params.assessmentTitle} assessment for ${scrubPII(params.patientName, params.patientName)}.
@@ -355,7 +355,7 @@ export async function analyzeAssessmentResult(params: {
 }
 
 export async function atomizeTask(taskTitle: string): Promise<string[]> {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
   
   const prompt = `
     You are an expert ADHD Productivity Coach. Your goal is to help a user who is feeling overwhelmed.

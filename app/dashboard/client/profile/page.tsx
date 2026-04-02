@@ -7,6 +7,7 @@ import {
   Globe, Clock, Heart, CheckCircle2, AlertCircle
 } from 'lucide-react'
 import { SafetyPlanForm } from './SafetyPlanForm'
+import { PrivacyControls } from '@/components/PrivacyControls'
 
 export const dynamic = 'force-dynamic'
 
@@ -246,6 +247,7 @@ export default async function ClientProfilePage() {
                   <span className="text-[9px] font-black uppercase tracking-widest text-oku-purple-dark">Certified</span>
                 </div>
               </div>
+              <PrivacyControls />
             </div>
 
             {/* Referral code */}
