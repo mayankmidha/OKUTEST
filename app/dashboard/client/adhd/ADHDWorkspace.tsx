@@ -254,7 +254,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
              </div>
              {aiStrategy && (
                 <m.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-8 pt-8 border-t border-white/10">
-                    <p className="text-sm text-oku-lavender font-display leading-relaxed italic">{aiStrategy.advice}</p>
+                    <p className="text-sm text-oku-lavender font-display leading-relaxed italic">{aiStrategy.strategy}</p>
                 </m.div>
              )}
              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px]" />
