@@ -9,20 +9,7 @@ interface Props {
   clientCount: number
 }
 
-const TICKER_ITEMS = [
-  '✦ Free first consultation',
-  '✦ Queer-affirming care',
-  '✦ Trauma-informed practitioners',
-  '✦ Sessions from ₹1,500',
-  '✦ HIPAA-compliant platform',
-  '✦ Available online across India',
-  '✦ No wait-lists',
-  '✦ Start today',
-]
-
 export function SocialProofBar({ practitionerCount, sessionCount, clientCount }: Props) {
-  const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
-
   return (
     <>
       {/* Floating stats ribbon — sits above the hero, sticks to top after scroll */}
@@ -63,21 +50,6 @@ export function SocialProofBar({ practitionerCount, sessionCount, clientCount }:
               Browse →
             </a>
           </div>
-        </motion.div>
-      </div>
-
-      {/* Marquee ticker */}
-      <div className="overflow-hidden bg-oku-darkgrey py-3 relative z-10">
-        <motion.div
-          animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
-          className="flex gap-10 whitespace-nowrap w-max"
-        >
-          {items.map((item, i) => (
-            <span key={i} className="text-[10px] font-black uppercase tracking-[0.25em] text-white/60">
-              {item}
-            </span>
-          ))}
         </motion.div>
       </div>
     </>
