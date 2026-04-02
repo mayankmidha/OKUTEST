@@ -88,10 +88,10 @@ export default async function ClientDocumentsPage() {
               <ChevronLeft size={13} /> Dashboard
             </Link>
             <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
-              Your <span className="text-oku-purple-dark italic">Documents.</span>
+              The <span className="text-oku-purple-dark italic">Vault.</span>
             </h1>
             <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
-              Session notes, assessments, and invoices — all in one place.
+              Your clinical and financial history, held in confidence.
             </p>
           </div>
         </div>

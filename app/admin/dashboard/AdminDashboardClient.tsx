@@ -172,30 +172,53 @@ function AdminDashboardContent({
               key="safety" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
               className="grid grid-cols-1 lg:grid-cols-12 gap-12"
             >
-               <div className="lg:col-span-8 card-glass-3d !p-12 !bg-white/40">
-                  <h2 className="heading-display text-4xl mb-12">Safety <span className="italic text-oku-purple-dark">Watchlist</span></h2>
-                  <div className="space-y-6">
-                     {highRiskSignals.length === 0 ? (
-                        <p className="text-xl font-display italic text-oku-darkgrey/20 py-20 text-center">No elevated clinical signals detected.</p>
-                     ) : (
-                        highRiskSignals.map((signal, i) => (
-                            <div key={i} className="p-8 bg-white/80 rounded-[2.5rem] border border-white flex items-center justify-between gap-8 group hover:shadow-xl transition-all">
-                                <div className="flex items-center gap-8">
-                                    <div className="w-16 h-16 rounded-2xl bg-oku-blush/20 flex items-center justify-center text-oku-blush-dark">
-                                        <AlertTriangle size={28} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-oku-blush-dark mb-1">{signal.riskLevel} Risk Flag</p>
-                                        <h3 className="text-2xl font-display font-bold">Patient: {signal.appointment.client?.name}</h3>
-                                        <p className="text-xs opacity-40 italic mt-1">{signal.summary?.substring(0, 100)}...</p>
-                                    </div>
-                                </div>
-                                <Link href={`/admin/dashboard?tab=audit&id=${signal.id}`} className="btn-pill-3d bg-oku-dark text-white !py-3 !px-8">Audit</Link>
+               <div className="lg:col-span-8 space-y-12">
+                  <div className="card-glass-3d !p-12 !bg-white/40">
+                     <h2 className="heading-display text-4xl mb-12 flex items-center gap-4">
+                        <ShieldAlert className="text-oku-blush-dark" />
+                        Safety <span className="italic text-oku-purple-dark">Watchlist</span>
+                     </h2>
+                     <div className="space-y-6">
+                        {highRiskSignals.length === 0 ? (
+                           <p className="text-xl font-display italic text-oku-darkgrey/20 py-20 text-center">No elevated clinical signals detected.</p>
+                        ) : (
+                           highRiskSignals.map((signal, i) => (
+                               <div key={i} className="p-8 bg-white/80 rounded-[2.5rem] border border-white flex items-center justify-between gap-8 group hover:shadow-xl transition-all">
+                                   <div className="flex items-center gap-8">
+                                       <div className="w-16 h-16 rounded-2xl bg-oku-blush/20 flex items-center justify-center text-oku-blush-dark">
+                                           <AlertTriangle size={28} />
+                                       </div>
+                                       <div>
+                                           <p className="text-[10px] font-black uppercase tracking-widest text-oku-blush-dark mb-1">{signal.riskLevel} Risk Flag</p>
+                                           <h3 className="text-2xl font-display font-bold">Patient: {signal.appointment.client?.name}</h3>
+                                           <p className="text-xs opacity-40 italic mt-1">{signal.summary?.substring(0, 100)}...</p>
+                                       </div>
+                                   </div>
+                                   <Link href={`/admin/dashboard?tab=audit&id=${signal.id}`} className="btn-pill-3d bg-oku-dark text-white !py-3 !px-8">Audit</Link>
+                               </div>
+                           ))
+                        )}
+                     </div>
+                  </div>
+
+                  <div className="card-glass-3d !p-12 !bg-oku-dark text-white relative overflow-hidden group">
+                     <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-12">
+                            <Zap className="text-oku-lavender" />
+                            <h2 className="heading-display text-3xl tracking-tight text-white">Behavioral <span className="italic text-oku-lavender">Signals</span></h2>
+                        </div>
+                        <p className="text-sm text-white/40 italic mb-8 max-w-xl">AI-detected anomalies in patient behavior, session patterns, and sentiment shifts across the platform.</p>
+                        <div className="p-10 bg-white/5 rounded-[3rem] border border-white/10 text-center">
+                            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-6">
+                                <Activity className="text-oku-lavender animate-pulse" />
                             </div>
-                        ))
-                     )}
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Active Sentinel monitoring — 0 anomalies found</p>
+                        </div>
+                     </div>
+                     <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px]" />
                   </div>
                </div>
+
                <div className="lg:col-span-4 space-y-12">
                   <div className="card-glass-3d !p-10 !bg-oku-lavender/30">
                      <h3 className="heading-display text-2xl mb-8">Circle <span className="italic">Moderation</span></h3>

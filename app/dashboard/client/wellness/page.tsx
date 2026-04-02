@@ -60,7 +60,7 @@ export default async function WellnessPage() {
     {
       title: 'Mood Tracker',
       description: 'Log and chart your emotional patterns over 30 days.',
-      href: '/dashboard/client/wellness/mood',
+      href: '/dashboard/client/mood/history',
       icon: Heart,
       color: 'bg-oku-lavender/60',
       iconColor: 'text-oku-purple-dark',
@@ -74,9 +74,9 @@ export default async function WellnessPage() {
       iconColor: 'text-emerald-600',
     },
     {
-      title: 'Weekly Check-In',
-      description: 'Reflect on your week and set intentions.',
-      href: '/dashboard/client/wellness/mood',
+      title: 'Vitality Ledger',
+      description: 'Analyze energy and medication trends.',
+      href: '/dashboard/client/mood/history',
       icon: CalendarCheck,
       color: 'bg-white/60',
       iconColor: 'text-oku-darkgrey',

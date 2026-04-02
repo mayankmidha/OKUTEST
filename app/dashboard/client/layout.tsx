@@ -1,8 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
-import { ClientSidebar } from './ClientSidebar'
+import { DashboardSidebar } from '@/components/DashboardSidebar'
 
 export default async function ClientDashboardLayout({
   children,
@@ -24,19 +23,9 @@ export default async function ClientDashboardLayout({
     redirect('/admin/dashboard')
   }
 
-  // Fetch ADHD flag server-side — never trust client state for gate
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      clientProfile: { select: { adhdDiagnosed: true } },
-    },
-  })
-
-  const adhdUnlocked = user?.clientProfile?.adhdDiagnosed === true
-
   return (
     <div className="flex min-h-screen bg-oku-lavender/5">
-      <ClientSidebar adhdUnlocked={adhdUnlocked} />
+      <DashboardSidebar />
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>

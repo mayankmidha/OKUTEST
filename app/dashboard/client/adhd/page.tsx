@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
 import { 
     Brain, 
     Sparkles, 
@@ -11,7 +12,9 @@ import {
     PartyPopper,
     Play,
     Timer,
-    Coffee
+    Coffee,
+    ClipboardCheck,
+    ChevronRight
 } from 'lucide-react'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { ADHDWorkspace } from './ADHDWorkspace'
@@ -74,6 +77,35 @@ export default async function ADHDHelperPage() {
            <h3 className="font-bold text-lg text-oku-dark">Dopamine Reset</h3>
            <p className="text-[10px] text-oku-taupe uppercase tracking-widest mt-1">Quick 3-min break</p>
         </div>
+      </div>
+
+      {/* OS Navigation: Sub-tools */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <Link href="/dashboard/client/adhd/tasks" className="card-glass-3d !p-8 !bg-white/60 hover:bg-white transition-all flex items-center justify-between group">
+            <div className="flex items-center gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark shadow-inner">
+                    <ClipboardCheck size={24} />
+                </div>
+                <div>
+                    <h3 className="text-xl font-display font-bold text-oku-darkgrey">Today&apos;s Three</h3>
+                    <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40">Focused Task Protocol</p>
+                </div>
+            </div>
+            <ChevronRight size={20} className="text-oku-darkgrey/20 group-hover:translate-x-2 transition-transform" />
+        </Link>
+
+        <Link href="/dashboard/client/adhd/log" className="card-glass-3d !p-8 !bg-white/60 hover:bg-white transition-all flex items-center justify-between group">
+            <div className="flex items-center gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-oku-mint flex items-center justify-center text-oku-mint-dark shadow-inner">
+                    <Zap size={24} />
+                </div>
+                <div>
+                    <h3 className="text-xl font-display font-bold text-oku-darkgrey">Energy & Meds</h3>
+                    <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40">Daily Vitality Log</p>
+                </div>
+            </div>
+            <ChevronRight size={20} className="text-oku-darkgrey/20 group-hover:translate-x-2 transition-transform" />
+        </Link>
       </div>
 
       <ADHDWorkspace initialTasks={tasks} />
