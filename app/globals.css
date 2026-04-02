@@ -132,3 +132,10 @@ body {
 .sidebar-gradient {
   @apply bg-gradient-to-b from-oku-lavender to-oku-blush dark:from-oku-dark-lavender dark:to-oku-dark-blush;
 }
+
+/* Immersive Experience Overrides */
+body.hide-global-header header, 
+body.hide-global-header nav,
+body.hide-global-header .global-header {
+  display: none !important;
+}

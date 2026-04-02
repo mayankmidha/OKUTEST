@@ -24,6 +24,13 @@ export default function TypeformAssessmentPlayer() {
   const [isFinished, setIsFinished] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
 
+  // ── FIX: HIDE GLOBAL HEADER ──
+  useEffect(() => {
+    // We add a class to the body to hide the global root layout header during this immersive session
+    document.body.classList.add('hide-global-header');
+    return () => document.body.classList.remove('hide-global-header');
+  }, []);
+
   const handleNext = useCallback(() => {
     if (currentStep < (assessment?.questions.length || 0) - 1) {
       setCurrentStep(prev => prev + 1)

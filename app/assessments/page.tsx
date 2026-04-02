@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ClipboardCheck, ArrowRight, Shield, Zap, Heart, Sparkles, Loader2 } from 'lucide-react'
+import { ClipboardCheck, ArrowRight, Shield, Zap, Heart, Sparkles, Loader2, Clock, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 
 const staticAssessments = [
@@ -70,48 +70,88 @@ export default function AssessmentsPage() {
   }
 
   return (
-    <div className="oku-page-public min-h-screen bg-oku-mint relative overflow-hidden">
-      {/* Animated Background Blobs */}
-      <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-oku-lavender/30 rounded-full blur-[140px] animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-oku-butter/20 rounded-full blur-[120px] animate-float-3d" />
+    <div className="oku-page-public min-h-screen bg-oku-cream relative overflow-hidden font-sans">
+      {/* Animated Background Architecture */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+          <motion.div 
+            animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3], x: [0, 50, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-20 -right-20 w-[800px] h-[800px] bg-oku-lavender/40 rounded-full blur-[160px]"
+          />
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2], y: [0, -40, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute -bottom-40 -left-40 w-[700px] h-[700px] bg-oku-blush/30 rounded-full blur-[140px]"
+          />
+      </div>
 
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-48 pb-32 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <div className="mb-24 text-center">
-            <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 28, display: "inline-block" }}>
-              Public Marketplace
-            </span>
-            <h1 className="heading-display text-oku-darkgrey text-5xl md:text-8xl leading-[0.85] tracking-tight mb-8">
-              Gentle <span className="text-oku-purple-dark italic">Self-Checks.</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-oku-darkgrey/60 font-display italic leading-relaxed max-w-2xl mx-auto border-l-4 border-oku-purple-dark/10 pl-8">
-              Explore our core clinical screeners and premium practitioner-designed assessments.
-            </p>
+          <div className="mb-32 text-center space-y-10">
+            <motion.span 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="px-5 py-2 bg-white/60 backdrop-blur-md border border-white rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-oku-purple-dark shadow-sm inline-block"
+            >
+              Clinical Marketplace
+            </motion.span>
+            
+            <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="heading-display text-oku-darkgrey text-7xl md:text-[10rem] leading-[0.8] tracking-tighter"
+            >
+              Gentle <br />
+              <span className="text-oku-purple-dark italic">Insights.</span>
+            </motion.h1>
+            
+            <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-2xl md:text-3xl text-oku-darkgrey/50 font-display italic leading-relaxed max-w-2xl mx-auto border-l-4 border-oku-purple-dark/10 pl-10"
+            >
+              Explore clinically validated screeners and premium practitioner-designed assessments.
+            </motion.p>
           </div>
 
-          <div className="space-y-24">
+          <div className="space-y-40">
             {/* 1. Core Assessments */}
             <section>
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-purple-dark/40 mb-12 ml-4">Standard Clinical Hub</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="flex items-center gap-6 mb-20 ml-4">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-oku-purple-dark/40 shrink-0">Clinical Foundations</h2>
+                <div className="h-px w-full bg-oku-purple-dark/10" />
+              </div>
+              <div className="grid md:grid-cols-2 gap-10">
                 {staticAssessments.map((assessment, index) => (
                   <motion.div 
                     key={assessment.slug}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="card-glass-3d !p-8 !bg-white/60 group hover:shadow-2xl transition-all"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, duration: 0.8 }}
+                    className="card-glass-3d !p-12 !bg-white/60 group hover:shadow-2xl transition-all border border-white/80 !rounded-[4rem]"
                   >
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-oku-purple-dark/40 mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                      <ClipboardCheck size={24} />
+                    <div className="flex justify-between items-start mb-12">
+                        <div className="w-16 h-16 bg-oku-lavender/40 rounded-3xl flex items-center justify-center text-oku-purple-dark shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                          <ClipboardCheck size={32} />
+                        </div>
+                        <div className="text-right space-y-1">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30">Completion Time</p>
+                            <div className="flex items-center gap-2 justify-end text-oku-darkgrey">
+                                <Clock size={14} className="text-oku-purple" />
+                                <span className="text-sm font-bold">{assessment.time}</span>
+                            </div>
+                        </div>
                     </div>
-                    <h3 className="text-lg font-bold text-oku-darkgrey mb-3">{assessment.title}</h3>
-                    <p className="text-xs text-oku-darkgrey/50 italic font-display mb-8 leading-relaxed">{assessment.description}</p>
+                    <h3 className="heading-display text-4xl text-oku-darkgrey mb-6 tracking-tight">{assessment.title}</h3>
+                    <p className="text-lg text-oku-darkgrey/50 italic font-display mb-12 leading-relaxed min-h-[4rem]">{assessment.description}</p>
                     <button 
                       onClick={() => handleBegin(assessment.slug, false)}
-                      className="w-full py-4 bg-oku-darkgrey text-white rounded-full text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-oku-purple-dark transition-all"
+                      className="w-full py-6 bg-oku-darkgrey text-white rounded-full text-[10px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-oku-purple-dark transition-all shadow-xl group/btn"
                     >
-                      Begin <ArrowRight size={14} />
+                      Begin Screening <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
                     </button>
                   </motion.div>
                 ))}
@@ -121,41 +161,42 @@ export default function AssessmentsPage() {
             {/* 2. Premium / Practitioner Assessments */}
             {dbAssessments.length > 0 && (
               <section>
-                <div className="flex items-center gap-4 mb-12 ml-4">
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-peach-dark/60">Premium Diagnostic Suite</h2>
-                  <div className="h-px flex-1 bg-oku-peach/20" />
+                <div className="flex items-center gap-6 mb-20 ml-4">
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-oku-peach-dark/60 shrink-0">Premium Suite</h2>
+                  <div className="h-px w-full bg-oku-peach/20" />
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                   {dbAssessments.map((assessment: any, index: number) => (
                     <motion.div 
                       key={assessment.id}
                       initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      className="card-glass-3d !p-10 !bg-oku-dark text-white relative overflow-hidden group shadow-2xl"
+                      className="card-glass-3d !p-12 !bg-oku-dark text-white relative overflow-hidden group shadow-2xl !rounded-[4rem]"
                     >
                       <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-10">
-                           <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20">
-                              <Sparkles size={24} className="text-oku-lavender" />
+                        <div className="flex justify-between items-start mb-12">
+                           <div className="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center border border-white/20 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                              <Sparkles size={32} className="text-oku-lavender" />
                            </div>
                            <div className="text-right">
-                              <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Premium</p>
-                              <p className="text-lg font-bold text-oku-mint">₹{assessment.price}</p>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Premium Fee</p>
+                              <p className="text-3xl heading-display text-oku-mint">₹{assessment.price}</p>
                            </div>
                         </div>
-                        <h3 className="heading-display text-3xl mb-4 leading-tight">{assessment.title}</h3>
-                        <p className="text-sm text-white/50 mb-10 italic font-display leading-relaxed">
-                          {assessment.description || "In-depth clinical assessment designed for formal diagnostic support."}
+                        <h3 className="heading-display text-4xl mb-6 leading-tight tracking-tight">{assessment.title}</h3>
+                        <p className="text-base text-white/50 mb-12 italic font-display leading-relaxed line-clamp-3">
+                          {assessment.description || "In-depth clinical assessment designed for formal diagnostic support and specialized reporting."}
                         </p>
                         <button 
                           onClick={() => handleBegin(assessment.id, true, assessment.id)}
-                          className="w-full py-5 bg-white text-oku-dark rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-oku-lavender transition-all group"
+                          className="w-full py-6 bg-white text-oku-dark rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-oku-lavender transition-all group/btn shadow-lg"
                         >
-                          Unlock Report <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                          Unlock Report <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
                         </button>
                       </div>
-                      <div className="absolute top-0 right-0 w-48 h-48 bg-oku-purple/10 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2" />
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
                     </motion.div>
                   ))}
                 </div>
@@ -163,12 +204,21 @@ export default function AssessmentsPage() {
             )}
 
             {isLoading && (
-              <div className="flex justify-center py-20">
-                <Loader2 className="w-10 h-10 animate-spin text-oku-purple-dark/20" />
+              <div className="flex justify-center py-32">
+                <Loader2 className="w-12 h-12 animate-spin text-oku-purple-dark/20" />
               </div>
             )}
           </div>
         </div>
+      </div>
+
+      {/* Trust Bar Footer */}
+      <div className="max-w-5xl mx-auto px-12 py-20 border-t border-oku-darkgrey/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40 hover:opacity-100 transition-opacity duration-700 relative z-10">
+          <div className="flex items-center gap-3">
+              <ShieldCheck size={20} className="text-oku-purple-dark" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey">Verified Clinical Engine</span>
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey">Privacy by Design &copy; 2026</p>
       </div>
     </div>
   )
