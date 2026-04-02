@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, User, Activity, FileText, Heart, Shield, Calendar, Mail, Phone, ExternalLink, Brain } from 'lucide-react'
 import { UserRole, AppointmentStatus } from '@prisma/client'
+import { toggleClientAdhdByTherapist } from '@/app/admin/actions'
 import { TreatmentPlanManager } from '@/components/TreatmentPlanManager'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
@@ -11,6 +12,7 @@ import { DocumentVault } from '@/components/DocumentVault'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
 import { ClinicalAITranscriptViewer } from '@/components/ClinicalAITranscriptViewer'
 import { ToolRecommendationHub } from './ToolRecommendationHub'
+import { ClientBehaviourReport } from './ClientBehaviourReport'
 
 export const dynamic = 'force-dynamic'
 
@@ -173,12 +175,44 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                                     <div className="w-2 h-2 rounded-full bg-oku-success"></div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-oku-success">Consent Signed</span>
                                 </div>
-                                <span className="text-[9px] font-black text-oku-taupe opacity-40">{new Date(clientData.intakeForm.signedAt!).toLocaleDateString()}</span>
+                                <span className="text-[9px] font-black text-oku-taupe opacity-40">{new Date(clientData.intakeForm.signedAt!).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
                             </div>
                         </div>
                     ) : (
                         <p className="text-xs italic text-oku-taupe opacity-60">Intake form not yet submitted.</p>
                     )}
+                </div>
+
+                {/* ADHD Access Control */}
+                <div className="bg-oku-lavender/30 p-8 rounded-[2.5rem] border border-oku-lavender/40">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-oku-purple-dark flex items-center gap-2">
+                      <Brain size={16} /> ADHD Manager
+                    </h3>
+                    {clientData.clientProfile?.adhdDiagnosed ? (
+                      <span className="px-3 py-1 bg-oku-lavender text-oku-purple-dark text-[9px] font-black uppercase tracking-widest rounded-full border border-oku-lavender">Active</span>
+                    ) : (
+                      <span className="px-3 py-1 bg-white/40 text-oku-darkgrey/30 text-[9px] font-black uppercase tracking-widest rounded-full border border-oku-darkgrey/10">Off</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-oku-purple-dark/60 italic mb-6 leading-relaxed">
+                    Enable the ADHD Manager dashboard for this client — task atomizer, daily tracker, body doubling rooms, and focus tools.
+                  </p>
+                  <form action={async () => {
+                    'use server'
+                    await toggleClientAdhdByTherapist(clientData.id, !clientData.clientProfile?.adhdDiagnosed)
+                  }}>
+                    <button
+                      type="submit"
+                      className={`w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        clientData.clientProfile?.adhdDiagnosed
+                          ? 'bg-white/60 text-oku-purple-dark hover:bg-white border border-oku-lavender'
+                          : 'bg-oku-purple-dark text-white hover:bg-oku-purple-dark/80'
+                      }`}
+                    >
+                      {clientData.clientProfile?.adhdDiagnosed ? 'Revoke ADHD Access' : 'Enable ADHD Manager'}
+                    </button>
+                  </form>
                 </div>
 
                 <ToolRecommendationHub clientId={clientData.id} />
@@ -187,6 +221,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             {/* Right Col: Timeline & Notes */}
             <div className="lg:col-span-2 space-y-12">
                 
+                {/* AI Behaviour Report */}
+                <ClientBehaviourReport clientId={clientData.id} />
+
                 {/* Outcome Analytics */}
                 <WellnessVisualizer clientId={clientData.id} />
 
@@ -275,7 +312,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                                             <Calendar size={20} />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-oku-dark text-lg">{new Date(appt.startTime).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric'})}</p>
+                                            <p className="font-bold text-oku-dark text-lg">{new Date(appt.startTime).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', month: 'long', day: 'numeric' })}</p>
                                             <p className="text-xs text-oku-taupe uppercase tracking-widest font-black mt-1">{appt.service.name}</p>
                                         </div>
                                     </div>

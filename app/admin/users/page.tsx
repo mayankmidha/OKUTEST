@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import Link from 'next/link'
 import { Users, UserCheck, UserPlus, Activity, Shield, Trash2, Ban, ChevronLeft } from 'lucide-react'
-import { deleteUser } from '../actions'
+import { deleteUser, toggleClientAdhd } from '../actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -122,11 +122,22 @@ export default async function AdminUsersPage() {
                     ₹{((client.clientProfile?.referralCreditBalance ?? 0)).toFixed(0)}
                   </td>
                   <td className="px-8 py-5">
-                    {client.clientProfile?.adhdDiagnosed ? (
-                      <span className="px-3 py-1 bg-oku-lavender text-oku-purple-dark text-[9px] font-black uppercase tracking-widest rounded-full">Confirmed</span>
-                    ) : (
-                      <span className="text-[9px] text-oku-darkgrey/20 font-black uppercase tracking-widest">—</span>
-                    )}
+                    <form action={async () => {
+                      'use server'
+                      await toggleClientAdhd(client.id, !client.clientProfile?.adhdDiagnosed)
+                    }}>
+                      <button
+                        type="submit"
+                        className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all border ${
+                          client.clientProfile?.adhdDiagnosed
+                            ? 'bg-oku-lavender text-oku-purple-dark border-oku-lavender hover:bg-oku-lavender/60'
+                            : 'bg-white/40 text-oku-darkgrey/30 border-oku-darkgrey/10 hover:bg-oku-lavender/30 hover:text-oku-purple-dark'
+                        }`}
+                        title={client.clientProfile?.adhdDiagnosed ? 'Revoke ADHD access' : 'Enable ADHD Manager'}
+                      >
+                        {client.clientProfile?.adhdDiagnosed ? '✓ ADHD On' : 'Enable ADHD'}
+                      </button>
+                    </form>
                   </td>
                   <td className="px-8 py-5">
                     {client.deletionRequestedAt ? (

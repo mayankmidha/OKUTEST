@@ -19,9 +19,11 @@ export interface Assessment {
   longDescription: string;
   timeEstimate: string;
   questionCount: number;
+  timeframe: string; // Clinical preamble shown above each question, e.g. "Over the last 2 weeks…"
   questions: AssessmentQuestion[];
   options: { label: string; value: number }[];
   scoring: AssessmentScoring[];
+  highRiskThreshold?: number; // Score at or above which a crisis note is shown
 }
 
 export const ASSESSMENTS: Assessment[] = [
@@ -33,7 +35,8 @@ export const ASSESSMENTS: Assessment[] = [
     description: "The WHO-validated 18-question screener for adult ADHD symptoms.",
     longDescription: "Developed in conjunction with the World Health Organization, the ASRS is a validated tool to help identify the symptoms of ADHD in adults. This screening is the first step in a professional diagnostic journey.",
     timeEstimate: "5 mins",
-    questionCount: 6, // Focus on the Part-A screening version for high conversion
+    questionCount: 6,
+    timeframe: "Over the last 6 months, how often have you experienced the following?",
     questions: [
       { id: '1', text: "How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?" },
       { id: '2', text: "How often do you have difficulty getting things in order when you have to do a task that requires organization?" },
@@ -63,6 +66,8 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "The PHQ-9 is a multipurpose instrument for screening, diagnosing, monitoring and measuring the severity of depression.",
     timeEstimate: "3 mins",
     questionCount: 9,
+    timeframe: "Over the last 2 weeks, how often have you been bothered by any of the following problems?",
+    highRiskThreshold: 15,
     questions: [
       { id: '1', text: "Little interest or pleasure in doing things" },
       { id: '2', text: "Feeling down, depressed, or hopeless" },
@@ -96,6 +101,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "The GAD-7 is a sensitive self-report scale to identify probable cases of Generalized Anxiety Disorder and assess symptom severity.",
     timeEstimate: "3 mins",
     questionCount: 7,
+    timeframe: "Over the last 2 weeks, how often have you been bothered by any of the following problems?",
     questions: [
       { id: '1', text: "Feeling nervous, anxious or on edge" },
       { id: '2', text: "Not being able to stop or control worrying" },
@@ -127,6 +133,8 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "Used by the VA and trauma clinicians, the PCL-5 monitors PTSD symptoms aligned with the DSM-5 criteria.",
     timeEstimate: "8 mins",
     questionCount: 20,
+    timeframe: "In the past month, how much were you bothered by the following problems?",
+    highRiskThreshold: 33,
     questions: [
       { id: '1', text: "Repeated, disturbing, and unwanted memories of the stressful experience?" },
       { id: '2', text: "Repeated, disturbing dreams of the stressful experience?" },
@@ -170,6 +178,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "The DASS-21 is designed to measure the negative emotional states of depression, anxiety and stress. It provides a comprehensive emotional profile.",
     timeEstimate: "6 mins",
     questionCount: 21,
+    timeframe: "Please read each statement and indicate how much it applied to you over the past week.",
     questions: [
       { id: '1', text: "I found it hard to wind down" },
       { id: '2', text: "I was aware of dryness of my mouth" },
@@ -214,6 +223,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "The Conners 3 is a dependable tool for assessing ADHD and common comorbid problems. This screening version targets the core DSM-5 symptoms.",
     timeEstimate: "10 mins",
     questionCount: 15,
+    timeframe: "Rate how true each item has been for you over the past month.",
     questions: [
       { id: '1', text: "I have trouble keeping my mind on my work or tasks." },
       { id: '2', text: "I am easily distracted by things around me." },
@@ -252,6 +262,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "Originally designed for pediatrics, this adult self-report version helps identify ADHD subtypes plus comorbid anxiety or conduct issues.",
     timeEstimate: "8 mins",
     questionCount: 12,
+    timeframe: "Over the last month, how often did you experience the following?",
     questions: [
       { id: '1', text: "Fails to give attentive to details or makes careless mistakes" },
       { id: '2', text: "Has difficulty sustaining attention to tasks or activities" },
@@ -286,6 +297,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "The BAI is a widely used 21-item self-report inventory used for measuring the severity of anxiety.",
     timeEstimate: "5 mins",
     questionCount: 21,
+    timeframe: "Over the last week, including today, how much have you been bothered by the following?",
     questions: [
       { id: '1', text: "Numbness or tingling" },
       { id: '2', text: "Feeling hot" },
@@ -331,6 +343,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "A concise screening tool used globally to assess general mental health status and psychological distress.",
     timeEstimate: "2 mins",
     questionCount: 5,
+    timeframe: "How much of the time during the past month have you...",
     questions: [
       { id: '1', text: "How much of the time have you been a very nervous person?" },
       { id: '2', text: "How much of the time have you felt so down in the dumps that nothing could cheer you up?" },
@@ -359,6 +372,7 @@ export const ASSESSMENTS: Assessment[] = [
     longDescription: "The BRIEF-2 targets the cognitive processes that allow us to plan, focus attention, and manage multiple tasks.",
     timeEstimate: "7 mins",
     questionCount: 10,
+    timeframe: "Over the last 6 months, how often have you had problems with...",
     questions: [
       { id: '1', text: "I have trouble sitting still." },
       { id: '2', text: "I act without thinking." },

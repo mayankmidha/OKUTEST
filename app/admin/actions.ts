@@ -239,6 +239,39 @@ export async function deletePost(id: string) {
   revalidatePath('/blog')
 }
 
+// ─── ADHD ACCESS CONTROL ─────────────────────────────────────────────────────
+
+/** Admin: toggle ADHD Manager access for any client */
+export async function toggleClientAdhd(userId: string, adhdDiagnosed: boolean) {
+  await checkAdmin()
+  await prisma.clientProfile.upsert({
+    where: { userId },
+    update: { adhdDiagnosed },
+    create: { userId, adhdDiagnosed },
+  })
+  revalidatePath('/admin/users')
+  revalidatePath('/dashboard/client')
+}
+
+/** Therapist: toggle ADHD Manager access for one of their own clients */
+export async function toggleClientAdhdByTherapist(clientId: string, adhdDiagnosed: boolean) {
+  const session = await auth()
+  if (!session?.user || session.user.role !== UserRole.THERAPIST) throw new Error('Unauthorized')
+
+  // Verify this client has had at least one appointment with this therapist
+  const link = await prisma.appointment.findFirst({
+    where: { clientId, practitionerId: session.user.id },
+  })
+  if (!link) throw new Error('Client not in your caseload')
+
+  await prisma.clientProfile.upsert({
+    where: { userId: clientId },
+    update: { adhdDiagnosed },
+    create: { userId: clientId, adhdDiagnosed },
+  })
+  revalidatePath(`/practitioner/clients/${clientId}`)
+}
+
 // ─── PAYOUT ACTIONS ──────────────────────────────────────────────────────────
 
 export async function markAsPaid(practitionerId: string, amount: number, payoutId?: string) {

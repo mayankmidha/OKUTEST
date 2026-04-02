@@ -190,6 +190,90 @@ export async function getOkuAiSettings() {
   }
 }
 
+// ─── Client Behaviour Analysis ───────────────────────────────────────────────
+
+export interface ClientBehaviourReport {
+  summary: string
+  engagementScore: number // 0–100
+  moodTrend: 'improving' | 'declining' | 'stable' | 'volatile' | 'insufficient_data'
+  patterns: string[]
+  riskFlags: string[]
+  recommendations: string[]
+  nextSessionFocus: string
+}
+
+/**
+ * Analyses aggregated client behavioural data and returns a therapist-facing report.
+ * Uses Gemini Flash (fast + cost-effective for periodic reports).
+ */
+export async function analyzeClientBehaviour(params: {
+  clientName: string
+  moodEntries: { mood: number; createdAt: Date; notes?: string | null }[]
+  assessmentAnswers: { score: number | null; result: string | null; completedAt: Date; assessment: { title: string } }[]
+  adhdLogs: { moodScore: number | null; energyLevel: number; sleepHours: number | null; medicationTaken: boolean; date: Date }[]
+  sessionCount: number
+  missedSessions: number
+}): Promise<ClientBehaviourReport> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+
+  const moodSummary = params.moodEntries.length > 0
+    ? `${params.moodEntries.length} mood entries. Scores: ${params.moodEntries.map(m => m.mood).join(', ')}. Notes: ${params.moodEntries.slice(0, 5).map(m => m.notes).filter(Boolean).join(' | ')}`
+    : 'No mood data recorded.'
+
+  const assessmentSummary = params.assessmentAnswers.length > 0
+    ? params.assessmentAnswers.map(a => `${a.assessment.title}: ${a.result ?? 'No result'} (score ${a.score ?? 'N/A'}) on ${new Date(a.completedAt).toDateString()}`).join('; ')
+    : 'No assessments completed.'
+
+  const adhdSummary = params.adhdLogs.length > 0
+    ? `${params.adhdLogs.length} ADHD logs. Avg energy: ${Math.round(params.adhdLogs.reduce((a, b) => a + b.energyLevel, 0) / params.adhdLogs.length)}/100. Avg sleep: ${(params.adhdLogs.reduce((a, b) => a + (b.sleepHours ?? 0), 0) / params.adhdLogs.length).toFixed(1)}h. Medication adherence: ${Math.round((params.adhdLogs.filter(l => l.medicationTaken).length / params.adhdLogs.length) * 100)}%.`
+    : 'No ADHD tracking data.'
+
+  const prompt = `
+You are a clinical AI assistant for OKU Therapy. Analyze the following patient data and provide a structured behavioural report for the treating therapist.
+
+PATIENT: ${params.clientName}
+SESSION HISTORY: ${params.sessionCount} sessions completed, ${params.missedSessions} missed.
+
+MOOD DATA (last 30 days): ${moodSummary}
+
+SCREENING RESULTS: ${assessmentSummary}
+
+ADHD TRACKING: ${adhdSummary}
+
+Return a JSON object with:
+1. "summary": 2-3 sentence clinical summary of the patient's current trajectory.
+2. "engagementScore": Integer 0-100 reflecting overall engagement with care (attendance, mood logging, assessments).
+3. "moodTrend": Exactly one of: "improving", "declining", "stable", "volatile", "insufficient_data".
+4. "patterns": Array of 3-5 specific behavioural patterns observed (clinical language).
+5. "riskFlags": Array of 0-3 risk flags that need therapist attention. Empty array if none.
+6. "recommendations": Array of 3-4 specific recommendations for the next session or care plan.
+7. "nextSessionFocus": One sentence describing the primary suggested focus for the next session.
+
+Be clinical, concise, and actionable. Base everything only on the data provided.
+`
+
+  try {
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]) as ClientBehaviourReport
+    }
+    throw new Error('Failed to parse behaviour report')
+  } catch (error) {
+    console.error('[OCI_BEHAVIOUR_ERROR]', error)
+    return {
+      summary: 'Insufficient data to generate a full report at this time.',
+      engagementScore: 0,
+      moodTrend: 'insufficient_data',
+      patterns: [],
+      riskFlags: [],
+      recommendations: ['Schedule a check-in session', 'Encourage mood logging', 'Assign a baseline assessment'],
+      nextSessionFocus: 'Establish rapport and gather more baseline data.',
+    }
+  }
+}
+
 /**
  * ADHD Task Atomizer
  * Breaks a large, overwhelming task into small, manageable "atoms"
