@@ -96,8 +96,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async session({ session, token }: { session: any, token: any }) {
         if (session.user) {
-          if (token.sub) session.user.id = token.sub;
-          if (token.role) session.user.role = token.role;
+          session.user.id = token.id || token.sub;
+          session.user.role = token.role;
           session.user.hasSignedConsent = !!token.hasSignedConsent;
         }
         return session;
@@ -117,6 +117,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (session.role) {
           token.role = session.role;
         }
+      }
+
+      // Secondary safety: If hasSignedConsent is missing, fetch from DB once (optional but safer)
+      if (token.id && token.hasSignedConsent === undefined) {
+          const u = await prisma.user.findUnique({ where: { id: token.id }, select: { hasSignedConsent: true } });
+          token.hasSignedConsent = !!u?.hasSignedConsent;
       }
       
       return token;
