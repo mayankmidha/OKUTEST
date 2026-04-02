@@ -10,6 +10,8 @@ import {
 } from 'lucide-react'
 import { AppointmentStatus } from '@prisma/client'
 import { formatCurrency } from '@/lib/currency'
+import { AnimatedDashboardStats } from '@/components/AnimatedDashboardStats'
+import { LottieWellness } from '@/components/LottieWellness'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,27 +22,41 @@ export default async function ClientDashboardPage() {
     redirect('/auth/login')
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      clientProfile: true,
-      clientAppointments: {
-        include: { practitioner: true, service: true },
-        where: { startTime: { gte: new Date() }, status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] } },
-        orderBy: { startTime: 'asc' },
-        take: 1
+  const [user, intakeForm, totalSessions] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        clientProfile: true,
+        clientAppointments: {
+          include: { practitioner: true, service: true },
+          where: { startTime: { gte: new Date() }, status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] } },
+          orderBy: { startTime: 'asc' },
+          take: 1,
+        },
+        assessmentAnswers: {
+          orderBy: { completedAt: 'desc' },
+          take: 5,
+        },
       },
-      assessmentAnswers: {
-        orderBy: { completedAt: 'desc' },
-        take: 5
-      }
-    }
-  })
+    }),
+    prisma.intakeForm.findUnique({ where: { userId: session.user.id }, select: { id: true } }),
+    prisma.appointment.count({ where: { clientId: session.user.id, status: 'COMPLETED' } }),
+  ])
 
   if (!user) redirect('/auth/login')
 
   const nextSession = user.clientAppointments[0]
   const referralCredit = user.clientProfile?.referralCreditBalance || 0
+  const hasIntake = !!intakeForm
+  const isNewUser = totalSessions === 0 && !nextSession
+
+  // Getting started steps
+  const gettingStarted = [
+    { done: hasIntake, label: 'Complete intake form', href: '/dashboard/client/intake', desc: 'Takes 3 minutes — required before your first session' },
+    { done: user.assessmentAnswers.length > 0, label: 'Take a self-assessment', href: '/dashboard/client/clinical', desc: 'Understand where you are and share it with your therapist' },
+    { done: totalSessions > 0 || !!nextSession, label: 'Book your first session', href: '/dashboard/client/therapists', desc: 'First consultation is free — no commitment needed' },
+  ]
+  const completedSteps = gettingStarted.filter((s) => s.done).length
 
   return (
     <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5 relative overflow-hidden">
@@ -70,46 +86,87 @@ export default async function ClientDashboardPage() {
         </div>
       </div>
 
-      {/* ── 1. MISSION CRITICALS (STATS) ── */}
+      {/* ── ONBOARDING BANNER (new users) ── */}
+      {isNewUser && (
+        <div className="mb-12 relative z-10">
+          {/* Intake warning */}
+          {!hasIntake && (
+            <Link href="/dashboard/client/intake" className="flex items-center justify-between p-5 mb-4 bg-oku-peach/40 border border-oku-peach rounded-2xl hover:bg-oku-peach/60 transition-all group">
+              <div className="flex items-center gap-3">
+                <AlertCircle size={16} className="text-orange-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-black text-oku-darkgrey">Complete your intake form</p>
+                  <p className="text-xs text-oku-darkgrey/60">Required before your first session — takes 3 min</p>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-oku-darkgrey/30 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          )}
+
+          {/* Getting started card */}
+          <div className="card-glass-3d !bg-white/60 !p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30 mb-1">Your Journey</p>
+                <h3 className="text-xl font-black text-oku-darkgrey">Getting Started</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  {gettingStarted.map((_, i) => (
+                    <div key={i} className={`h-2 rounded-full transition-all ${i < completedSteps ? 'bg-oku-purple-dark w-6' : 'bg-oku-darkgrey/10 w-2'}`} />
+                  ))}
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30">{completedSteps}/{gettingStarted.length}</span>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-3">
+              {gettingStarted.map((step, i) => (
+                <Link
+                  key={i}
+                  href={step.done ? '#' : step.href}
+                  className={`flex items-start gap-3 p-4 rounded-2xl border transition-all ${
+                    step.done
+                      ? 'bg-oku-mint/30 border-oku-mint/50 cursor-default'
+                      : 'bg-white/50 border-white/80 hover:border-oku-lavender hover:bg-oku-lavender/10'
+                  }`}
+                >
+                  <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-[10px] font-black mt-0.5 ${
+                    step.done ? 'bg-oku-purple-dark text-white' : 'bg-oku-darkgrey/10 text-oku-darkgrey/40'
+                  }`}>
+                    {step.done ? '✓' : i + 1}
+                  </div>
+                  <div>
+                    <p className={`text-sm font-black ${step.done ? 'text-oku-darkgrey/50 line-through' : 'text-oku-darkgrey'}`}>{step.label}</p>
+                    {!step.done && <p className="text-xs text-oku-darkgrey/40 mt-0.5 leading-snug">{step.desc}</p>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── INTAKE NUDGE (returning users without intake) ── */}
+      {!isNewUser && !hasIntake && (
+        <Link href="/dashboard/client/intake" className="flex items-center justify-between p-5 mb-8 bg-oku-peach/30 border border-oku-peach/50 rounded-2xl hover:bg-oku-peach/50 transition-all group relative z-10">
+          <div className="flex items-center gap-3">
+            <AlertCircle size={16} className="text-orange-500 shrink-0" />
+            <div>
+              <p className="text-sm font-black text-oku-darkgrey">Your intake form is incomplete</p>
+              <p className="text-xs text-oku-darkgrey/60">Some therapists require this before your session</p>
+            </div>
+          </div>
+          <span className="text-[9px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline">Complete Now →</span>
+        </Link>
+      )}
+
+      {/* ── 1. MISSION CRITICALS (STATS) — animated spring counters ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 relative z-10">
-        <div className="card-glass-3d !bg-oku-lavender/60 !p-10 flex flex-col justify-between group animate-float-3d">
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Zap size={32} strokeWidth={1.5} />
-            </div>
-            <TrendingUp size={20} className="text-oku-purple-dark/40" />
-          </div>
-          <div>
-            <p className="text-6xl heading-display text-oku-darkgrey mb-2">{user.assessmentAnswers.length}</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Growth Milestones</p>
-          </div>
-        </div>
-
-        <div className="card-glass-3d !bg-oku-mint/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.2s' }}>
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Heart size={32} strokeWidth={1.5} />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Wellness</span>
-          </div>
-          <div>
-            <p className="text-6xl heading-display text-oku-darkgrey mb-2">Active</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Care Journey</p>
-          </div>
-        </div>
-
-        <div className="card-glass-3d !bg-oku-babyblue/60 !p-10 flex flex-col justify-between group animate-float-3d" style={{ animationDelay: '0.4s' }}>
-          <div className="flex justify-between items-start mb-12">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center text-oku-purple-dark shadow-sm">
-              <Gift size={32} strokeWidth={1.5} />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/20">Referrals</span>
-          </div>
-          <div>
-            <p className="text-4xl heading-display text-oku-darkgrey mb-2">{formatCurrency(referralCredit, 'INR')}</p>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40">Available Credits</p>
-          </div>
-        </div>
+        <AnimatedDashboardStats
+          assessmentCount={user.assessmentAnswers.length}
+          sessionCount={totalSessions}
+          referralCredit={referralCredit}
+        />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 relative z-10">
@@ -212,31 +269,8 @@ export default async function ClientDashboardPage() {
         {/* ── RIGHT: PERSONAL UTILITIES ── */}
         <div className="xl:col-span-4 space-y-12">
           
-          {/* WELLNESS TRACKING */}
-          <section className="card-glass-3d !bg-oku-butter !p-10 group relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-8">
-                <Smile className="text-oku-purple-dark/60 animate-float-3d" size={28} />
-                <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">Daily Check-in</span>
-              </div>
-              <h3 className="heading-display text-3xl text-oku-darkgrey mb-6">How is your <span className="italic text-oku-purple-dark">rhythm?</span></h3>
-              <div className="flex justify-between mb-8">
-                {['😔', '😐', '🙂', '✨'].map((emoji, i) => (
-                    <button key={i} className="w-14 h-14 rounded-2xl bg-white/40 border border-white/60 flex items-center justify-center text-2xl hover:bg-white hover:scale-110 transition-all shadow-sm">
-                        {emoji}
-                    </button>
-                ))}
-              </div>
-              <div className="flex flex-col gap-3">
-                <Link href="/dashboard/client/mood" className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white w-full !py-4 text-center">
-                    Log Wellness Data
-                </Link>
-                <Link href="/dashboard/client/mood/history" className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 text-center hover:text-oku-purple-dark transition-colors">
-                    View Vitality Ledger →
-                </Link>
-              </div>
-            </div>
-          </section>
+          {/* WELLNESS TRACKING — Lottie + React Spring */}
+          <LottieWellness />
 
           {/* THE VAULT SUMMARY */}
           <section className="card-glass-3d !p-10 !bg-white/40">

@@ -2,10 +2,13 @@ import type { Metadata } from 'next'
 import './globals.css'
 import RootLayoutClient from '@/components/RootLayoutClient'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export const metadata: Metadata = {
   title: 'OKU Therapy - Inclusive, Trauma-Informed Care',
   description: 'OKU is a psychotherapy collective offering inclusive, trauma-informed care for all parts of who you are. Book a free consultation to begin gently.',
+  manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.ico',
@@ -52,6 +55,8 @@ export default function RootLayout({
             {children}
           </RootLayoutClient>
         </ErrorBoundary>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

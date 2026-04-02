@@ -35,6 +35,7 @@ export function DashboardSidebar() {
     ...(adhdUnlocked
       ? [{ label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} /> }]
       : []),
+    { label: 'My Progress',      href: '/dashboard/client/progress',          icon: <TrendingUp size={18} strokeWidth={1.5} /> },
     { label: 'Wellness Hub',     href: '/dashboard/client/wellness',          icon: <Heart size={18} strokeWidth={1.5} /> },
     { label: 'Library',          href: '/dashboard/client/resources',         icon: <BookOpen size={18} strokeWidth={1.5} /> },
     { label: 'The Vault',        href: '/dashboard/client/documents',         icon: <FileText size={18} strokeWidth={1.5} /> },
@@ -50,6 +51,7 @@ export function DashboardSidebar() {
     { label: 'Circles Host', href: '/practitioner/dashboard?tab=circles', icon: <Video size={18} strokeWidth={1.5} /> },
     { label: 'Clinical Tools', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
     { label: 'Intelligence', href: '/practitioner/intelligence', icon: <Brain size={18} strokeWidth={1.5} /> },
+    { label: 'Outcomes', href: '/practitioner/outcomes', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
     { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
     { label: 'Financials', href: '/practitioner/billing', icon: <DollarSign size={18} strokeWidth={1.5} /> },
     { label: 'Settings', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} /> },
