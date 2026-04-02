@@ -316,7 +316,21 @@ function AdminDashboardContent({
                                 </div>
                                 ))}
                             </div>
-                            <button onClick={() => alert("✅ Protocols updated.")} className="btn-pill-3d bg-oku-dark text-white w-full !py-5 mt-12 shadow-2xl">Commit Platform Protocol</button>
+                            <button
+                              onClick={async () => {
+                                setIsUpdating(true)
+                                try {
+                                  await updatePlatformSettings(platformSettings)
+                                  router.refresh()
+                                } finally {
+                                  setIsUpdating(false)
+                                }
+                              }}
+                              disabled={isUpdating}
+                              className="btn-pill-3d bg-oku-dark text-white w-full !py-5 mt-12 shadow-2xl flex items-center justify-center gap-3 disabled:opacity-60"
+                            >
+                              {isUpdating ? <><Loader2 size={16} className="animate-spin" /> Saving...</> : 'Commit Platform Protocol'}
+                            </button>
                         </div>
                     </div>
                     <div className="lg:col-span-4 space-y-12">

@@ -7,46 +7,46 @@ import { ClipboardCheck, ArrowRight, Shield, Zap, Heart } from 'lucide-react'
 
 const assessments = [
   {
-    slug: 'adhd-screening',
+    slug: 'adhd-asrs',
     title: 'ADHD Screening (ASRS)',
     description: 'Understand your focus, organization, and executive function patterns.',
-    time: '6 mins',
-    questions: 18
+    time: '5 mins',
+    questions: 6
   },
   {
-    slug: 'depression-check',
+    slug: 'depression-phq9',
     title: 'PHQ-9 Depression',
     description: 'A clinical standard for measuring your recent mood and energy levels.',
     time: '5 mins',
     questions: 9
   },
   {
-    slug: 'anxiety-check',
+    slug: 'anxiety-gad7',
     title: 'GAD-7 Anxiety',
     description: 'A gentle look at your recent feelings of worry and tension.',
-    time: '5 mins',
+    time: '4 mins',
     questions: 7
   },
   {
-    slug: 'burnout-audit',
-    title: 'Burnout Audit',
-    description: 'Measure the impact of chronic stress on your work and creative life.',
+    slug: 'wellness-dass21',
+    title: 'Burnout & Stress (DASS-21)',
+    description: 'Measure the impact of chronic stress, anxiety, and low mood.',
     time: '8 mins',
-    questions: 12
+    questions: 21
   },
   {
-    slug: 'mood-landscape',
-    title: 'Mood Landscape',
-    description: 'Understanding the patterns of your emotional well-being.',
-    time: '8 mins',
-    questions: 10
+    slug: 'wellness-mhi5',
+    title: 'Mental Health Index (MHI-5)',
+    description: 'Understanding the patterns of your overall emotional wellbeing.',
+    time: '3 mins',
+    questions: 5
   },
   {
-    slug: 'trauma-screening',
-    title: 'Trauma Screening',
-    description: 'A safe, body-aware check-in for stored experiences.',
-    time: '10 mins',
-    questions: 12
+    slug: 'trauma-pcl5',
+    title: 'Trauma Screening (PCL-5)',
+    description: 'A safe, body-aware check-in for stored traumatic experiences.',
+    time: '8 mins',
+    questions: 20
   }
 ]
 

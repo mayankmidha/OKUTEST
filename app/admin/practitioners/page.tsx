@@ -1,196 +1,145 @@
-'use client'
-
-import { useState, useEffect } from 'react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { UserRole } from '@prisma/client'
 import Link from 'next/link'
-import { Settings, Bell, LogOut, Users, Search, Filter, ShieldCheck, Briefcase } from 'lucide-react'
-import { ActionMenu } from '@/components/ActionMenu'
+import { Users, ShieldCheck, DollarSign, ChevronLeft, Check, X } from 'lucide-react'
+import { toggleTherapistVerification, updateTherapistRate } from '../actions'
+import { getPractitionerDisciplineLabel } from '@/lib/practitioner-type'
+import { formatCurrency } from '@/lib/currency'
 
-export default function AdminPractitionersPage() {
-  const [user, setUser] = useState<any>(null)
-  const [practitioners, setPractitioners] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+export const dynamic = 'force-dynamic'
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user')
-    if (userData) {
-      setUser(JSON.parse(userData))
-    }
-    
-    // Mock practitioners data
-    setPractitioners([
-      {
-        id: '1',
-        name: 'Dr. Suraj Singh',
-        email: 'suraj@okutherapy.com',
-        licenseNumber: 'MD-12345',
-        specialization: ['Psychiatry', 'Medication Management'],
-        experience: '15+ years',
-        status: 'VERIFIED',
-        createdAt: '2024-01-10',
-        totalSessions: 156,
-        rating: 4.9,
-        hourlyRate: 1500
-      },
-      {
-        id: '2',
-        name: 'Tanisha Singh',
-        email: 'tanisha@okutherapy.com',
-        licenseNumber: 'PSY-67890',
-        specialization: ['Clinical Psychology', 'Psychodynamic Therapy'],
-        experience: '12+ years',
-        status: 'VERIFIED',
-        createdAt: '2024-01-12',
-        totalSessions: 98,
-        rating: 4.8,
-        hourlyRate: 1200
-      },
-      {
-        id: '3',
-        name: 'Dr. Rananjay Singh',
-        email: 'rananjay@okutherapy.com',
-        licenseNumber: 'MD-24680',
-        specialization: ['Psychiatry', 'Child & Adolescent Psychiatry'],
-        experience: '10+ years',
-        status: 'PENDING',
-        createdAt: '2024-02-15',
-        totalSessions: 45,
-        rating: 4.7,
-        hourlyRate: 1400
-      }
-    ])
-    
-    setLoading(false)
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-oku-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-oku-purple mx-auto"></div>
-          <p className="mt-4 text-oku-dark font-display italic">Synchronizing collective...</p>
-        </div>
-      </div>
-    )
+export default async function AdminPractitionersPage() {
+  const session = await auth()
+  if (!session?.user || session.user.role !== UserRole.ADMIN) {
+    redirect('/auth/login')
   }
 
+  const [practitioners, stats] = await Promise.all([
+    prisma.user.findMany({
+      where: { role: UserRole.THERAPIST },
+      include: {
+        practitionerProfile: true,
+        _count: { select: { practitionerAppointments: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    Promise.all([
+      prisma.user.count({ where: { role: UserRole.THERAPIST } }),
+      prisma.practitionerProfile.count({ where: { isVerified: true } }),
+      prisma.practitionerProfile.count({ where: { isVerified: false } }),
+    ]).then(([total, verified, pending]) => ({ total, verified, pending })),
+  ])
+
   return (
-    <div className="min-h-screen bg-oku-cream px-6 py-12 lg:px-12">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 mb-4">
-               <span className="bg-oku-navy text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-premium">Admin Control</span>
-               <span className="text-oku-taupe/40 text-[10px] font-black uppercase tracking-[0.3em]">Practitioner Management</span>
-            </div>
-            <h1 className="text-5xl lg:text-7xl font-display font-bold tracking-tight text-oku-dark">
-              Clinical Collective.
-            </h1>
-            <p className="text-xl text-oku-taupe font-display italic opacity-80 max-w-xl">
-              Verification and oversight for Oku's trusted practitioners.
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Link href="/admin/dashboard" className="text-[10px] font-black uppercase tracking-widest text-oku-taupe hover:text-oku-dark transition-colors">
-               ← Dashboard
+    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 hover:text-oku-darkgrey bg-white/40 px-5 py-2.5 rounded-full border border-white/60">
+              <ChevronLeft size={13} /> Command Hub
             </Link>
-            <div className="h-8 w-px bg-oku-taupe/10 mx-2" />
-            <button className="btn-navy group flex items-center gap-3">
-               <Users size={18} /> Onboard Specialist
-            </button>
+            <span className="chip bg-white/60 border-white/80">Practitioner Network</span>
           </div>
+          <h1 className="heading-display text-6xl lg:text-7xl text-oku-darkgrey tracking-tighter">
+            Network <span className="text-oku-purple-dark italic">Integrity.</span>
+          </h1>
         </div>
+      </div>
 
-        {/* Filters & Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-           <div className="md:col-span-2 relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-oku-taupe/40 group-focus-within:text-oku-dark transition-colors" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search by name, email, or license..." 
-                className="w-full bg-white/60 backdrop-blur-md border border-white rounded-3xl py-5 pl-16 pr-8 text-sm focus:outline-none focus:ring-4 focus:ring-oku-lavender/50 transition-all shadow-sm"
-              />
-           </div>
-           <button className="bg-white/60 backdrop-blur-md border border-white rounded-3xl py-5 px-8 flex items-center justify-between group hover:bg-white transition-all shadow-sm">
-              <span className="text-[10px] font-black uppercase tracking-widest text-oku-taupe">Filter by Status</span>
-              <Filter size={16} className="text-oku-taupe group-hover:text-oku-dark transition-colors" />
-           </button>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-6 mb-12">
+        {[
+          { label: 'Total Practitioners', value: stats.total, color: 'bg-oku-lavender/30' },
+          { label: 'Verified', value: stats.verified, color: 'bg-oku-mint/30' },
+          { label: 'Pending KYC', value: stats.pending, color: stats.pending > 0 ? 'bg-oku-peach/30' : 'bg-white/40' },
+        ].map((s) => (
+          <div key={s.label} className={`card-glass-3d !p-8 ${s.color}`}>
+            <p className="text-4xl font-display font-bold text-oku-darkgrey">{s.value}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mt-2">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Practitioners Table */}
+      <div className="card-glass-3d !p-0 !bg-white/40 overflow-hidden">
+        <div className="p-10 border-b border-white/60">
+          <h2 className="heading-display text-3xl text-oku-darkgrey">All Practitioners</h2>
+          <p className="text-sm text-oku-darkgrey/40 mt-1 font-display italic">{practitioners.length} registered practitioners</p>
         </div>
-
-        {/* Data Table */}
-        <div className="bg-white/40 backdrop-blur-3xl rounded-[3rem] border border-white shadow-premium overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-oku-taupe/5">
-              <thead>
-                <tr className="bg-oku-lavender/30">
-                  <th className="px-8 py-6 text-left text-[10px] font-black text-oku-taupe uppercase tracking-[0.2em]">Practitioner</th>
-                  <th className="px-8 py-6 text-left text-[10px] font-black text-oku-taupe uppercase tracking-[0.2em]">Specialization</th>
-                  <th className="px-8 py-6 text-left text-[10px] font-black text-oku-taupe uppercase tracking-[0.2em]">Status</th>
-                  <th className="px-8 py-6 text-left text-[10px] font-black text-oku-taupe uppercase tracking-[0.2em]">Sessions</th>
-                  <th className="px-8 py-6 text-left text-[10px] font-black text-oku-taupe uppercase tracking-[0.2em]">Revenue (₹)</th>
-                  <th className="px-8 py-6 text-right text-[10px] font-black text-oku-taupe uppercase tracking-[0.2em]">Actions</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-oku-lavender/20 text-[9px] uppercase tracking-[0.3em] font-black text-oku-darkgrey/40">
+                <th className="px-8 py-5">Practitioner</th>
+                <th className="px-8 py-5">Discipline</th>
+                <th className="px-8 py-5">License</th>
+                <th className="px-8 py-5">Sessions</th>
+                <th className="px-8 py-5">Rate (INR/hr)</th>
+                <th className="px-8 py-5">KYC Status</th>
+                <th className="px-8 py-5 text-right">Verify</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/40">
+              {practitioners.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-8 py-16 text-center text-oku-darkgrey/30 font-display italic">
+                    No practitioners registered yet.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-oku-taupe/5">
-                {practitioners.map((practitioner) => (
-                  <tr key={practitioner.id} className="group hover:bg-white/60 transition-colors duration-500">
-                    <td className="px-8 py-8 whitespace-nowrap">
-                      <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 rounded-2xl bg-oku-glacier flex items-center justify-center text-oku-navy-light shadow-inner group-hover:scale-110 transition-transform duration-500">
-                          <Users size={24} strokeWidth={1.5} />
-                        </div>
-                        <div>
-                          <p className="text-lg font-bold text-oku-dark leading-tight">{practitioner.name}</p>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-60 mt-1">{practitioner.email}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                             <ShieldCheck size={12} className="text-oku-purple-dark" />
-                             <span className="text-[9px] font-bold text-oku-taupe">Lic: {practitioner.licenseNumber}</span>
-                          </div>
-                        </div>
-                      </div>
+              ) : practitioners.map((p) => {
+                const profile = p.practitionerProfile
+                return (
+                  <tr key={p.id} className="hover:bg-white/30 transition-all">
+                    <td className="px-8 py-5">
+                      <p className="font-bold text-oku-darkgrey">{p.name || '—'}</p>
+                      <p className="text-xs text-oku-darkgrey/40 font-mono mt-0.5">{p.email}</p>
                     </td>
-                    <td className="px-8 py-8">
-                      <div className="flex flex-wrap gap-1.5 max-w-[200px]">
-                        {practitioner.specialization.map((spec: string, index: number) => (
-                          <span key={index} className="px-3 py-1 bg-oku-matcha text-oku-matcha-dark border border-oku-matcha-dark/10 rounded-lg text-[9px] font-black uppercase tracking-widest">
-                            {spec}
-                          </span>
-                        ))}
-                      </div>
+                    <td className="px-8 py-5 text-xs text-oku-darkgrey/60">
+                      {getPractitionerDisciplineLabel(profile) || '—'}
                     </td>
-                    <td className="px-8 py-8 whitespace-nowrap">
-                      <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${
-                        practitioner.status === 'VERIFIED'
-                          ? 'bg-oku-success/10 text-oku-success border border-oku-success/20'
-                          : 'bg-oku-pending/10 text-oku-pending border border-oku-pending/20'
+                    <td className="px-8 py-5 font-mono text-xs text-oku-darkgrey/40">
+                      {profile?.licenseNumber || 'NOT PROVIDED'}
+                    </td>
+                    <td className="px-8 py-5 text-sm font-bold text-oku-darkgrey">
+                      {p._count.practitionerAppointments}
+                    </td>
+                    <td className="px-8 py-5 text-xs text-oku-darkgrey/60">
+                      {profile?.hourlyRate ? formatCurrency(profile.hourlyRate, 'INR') : '—'}
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                        profile?.isVerified ? 'bg-oku-mint text-oku-darkgrey/60' : 'bg-oku-peach text-oku-darkgrey/60'
                       }`}>
-                        {practitioner.status}
+                        {profile?.isVerified ? 'Verified' : 'Pending'}
                       </span>
                     </td>
-                    <td className="px-8 py-8 whitespace-nowrap">
-                       <div className="flex items-center gap-2">
-                          <span className="text-xl font-display font-bold text-oku-dark">{practitioner.totalSessions}</span>
-                          <Briefcase size={14} className="text-oku-taupe opacity-30" />
-                       </div>
-                    </td>
-                    <td className="px-8 py-8 whitespace-nowrap">
-                       <p className="text-lg font-bold text-oku-dark">₹{practitioner.hourlyRate.toLocaleString()}</p>
-                       <p className="text-[9px] font-black text-oku-taupe opacity-40 uppercase tracking-widest">Base Rate</p>
-                    </td>
-                    <td className="px-8 py-8 whitespace-nowrap text-right">
-                       <ActionMenu 
-                         onView={() => console.log('View', practitioner.id)}
-                         onEdit={() => console.log('Edit', practitioner.id)}
-                         onSecurity={() => console.log('Security', practitioner.id)}
-                         onDelete={() => console.log('Delete', practitioner.id)}
-                       />
+                    <td className="px-8 py-5 text-right">
+                      {profile && (
+                        <form action={async () => {
+                          'use server'
+                          await toggleTherapistVerification(profile.id, !profile.isVerified)
+                        }}>
+                          <button
+                            type="submit"
+                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                              profile.isVerified
+                                ? 'bg-oku-peach/40 hover:bg-oku-peach text-oku-darkgrey/60'
+                                : 'bg-oku-mint/40 hover:bg-oku-mint text-oku-darkgrey'
+                            }`}
+                          >
+                            {profile.isVerified ? <><X size={12} /> Revoke</> : <><Check size={12} /> Verify</>}
+                          </button>
+                        </form>
+                      )}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

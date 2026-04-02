@@ -75,7 +75,13 @@ export default async function PractitionerDashboardPage() {
       take: 5
     }),
     prisma.assessmentAnswer.findMany({
-        where: { assessment: { creatorId: session.user.id } }, // Simplified logic for demo
+        where: {
+          user: {
+            clientAppointments: {
+              some: { practitionerId: session.user.id }
+            }
+          }
+        },
         include: { user: true, assessment: true },
         orderBy: { completedAt: 'desc' },
         take: 5
