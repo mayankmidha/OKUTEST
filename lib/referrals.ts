@@ -123,8 +123,17 @@ export async function awardReferralRewardForAppointment(appointmentId: string) {
     return null
   }
 
+  // Fetch dynamic settings (Master Vision Control)
+  const settings = await prisma.platformSettings.findUnique({ where: { id: 'global' } })
+  const rewardPercent = settings?.referralRewardPercent ?? REFERRAL_REWARD_PERCENT
+  const maxRewards = settings?.maxReferralRewards ?? MAX_REFERRAL_REWARDS
+
+  if (paidSessionsCount > maxRewards) {
+    return null
+  }
+
   const appointmentAmount = getAppointmentBillingAmount(appointment)
-  const rewardAmount = Number((appointmentAmount * (REFERRAL_REWARD_PERCENT / 100)).toFixed(2))
+  const rewardAmount = Number((appointmentAmount * (rewardPercent / 100)).toFixed(2))
 
   const [, reward] = await prisma.$transaction([
     prisma.clientProfile.upsert({
@@ -145,7 +154,7 @@ export async function awardReferralRewardForAppointment(appointmentId: string) {
         referredUserId: appointment.client.id,
         appointmentId,
         rewardStep: paidSessionsCount,
-        rewardPercent: REFERRAL_REWARD_PERCENT,
+        rewardPercent: rewardPercent,
         rewardAmount,
         status: 'EARNED',
       },

@@ -336,6 +336,8 @@ model PlatformSettings {
   adhdCareModeEnabled              Boolean  @default(true)
   requireConsentBeforeTranscription Boolean @default(true)
   transcriptRetentionDays          Int      @default(365)
+  referralRewardPercent            Float    @default(10.0)
+  maxReferralRewards               Int      @default(3)
   supportEmail                     String   @default("support@okutherapy.com")
   announcementTitle                String?
   announcementText                 String?

@@ -315,6 +315,19 @@ function AdminDashboardContent({
                             <span className="font-black uppercase tracking-widest opacity-40">Platform Fee</span>
                             <span className="font-bold">{platformSettings.platformFeePercent}%</span>
                         </div>
+                        <div className="p-5 bg-white/60 rounded-2xl border border-white flex flex-col gap-4 text-[10px]">
+                            <span className="font-black uppercase tracking-widest opacity-40">Referral Settings</span>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-[8px] opacity-40 uppercase">Reward (%)</p>
+                                    <input type="number" className="bg-transparent font-bold w-full" value={platformSettings.referralRewardPercent} onChange={(e) => setPlatformSettings({...platformSettings, referralRewardPercent: parseFloat(e.target.value)})} />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-[8px] opacity-40 uppercase">Max Sessions</p>
+                                    <input type="number" className="bg-transparent font-bold w-full" value={platformSettings.maxReferralRewards} onChange={(e) => setPlatformSettings({...platformSettings, maxReferralRewards: parseInt(e.target.value)})} />
+                                </div>
+                            </div>
+                        </div>
                      </div>
                   </div>
                </div>

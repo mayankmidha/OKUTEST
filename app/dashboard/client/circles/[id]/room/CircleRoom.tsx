@@ -13,8 +13,9 @@ import {
   useCallStateHooks
 } from '@stream-io/video-react-sdk'
 import '@stream-io/video-react-sdk/dist/css/styles.css'
-import { Loader2, ShieldCheck, Users } from 'lucide-react'
+import { Loader2, ShieldCheck, Users, MessageSquare, Send, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface CircleRoomProps {
   circleId: string
@@ -27,10 +28,21 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
   const [call, setCall] = useState<Call | null>(null)
   const [joinError, setJoinError] = useState<string | null>(null)
   const [joinStatus, setJoinStatus] = useState<'connecting' | 'ready' | 'error'>('connecting')
+  const [showChat, setShowChat] = useState(false)
+  const [chatMessage, setChatMessage] = useState('')
+  const [messages, setMessages] = useState<any[]>([
+    { id: 1, user: 'Guide', text: 'Welcome to our sanctuary. Take a deep breath.', time: 'now' }
+  ])
   const router = useRouter()
 
   const clientRef = useRef<StreamVideoClient | null>(null)
   const callRef = useRef<Call | null>(null)
+
+  const sendMessage = () => {
+    if (!chatMessage.trim()) return
+    setMessages([...messages, { id: Date.now(), user: user.name.split(' ')[0], text: chatMessage, time: 'just now' }])
+    setChatMessage('')
+  }
 
   const cleanupStream = async () => {
     try {
@@ -145,11 +157,66 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
                  <span className="text-white font-display text-sm tracking-wide">{circleName}</span>
                  <div className="w-1.5 h-1.5 rounded-full bg-oku-green animate-pulse ml-2"></div>
               </div>
+
+              <button 
+                onClick={() => setShowChat(!showChat)}
+                className="bg-oku-lavender text-oku-dark px-6 py-3 rounded-full border border-white/20 pointer-events-auto flex items-center gap-2 font-black text-[10px] uppercase tracking-widest shadow-xl"
+              >
+                <MessageSquare size={16} /> {showChat ? 'Close' : 'Discussion'}
+              </button>
             </div>
 
-            {/* Video Grid */}
-            <div className="flex-1 p-6 pt-24 pb-28">
-              <PaginatedGridLayout groupSize={6} />
+            {/* Main Content Area */}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Video Grid */}
+                <div className="flex-1 p-6 pt-24 pb-28">
+                    <PaginatedGridLayout groupSize={6} />
+                </div>
+
+                {/* Chat Sidebar */}
+                <AnimatePresence>
+                    {showChat && (
+                        <motion.div 
+                            initial={{ x: 400, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: 400, opacity: 0 }}
+                            className="w-[350px] bg-black/40 backdrop-blur-3xl border-l border-white/10 flex flex-col pt-24"
+                        >
+                            <div className="p-6 border-b border-white/5">
+                                <h3 className="text-white font-display font-bold text-lg">Circle Thread</h3>
+                                <p className="text-[9px] uppercase tracking-widest text-white/40">Shared sanctuary space</p>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                                {messages.map(msg => (
+                                    <div key={msg.id} className="space-y-1">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[10px] font-black text-oku-lavender uppercase">{msg.user}</span>
+                                            <span className="text-[8px] text-white/20 uppercase">{msg.time}</span>
+                                        </div>
+                                        <p className="text-sm text-white/80 leading-relaxed">{msg.text}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="p-6 mt-auto pb-24">
+                                <div className="relative">
+                                    <input 
+                                        value={chatMessage}
+                                        onChange={(e) => setChatMessage(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                                        placeholder="Share a thought..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-oku-lavender/20"
+                                    />
+                                    <button 
+                                        onClick={sendMessage}
+                                        className="absolute right-2 top-2 p-2 bg-oku-lavender text-oku-dark rounded-xl"
+                                    >
+                                        <Send size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Controls */}

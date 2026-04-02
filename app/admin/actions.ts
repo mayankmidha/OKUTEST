@@ -149,6 +149,8 @@ export async function updatePlatformSettings(data: {
   adhdCareModeEnabled?: boolean
   requireConsentBeforeTranscription?: boolean
   transcriptRetentionDays?: number
+  referralRewardPercent?: number
+  maxReferralRewards?: number
 }) {
   await checkAdmin()
   await prisma.platformSettings.upsert({
@@ -168,6 +170,8 @@ export async function updatePlatformSettings(data: {
       adhdCareModeEnabled: data.adhdCareModeEnabled ?? true,
       requireConsentBeforeTranscription: data.requireConsentBeforeTranscription ?? true,
       transcriptRetentionDays: data.transcriptRetentionDays ?? 365,
+      referralRewardPercent: data.referralRewardPercent ?? 10.0,
+      maxReferralRewards: data.maxReferralRewards ?? 3,
     }
   })
   revalidatePath('/admin/dashboard')

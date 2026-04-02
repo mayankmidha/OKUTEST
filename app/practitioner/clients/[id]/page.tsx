@@ -10,6 +10,7 @@ import { AssignAssessmentModal } from '@/components/AssignAssessmentModal'
 import { DocumentVault } from '@/components/DocumentVault'
 import { WellnessVisualizer } from '@/components/WellnessVisualizer'
 import { ClinicalAITranscriptViewer } from '@/components/ClinicalAITranscriptViewer'
+import { ToolRecommendationHub } from './ToolRecommendationHub'
 
 export const dynamic = 'force-dynamic'
 
@@ -179,6 +180,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                         <p className="text-xs italic text-oku-taupe opacity-60">Intake form not yet submitted.</p>
                     )}
                 </div>
+
+                <ToolRecommendationHub clientId={clientData.id} />
             </div>
 
             {/* Right Col: Timeline & Notes */}
