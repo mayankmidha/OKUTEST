@@ -11,8 +11,10 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ASSESSMENTS } from '@/lib/assessments'
+import { useSession } from 'next-auth/react'
 
 export default function TypeformAssessmentPlayer() {
+  const { data: session } = useSession()
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string
@@ -76,8 +78,29 @@ export default function TypeformAssessmentPlayer() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [currentStep, isFinished, isSyncing, assessment, handleNext, handleBack])
 
-  const finishAssessment = () => {
+  const finishAssessment = async () => {
     setIsSyncing(true)
+    
+    // If Authenticated: Submit directly
+    if (session?.user) {
+        try {
+            await fetch('/api/assessments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    assessmentId: assessment.id, 
+                    type: assessment.slug,
+                    answers 
+                }),
+            })
+            router.push('/dashboard/client/clinical?success=true')
+            return
+        } catch (error) {
+            console.error("Direct submission failed", error)
+        }
+    }
+
+    // If Guest: Store in localStorage for later sync
     const guestData = { slug, answers, completedAt: new Date().toISOString() }
     localStorage.setItem('pending_assessment', JSON.stringify(guestData))
     setTimeout(() => {

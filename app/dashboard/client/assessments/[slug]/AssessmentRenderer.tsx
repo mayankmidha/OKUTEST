@@ -63,10 +63,19 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
     }
     setIsSubmitting(true)
     try {
+      // Logic: If it's a static assessment, we send 'type' (the slug). 
+      // If it's a DB assessment, we send 'assessmentId'.
+      const payload = {
+        assessmentId: assessment.id,
+        type: assessment.slug,
+        answers,
+        assignmentId
+      }
+
       const res = await fetch('/api/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessmentId: assessment.id, answers, assignmentId }),
+        body: JSON.stringify(payload),
       })
       if (res.ok) {
         if (fee > 0 && billingStatus === 'PENDING') {

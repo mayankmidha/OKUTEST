@@ -23,14 +23,15 @@ export async function POST(req: Request) {
     const assessmentDef = await prisma.assessment.findFirst({
       where: {
         OR: [
-          { id: finalId },
-          { title: type }
+          { id: finalId || undefined },
+          { title: { contains: type || '', mode: 'insensitive' } }
         ]
       }
     })
 
     if (!assessmentDef) {
-      return new NextResponse("Assessment not found in database", { status: 404 })
+      console.error("[ASSESSMENT_NOT_FOUND]", { finalId, type })
+      return new NextResponse("Assessment definition not found in database", { status: 404 })
     }
 
     // 2. Industrial-grade Server-side Scoring (Protects data integrity)
