@@ -32,7 +32,7 @@ export default async function ClientSessionsPage() {
         title="My Sessions" 
         description="View your upcoming appointments and full clinical history."
         actions={
-          <Link href="/therapists" className="btn-primary py-4 px-8 flex items-center gap-2 shadow-xl">
+          <Link href="/dashboard/client/therapists" className="btn-primary py-4 px-8 flex items-center gap-2 shadow-xl">
             <Calendar size={18} /> Book New Session
           </Link>
         }
@@ -45,7 +45,7 @@ export default async function ClientSessionsPage() {
           {upcoming.length === 0 ? (
             <DashboardCard className="border-dashed py-16 text-center">
                <p className="text-oku-taupe font-display italic text-lg mb-6">No upcoming sessions found.</p>
-               <Link href="/therapists" className="text-oku-purple font-bold hover:underline">Find a therapist to begin →</Link>
+               <Link href="/dashboard/client/therapists" className="text-oku-purple font-bold hover:underline">Find a therapist to begin →</Link>
             </DashboardCard>
           ) : (
             <div className="grid gap-4">
