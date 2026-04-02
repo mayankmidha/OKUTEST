@@ -17,7 +17,7 @@ export function DashboardSidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const role = session?.user?.role
-  const adhdUnlocked = (session?.user as any)?.adhdDiagnosed 
+  const adhdUnlocked = (session?.user as any)?.adhdDiagnosed || (session?.user as any)?.clientProfile?.adhdDiagnosed
   const [isOpen, setIsOpen] = useState(false)
 
   // Close sidebar on navigation
@@ -57,11 +57,13 @@ export function DashboardSidebar() {
 
   const adminLinks = [
     { label: 'Pulse', href: '/admin/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
-    { label: 'Integrity', href: '/admin/dashboard?pillar=network', icon: <Shield size={18} strokeWidth={1.5} /> },
+    { label: 'Health', href: '/admin/health', icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Compliance', href: '/admin/compliance', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Analytics', href: '/admin/analytics', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
     { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} /> },
-    { label: 'Network', href: '/admin/dashboard?pillar=network', icon: <Users size={18} strokeWidth={1.5} /> },
-    { label: 'Templates', href: '/admin/dashboard?pillar=operations&sub=templates', icon: <FileText size={18} strokeWidth={1.5} /> },
-    { label: 'Audit', href: '/admin/dashboard?tab=audit', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Network', href: '/admin/practitioners', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Automation', href: '/admin/automation', icon: <Zap size={18} strokeWidth={1.5} /> },
+    { label: 'Security', href: '/admin/security', icon: <Shield size={18} strokeWidth={1.5} /> },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks

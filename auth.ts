@@ -10,12 +10,14 @@ declare module "next-auth" {
       id: string
       role: string
       hasSignedConsent: boolean
+      adhdDiagnosed: boolean
     } & DefaultSession["user"]
   }
   
   interface User {
     role: string
     hasSignedConsent: boolean
+    adhdDiagnosed: boolean
   }
 }
 
@@ -39,7 +41,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         try {
           const user = await prisma.user.findUnique({
-            where: { email }
+            where: { email },
+            include: { clientProfile: true }
           })
 
           if (!user || !user.password) {
@@ -76,11 +79,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: user.email,
             name: user.name,
             role: user.role,
-            hasSignedConsent: user.hasSignedConsent
+            hasSignedConsent: user.hasSignedConsent,
+            adhdDiagnosed: !!user.clientProfile?.adhdDiagnosed
           }
         } catch (error) {
           console.error("Auth error:", error)
-          throw error // Throw the error so the client can handle specific messages like "2FA code required"
+          throw error 
         }
       },
     }),
@@ -99,6 +103,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           session.user.id = token.id || token.sub;
           session.user.role = token.role;
           session.user.hasSignedConsent = !!token.hasSignedConsent;
+          session.user.adhdDiagnosed = !!token.adhdDiagnosed;
         }
         return session;
     },
@@ -107,22 +112,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.role = user.role;
         token.hasSignedConsent = !!user.hasSignedConsent;
+        token.adhdDiagnosed = !!user.adhdDiagnosed;
       }
       
-      // Handle session updates (e.g. after signing consent)
+      // Handle session updates
       if (trigger === "update" && session) {
         if (typeof session.hasSignedConsent === 'boolean') {
           token.hasSignedConsent = session.hasSignedConsent;
+        }
+        if (typeof session.adhdDiagnosed === 'boolean') {
+          token.adhdDiagnosed = session.adhdDiagnosed;
         }
         if (session.role) {
           token.role = session.role;
         }
       }
 
-      // Secondary safety: If hasSignedConsent is missing, fetch from DB once (optional but safer)
-      if (token.id && token.hasSignedConsent === undefined) {
-          const u = await prisma.user.findUnique({ where: { id: token.id }, select: { hasSignedConsent: true } });
+      // Secondary safety: If hasSignedConsent or adhdDiagnosed is missing, fetch from DB once
+      if (token.id && (token.hasSignedConsent === undefined || token.adhdDiagnosed === undefined)) {
+          const u = await prisma.user.findUnique({ 
+            where: { id: token.id }, 
+            select: { hasSignedConsent: true, clientProfile: { select: { adhdDiagnosed: true } } } 
+          });
           token.hasSignedConsent = !!u?.hasSignedConsent;
+          token.adhdDiagnosed = !!u?.clientProfile?.adhdDiagnosed;
       }
       
       return token;

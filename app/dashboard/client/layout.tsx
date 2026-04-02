@@ -1,7 +1,6 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { UserRole } from '@prisma/client'
-import { DashboardSidebar } from '@/components/DashboardSidebar'
 
 export default async function ClientDashboardLayout({
   children,
@@ -23,12 +22,7 @@ export default async function ClientDashboardLayout({
     redirect('/admin/dashboard')
   }
 
-  return (
-    <div className="flex min-h-screen bg-oku-lavender/5">
-      <DashboardSidebar />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-    </div>
-  )
+  // This layout is nested under app/dashboard/layout.tsx
+  // which already provides the DashboardSidebar and container.
+  return <>{children}</>
 }
