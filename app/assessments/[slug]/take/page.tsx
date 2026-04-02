@@ -7,7 +7,7 @@ import {
   ArrowRight, ArrowLeft, ClipboardCheck, 
   Sparkles, ShieldCheck, Lock, 
   ChevronDown, ChevronUp, Loader2,
-  CornerDownLeft, Wind, CheckCircle2
+  CornerDownLeft, Wind, CheckCircle2, Brain
 } from 'lucide-react'
 import Link from 'next/link'
 import { ASSESSMENTS } from '@/lib/assessments'
@@ -91,10 +91,10 @@ export default function TypeformAssessmentPlayer() {
   const progress = currentStep === -1 ? 0 : ((currentStep + 1) / assessment.questions.length) * 100
 
   return (
-    <div className="fixed inset-0 bg-oku-cream overflow-hidden font-sans selection:bg-oku-purple/20 flex flex-col">
+    <div className="min-h-screen bg-oku-cream overflow-y-auto font-sans selection:bg-oku-purple/20 flex flex-col relative">
       
       {/* ── BACKGROUND ── */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none">
           <motion.div 
             animate={{ scale: [1, 1.05, 1], opacity: [0.2, 0.3, 0.2] }}
             transition={{ duration: 8, repeat: Infinity }}
@@ -102,18 +102,37 @@ export default function TypeformAssessmentPlayer() {
           />
       </div>
 
-      {/* ── LOGO / HEADER ── */}
-      <div className="relative z-50 p-8 flex justify-between items-center">
-          <Link href="/assessments" className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30 hover:text-oku-purple-dark transition-colors">
-              Oku Therapy
+      {/* ── TOP NAVIGATION ── */}
+      <header className="fixed top-0 left-0 w-full z-50 px-8 py-8 flex justify-between items-center bg-oku-cream/10 backdrop-blur-sm">
+          <Link href="/assessments" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl bg-white/80 border border-white flex items-center justify-center text-oku-darkgrey group-hover:bg-oku-darkgrey group-hover:text-white transition-all shadow-sm">
+                  <ArrowLeft size={18} />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 group-hover:text-oku-darkgrey transition-colors">Exit Session</span>
           </Link>
-          <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/20">
-              <ShieldCheck size={12} /> HIPAA Secure
+
+          <div className="flex items-center gap-4">
+              <div className="flex flex-col items-right text-right">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-oku-purple-dark">{assessment.title}</span>
+                  <span className="text-[8px] font-bold text-oku-darkgrey/30 uppercase tracking-widest">{currentStep >= 0 ? `Step ${currentStep + 1} of ${assessment.questions.length}` : 'Introduction'}</span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-oku-purple/10 flex items-center justify-center text-oku-purple-dark border border-oku-purple/20">
+                  <Brain size={18} />
+              </div>
           </div>
+      </header>
+
+      {/* Progress Line */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-white/20 z-[60]">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            className="h-full bg-oku-purple-dark shadow-[0_0_15px_rgba(110,89,165,0.4)]"
+          />
       </div>
 
-      {/* ── MAIN PLAYER ── */}
-      <main className="flex-1 relative z-10 flex flex-col items-center justify-center px-6">
+      {/* ── MAIN PLAYER INTERFACE ── */}
+      <main className="flex-1 relative z-10 flex flex-col items-center justify-center px-6 py-32">
         <AnimatePresence mode="wait">
           {isSyncing ? (
             <motion.div key="sync" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center space-y-4">
@@ -267,7 +286,7 @@ export default function TypeformAssessmentPlayer() {
       </main>
 
       {/* ── FOOTER CONTROLS ── */}
-      <footer className="relative z-50 p-8 flex justify-between items-center">
+      <footer className="fixed bottom-0 left-0 w-full z-50 p-8 flex justify-between items-center bg-oku-cream/10 backdrop-blur-sm">
           <div className="flex bg-white/80 backdrop-blur rounded-xl border border-oku-darkgrey/5 overflow-hidden shadow-sm">
               <button onClick={handleBack} className="p-4 hover:bg-oku-lavender/20 border-r border-oku-darkgrey/5 transition-colors text-oku-darkgrey/40 hover:text-oku-purple-dark">
                   <ChevronUp size={20} />
