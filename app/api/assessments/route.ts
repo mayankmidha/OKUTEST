@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { AssessmentBillingStatus } from "@prisma/client"
 import { calculateAssessmentResult, isHighRisk } from "@/lib/clinical-intelligence"
-import { triggerEmergencyAlert } from "@/lib/notifications"
+import { analyzeAssessmentResult } from "@/lib/oku-ai"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -66,7 +66,21 @@ export async function POST(req: Request) {
         })
       : null
 
-    // 4. Save Verified Result
+    // 4. OKU AI Curation Logic
+    let aiCuration = null;
+    try {
+      aiCuration = await analyzeAssessmentResult({
+        patientName: session.user.name || "Patient",
+        assessmentTitle: assessmentDef.title,
+        score: calculatedScore,
+        result: calculatedResult,
+        answers: finalResponses
+      });
+    } catch (aiError) {
+      console.error("[ASSESSMENT_AI_ERROR]", aiError);
+    }
+
+    // 5. Save Verified Result
     const assessmentAnswer = await prisma.assessmentAnswer.create({
       data: {
         userId: session.user.id,
@@ -74,6 +88,11 @@ export async function POST(req: Request) {
         answers: finalResponses as any,
         score: calculatedScore,
         result: calculatedResult,
+        // AI Curation Fields
+        aiInterpretation: aiCuration?.aiInterpretation,
+        clinicalCuration: aiCuration?.clinicalCuration,
+        aiRecommendations: aiCuration?.personalizedRecommendations || [],
+        therapistAiNotes: aiCuration?.therapistNotes,
       }
     })
 

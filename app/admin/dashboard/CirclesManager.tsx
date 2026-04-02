@@ -1,11 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, Calendar, Users, DollarSign, Loader2, Sparkles, Clock, X, UserPlus, Edit2 } from 'lucide-react'
 import { createCircle, deleteCircle, addParticipantToCircle, removeParticipantFromCircle } from '../actions'
+import { 
+  createCircleByPractitioner, 
+  deleteCircleByPractitioner, 
+  addParticipantToCircleByPractitioner, 
+  removeParticipantFromCircleByPractitioner 
+} from '@/app/practitioner/actions'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 export function CirclesManager({ practitioners, existingCircles, allClients }: { practitioners: any[], existingCircles: any[], allClients: any[] }) {
+  const { data: session } = useSession()
+  const role = session?.user?.role
+  const isPractitioner = role === 'THERAPIST'
+
   const [isUpdating, setIsUpdating] = useState<string | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -19,16 +30,30 @@ export function CirclesManager({ practitioners, existingCircles, allClients }: {
     endTime: '',
     maxCapacity: 10,
     price: 1500,
-    practitionerId: practitioners[0]?.id || ''
+    practitionerId: isPractitioner ? session?.user?.id : (practitioners[0]?.id || '')
   })
   const router = useRouter()
+
+  useEffect(() => {
+    if (isPractitioner && session?.user?.id) {
+      setFormData(prev => ({ ...prev, practitionerId: session.user.id }))
+    } else if (!isPractitioner && practitioners.length > 0 && !formData.practitionerId) {
+      setFormData(prev => ({ ...prev, practitionerId: practitioners[0].id }))
+    }
+  }, [isPractitioner, session?.user?.id, practitioners])
 
   const handleAddParticipant = async (circleId: string) => {
     if (!selectedClientToAdd) return
     setIsUpdating(`add-${circleId}`)
     try {
-      await addParticipantToCircle(circleId, selectedClientToAdd)
+      if (isPractitioner) {
+        await addParticipantToCircleByPractitioner(circleId, selectedClientToAdd)
+      } else {
+        await addParticipantToCircle(circleId, selectedClientToAdd)
+      }
       setSelectedClientToAdd('')
+    } catch (err: any) {
+      alert(err.message || 'Failed to add participant')
     } finally {
       setIsUpdating(null)
     }
@@ -38,7 +63,13 @@ export function CirclesManager({ practitioners, existingCircles, allClients }: {
     if (!confirm('Remove seeker from this circle?')) return
     setIsUpdating(`remove-${participantId}`)
     try {
-      await removeParticipantFromCircle(participantId)
+      if (isPractitioner) {
+        await removeParticipantFromCircleByPractitioner(participantId)
+      } else {
+        await removeParticipantFromCircle(participantId)
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to remove participant')
     } finally {
       setIsUpdating(null)
     }
@@ -49,14 +80,20 @@ export function CirclesManager({ practitioners, existingCircles, allClients }: {
     setIsCreating(true)
     setIsUpdating('form')
     try {
-      // In a real app we'd have an updateCircle action too, 
-      // but for now let's focus on creation and the participant power.
-      await createCircle({
-        ...formData,
-        startTime: new Date(formData.startTime),
-        endTime: new Date(formData.endTime),
-        description: `${formData.title}|${formData.description}`
-      })
+      if (isPractitioner) {
+        await createCircleByPractitioner({
+          ...formData,
+          startTime: new Date(formData.startTime),
+          endTime: new Date(formData.endTime)
+        })
+      } else {
+        await createCircle({
+          ...formData,
+          startTime: new Date(formData.startTime),
+          endTime: new Date(formData.endTime),
+          description: `${formData.title}|${formData.description}`
+        })
+      }
       setShowForm(false)
       setFormData({
         title: '',
@@ -65,9 +102,11 @@ export function CirclesManager({ practitioners, existingCircles, allClients }: {
         endTime: '',
         maxCapacity: 10,
         price: 1500,
-        practitionerId: practitioners[0]?.id || ''
+        practitionerId: isPractitioner ? session?.user?.id : (practitioners[0]?.id || '')
       })
       router.refresh()
+    } catch (err: any) {
+      alert(err.message || 'Failed to create circle')
     } finally {
       setIsCreating(false)
       setIsUpdating(null)
@@ -76,8 +115,16 @@ export function CirclesManager({ practitioners, existingCircles, allClients }: {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this circle?')) return
-    await deleteCircle(id)
-    router.refresh()
+    try {
+      if (isPractitioner) {
+        await deleteCircleByPractitioner(id)
+      } else {
+        await deleteCircle(id)
+      }
+      router.refresh()
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete circle')
+    }
   }
 
   return (
@@ -110,15 +157,22 @@ export function CirclesManager({ practitioners, existingCircles, allClients }: {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 ml-2">Lead Practitioner</label>
-              <select 
-                className="input-pastel appearance-none"
-                value={formData.practitionerId}
-                onChange={e => setFormData({...formData, practitionerId: e.target.value})}
-              >
-                {practitioners.map(p => (
-                  <option key={p.id} value={p.user.id}>{p.user.name}</option>
-                ))}
-              </select>
+              {isPractitioner ? (
+                <div className="input-pastel bg-white/40 flex items-center">
+                  <span className="text-xs font-bold text-oku-darkgrey">{session?.user?.name}</span>
+                  <span className="ml-auto text-[8px] font-black uppercase tracking-widest text-oku-purple-dark">You</span>
+                </div>
+              ) : (
+                <select 
+                  className="input-pastel appearance-none"
+                  value={formData.practitionerId}
+                  onChange={e => setFormData({...formData, practitionerId: e.target.value})}
+                >
+                  {practitioners.map(p => (
+                    <option key={p.id} value={p.user.id}>{p.user.name}</option>
+                  ))}
+                </select>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 ml-2">Start Time</label>

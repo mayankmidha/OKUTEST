@@ -278,6 +278,59 @@ Be clinical, concise, and actionable. Base everything only on the data provided.
  * ADHD Task Atomizer
  * Breaks a large, overwhelming task into small, manageable "atoms"
  */
+export async function analyzeAssessmentResult(params: {
+  patientName: string
+  assessmentTitle: string
+  score: number | null
+  result: string | null
+  answers: any
+}): Promise<{ 
+  aiInterpretation: string
+  clinicalCuration: string
+  personalizedRecommendations: string[]
+  therapistNotes: string
+}> {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+
+  const prompt = `
+    You are OKU AI, a clinical intelligence assistant. You are analyzing the results of a ${params.assessmentTitle} assessment for ${params.patientName}.
+    
+    DATA:
+    - Assessment: ${params.assessmentTitle}
+    - Calculated Score: ${params.score ?? 'N/A'}
+    - Initial Result: ${params.result ?? 'Completed'}
+    - User Answers: ${JSON.stringify(params.answers)}
+    
+    TASK:
+    Provide a multi-layered curation of this result:
+    1. "aiInterpretation": A gentle, patient-facing explanation of what this result might mean for their daily life. Avoid being diagnostic; use phrases like "This suggests..." or "You might be experiencing...".
+    2. "clinicalCuration": A deeper, data-driven analysis of their specific answer patterns (e.g. if they scored particularly high on specific items).
+    3. "personalizedRecommendations": 3-4 actionable "Next Steps" for the user (e.g. mindfulness, sleep hygiene, or specific questions to ask their therapist).
+    4. "therapistNotes": A concise 1-2 sentence briefing for their therapist to read before the next session.
+
+    FORMAT:
+    Return ONLY a JSON object.
+  `
+
+  try {
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0])
+    }
+    throw new Error("Failed to parse assessment analysis")
+  } catch (error) {
+    console.error("[OCI_ASSESSMENT_AI_ERROR]", error)
+    return {
+      aiInterpretation: "We've received your results. Your therapist will review these with you in your next session to provide a full clinical context.",
+      clinicalCuration: "Results logged for clinical review.",
+      personalizedRecommendations: ["Share these results with your therapist", "Continue monitoring your mood in the dashboard"],
+      therapistNotes: "Patient completed assessment. Analysis was unable to be generated automatically; please review manually."
+    }
+  }
+}
+
 export async function atomizeTask(taskTitle: string): Promise<string[]> {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
   

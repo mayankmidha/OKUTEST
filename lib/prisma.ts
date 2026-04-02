@@ -131,6 +131,75 @@ export const prisma = basePrisma.$extends({
         }));
       },
     },
+    message: {
+      async create({ args, query }) {
+        if (args.data?.content && typeof args.data.content === 'string') args.data.content = encrypt(args.data.content);
+        const result = await query(args);
+        if (result?.content) result.content = decrypt(result.content);
+        return result;
+      },
+      async update({ args, query }) {
+        if (args.data?.content && typeof args.data.content === 'string') args.data.content = encrypt(args.data.content);
+        const result = await query(args);
+        if (result?.content) result.content = decrypt(result.content);
+        return result;
+      },
+      async findUnique({ args, query }) {
+        const result = await query(args);
+        if (result?.content) result.content = decrypt(result.content);
+        return result;
+      },
+      async findFirst({ args, query }) {
+        const result = await query(args);
+        if (result?.content) result.content = decrypt(result.content);
+        return result;
+      },
+      async findMany({ args, query }) {
+        const results = await query(args);
+        return results.map(r => ({
+          ...r,
+          content: r.content ? decrypt(r.content) : r.content
+        }));
+      },
+    },
+    treatmentPlan: {
+      async create({ args, query }) {
+        if (args.data?.presentingProblem) args.data.presentingProblem = encrypt(args.data.presentingProblem);
+        if (args.data?.goals) args.data.goals = encrypt(args.data.goals);
+        if (args.data?.objectives) args.data.objectives = encrypt(args.data.objectives);
+        if (args.data?.interventions) args.data.interventions = encrypt(args.data.interventions);
+        const result = await query(args);
+        return result; // Decryption handled in find methods
+      },
+      async update({ args, query }) {
+        if (args.data?.presentingProblem && typeof args.data.presentingProblem === 'string') args.data.presentingProblem = encrypt(args.data.presentingProblem);
+        if (args.data?.goals && typeof args.data.goals === 'string') args.data.goals = encrypt(args.data.goals);
+        if (args.data?.objectives && typeof args.data.objectives === 'string') args.data.objectives = encrypt(args.data.objectives);
+        if (args.data?.interventions && typeof args.data.interventions === 'string') args.data.interventions = encrypt(args.data.interventions);
+        const result = await query(args);
+        return result;
+      },
+      async findUnique({ args, query }) {
+        const result = await query(args);
+        if (result) {
+          if (result.presentingProblem) result.presentingProblem = decrypt(result.presentingProblem);
+          if (result.goals) result.goals = decrypt(result.goals);
+          if (result.objectives) result.objectives = decrypt(result.objectives);
+          if (result.interventions) result.interventions = decrypt(result.interventions);
+        }
+        return result;
+      },
+      async findMany({ args, query }) {
+        const results = await query(args);
+        return results.map(r => ({
+          ...r,
+          presentingProblem: r.presentingProblem ? decrypt(r.presentingProblem) : r.presentingProblem,
+          goals: r.goals ? decrypt(r.goals) : r.goals,
+          objectives: r.objectives ? decrypt(r.objectives) : r.objectives,
+          interventions: r.interventions ? decrypt(r.interventions) : r.interventions,
+        }));
+      },
+    },
   }
 }) as PrismaClient
 

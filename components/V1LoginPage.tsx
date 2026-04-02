@@ -110,6 +110,34 @@ export default function V1LoginPage() {
                 >
                     {isLoading ? <Loader2 className="animate-spin mx-auto" size={20} /> : "Enter Sanctuary"}
                 </button>
+
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-oku-darkgrey/5"></span>
+                  </div>
+                  <div className="relative flex justify-center text-center">
+                    <span className="bg-transparent px-6 text-[9px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/20">Continue with</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    type="button"
+                    onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                    className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-4 flex items-center justify-center gap-3 group"
+                  >
+                    <img src="/google.svg" className="w-5 h-5 group-hover:scale-110 transition-transform" alt="Google" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Google</span>
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => signIn('apple', { callbackUrl: '/dashboard' })}
+                    className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-4 flex items-center justify-center gap-3 group"
+                  >
+                    <img src="/apple.svg" className="w-5 h-5 group-hover:scale-110 transition-transform" alt="Apple" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Apple</span>
+                  </button>
+                </div>
             </form>
 
             <div className="mt-12 text-center pt-10 border-t border-oku-darkgrey/5">

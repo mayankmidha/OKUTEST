@@ -57,7 +57,8 @@ export default function AssessmentsPage() {
   const handleBegin = (slug: string) => {
     // Enable anonymous flow: allow users to take the assessment first, 
     // then prompt for details at the end to "see results".
-    const destination = `/dashboard/client/assessments/${slug}?mode=anonymous`
+    // We redirect to a specialized public route for taking the test
+    const destination = `/assessments/${slug}/take`
     router.push(destination)
   }
 

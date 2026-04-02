@@ -66,13 +66,17 @@ export default async function ClientDashboardPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
              <span className="px-4 py-1.5 bg-white/60 backdrop-blur-md border border-white/80 rounded-full text-[9px] font-black uppercase tracking-widest text-oku-purple-dark shadow-sm">Sanctuary Hub</span>
-             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Client Dashboard</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">
+                {nextSession ? "Active Care Mode" : isNewUser ? "Welcome Home" : "Quiet Growth"}
+             </span>
           </div>
           <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
             Peace, <span className="text-oku-purple-dark italic">{user.name?.split(' ')[0] || 'Seeker'}.</span>
           </h1>
           <p className="text-2xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
-            Your space for healing, focus, and quiet growth.
+            {nextSession 
+              ? `Your next session is on ${new Date(nextSession.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}.`
+              : "Your secure space for healing and quiet growth."}
           </p>
         </div>
 
@@ -86,8 +90,8 @@ export default async function ClientDashboardPage() {
         </div>
       </div>
 
-      {/* ── ONBOARDING BANNER (new users) ── */}
-      {isNewUser && (
+      {/* ── ONBOARDING BANNER (only for truly incomplete new users) ── */}
+      {isNewUser && completedSteps < 2 && (
         <div className="mb-12 relative z-10">
           {/* Intake warning */}
           {!hasIntake && (

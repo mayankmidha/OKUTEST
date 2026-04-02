@@ -550,6 +550,13 @@ model AssessmentAnswer {
   answers      Json
   score        Float?
   result       String?
+  
+  // OKU AI Curation
+  aiInterpretation    String?
+  clinicalCuration    String?
+  aiRecommendations   String[]
+  therapistAiNotes    String?
+
   completedAt  DateTime      @default(now())
   assessment   Assessment    @relation(fields: [assessmentId], references: [id], map: "AssessmentAnswer_assessmentId_fkey")
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, map: "AssessmentAnswer_userId_fkey")
