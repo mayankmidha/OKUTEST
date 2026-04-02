@@ -83,7 +83,7 @@ export default async function CirclesPage() {
                           </div>
                        </div>
                        <div className="text-right">
-                          <p className="text-xl font-bold text-oku-darkgrey">₹{circle.priceSnapshot || 1500}</p>
+                          <p className="text-xl font-bold text-oku-darkgrey">₹{circle.priceSnapshot || 500}</p>
                           <p className="text-[8px] font-black uppercase tracking-widest text-oku-darkgrey/30">per session</p>
                        </div>
                     </div>

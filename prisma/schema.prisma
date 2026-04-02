@@ -512,7 +512,7 @@ model GroupSession {
   endTime       DateTime
   maxCapacity   Int                     @default(10)
   status        AppointmentStatus       @default(SCHEDULED)
-  price         Float                   @default(1500)
+  price         Float                   @default(500)
   practitionerId String
   practitioner  User                    @relation("FacilitatedGroups", fields: [practitionerId], references: [id])
   participants  GroupSessionParticipant[]

@@ -56,7 +56,7 @@ export async function POST(req: Request) {
           })
           if (!group) return new NextResponse('Circle not found', { status: 404 })
           
-          amount = group.priceSnapshot || 1500
+          amount = group.priceSnapshot || 500
           description = `Join Circle: ${group.notes?.split('|')[0] || 'Therapy Group'}`
           metadata.appointmentId = group.id
           // Circles don't currently use referral credits in this logic (per vision)

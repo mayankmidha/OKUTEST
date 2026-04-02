@@ -1,17 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ArrowRight, ArrowLeft, ClipboardCheck, 
-  Sparkles, ShieldCheck, Brain, Lock, 
-  Zap, Heart, ChevronRight, Loader2
+  Sparkles, ShieldCheck, Lock, 
+  ChevronDown, ChevronUp, Loader2,
+  CornerDownLeft
 } from 'lucide-react'
 import Link from 'next/link'
 import { ASSESSMENTS } from '@/lib/assessments'
 
-export default function GuestAssessmentPage() {
+export default function TypeformAssessmentPlayer() {
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string
@@ -21,224 +22,231 @@ export default function GuestAssessmentPage() {
   const [currentStep, setCurrentStep] = useState(-1) // -1 is intro
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [isFinished, setIsFinished] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
 
-  if (!assessment) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-oku-cream">
-        <div className="text-center">
-          <h1 className="heading-display text-4xl mb-4">Assessment not found.</h1>
-          <Link href="/assessments" className="text-oku-purple-dark font-black underline">Return to Hub</Link>
-        </div>
-      </div>
-    )
-  }
-
-  const handleNext = () => {
-    if (currentStep < assessment.questions.length - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
+  const handleNext = useCallback(() => {
+    if (currentStep < (assessment?.questions.length || 0) - 1) {
+      setCurrentStep(prev => prev + 1)
+    } else if (currentStep !== -1) {
       finishAssessment()
+    } else {
+      setCurrentStep(0)
     }
-  }
+  }, [currentStep, assessment])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (currentStep > -1) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(prev => prev - 1)
     }
-  }
+  }, [currentStep])
 
   const selectOption = (questionId: string, value: number) => {
-    setAnswers({ ...answers, [questionId]: value })
-    // Auto-advance after a small delay for better UX
-    setTimeout(() => {
-      if (currentStep < assessment.questions.length - 1) {
-        setCurrentStep(currentStep + 1)
-      } else {
-        finishAssessment()
-      }
-    }, 400)
+    setAnswers(prev => ({ ...prev, [questionId]: value }))
+    setTimeout(() => handleNext(), 400)
   }
 
-  const finishAssessment = () => {
-    // Store in localStorage for later sync
-    const guestData = {
-      slug,
-      answers,
-      completedAt: new Date().toISOString()
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isFinished || isSyncing) return
+      
+      if (e.key === 'Enter' && currentStep === -1) handleNext()
+      if (e.key === 'ArrowDown') handleNext()
+      if (e.key === 'ArrowUp') handleBack()
+      
+      // Numbers 1-5 for options
+      if (currentStep >= 0 && !isFinished) {
+        const val = parseInt(e.key)
+        if (val >= 1 && val <= (assessment?.options.length || 0)) {
+          const option = assessment?.options[val - 1]
+          if (option && assessment) {
+            selectOption(assessment.questions[currentStep].id, option.value)
+          }
+        }
+      }
     }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentStep, isFinished, isSyncing, assessment, handleNext, handleBack])
+
+  const finishAssessment = () => {
+    setIsSyncing(true)
+    const guestData = { slug, answers, completedAt: new Date().toISOString() }
     localStorage.setItem('pending_assessment', JSON.stringify(guestData))
-    setIsFinished(true)
+    setTimeout(() => {
+        setIsSyncing(false)
+        setIsFinished(true)
+    }, 1500)
   }
+
+  if (!assessment) return null
 
   const progress = currentStep === -1 ? 0 : ((currentStep + 1) / assessment.questions.length) * 100
 
   return (
-    <div className="min-h-screen bg-oku-mint flex flex-col relative overflow-hidden">
-      {/* Background blobs */}
-      <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-oku-lavender/30 rounded-full blur-[140px] animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-oku-butter/20 rounded-full blur-[120px]" />
-
-      {/* Progress Bar */}
-      {currentStep >= 0 && !isFinished && (
-        <div className="fixed top-0 left-0 w-full h-2 bg-white/20 z-50">
+    <div className="fixed inset-0 bg-oku-cream overflow-hidden font-sans selection:bg-oku-purple/20 flex flex-col">
+      
+      {/* ── BACKGROUND ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
           <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            className="h-full bg-oku-purple-dark shadow-[0_0_20px_rgba(110,89,165,0.5)]"
+            animate={{ scale: [1, 1.05, 1], opacity: [0.2, 0.3, 0.2] }}
+            transition={{ duration: 8, repeat: Infinity }}
+            className="absolute top-0 right-0 w-full h-full bg-oku-lavender/20 rounded-full blur-[120px]"
           />
-        </div>
-      )}
+      </div>
 
-      <main className="flex-1 flex items-center justify-center p-6 relative z-10">
+      {/* ── LOGO / HEADER ── */}
+      <div className="relative z-50 p-8 flex justify-between items-center">
+          <Link href="/assessments" className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30 hover:text-oku-purple-dark transition-colors">
+              Oku Therapy
+          </Link>
+          <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/20">
+              <ShieldCheck size={12} /> HIPAA Secure
+          </div>
+      </div>
+
+      {/* ── MAIN PLAYER ── */}
+      <main className="flex-1 relative z-10 flex flex-col items-center justify-center px-6">
         <AnimatePresence mode="wait">
-          {!isFinished ? (
+          {isSyncing ? (
+            <motion.div key="sync" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center space-y-4">
+                <Loader2 className="w-10 h-10 animate-spin text-oku-purple mx-auto" />
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/40">Clinical Analysis in Progress...</p>
+            </motion.div>
+          ) : !isFinished ? (
             <motion.div 
               key={currentStep === -1 ? 'intro' : `q-${currentStep}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-3xl"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full max-w-2xl"
             >
               {currentStep === -1 ? (
-                /* INTRO SCREEN */
-                <div className="card-glass-3d !p-12 !bg-white/60 !rounded-[4rem] text-center shadow-2xl">
-                  <div className="w-20 h-20 bg-oku-lavender rounded-3xl flex items-center justify-center text-oku-purple-dark mx-auto mb-10 animate-float-3d">
-                    <ClipboardCheck size={40} />
-                  </div>
-                  <span className="chip bg-oku-purple/10 text-oku-purple-dark mb-6 inline-block">Clinical Screening</span>
-                  <h1 className="heading-display text-5xl md:text-7xl text-oku-darkgrey mb-6 tracking-tighter leading-tight">
-                    {assessment.title.split('(')[0]}
-                  </h1>
-                  <p className="text-xl text-oku-darkgrey/60 font-display italic mb-12 max-w-xl mx-auto leading-relaxed">
-                    {assessment.description}
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-6 mb-12">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">
-                      <Zap size={14} className="text-oku-purple" /> {assessment.questionCount} Questions
+                /* INTRO */
+                <div className="space-y-10">
+                    <div className="space-y-4">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple-dark bg-oku-purple/10 px-4 py-1 rounded-full">Assessment</span>
+                        <h1 className="heading-display text-5xl md:text-7xl text-oku-darkgrey tracking-tighter leading-tight">
+                            {assessment.title.split('(')[0]}
+                        </h1>
+                        <p className="text-xl md:text-2xl text-oku-darkgrey/50 font-display italic">
+                            {assessment.description}
+                        </p>
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">
-                      <Heart size={14} className="text-oku-purple" /> {assessment.timeEstimate}
+                    
+                    <div className="flex flex-col items-start gap-6">
+                        <button 
+                            onClick={() => setCurrentStep(0)}
+                            className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-12 !py-6 text-lg flex items-center gap-4 group"
+                        >
+                            Start Now <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30">
+                            press <span className="font-bold text-oku-darkgrey/60 border border-oku-darkgrey/20 px-1.5 py-0.5 rounded mx-1">Enter ↵</span>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">
-                      <ShieldCheck size={14} className="text-oku-purple" /> Anonymous & Secure
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentStep(0)}
-                    className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-16 !py-6 text-lg pulse-cta"
-                  >
-                    Begin Exploration <ArrowRight className="ml-3" />
-                  </button>
                 </div>
               ) : (
-                /* QUESTION SCREEN */
+                /* QUESTIONS */
                 <div className="space-y-12">
-                  <div className="text-center space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-purple-dark opacity-40">Question {currentStep + 1} of {assessment.questions.length}</p>
-                    <h2 className="text-2xl md:text-4xl text-oku-darkgrey font-bold tracking-tight leading-tight">
-                      {assessment.questions[currentStep].text}
-                    </h2>
-                    <p className="text-sm text-oku-darkgrey/40 italic font-display">{assessment.timeframe}</p>
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4 text-oku-purple-dark">
+                        <span className="text-lg font-bold">{currentStep + 1}</span>
+                        <ArrowRight size={18} />
+                        <h2 className="text-2xl md:text-4xl text-oku-darkgrey font-bold tracking-tight leading-tight">
+                          {assessment.questions[currentStep].text}
+                        </h2>
+                    </div>
+                    <p className="text-sm text-oku-darkgrey/40 italic font-display ml-12">
+                        {assessment.timeframe}
+                    </p>
                   </div>
 
-                  <div className="grid gap-4">
-                    {assessment.options.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => selectOption(assessment.questions[currentStep].id, option.value)}
-                        className={`group p-8 rounded-[2rem] border-2 transition-all text-left flex items-center justify-between ${
-                          answers[assessment.questions[currentStep].id] === option.value
-                            ? 'bg-oku-purple-dark border-oku-purple-dark text-white shadow-xl scale-[1.02]'
-                            : 'bg-white/60 border-white/80 text-oku-darkgrey hover:border-oku-purple hover:bg-white'
-                        }`}
+                  <div className="space-y-3 ml-12">
+                    {assessment.options.map((option, idx) => {
+                      const isSelected = answers[assessment.questions[currentStep].id] === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => selectOption(assessment.questions[currentStep].id, option.value)}
+                          className={`w-full group p-5 rounded-2xl border-2 transition-all flex items-center gap-4 text-left relative ${
+                            isSelected 
+                              ? 'bg-oku-purple/10 border-oku-purple text-oku-purple-dark ring-4 ring-oku-purple/5' 
+                              : 'bg-white/60 border-white hover:border-oku-purple/30 text-oku-darkgrey'
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center text-[10px] font-black transition-all ${
+                            isSelected ? 'bg-oku-purple border-oku-purple text-white' : 'bg-white border-oku-darkgrey/10 text-oku-darkgrey/40 group-hover:border-oku-purple/40'
+                          }`}>
+                            {idx + 1}
+                          </div>
+                          <span className="text-lg font-bold">{option.label}</span>
+                          {isSelected && <Sparkles size={16} className="ml-auto text-oku-purple animate-pulse" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  
+                  <div className="ml-12 pt-4 flex items-center gap-4">
+                      <button 
+                        onClick={handleNext}
+                        className="bg-oku-darkgrey text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-oku-dark transition-all"
                       >
-                        <span className="text-lg font-bold">{option.label}</span>
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                          answers[assessment.questions[currentStep].id] === option.value
-                            ? 'bg-white border-white text-oku-purple-dark'
-                            : 'border-oku-darkgrey/10 text-transparent'
-                        }`}>
-                          <ChevronRight size={18} strokeWidth={3} />
-                        </div>
+                          OK <CornerDownLeft size={14} />
                       </button>
-                    ))}
+                      <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/20 italic">Press Enter</span>
                   </div>
-
-                  <button 
-                    onClick={handleBack}
-                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/30 hover:text-oku-purple-dark transition-colors mx-auto pt-8"
-                  >
-                    <ArrowLeft size={14} /> Previous Question
-                  </button>
                 </div>
               )}
             </motion.div>
           ) : (
-            /* FINISHED / SIGNUP HOOK SCREEN */
-            <motion.div 
-              key="finished"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="w-full max-w-2xl"
-            >
-              <div className="card-glass-3d !p-12 !bg-white/80 !rounded-[4rem] text-center shadow-2xl relative overflow-hidden">
-                <div className="relative z-10">
-                    <div className="w-20 h-20 bg-oku-mint rounded-3xl flex items-center justify-center text-oku-mint-dark mx-auto mb-10 shadow-lg">
-                        <ShieldCheck size={40} />
-                    </div>
-                    <h2 className="heading-display text-5xl text-oku-darkgrey mb-6 tracking-tighter leading-tight">
-                        Insights <span className="text-oku-purple-dark italic">Ready.</span>
-                    </h2>
-                    <p className="text-lg text-oku-darkgrey/60 font-display italic mb-10 leading-relaxed">
-                        We've analyzed your responses. To protect your clinical privacy and unlock your **Personalized OKU AI Report**, please create your secure sanctuary.
+            /* CONVERSION */
+            <motion.div key="finish" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-xl space-y-10">
+                <div className="w-20 h-20 bg-oku-mint rounded-3xl flex items-center justify-center text-oku-mint-dark mx-auto shadow-xl">
+                    <ShieldCheck size={40} />
+                </div>
+                <div className="space-y-4">
+                    <h2 className="heading-display text-5xl text-oku-darkgrey tracking-tighter">Insights <span className="text-oku-purple-dark italic">Ready.</span></h2>
+                    <p className="text-lg text-oku-darkgrey/50 font-display italic">
+                        We've analyzed your responses. To unlock your clinical report, please create your secure sanctuary.
                     </p>
-
-                    <div className="space-y-4 mb-12">
-                        <Link 
-                          href={`/auth/signup?callbackUrl=/assessments/${slug}/results`}
-                          className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white w-full !py-6 text-lg pulse-cta flex items-center justify-center gap-3"
-                        >
-                            <Sparkles size={20} /> Unlock My Report <ArrowRight size={20} />
-                        </Link>
-                        
-                        <div className="relative py-4">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-oku-darkgrey/10"></span>
-                            </div>
-                            <div className="relative flex justify-center">
-                                <span className="bg-white px-4 text-[9px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/20">Fast Access</span>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <button className="btn-pill-3d bg-white border-oku-darkgrey/5 text-oku-darkgrey !py-4 flex items-center justify-center gap-2">
-                                <img src="/google.svg" className="w-5 h-5" alt="Google" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Google</span>
-                            </button>
-                            <button className="btn-pill-3d bg-white border-oku-darkgrey/5 text-oku-darkgrey !py-4 flex items-center justify-center gap-2">
-                                <img src="/apple.svg" className="w-5 h-5" alt="Apple" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Apple</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-4 text-oku-darkgrey/30">
-                        <div className="flex items-center gap-2">
-                            <Lock size={14} />
-                            <span className="text-[9px] font-black uppercase tracking-widest">256-bit HIPAA Encryption</span>
-                        </div>
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em]">Already have an account? <Link href="/auth/login" className="text-oku-purple-dark underline">Sign In</Link></p>
+                </div>
+                <div className="grid gap-4">
+                    <Link href={`/auth/signup?callbackUrl=/assessments/${slug}/results`} className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !py-6 text-lg pulse-cta flex items-center justify-center gap-3">
+                        Unlock My Report <ArrowRight size={20} />
+                    </Link>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                            <img src="/google.svg" className="w-4 h-4" /> Google
+                        </button>
+                        <button className="btn-pill-3d bg-white border-white text-oku-darkgrey !py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                            <img src="/apple.svg" className="w-4 h-4" /> Apple
+                        </button>
                     </div>
                 </div>
-                
-                {/* Decorative background for finished state */}
-                <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple/10 rounded-full blur-[80px]" />
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </main>
+
+      {/* ── FOOTER CONTROLS ── */}
+      <footer className="relative z-50 p-8 flex justify-between items-center">
+          <div className="flex bg-white/80 backdrop-blur rounded-xl border border-oku-darkgrey/5 overflow-hidden shadow-sm">
+              <button onClick={handleBack} className="p-4 hover:bg-oku-lavender/20 border-r border-oku-darkgrey/5 transition-colors text-oku-darkgrey/40 hover:text-oku-purple-dark">
+                  <ChevronUp size={20} />
+              </button>
+              <button onClick={handleNext} className="p-4 hover:bg-oku-lavender/20 transition-colors text-oku-darkgrey/40 hover:text-oku-purple-dark">
+                  <ChevronDown size={20} />
+              </button>
+          </div>
+          <div className="flex flex-col items-end">
+              <div className="w-48 h-1 bg-oku-darkgrey/5 rounded-full overflow-hidden mb-2">
+                  <motion.div animate={{ width: `${progress}%` }} className="h-full bg-oku-purple" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/20">{Math.round(progress)}% Completed</span>
+          </div>
+      </footer>
     </div>
   )
 }

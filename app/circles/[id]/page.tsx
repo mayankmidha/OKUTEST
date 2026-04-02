@@ -154,7 +154,7 @@ export default async function CircleDetailPage({ params }: PageProps) {
               <div className="text-center mb-12">
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Session Rate</span>
                 <div className="flex items-center justify-center gap-4 mt-4">
-                  <p className="heading-display text-6xl text-oku-darkgrey">₹{circle.priceSnapshot || 1500}</p>
+                  <p className="heading-display text-6xl text-oku-darkgrey">₹{circle.priceSnapshot || 500}</p>
                   <div className="text-left">
                     <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">Per session</p>
                     <p className="text-[9px] font-bold text-oku-darkgrey/40 italic">90 minutes</p>
