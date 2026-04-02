@@ -6,7 +6,7 @@ import {
   Calendar, Clock, Users, FileText, Heart,
   Video, Search, Sparkles, ClipboardCheck, BookOpen,
   ArrowUpRight, Wind, ShieldCheck, AlertCircle, Shield, Gift, MessageSquare, Plus, Save, Moon,
-  Brain, HelpCircle, Smile, ChevronRight, TrendingUp, Zap, CreditCard
+  Brain, HelpCircle, Smile, ChevronRight, TrendingUp, Zap, CreditCard, Lock
 } from 'lucide-react'
 import { AppointmentStatus } from '@prisma/client'
 import { formatCurrency } from '@/lib/currency'
