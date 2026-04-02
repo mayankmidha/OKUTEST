@@ -1,13 +1,17 @@
 import Razorpay from 'razorpay';
 
-if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-  throw new Error("⚠️ RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing. Razorpay features will fail. Please set it in .env");
+export const IS_RAZORPAY_ENABLED = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+
+if (!IS_RAZORPAY_ENABLED) {
+  console.warn("⚠️ RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing. Razorpay features are currently disabled.");
 }
 
-export const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+export const razorpay = IS_RAZORPAY_ENABLED 
+  ? new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    })
+  : null;
 
 export const createRazorpayOrder = async (amount: number, currency: string = 'INR') => {
   try {
