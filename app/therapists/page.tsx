@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import TherapistFilters from '@/components/TherapistFilters'
-import { Sparkles, ShieldCheck, ArrowRight } from 'lucide-react'
+import { Sparkles, ShieldCheck, ArrowRight, MessageCircle } from 'lucide-react'
 import { detectCurrency, getLiveExchangeRates } from '@/lib/currency'
+import { getWhatsAppCareLink } from '@/lib/whatsapp'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -69,6 +70,18 @@ export default async function PublicTherapistsPage() {
           </div>
         </div>
       </div>
+
+      {/* WhatsApp Care Float */}
+      <a
+        href={getWhatsAppCareLink('THERAPIST_MATCH', {})}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-8 right-8 z-50 flex items-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-full shadow-2xl hover:shadow-[#25D366]/40 hover:scale-105 transition-all duration-300 group"
+        aria-label="Chat with a care coordinator on WhatsApp"
+      >
+        <MessageCircle size={20} className="shrink-0" />
+        <span className="text-[11px] font-black uppercase tracking-[0.2em] hidden group-hover:inline">Need Help Choosing?</span>
+      </a>
 
       {/* Trust Footer */}
       <div className="max-w-5xl mx-auto px-12 py-20 border-t border-oku-darkgrey/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40 hover:opacity-100 transition-opacity duration-700 relative z-10">

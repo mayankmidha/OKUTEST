@@ -127,6 +127,19 @@ export default async function PractitionerDashboardPage({
           />
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 relative z-10">
+            {/* ── VERIFICATION BANNER ── */}
+            {!practitioner.isVerified && (
+              <div className="xl:col-span-12 flex items-start gap-4 p-6 bg-amber-50 border border-amber-200 rounded-3xl">
+                <AlertTriangle size={20} className="text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold text-amber-800 text-sm">Profile Under Review</p>
+                  <p className="text-amber-700 text-xs mt-1 leading-relaxed">
+                    Your profile is pending admin verification. Once approved, you&apos;ll appear in the practitioner directory and clients can book sessions with you. We typically verify within 1–2 business days.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* ── LEFT: THE CLINICAL QUEUE (TODAY) ── */}
             <div className="xl:col-span-8 space-y-12">
             
