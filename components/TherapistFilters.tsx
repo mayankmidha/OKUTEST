@@ -233,17 +233,17 @@ export default function TherapistFilters({
                   </div>
 
                   <div className="mt-auto pt-8 border-t border-oku-taupe/5 grid grid-cols-2 gap-4">
-                    <Link 
-                        href={`/dashboard/client/book/new/${practitioner.id}`} 
-                        className="bg-oku-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-navy transition-all text-center shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                    <Link
+                        href={`/therapists/${practitioner.id}/trial`}
+                        className="bg-oku-purple-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-all text-center shadow-xl active:scale-95 flex items-center justify-center gap-2"
                     >
-                      Establish Care <ArrowRight size={14} />
+                      Free Trial <ArrowRight size={14} />
                     </Link>
-                    <Link 
-                        href={`/therapists/${practitioner.id}`} 
+                    <Link
+                        href={`/therapists/${practitioner.id}`}
                         className="bg-white text-oku-dark border border-oku-taupe/10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-cream transition-all text-center shadow-sm active:scale-95"
                     >
-                        View full profile →
+                        View Profile →
                     </Link>
                   </div>
                 </div>

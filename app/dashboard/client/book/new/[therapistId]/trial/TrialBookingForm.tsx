@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CheckCircle2, Loader2, Calendar } from 'lucide-react'
+import { CheckCircle2, Loader2, Calendar, AlertCircle } from 'lucide-react'
 
 interface Slot {
   date: string;
@@ -24,6 +24,7 @@ export default function TrialBookingForm({ practitionerId, slots, isLoggedIn, us
   const [email, setEmail] = useState(userEmail || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,11 +56,11 @@ export default function TrialBookingForm({ practitionerId, slots, isLoggedIn, us
         }
       } else {
         const data = await res.json()
-        alert(data.error || 'Something went wrong')
+        setErrorMsg(data.error || 'Something went wrong. Please try another slot.')
       }
     } catch (error) {
       console.error(error)
-      alert('Failed to book trial call')
+      setErrorMsg('Failed to book trial call. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -157,10 +158,18 @@ export default function TrialBookingForm({ practitionerId, slots, isLoggedIn, us
         )}
       </div>
 
+      {errorMsg && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 mb-6 text-sm">
+          <AlertCircle size={16} className="shrink-0" />
+          {errorMsg}
+        </div>
+      )}
+
       <button
         type="submit"
         disabled={!selectedSlot || isSubmitting}
         className="btn-primary w-full py-5 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={() => setErrorMsg(null)}
       >
         {isSubmitting ? (
           <Loader2 className="animate-spin" />

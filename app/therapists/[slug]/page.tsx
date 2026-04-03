@@ -2,16 +2,16 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Briefcase, Award, BookOpen, ArrowRight, ShieldCheck, 
-  ChevronLeft, Star, Globe, Heart, MessageCircle 
+  Briefcase, Award, BookOpen, ArrowRight, ShieldCheck,
+  ChevronLeft, Star, Globe, Heart
 } from 'lucide-react'
 
 export default async function TherapistProfilePage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = params
+  const { slug } = await params
 
   const practitioner = await prisma.practitionerProfile.findUnique({
     where: { id: slug },
@@ -131,17 +131,17 @@ export default async function TherapistProfilePage({
             </div>
 
             <div className="pt-12 border-t border-oku-darkgrey/5 flex flex-col sm:flex-row items-center gap-6">
-              <Link 
+              <Link
+                href={`/therapists/${practitioner.id}/trial`}
+                className="btn-pill-3d bg-oku-purple-dark border-oku-purple-dark text-white !px-12 !py-6 text-[11px] pulse-cta w-full sm:w-auto"
+              >
+                Book Free 15-Min Consult <ArrowRight size={16} className="ml-2" />
+              </Link>
+              <Link
                 href={`/dashboard/client/book/new/${practitioner.id}`}
-                className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-12 !py-6 text-[11px] pulse-cta w-full sm:w-auto"
+                className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-12 !py-6 text-[11px] w-full sm:w-auto"
               >
                 Establish Care with {firstName} <ArrowRight size={16} className="ml-2" />
-              </Link>
-              <Link 
-                href="/auth/signup"
-                className="btn-pill-3d bg-white/60 border-white text-oku-darkgrey !px-12 !py-6 text-[11px] w-full sm:w-auto"
-              >
-                Inquiry <MessageCircle size={16} className="ml-2" />
               </Link>
             </div>
           </div>

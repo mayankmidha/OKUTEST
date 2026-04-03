@@ -287,7 +287,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                                     <div>
                                         <p className="text-[10px] uppercase tracking-widest text-oku-purple font-black mb-1">{ans.assessment.title}</p>
                                         <p className="text-lg font-bold text-oku-dark">{ans.result}</p>
-                                        <p className="text-[10px] uppercase tracking-widest opacity-40 mt-2">{new Date(ans.completedAt).toLocaleDateString()}</p>
+                                        <p className="text-[10px] uppercase tracking-widest opacity-40 mt-2">{new Date(ans.completedAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
                                     </div>
                                     <div className="w-10 h-10 rounded-xl bg-oku-purple/5 flex items-center justify-center text-oku-purple font-bold">
                                         {ans.score}
