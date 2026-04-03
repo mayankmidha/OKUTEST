@@ -1283,8 +1283,8 @@ export default function OkuHomepage() {
                     Oku is a psychotherapy collective offering <strong>inclusive, trauma-informed care</strong> for all parts of who you are. Start with a free consultation, a gentle self-check, or a closer look at our collective.
                   </p>
                   <div className="hero-actions">
-                    <Link href="/therapists" className="btn-pill-3d bg-oku-lavender border-oku-purple-dark/20 text-oku-darkgrey hover:scale-105 transition-transform pulse-cta">
-                       Book a free 1:1 consultation
+                    <Link href="/match" className="btn-pill-3d bg-oku-lavender border-oku-purple-dark/20 text-oku-darkgrey hover:scale-105 transition-transform pulse-cta">
+                       Find my therapist — free →
                     </Link>
                   </div>
                   <div className="hero-secondary-links mt-8">
