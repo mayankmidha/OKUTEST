@@ -25,7 +25,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   }
 
   // Fetch the client data
-  const [clientData, assessments, transcripts, profile] = await Promise.all([
+  const [clientData, assessments, transcripts, profile, safetyPlan] = await Promise.all([
     prisma.user.findFirst({
         where: { 
             id: clientId,
@@ -76,6 +76,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     prisma.practitionerProfile.findUnique({
         where: { userId: session.user.id },
         select: { canPostBlogs: true }
+    }),
+    prisma.safetyPlan.findUnique({
+        where: { userId: clientId }
     })
   ])
 
@@ -170,6 +173,20 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                                 <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-1">Current Residence</p>
                                 <p className="text-xs text-oku-dark leading-relaxed">{clientData.intakeForm.currentAddress}</p>
                             </div>
+
+                            {/* Safety Plan Indicator */}
+                            {safetyPlan && (
+                                <div className="p-4 bg-oku-purple/5 border border-oku-purple/10 rounded-2xl">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Shield size={14} className="text-oku-purple" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-oku-purple">Safety Plan Active</span>
+                                    </div>
+                                    <p className="text-[10px] text-oku-taupe leading-relaxed">
+                                        {safetyPlan.warningSigns.length} warning signs & {safetyPlan.copingStrategies.length} coping strategies recorded.
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="pt-4 border-t border-oku-taupe/5 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-oku-success"></div>

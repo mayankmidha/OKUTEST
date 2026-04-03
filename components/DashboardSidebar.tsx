@@ -7,7 +7,7 @@ import {
   Settings, Heart, ClipboardCheck,
   Shield, FileText, Bell, LogOut,
   ChevronRight, Activity, DollarSign, ShieldCheck, BookOpen, Search, Video,
-  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp, Zap
+  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp, Zap, Star
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'motion/react'
@@ -62,6 +62,8 @@ export function DashboardSidebar() {
     { label: 'Health', href: '/admin/health', icon: <Activity size={18} strokeWidth={1.5} /> },
     { label: 'Compliance', href: '/admin/compliance', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
     { label: 'Analytics', href: '/admin/analytics', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
+    { label: 'Intelligence', href: '/admin/bi', icon: <Brain size={18} strokeWidth={1.5} /> },
+    { label: 'Quality', href: '/admin/quality', icon: <Star size={18} strokeWidth={1.5} /> },
     { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} /> },
     { label: 'Network', href: '/admin/practitioners', icon: <Users size={18} strokeWidth={1.5} /> },
     { label: 'Automation', href: '/admin/automation', icon: <Zap size={18} strokeWidth={1.5} /> },

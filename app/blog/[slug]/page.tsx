@@ -10,11 +10,16 @@ const BASE = process.env.NEXT_PUBLIC_APP_URL || 'https://okutherapy.com'
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    select: { slug: true },
-  })
-  return posts.map((p) => ({ slug: p.slug }))
+  try {
+    const posts = await prisma.post.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+    return posts.map((p) => ({ slug: p.slug }))
+  } catch (error) {
+    console.error('Error generating blog static params:', error)
+    return []
+  }
 }
 
 export async function generateMetadata({
@@ -23,27 +28,32 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const post = await prisma.post.findUnique({
-    where: { slug },
-    select: { title: true, excerpt: true, category: true, updatedAt: true },
-  })
-  if (!post) return {}
+  try {
+    const post = await prisma.post.findUnique({
+      where: { slug },
+      select: { title: true, excerpt: true, category: true, updatedAt: true },
+    })
+    if (!post) return {}
 
-  const title = `${post.title} | OKU Therapy Blog`
-  const description = post.excerpt ?? `${post.title} — a mental health guide by OKU Therapy.`
+    const title = `${post.title} | OKU Therapy Blog`
+    const description = post.excerpt ?? `${post.title} — a mental health guide by OKU Therapy.`
 
-  return {
-    title,
-    description,
-    keywords: `${post.category ?? 'mental health'}, therapy India, ${post.title.toLowerCase()}, OKU therapy`,
-    openGraph: {
+    return {
       title,
       description,
-      url: `${BASE}/blog/${slug}`,
-      type: 'article',
-      publishedTime: post.updatedAt.toISOString(),
-    },
-    alternates: { canonical: `${BASE}/blog/${slug}` },
+      keywords: `${post.category ?? 'mental health'}, therapy India, ${post.title.toLowerCase()}, OKU therapy`,
+      openGraph: {
+        title,
+        description,
+        url: `${BASE}/blog/${slug}`,
+        type: 'article',
+        publishedTime: post.updatedAt.toISOString(),
+      },
+      alternates: { canonical: `${BASE}/blog/${slug}` },
+    }
+  } catch (error) {
+    console.error('Error generating blog metadata:', error)
+    return {}
   }
 }
 
@@ -54,25 +64,26 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params
 
-  const post = await prisma.post.findUnique({
-    where: { slug, published: true },
-    include: { author: { select: { name: true } } },
-  })
-  if (!post) notFound()
+  try {
+    const post = await prisma.post.findUnique({
+      where: { slug, published: true },
+      include: { author: { select: { name: true } } },
+    })
+    if (!post) notFound()
 
-  // Related posts (same category, exclude current)
-  const related = await prisma.post.findMany({
-    where: {
-      published: true,
-      category: post.category ?? undefined,
-      slug: { not: slug },
-    },
-    select: { slug: true, title: true, excerpt: true, category: true },
-    take: 3,
-    orderBy: { updatedAt: 'desc' },
-  })
+    // Related posts (same category, exclude current)
+    const related = await prisma.post.findMany({
+      where: {
+        published: true,
+        category: post.category ?? undefined,
+        slug: { not: slug },
+      },
+      select: { slug: true, title: true, excerpt: true, category: true },
+      take: 3,
+      orderBy: { updatedAt: 'desc' },
+    })
 
-  const htmlContent = await marked(post.content, { gfm: true, breaks: true })
+    const htmlContent = await marked(post.content, { gfm: true, breaks: true })
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -205,4 +216,8 @@ export default async function BlogPostPage({
       </div>
     </>
   )
+  } catch (error) {
+    console.error('Error loading blog post:', error)
+    notFound()
+  }
 }
