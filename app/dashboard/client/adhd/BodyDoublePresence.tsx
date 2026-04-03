@@ -72,7 +72,7 @@ export function BodyDoublePresence({ currentTask, isActive }: { currentTask?: st
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-10 -mx-10 bg-oku-dark overflow-hidden py-3 transform -rotate-1 border-y border-white/10 shadow-2xl"
+            className="mb-10 -mx-10 bg-oku-darkgrey overflow-hidden py-3 transform -rotate-1 border-y border-white/10 shadow-2xl"
           >
               <m.div 
                   animate={{ x: [0, -1000] }}

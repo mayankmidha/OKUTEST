@@ -29,13 +29,13 @@ export function RoutineManager() {
   }
 
   return (
-    <div className="bg-white rounded-[2.5rem] p-8 border border-oku-taupe/10 shadow-sm">
+    <div className="bg-white rounded-[2.5rem] p-8 border border-oku-darkgrey/10 shadow-sm">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-2xl bg-oku-babyblue/20 flex items-center justify-center text-oku-babyblue-dark">
+        <div className="w-12 h-12 rounded-2xl bg-oku-babyblue/20 flex items-center justify-center text-oku-darkgrey">
             <ClipboardList size={24} />
         </div>
         <div>
-            <h2 className="text-xl font-display font-bold text-oku-dark">Focus Routines</h2>
+            <h2 className="text-xl font-display font-bold text-oku-darkgrey">Focus Routines</h2>
             <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40">Checklists for your autopilot</p>
         </div>
       </div>
@@ -44,8 +44,8 @@ export function RoutineManager() {
         {routines.map(routine => (
           <div key={routine.id} className="bg-oku-lavender/10 rounded-3xl p-6 border border-oku-lavender/20">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-oku-dark flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-oku-purple animate-pulse" />
+                <h3 className="font-bold text-oku-darkgrey flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-oku-purple-dark animate-pulse" />
                     {routine.title}
                 </h3>
                 <span className="text-[9px] font-black uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-oku-lavender/30 text-oku-purple-dark">
@@ -61,11 +61,11 @@ export function RoutineManager() {
                         className="w-full flex items-center gap-3 p-3 bg-white/60 hover:bg-white rounded-2xl transition-all group border border-transparent hover:border-oku-lavender/30"
                     >
                         {item.done ? (
-                            <CheckCircle2 size={18} className="text-oku-purple" />
+                            <CheckCircle2 size={18} className="text-oku-purple-dark" />
                         ) : (
-                            <Circle size={18} className="text-oku-darkgrey/20 group-hover:text-oku-purple/40" />
+                            <Circle size={18} className="text-oku-darkgrey/20 group-hover:text-oku-purple-dark/40" />
                         )}
-                        <span className={`text-sm font-medium ${item.done ? 'text-oku-darkgrey/40 line-through' : 'text-oku-dark'}`}>
+                        <span className={`text-sm font-medium ${item.done ? 'text-oku-darkgrey/40 line-through' : 'text-oku-darkgrey'}`}>
                             {item.text}
                         </span>
                     </button>

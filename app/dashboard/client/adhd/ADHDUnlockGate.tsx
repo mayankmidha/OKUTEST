@@ -99,7 +99,7 @@ export function ADHDUnlockGate() {
       >
         {/* Lock badge */}
         <div className="flex justify-center mb-10">
-          <div className="w-20 h-20 rounded-[2rem] bg-oku-purple/30 backdrop-blur-xl border border-white/60 flex items-center justify-center shadow-premium">
+          <div className="w-20 h-20 rounded-[2rem] bg-oku-lavender/60 backdrop-blur-xl border border-white/60 flex items-center justify-center shadow-xl">
             <Lock size={36} className="text-oku-purple-dark" strokeWidth={1.5} />
           </div>
         </div>
@@ -128,7 +128,7 @@ export function ADHDUnlockGate() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 * i, duration: 0.4 }}
-              className="flex items-start gap-5 p-7 rounded-[2rem] bg-white/60 backdrop-blur-xl border border-white/80 shadow-premium"
+              className="flex items-start gap-5 p-7 rounded-[2rem] bg-white/60 backdrop-blur-xl border border-white/80 shadow-xl"
             >
               <div className="w-11 h-11 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark flex-shrink-0">
                 {f.icon}
@@ -161,7 +161,7 @@ export function ADHDUnlockGate() {
             <button
               onClick={askTherapist}
               disabled={isSending}
-              className="flex items-center justify-center gap-3 px-8 py-5 rounded-full bg-white/80 backdrop-blur-md border border-oku-lavender text-oku-purple-dark font-bold text-sm tracking-tight hover:bg-oku-lavender transition-all shadow-premium hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-3 px-8 py-5 rounded-full bg-white/80 backdrop-blur-md border border-oku-lavender text-oku-purple-dark font-bold text-sm tracking-tight hover:bg-oku-lavender transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSending ? (
                 <Loader2 size={18} className="animate-spin" />

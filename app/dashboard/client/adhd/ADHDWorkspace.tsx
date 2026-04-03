@@ -233,7 +233,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
           <m.section 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card-glass-3d !p-12 !bg-oku-dark text-white relative overflow-hidden group shadow-2xl !rounded-[3rem]"
+            className="card-glass-3d !p-12 !bg-oku-darkgrey text-white relative overflow-hidden group shadow-2xl !rounded-[3rem]"
           >
              <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div className="space-y-2">
@@ -246,9 +246,9 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                 <button 
                     onClick={generateStrategy}
                     disabled={isGeneratingStrategy}
-                    className="btn-pill-3d bg-white text-oku-dark !py-4 !px-10 flex items-center gap-3 hover:scale-105 transition-all"
+                    className="btn-pill-3d bg-white text-oku-darkgrey !py-4 !px-10 flex items-center gap-3 hover:scale-105 transition-all"
                 >
-                    {isGeneratingStrategy ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} className="text-oku-purple" />}
+                    {isGeneratingStrategy ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} className="text-oku-purple-dark" />}
                     Generate Daily Path
                 </button>
              </div>
@@ -257,7 +257,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                     <p className="text-sm text-oku-lavender font-display leading-relaxed italic">{aiStrategy.strategy}</p>
                 </m.div>
              )}
-             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px]" />
+             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple-dark/10 rounded-full blur-[100px]" />
           </m.section>
 
           {/* TASK PLANNER (The 3-Task Rule) */}
@@ -273,9 +273,9 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     placeholder="Enter a task (Remember: 3 items max)..."
-                    className="w-full bg-white/60 backdrop-blur-md border-2 border-white rounded-[2.5rem] p-8 pr-32 text-xl font-display italic focus:outline-none focus:border-oku-purple/30 transition-all shadow-xl placeholder:text-oku-darkgrey/20"
+                    className="w-full bg-white/60 backdrop-blur-md border-2 border-white rounded-[2.5rem] p-8 pr-32 text-xl font-display italic focus:outline-none focus:border-oku-purple-dark/30 transition-all shadow-xl placeholder:text-oku-darkgrey/20"
                 />
-                <button className="absolute right-4 top-4 p-4 rounded-2xl bg-oku-darkgrey text-white hover:bg-oku-dark transition-all">
+                <button className="absolute right-4 top-4 p-4 rounded-2xl bg-oku-darkgrey text-white hover:bg-oku-darkgrey transition-all">
                     <Plus size={24} />
                 </button>
              </form>
@@ -288,12 +288,12 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className={`group p-8 rounded-[2.5rem] border-2 transition-all duration-500 ${task.isCompleted ? 'bg-oku-lavender/10 border-transparent opacity-60' : 'bg-white border-white/60 hover:border-oku-purple/30 shadow-sm'}`}
+                        className={`group p-8 rounded-[2.5rem] border-2 transition-all duration-500 ${task.isCompleted ? 'bg-oku-lavender/10 border-transparent opacity-60' : 'bg-white border-white/60 hover:border-oku-purple-dark/30 shadow-sm'}`}
                     >
                         <div className="flex items-center justify-between gap-8">
                             <div className="flex items-center gap-8">
                                 <button onClick={() => toggleTask(task.id, task.isCompleted)} className="transition-transform active:scale-90">
-                                    {task.isCompleted ? <CheckCircle2 size={32} className="text-oku-purple" /> : <Circle size={32} className="text-oku-darkgrey/10 group-hover:text-oku-purple/40" />}
+                                    {task.isCompleted ? <CheckCircle2 size={32} className="text-oku-purple-dark" /> : <Circle size={32} className="text-oku-darkgrey/10 group-hover:text-oku-purple-dark/40" />}
                                 </button>
                                 <div>
                                     <h3 className={`text-2xl font-display font-bold tracking-tight ${task.isCompleted ? 'line-through text-oku-darkgrey/40' : ''}`}>{task.title}</h3>
@@ -301,7 +301,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                                         <div className="mt-4 flex items-center gap-4">
                                             <div className="w-48 h-1.5 bg-oku-lavender/20 rounded-full overflow-hidden border border-white/10">
                                                 <m.div 
-                                                    className="h-full bg-oku-purple shadow-[0_0_8px_rgba(157,133,179,0.5)]" 
+                                                    className="h-full bg-oku-purple-dark shadow-[0_0_8px_rgba(157,133,179,0.5)]" 
                                                     animate={{ width: `${(task.subTasks.filter((st:any) => st.isCompleted).length / task.subTasks.length) * 100}%` }} 
                                                 />
                                             </div>
@@ -321,7 +321,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                                     {isAtomizing === task.id ? <Loader2 size={16} className="animate-spin" /> : <Split size={16} />} 
                                     Atomize
                                 </button>
-                                <button onClick={() => deleteTask(task.id)} className="p-4 rounded-2xl hover:bg-oku-blush/20 text-oku-darkgrey/20 hover:text-oku-blush-dark transition-all">
+                                <button onClick={() => deleteTask(task.id)} className="p-4 rounded-2xl hover:bg-oku-blush/20 text-oku-darkgrey/20 hover:text-oku-blush transition-all">
                                     <Trash2 size={20} />
                                 </button>
                             </div>
@@ -337,7 +337,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                                             onClick={() => toggleTask(st.id, st.isCompleted)}
                                             className={`p-4 rounded-2xl border transition-all flex items-center gap-4 text-left ${st.isCompleted ? 'bg-oku-lavender/5 border-transparent opacity-50' : 'bg-white/40 border-white hover:bg-white hover:shadow-sm'}`}
                                         >
-                                            {st.isCompleted ? <CheckCircle2 size={16} className="text-oku-purple" /> : <Circle size={16} className="text-oku-darkgrey/20" />}
+                                            {st.isCompleted ? <CheckCircle2 size={16} className="text-oku-purple-dark" /> : <Circle size={16} className="text-oku-darkgrey/20" />}
                                             <span className={`text-xs font-bold ${st.isCompleted ? 'line-through' : ''}`}>{st.title}</span>
                                         </button>
                                     ))}
@@ -370,14 +370,14 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
             />
             <button 
                 onClick={() => setIsSignalingFocus(!isSignalingFocus)}
-                className={`absolute top-10 right-10 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all shadow-sm ${isSignalingFocus ? 'bg-oku-matcha text-white' : 'bg-oku-lavender text-oku-purple-dark hover:bg-white border border-oku-lavender'}`}
+                className={`absolute top-10 right-10 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all shadow-sm ${isSignalingFocus ? 'bg-oku-mint text-white' : 'bg-oku-lavender text-oku-purple-dark hover:bg-white border border-oku-lavender'}`}
             >
                 {isSignalingFocus ? 'Focus Signaling Active' : 'Signal Focus'}
             </button>
           </div>
 
           {/* Pomodoro Protocol */}
-          <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-oku-dark text-white p-12 rounded-[4rem] shadow-2xl relative overflow-hidden group">
+          <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-oku-darkgrey text-white p-12 rounded-[4rem] shadow-2xl relative overflow-hidden group">
              <div className="relative z-10 text-center">
                 <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-12 border border-white/5 backdrop-blur-md">
                    <Clock size={14} className="text-oku-lavender animate-spin-slow" /> {timerMode === 'work' ? 'Phase: Deep Flow' : 'Phase: Dopamine Reset'}
@@ -386,7 +386,7 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
                 <div className="flex items-center justify-center gap-8">
                    <button 
                      onClick={() => setIsActive(!isActive)} 
-                     className={`w-24 h-24 rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl active:scale-90 ${isActive ? 'bg-white/10 text-white border border-white/20' : 'bg-white text-oku-dark hover:scale-110'}`}
+                     className={`w-24 h-24 rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl active:scale-90 ${isActive ? 'bg-white/10 text-white border border-white/20' : 'bg-white text-oku-darkgrey hover:scale-110'}`}
                    >
                       {isActive ? <Pause size={40} fill="currentColor" /> : <Play size={40} fill="currentColor" className="ml-2" />}
                    </button>

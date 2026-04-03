@@ -59,7 +59,7 @@ export function DailyTracker() {
   }
 
   return (
-    <div className="bg-oku-dark text-white rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+    <div className="bg-oku-darkgrey text-white rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
@@ -92,7 +92,7 @@ export function DailyTracker() {
               <div className="relative h-3 bg-white/10 rounded-full overflow-hidden border border-white/5">
                 <motion.div
                   animate={{ width: `${energy}%` }}
-                  className="h-full bg-gradient-to-r from-oku-purple to-oku-lavender shadow-[0_0_15px_rgba(157,133,179,0.5)]"
+                  className="h-full bg-gradient-to-r from-oku-purple-dark to-oku-lavender shadow-[0_0_15px_rgba(157,133,179,0.5)]"
                 />
                 <input
                   type="range"
@@ -129,7 +129,7 @@ export function DailyTracker() {
                     onClick={() => setSleepHours(sleepHours === h ? null : h)}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                       sleepHours === h
-                        ? 'bg-oku-lavender text-oku-dark shadow-[0_0_12px_rgba(157,133,179,0.4)]'
+                        ? 'bg-oku-lavender text-oku-darkgrey shadow-[0_0_12px_rgba(157,133,179,0.4)]'
                         : 'bg-white/10 text-white/40 hover:bg-white/20'
                     }`}
                   >
@@ -152,7 +152,7 @@ export function DailyTracker() {
                 <div
                   className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
                     medsTaken
-                      ? 'bg-oku-lavender text-oku-dark'
+                      ? 'bg-oku-lavender text-oku-darkgrey'
                       : 'bg-white/10 text-white/20 group-hover:bg-white/20'
                   }`}
                 >
@@ -175,7 +175,7 @@ export function DailyTracker() {
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full bg-white text-oku-dark py-4 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-lavender transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full bg-white text-oku-darkgrey py-4 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-lavender transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
               {isSaving ? (
                 <>
@@ -189,7 +189,7 @@ export function DailyTracker() {
         )}
       </div>
 
-      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple/10 rounded-full blur-[100px]" />
+      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-oku-purple-dark/10 rounded-full blur-[100px]" />
     </div>
   )
 }
