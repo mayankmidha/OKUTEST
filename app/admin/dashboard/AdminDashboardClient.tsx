@@ -17,7 +17,7 @@ import {
 import { AdminUserManagement } from '@/components/AdminUserManagement'
 import { formatCurrency, autoConvert } from '@/lib/currency'
 import { getPractitionerDisciplineLabel } from '@/lib/practitioner-type'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { CirclesManager } from './CirclesManager'
 import { AdminAppointmentsManagement } from './AdminAppointmentsManagement'
 import { AssessmentTemplateManager } from './AssessmentTemplateManager'

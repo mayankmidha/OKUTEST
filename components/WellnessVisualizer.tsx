@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { TrendingDown, TrendingUp, Activity, Loader2, Sparkles } from 'lucide-react'
 
 export function WellnessVisualizer({ clientId }: { clientId?: string }) {

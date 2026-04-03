@@ -6,7 +6,7 @@ import {
   ExternalLink, EyeOff, Loader2, Plus, 
   File, Lock, CheckCircle2, Download
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 interface Document {
   id: string

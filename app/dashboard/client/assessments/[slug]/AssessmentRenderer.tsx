@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle2, Loader2, Sparkles, AlertTriangle, ArrowRight, Phone } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { signIn, useSession } from 'next-auth/react'

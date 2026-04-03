@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'motion/react';
 import Link from 'next/link';
 
 export default function HomeHero() {

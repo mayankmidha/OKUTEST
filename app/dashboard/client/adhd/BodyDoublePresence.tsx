@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion as m, AnimatePresence } from 'framer-motion'
+import { motion as m, AnimatePresence } from 'motion/react'
 import { Users, Zap, Heart, Wind, Loader2 } from 'lucide-react'
 
 export function BodyDoublePresence({ currentTask, isActive }: { currentTask?: string, isActive: boolean }) {

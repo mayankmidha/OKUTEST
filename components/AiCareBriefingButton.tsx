@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sparkles, Loader2, X, Brain, Activity, Target, ShieldCheck, ChevronRight } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 interface AiCareBriefingButtonProps {
   appointmentId: string

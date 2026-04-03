@@ -6,7 +6,7 @@ import {
   Target, BarChart3, PieChart,
   Download, Calendar, ArrowUpRight, ArrowDownRight
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { formatCurrency } from '@/lib/currency'
 
 export default function AnalyticsDashboardClient() {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { ClipboardCheck, ArrowRight, Shield, Zap, Heart, Sparkles, Loader2, Clock, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 

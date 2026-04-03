@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Loader2, Terminal, ShieldCheck, AlertCircle, Zap, Brain } from 'lucide-react'
 
 export function OCIDiagnostic() {

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { TreePine, Flower2, Cloud, Sparkles, Sun } from 'lucide-react'
 
 interface GardenState {

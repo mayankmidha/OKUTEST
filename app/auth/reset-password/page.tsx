@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Loader2, ArrowRight, Lock, ShieldCheck, Eye, EyeOff, AlertTriangle } from 'lucide-react'
 
 function ResetPasswordContent() {

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Loader2, ArrowRight, ShieldCheck, Lock, Eye, EyeOff } from 'lucide-react'
 
 export default function V1LoginPage() {

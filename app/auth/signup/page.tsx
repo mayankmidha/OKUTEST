@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Loader2, ArrowRight, User, Mail, Lock, Shield, Heart, Zap } from 'lucide-react'
 
 const roles = [

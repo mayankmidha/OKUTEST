@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Loader2, Key, ShieldCheck, AlertCircle } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function PasswordChangeForm() {
   const [currentPassword, setCurrentPassword] = useState('')

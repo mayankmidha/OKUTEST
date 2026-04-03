@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sparkles, Loader2, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function AIAssistantWidget({ contextType, title = "AI Assistant" }: { contextType: string, title?: string }) {
   const [isOpen, setIsOpen] = useState(false)

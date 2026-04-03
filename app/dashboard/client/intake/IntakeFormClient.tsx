@@ -17,7 +17,7 @@ import {
     Sparkles,
     Heart
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { InformedConsentViewer } from '@/components/InformedConsentViewer'
 
 export default function IntakeFormClient({ initialData }: { initialData: any }) {

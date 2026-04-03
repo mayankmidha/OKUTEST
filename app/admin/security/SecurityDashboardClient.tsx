@@ -6,7 +6,7 @@ import {
   Key, Eye, AlertTriangle, 
   Terminal, UserX, Download
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 export default function SecurityDashboardClient() {
   const [data, setData] = useState<any>(null)

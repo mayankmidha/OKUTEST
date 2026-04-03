@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Camera, Mic, ShieldCheck, Video, Settings, Monitor, Loader2, Sparkles, CheckCircle, ArrowRight, RefreshCcw, TriangleAlert, WifiOff } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 type DeviceStatus = 'checking' | 'ready' | 'degraded' | 'needs-permission' | 'unsupported' | 'error'
 

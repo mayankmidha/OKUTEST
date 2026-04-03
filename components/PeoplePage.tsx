@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { ShieldCheck, Briefcase, Award, BookOpen, ArrowRight, Zap, Linkedin, Globe } from 'lucide-react';
 import { formatCurrency, autoConvert } from '@/lib/currency';

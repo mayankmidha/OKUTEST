@@ -1,6 +1,6 @@
 'use client'
 
-import { motion as m, AnimatePresence } from 'framer-motion'
+import { motion as m, AnimatePresence } from 'motion/react'
 import { 
   Gift, Sparkles, Heart, ArrowRight, Copy, Share2, 
   Wind, ShieldCheck, CheckCircle2, MessageCircle, Clock, 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Plus, Target, Save, X, FileText, CheckCircle2 } from 'lucide-react'
 
 export function TreatmentPlanManager({ clientId, existingPlans }: { clientId: string, existingPlans: any[] }) {

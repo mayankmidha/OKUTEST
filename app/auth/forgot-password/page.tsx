@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Loader2, ArrowRight, Mail, ShieldCheck, ArrowLeft } from 'lucide-react'
 
 export default function ForgotPasswordPage() {

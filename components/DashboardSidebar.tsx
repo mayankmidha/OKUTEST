@@ -10,7 +10,7 @@ import {
   Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp, Zap
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { useState, useEffect } from 'react'
 
 export function DashboardSidebar() {

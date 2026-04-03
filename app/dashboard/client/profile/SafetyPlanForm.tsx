@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ShieldAlert, Plus, Trash2, Save, Loader2, AlertCircle } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 interface SafetyPlanProps {
   initialPlan?: any

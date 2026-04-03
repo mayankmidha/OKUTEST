@@ -18,7 +18,7 @@ import {
     ShieldCheck,
     CheckCircle2
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { resolvePractitionerPricing } from '@/lib/pricing'
 
 export default function EditProfileForm({ initialData }: { initialData: any }) {

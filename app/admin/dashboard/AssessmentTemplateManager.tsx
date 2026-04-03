@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Save, FileText, ChevronRight, Layout, Edit2, Check, X, Loader2 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function AssessmentTemplateManager({ assessments }: { assessments: any[] }) {
   const [isEditing, setIsEditing] = useState<string | null>(null)

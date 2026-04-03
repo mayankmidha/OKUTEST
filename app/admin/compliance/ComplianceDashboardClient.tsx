@@ -6,7 +6,7 @@ import {
   Trash2, History, AlertCircle, 
   Download, Filter, Search, CheckCircle2
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 export default function ComplianceDashboardClient() {
   const [data, setData] = useState<any>(null)

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { 
   ArrowRight, ArrowLeft, ClipboardCheck, 
   Sparkles, ShieldCheck, Lock, 

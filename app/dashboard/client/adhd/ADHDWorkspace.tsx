@@ -24,7 +24,7 @@ import {
     TrendingUp,
     ChevronRight
 } from 'lucide-react'
-import { motion as m, AnimatePresence } from 'framer-motion'
+import { motion as m, AnimatePresence } from 'motion/react'
 import confetti from 'canvas-confetti'
 import { BodyDoublePresence } from './BodyDoublePresence'
 import { DopamineMenu } from './DopamineMenu'

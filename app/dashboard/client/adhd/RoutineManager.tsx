@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ClipboardList, Plus, Trash2, CheckCircle2, Circle } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function RoutineManager() {
   const [routines, setRoutines] = useState([

@@ -2,7 +2,7 @@
 
 import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { 
   Sparkles, X, Brain, Target, 
   Lightbulb, ShieldCheck, Activity,

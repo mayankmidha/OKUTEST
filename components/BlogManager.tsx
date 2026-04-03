@@ -7,7 +7,7 @@ import {
     Image as ImageIcon, Loader2, Sparkles
 } from 'lucide-react'
 import { createPost, updatePost, deletePost } from '@/app/admin/actions'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function BlogManager({ initialPosts }: { initialPosts: any[] }) {
   const [posts, setPosts] = useState(initialPosts)

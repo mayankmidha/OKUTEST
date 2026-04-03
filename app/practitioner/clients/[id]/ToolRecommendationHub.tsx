@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sparkles, Brain, Users, Send, CheckCircle2, Loader2 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function ToolRecommendationHub({ clientId }: { clientId: string }) {
   const [isSending, setIsSending] = useState<string | null>(null)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { MessageCircle, X, Send, ShieldAlert, Wind, LifeBuoy, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 

@@ -14,7 +14,7 @@ import {
 import '@stream-io/video-react-sdk/dist/css/styles.css'
 import { Loader2, ShieldCheck, Users, MessageSquare, Send, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 interface CircleSessionRoomProps {
   callId: string

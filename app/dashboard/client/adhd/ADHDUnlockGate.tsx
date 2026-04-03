@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion as m } from 'framer-motion'
+import { motion as m } from 'motion/react'
 import {
   Brain,
   Sparkles,

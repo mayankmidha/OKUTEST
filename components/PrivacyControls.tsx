@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Download, Trash2, ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function PrivacyControls() {
   const [isExporting, setIsExporting] = useState(false)

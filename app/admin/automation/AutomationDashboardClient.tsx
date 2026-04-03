@@ -6,7 +6,7 @@ import {
   RotateCw, AlertCircle, CheckCircle2,
   Calendar, Layers, Filter, Search
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 export default function AutomationDashboardClient() {
   const [data, setData] = useState<any>(null)
