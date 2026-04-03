@@ -31,6 +31,7 @@ export default function BrandedNav() {
     { label: 'Assessments', href: '/assessments' },
     { label: 'Circles', href: '/circles' },
     { label: 'Journal', href: '/blog' },
+    { label: 'For Therapists', href: '/for-therapists' },
     { label: 'About', href: '/about-us' },
   ]
 
