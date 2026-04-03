@@ -61,11 +61,13 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
   }, [isActive, phase, task, syncPresence])
 
   const handleStart = () => {
+    const activeTask = task.trim() || 'Deep work'
+    setTask(activeTask)
     setPhase('focus')
     setSecondsLeft(FOCUS_SECONDS)
     setIsActive(true)
-    syncPresence(task || 'Deep work', 'FOCUSING')
-    onSessionChange?.(true, task || 'Deep work')
+    syncPresence(activeTask, 'FOCUSING')
+    onSessionChange?.(true, activeTask)
   }
 
   const handlePause = () => {
@@ -146,8 +148,7 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
         {phase === 'idle' ? (
           <button
             onClick={handleStart}
-            disabled={!task.trim()}
-            className="flex-1 btn-pill-3d bg-oku-darkgrey text-white !py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest disabled:opacity-40"
+            className="flex-1 btn-pill-3d bg-oku-darkgrey text-white !py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
           >
             <Play size={14} /> Start Focus
           </button>

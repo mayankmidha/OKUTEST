@@ -13,7 +13,8 @@ export async function GET(req: Request) {
     
     const activeSessions = await prisma.aiCareSession.findMany({
       where: {
-        updatedAt: { gte: activeThreshold }
+        updatedAt: { gte: activeThreshold },
+        userId: { not: session.user.id }, // exclude self
       },
       include: {
         user: { select: { name: true, avatar: true } }
