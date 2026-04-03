@@ -136,7 +136,7 @@ body {
   /* ── CARDS ── */
 
   .card-glass-3d {
-    @apply bg-white/40 backdrop-blur-[16px] rounded-[3rem] border border-white/60 shadow-xl transition-all duration-400 hover:shadow-2xl hover:scale-[1.015];
+    @apply bg-white/40 backdrop-blur-[16px] rounded-[3rem] border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.015];
     perspective: 1000px;
   }
 
