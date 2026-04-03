@@ -33,10 +33,11 @@ const config: Config = {
         'oku-navy': '#4A4458',
       },
       fontFamily: {
-        'display': ['Plus Jakarta Sans', 'DM Sans', 'sans-serif'],
-        'body': ['Plus Jakarta Sans', 'DM Sans', 'sans-serif'],
-        'serif': ['Cormorant Garamond', 'serif'],
-        'cursive': ['Nothing You Could Do', 'cursive'],
+        'display': ['Bricolage Grotesque', 'sans-serif'],
+        'body': ['Geist', 'sans-serif'],
+        'sans': ['Geist', 'sans-serif'],
+        'serif': ['Instrument Serif', 'serif'],
+        'cursive': ['Caveat', 'cursive'],
       },
       borderRadius: {
         'button': '12px',
