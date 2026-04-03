@@ -94,10 +94,10 @@ export default function BrandedNav() {
                 Sign In
               </Link>
               <Link
-                href="/therapists"
+                href="/match"
                 className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-purple-dark px-5 py-3 rounded-full bg-oku-lavender/60 hover:bg-oku-lavender transition-colors"
               >
-                Browse Therapists
+                Find My Match
               </Link>
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
@@ -189,11 +189,11 @@ export default function BrandedNav() {
                     Sign In
                   </Link>
                   <Link
-                    href="/therapists"
+                    href="/match"
                     onClick={() => setMobileMenuOpen(false)}
                     className="w-full py-5 rounded-2xl bg-oku-lavender text-oku-purple-dark text-center font-black text-[10px] uppercase tracking-widest"
                   >
-                    Browse Therapists
+                    Find My Match
                   </Link>
                   <Link
                     href="/auth/signup"
