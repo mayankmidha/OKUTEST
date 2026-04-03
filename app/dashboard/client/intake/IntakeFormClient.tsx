@@ -34,15 +34,18 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
     isOnboarded: true
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [consentError, setConsentError] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (!formData.hasSignedConsent || !formData.hasAcceptedPrivacy) {
-        alert('Please accept the Oku Therapy Informed Consent and Privacy Policy to proceed.')
+        setConsentError(true)
         setStep(3)
+        setTimeout(() => setConsentError(false), 5000)
         return
     }
+    setConsentError(false)
 
     setIsSubmitting(true)
     try {
@@ -143,6 +146,12 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
                         <div className="h-[400px] overflow-y-auto pr-4 custom-scrollbar bg-oku-cream-warm/30 rounded-3xl p-8 border border-oku-taupe/10">
                             <InformedConsentViewer />
                         </div>
+                        {consentError && (
+                            <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
+                                <AlertCircle size={16} className="shrink-0" />
+                                Please accept both the Informed Consent and Privacy Policy to continue.
+                            </div>
+                        )}
                         <div className="space-y-4">
                             <label className="flex items-start gap-4 p-6 bg-oku-lavender/10 border border-oku-lavender/20 rounded-[2rem] cursor-pointer group">
                                 <input type="checkbox" className="mt-1 w-6 h-6 accent-oku-purple" checked={formData.hasSignedConsent} onChange={e => setFormData({...formData, hasSignedConsent: e.target.checked})} />

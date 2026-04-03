@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, User, Mail, Phone, Heart, Globe, Clock, ShieldAlert } from 'lucide-react'
+import { Loader2, Save, User, Mail, Phone, Heart, Globe, Clock, ShieldAlert, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function ClientProfileForm({ initialData }: { initialData: any }) {
   const [formData, setFormData] = useState({
@@ -17,7 +17,13 @@ export default function ClientProfileForm({ initialData }: { initialData: any })
     timezone: initialData.clientProfile?.timezone || 'UTC',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
   const router = useRouter()
+
+  const showToast = (type: 'success' | 'error', msg: string) => {
+    setToast({ type, msg })
+    setTimeout(() => setToast(null), 4000)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,18 +38,26 @@ export default function ClientProfileForm({ initialData }: { initialData: any })
 
       if (res.ok) {
         router.refresh()
-        alert('Profile updated successfully')
+        showToast('success', 'Profile updated successfully')
       } else {
-        alert('Failed to update profile')
+        showToast('error', 'Failed to update profile')
       }
     } catch (e) {
       console.error(e)
+      showToast('error', 'Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
+    <>
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl text-sm font-bold ${toast.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+          {toast.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {toast.msg}
+        </div>
+      )}
     <form onSubmit={handleSubmit} className="space-y-10">
       <div className="space-y-6">
         <div className="flex items-center gap-3 border-b border-oku-taupe/5 pb-4">
@@ -189,5 +203,6 @@ export default function ClientProfileForm({ initialData }: { initialData: any })
         </button>
       </div>
     </form>
+    </>
   )
 }
