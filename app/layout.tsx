@@ -4,6 +4,58 @@ import RootLayoutClient from '@/components/RootLayoutClient'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import {
+  Bricolage_Grotesque,
+  Instrument_Serif,
+  Caveat,
+  DM_Sans,
+  Cormorant_Garamond,
+  Nothing_You_Could_Do,
+} from 'next/font/google'
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['200', '300', '400', '500', '600', '700', '800'],
+  display: 'swap',
+})
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-editorial',
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  weight: '400',
+  style: ['normal', 'italic'],
+  display: 'swap',
+})
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-cursive',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const nothingYouCouldDo = Nothing_You_Could_Do({
+  subsets: ['latin'],
+  variable: '--font-handwriting',
+  weight: '400',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'OKU Therapy - Inclusive, Trauma-Informed Care',
@@ -43,12 +95,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Geist:wght@100..900&family=Instrument+Serif:ital@0;1&family=Caveat:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={`scroll-smooth ${bricolage.variable} ${cormorant.variable} ${instrumentSerif.variable} ${caveat.variable} ${dmSans.variable} ${nothingYouCouldDo.variable}`}>
       <body className="bg-white font-sans text-oku-dark antialiased">
         <ErrorBoundary>
           <RootLayoutClient>

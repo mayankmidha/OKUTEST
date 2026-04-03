@@ -35,42 +35,42 @@ const team = [
   {
     name: 'Dr. Suraj Singh',
     role: 'Founder & Consultant Psychiatrist',
-    image: '/wp-content/wp-content/uploads/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg',
+    image: '/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg',
     bio: 'Dr. Suraj Singh leads our clinical team with over 15 years of experience in psychiatry and mental health care.',
     credentials: ['MD Psychiatry', 'RCI Certified', 'EMDR Trained']
   },
   {
     name: 'Tanisha Singh',
     role: 'Clinical Psychologist & Psychodynamic Psychotherapist',
-    image: '/wp-content/wp-content/uploads/uploads/2025/07/Tanisha_-821x1024.jpg',
+    image: '/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg',
     bio: 'Tanisha brings deep expertise in psychodynamic therapy and trauma-informed care.',
     credentials: ['M.Phil Clinical Psychology', 'Psychodynamic Training', 'Trauma Specialist']
   },
   {
     name: 'Rananjay Singh',
     role: 'Queer Affirmative & Family Therapist',
-    image: '/wp-content/wp-content/uploads/uploads/2025/07/Rananjay--869x1536.jpg',
+    image: '/wp-content/uploads/2025/07/Rananjay--869x1536.jpg',
     bio: 'Rananjay specializes in LGBTQ+ affirmative therapy and family systems work.',
     credentials: ['Masters in Psychology', 'Queer-Affirmative Certified', 'Family Systems']
   },
   {
     name: 'Amna Ansari',
     role: 'Clinical Psychologist (A.)',
-    image: '/wp-content/wp-content/uploads/uploads/2025/07/Amna-1006x1536.jpg',
+    image: '/wp-content/uploads/2025/07/Amna-1006x1536.jpg',
     bio: 'Amna focuses on anxiety, OCD, and cognitive behavioral interventions.',
     credentials: ['M.Phil Clinical Psychology (A)', 'CBT Certified', 'Anxiety Specialist']
   },
   {
     name: 'Mohit Dudeja',
     role: 'Queer Affirmative Therapist',
-    image: '/wp-content/wp-content/uploads/uploads/2025/07/Mohit-911x1024.jpg',
+    image: '/wp-content/uploads/2025/07/Mohit-911x1024.jpg',
     bio: 'Mohit provides compassionate care for LGBTQ+ individuals navigating identity and grief.',
     credentials: ['Masters in Psychology', 'Queer-Affirmative', 'Grief Counseling']
   },
   {
     name: 'Gursheel Kaur',
     role: 'Psychodynamic Psychotherapist',
-    image: '/wp-content/wp-content/uploads/uploads/2025/07/gursheel_pfp-1024x980.jpg',
+    image: '/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg',
     bio: 'Gursheel works with depth psychology approaches for self-esteem and relational issues.',
     credentials: ['Masters in Psychology', 'Psychodynamic Training', 'Relational Therapy']
   }

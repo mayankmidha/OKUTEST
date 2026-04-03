@@ -234,10 +234,10 @@ export default function TherapistFilters({
 
                   <div className="mt-auto pt-8 border-t border-oku-taupe/5 grid grid-cols-2 gap-4">
                     <Link
-                        href={`/therapists/${practitioner.id}/trial`}
-                        className="bg-oku-purple-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-all text-center shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                        href={`/dashboard/client/book/new/${practitioner.id}`}
+                        className="bg-oku-dark text-white py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-oku-purple-dark transition-all text-center shadow-xl active:scale-95 flex items-center justify-center gap-2"
                     >
-                      Free Trial <ArrowRight size={14} />
+                      Book Session <ArrowRight size={14} />
                     </Link>
                     <Link
                         href={`/therapists/${practitioner.id}`}

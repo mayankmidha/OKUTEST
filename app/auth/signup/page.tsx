@@ -112,7 +112,7 @@ function SignupContent() {
           >
             <Link href="/" className="inline-block animate-float-3d">
               <img 
-                src="/wp-content/wp-content/uploads/2025/07/Logoo.png" 
+                src="/wp-content/uploads/2025/07/Logoo.png" 
                 alt="OKU Therapy" 
                 className="h-12 w-auto opacity-80" 
               />
@@ -151,7 +151,7 @@ function SignupContent() {
           >
             <div className="lg:hidden text-center mb-12">
                 <Link href="/" className="inline-block mb-8">
-                    <img src="/wp-content/wp-content/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 w-auto mx-auto opacity-80" />
+                    <img src="/wp-content/uploads/2025/07/Logoo.png" alt="OKU" className="h-8 w-auto mx-auto opacity-80" />
                 </Link>
                 <h1 className="heading-display text-5xl text-oku-darkgrey mb-4">Begin Journey.</h1>
             </div>

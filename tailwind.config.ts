@@ -33,11 +33,13 @@ const config: Config = {
         'oku-navy': '#4A4458',
       },
       fontFamily: {
-        'display': ['Bricolage Grotesque', 'sans-serif'],
-        'body': ['Geist', 'sans-serif'],
-        'sans': ['Geist', 'sans-serif'],
-        'serif': ['Instrument Serif', 'serif'],
-        'cursive': ['Caveat', 'cursive'],
+        'display': ['var(--font-display)', 'system-ui', 'sans-serif'],
+        'sans': ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        'body': ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        'editorial': ['var(--font-editorial)', 'Georgia', 'serif'],
+        'serif': ['var(--font-serif)', 'Georgia', 'serif'],
+        'cursive': ['var(--font-cursive)', 'cursive'],
+        'handwriting': ['var(--font-handwriting)', 'cursive'],
       },
       borderRadius: {
         'button': '12px',
@@ -60,6 +62,6 @@ const config: Config = {
       }
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 }
 export default config

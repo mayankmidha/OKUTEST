@@ -2,8 +2,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
-import { BodyDoublePresence } from '../BodyDoublePresence'
-import { BodyDoublingClient } from './BodyDoublingClient'
+import { BodyDoublingWrapper } from './BodyDoublingWrapper'
 import { ArrowLeft, Users, Zap } from 'lucide-react'
 import Link from 'next/link'
 
@@ -50,13 +49,7 @@ export default async function BodyDoublingPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left: Pomodoro + task entry */}
-          <BodyDoublingClient />
-
-          {/* Right: Live presence */}
-          <BodyDoublePresence isActive={false} />
-        </div>
+        <BodyDoublingWrapper />
       </div>
     </div>
   )

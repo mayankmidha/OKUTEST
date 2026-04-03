@@ -8,7 +8,11 @@ type Phase = 'idle' | 'focus' | 'break'
 const FOCUS_SECONDS = 25 * 60
 const BREAK_SECONDS = 5 * 60
 
-export function BodyDoublingClient() {
+interface BodyDoublingClientProps {
+  onSessionChange?: (isActive: boolean, task: string) => void
+}
+
+export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps) {
   const [task, setTask] = useState('')
   const [phase, setPhase] = useState<Phase>('idle')
   const [secondsLeft, setSecondsLeft] = useState(FOCUS_SECONDS)
@@ -61,11 +65,13 @@ export function BodyDoublingClient() {
     setSecondsLeft(FOCUS_SECONDS)
     setIsActive(true)
     syncPresence(task || 'Deep work', 'FOCUSING')
+    onSessionChange?.(true, task || 'Deep work')
   }
 
   const handlePause = () => {
     setIsActive(false)
     if (intervalRef.current) clearInterval(intervalRef.current)
+    onSessionChange?.(false, task)
   }
 
   const handleReset = () => {
@@ -73,6 +79,7 @@ export function BodyDoublingClient() {
     if (intervalRef.current) clearInterval(intervalRef.current)
     setPhase('idle')
     setSecondsLeft(FOCUS_SECONDS)
+    onSessionChange?.(false, '')
   }
 
   const mins = Math.floor(secondsLeft / 60)

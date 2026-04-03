@@ -25,7 +25,7 @@ export default function ErrorPage({
         <div className="mb-8">
           <Link href="/" className="inline-block mb-12">
             <img
-              src="/wp-content/wp-content/uploads/2025/07/Logoo.png"
+              src="/wp-content/uploads/2025/07/Logoo.png"
               alt="OKU Therapy"
               className="h-10 w-auto opacity-60 mx-auto"
             />

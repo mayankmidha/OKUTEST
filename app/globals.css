@@ -6,7 +6,7 @@
   --foreground-rgb: 74, 68, 88;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 249, 247, 228;
-  
+
   --oku-lavender: #E8E4F9;
   --oku-blush: #F9E4EE;
   --oku-mint: #E4F9F0;
@@ -14,6 +14,13 @@
   --oku-butter: #F9F7E4;
   --oku-babyblue: #E4EEF9;
   --oku-darkgrey: #4A4458;
+  --oku-purple-dark: #A599E0;
+
+  /* Homepage warm tones (matching WP site) */
+  --warm: #EDE8E0;
+  --cream: #F7F4EF;
+  --accent: #8B7355;
+  --ink: #2D2D2D;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,67 +34,166 @@
 body {
   color: var(--oku-darkgrey);
   background: var(--background-start-rgb);
-  font-family: 'Geist', sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  @apply selection:bg-oku-lavender;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  @apply selection:bg-oku-lavender selection:text-oku-darkgrey;
 }
 
 @layer components {
-  /* Typography */
+  /* ── TYPOGRAPHY SYSTEM ── */
+
+  /* Primary display — Bricolage Grotesque, editorial weight */
   .heading-display {
-    font-family: 'Bricolage Grotesque', sans-serif;
+    font-family: var(--font-display), system-ui, sans-serif;
     font-weight: 800;
-    line-height: 0.9;
-    letter-spacing: -0.05em;
+    line-height: 0.88;
+    letter-spacing: -0.045em;
   }
-  
-  .heading-display b, .heading-display strong {
+
+  .heading-display b,
+  .heading-display strong {
     font-weight: 800;
     font-style: italic;
-    color: var(--oku-purple-dark);
   }
 
+  /* Editorial subtitle — Instrument Serif italic */
+  .text-editorial {
+    font-family: var(--font-serif), Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.005em;
+  }
+
+  /* Section label — small caps, spaced */
+  .text-label {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  /* Overline chip labels */
+  .chip {
+    @apply inline-flex items-center px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] border border-white/60 bg-white/50 text-oku-darkgrey/70 backdrop-blur-md;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  /* Handwritten accent — Caveat for OKU design system */
   .cursive-word {
-    font-family: 'Caveat', cursive;
+    font-family: var(--font-cursive), cursive;
     font-weight: 600;
-    font-size: 1.2em;
+    font-size: 1.15em;
     display: inline-block;
     color: var(--oku-purple-dark);
+    line-height: 1.2;
   }
 
-  /* 3D Button Effect */
+  /* Handwriting accent — Nothing You Could Do for homepage cycling word */
+  .handwriting {
+    font-family: var(--font-handwriting), cursive;
+    font-weight: 400;
+    display: inline-block;
+    line-height: 1.2;
+  }
+
+  /* Body copy refinement */
+  .text-body {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    font-weight: 400;
+    color: rgb(74 68 88 / 0.75);
+  }
+
+  /* Lead paragraph */
+  .text-lead {
+    font-family: var(--font-serif), Georgia, serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: rgb(74 68 88 / 0.65);
+    letter-spacing: 0.005em;
+  }
+
+  /* ── BUTTONS ── */
+
   .btn-pill-3d {
-    @apply relative inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-lg border-b-4 active:border-b-0 active:translate-y-[4px];
+    @apply relative inline-flex items-center justify-center px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.22em] transition-all duration-200 shadow-lg border-b-[3px] active:border-b-0 active:translate-y-[3px] select-none;
+    font-family: var(--font-sans), system-ui, sans-serif;
   }
 
-  /* Glassmorphism Card */
-  .card-glass-3d {
-    @apply bg-white/40 backdrop-blur-[12px] rounded-[3rem] border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02];
-    perspective: 1000px;
-  }
-
-  /* Input Fields */
-  .input-pastel, .input-pebble {
-    @apply w-full rounded-2xl border border-white bg-white/50 px-6 py-4 text-sm outline-none transition-all placeholder:text-oku-darkgrey/40 focus:ring-4 focus:ring-oku-lavender/50;
-  }
-
-  /* Button Aliases */
   .btn-pebble {
     @apply btn-pill-3d;
   }
 
-  /* Card Aliases */
+  /* ── CARDS ── */
+
+  .card-glass-3d {
+    @apply bg-white/40 backdrop-blur-[16px] rounded-[3rem] border border-white/60 shadow-xl transition-all duration-400 hover:shadow-2xl hover:scale-[1.015];
+    perspective: 1000px;
+  }
+
   .card-pebble {
     @apply card-glass-3d !p-10;
   }
 
-  /* Section Reveal Animation */
+  /* ── INPUTS ── */
+
+  .input-pastel,
+  .input-pebble {
+    @apply w-full rounded-2xl border border-white/80 bg-white/60 px-6 py-4 text-sm outline-none transition-all duration-200;
+    @apply placeholder:text-oku-darkgrey/35 focus:ring-4 focus:ring-oku-lavender/60 focus:border-oku-lavender/60;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    line-height: 1.5;
+    color: #4A4458;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SCROLL REVEAL ── */
+
   .reveal-on-scroll {
-    @apply opacity-0 translate-y-8 transition-all duration-1000 ease-out;
+    @apply opacity-0 translate-y-6 transition-all duration-700 ease-out;
   }
 
   .reveal-on-scroll.visible {
     @apply opacity-100 translate-y-0;
+  }
+
+  /* ── PAGE WRAPPER ── */
+
+  .oku-page-public {
+    padding-top: 0;
+  }
+
+  /* ── CUSTOM SCROLLBAR ── */
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(165 153 224 / 0.3) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(165 153 224 / 0.3);
+    border-radius: 100px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(165 153 224 / 0.6);
   }
 }
 

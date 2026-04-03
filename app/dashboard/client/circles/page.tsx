@@ -219,7 +219,7 @@ function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProp
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl overflow-hidden border-2 border-white shadow-md flex-shrink-0">
               <img
-                src={circle.practitioner?.avatar || '/wp-content/wp-content/uploads/2025/07/placeholder.jpg'}
+                src={circle.practitioner?.avatar || '/wp-content/uploads/2025/07/placeholder.jpg'}
                 className="w-full h-full object-cover"
                 alt={circle.practitioner?.name || 'Facilitator'}
               />

@@ -50,33 +50,33 @@ interface CommunityPanel {
 const CYCLING_WORDS = ["grief", "longing", "quiet", "becoming", "anger", "story"];
 
 const FEATURES = [
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-23-2.png", label: "Slow Healing", desc: "We move at the pace your story asks for—never rushed." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-23.png", label: "Depth Work", desc: "We meet what's beneath, not just what's visible." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-23-3.png", label: "Whole Self", desc: "Your culture, identity, body—all of you is held here." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-23-1.png", label: "Welcoming Space", desc: "A calm, non-clinical space designed for ease and safety." },
+  { icon: "/wp-content/uploads/2025/06/Frame-23-2.png", label: "Slow Healing", desc: "We move at the pace your story asks for—never rushed." },
+  { icon: "/wp-content/uploads/2025/06/Frame-23.png", label: "Depth Work", desc: "We meet what's beneath, not just what's visible." },
+  { icon: "/wp-content/uploads/2025/06/Frame-23-3.png", label: "Whole Self", desc: "Your culture, identity, body—all of you is held here." },
+  { icon: "/wp-content/uploads/2025/06/Frame-23-1.png", label: "Welcoming Space", desc: "A calm, non-clinical space designed for ease and safety." },
 ];
 
 const TEAM: TeamMember[] = [
-  { name: "Dr. Suraj Singh", role: "Consultant Psychiatrist", image: "/wp-content/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" },
-  { name: "Tanisha Singh", role: "Clinical Psychologist (A.) & Psychodynamic Psychotherapist", image: "/wp-content/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg" },
-  { name: "Rananjay Singh", role: "Queer Affirmative & Family Therapist", image: "/wp-content/wp-content/uploads/2025/07/Rananjay--869x1536.jpg" },
-  { name: "Amna Ansari", role: "Clinical Psychologist (A.)", image: "/wp-content/wp-content/uploads/2025/07/Amna-1006x1536.jpg" },
-  { name: "Mohit Dudeja", role: "Queer Affirmative Therapist", image: "/wp-content/wp-content/uploads/2025/07/Mohit-911x1024.jpg" },
-  { name: "Gursheel Kaur", role: "Psychodynamic Psychotherapist", image: "/wp-content/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg" },
+  { name: "Dr. Suraj Singh", role: "Consultant Psychiatrist", image: "/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg" },
+  { name: "Tanisha Singh", role: "Clinical Psychologist (A.) & Psychodynamic Psychotherapist", image: "/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg" },
+  { name: "Rananjay Singh", role: "Queer Affirmative & Family Therapist", image: "/wp-content/uploads/2025/07/Rananjay--869x1536.jpg" },
+  { name: "Amna Ansari", role: "Clinical Psychologist (A.)", image: "/wp-content/uploads/2025/07/Amna-1006x1536.jpg" },
+  { name: "Mohit Dudeja", role: "Queer Affirmative Therapist", image: "/wp-content/uploads/2025/07/Mohit-911x1024.jpg" },
+  { name: "Gursheel Kaur", role: "Psychodynamic Psychotherapist", image: "/wp-content/uploads/2025/07/gursheel_pfp-1024x980.jpg" },
 ];
 
 const HERO_VISUALS = {
   primary: {
-    image: "/wp-content/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg",
+    image: "/wp-content/uploads/2025/07/Tanisha_-821x1024.jpg",
     alt: "Tanisha Singh portrait",
   },
   secondary: {
-    image: "/wp-content/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg",
+    image: "/wp-content/uploads/2025/07/Dr.-Suraj-Singh-psychiatrist-e1751875182592-1022x1024.jpg",
     alt: "Dr. Suraj Singh portrait",
   },
-  stickerOne: "/wp-content/wp-content/uploads/2025/06/Group-28.png",
-  stickerTwo: "/wp-content/wp-content/uploads/2025/06/Group-29.png",
-  stickerThree: "/wp-content/wp-content/uploads/2025/06/Frame-137.png",
+  stickerOne: "/wp-content/uploads/2025/06/Group-28.png",
+  stickerTwo: "/wp-content/uploads/2025/06/Group-29.png",
+  stickerThree: "/wp-content/uploads/2025/06/Frame-137.png",
 };
 
 const SERVICES: Service[] = [
@@ -122,7 +122,7 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "In many traditional spaces, therapy begins with a problem to solve and a diagnosis to name. You're often seen as something to treat.",
       "At Oku, we start by listening—not labeling. We sit beside your story, not above it.",
     ],
-    image: "/wp-content/wp-content/uploads/2025/06/Group.png",
+    image: "/wp-content/uploads/2025/06/Group.png",
     imageAlt: "Illustration representing listening",
   },
   {
@@ -131,7 +131,7 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "You won't find harsh lighting or stiff furniture here. Our space is designed to feel like somewhere you can exhale.",
       "We believe healing happens in relationship, not in procedure. The room matters as much as the therapist.",
     ],
-    image: "/wp-content/wp-content/uploads/2025/06/x31_.png",
+    image: "/wp-content/uploads/2025/06/x31_.png",
     imageAlt: "Warm relational space",
   },
   {
@@ -140,7 +140,7 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "Therapy isn't a checklist or 5-step solution. Real change doesn't fit into fixed frameworks.",
       "We allow things to unfold—slowly, organically. At Oku, therapy adapts as you do.",
     ],
-    image: "/wp-content/wp-content/uploads/2025/06/Vector.png",
+    image: "/wp-content/uploads/2025/06/Vector.png",
     imageAlt: "Process over plan",
   },
   {
@@ -149,21 +149,21 @@ const PHILOSOPHY: PhilosophyBlock[] = [
       "You shouldn't have to educate your therapist about your identity. Safety isn't created by neutrality—it's created by awareness.",
       "We're queer-affirmative, caste-aware, body-literate. Not just inclusive in words, but in every layer of our work.",
     ],
-    image: "/wp-content/wp-content/uploads/2025/06/Frame-108.png",
+    image: "/wp-content/uploads/2025/06/Frame-108.png",
     imageAlt: "Affirming and inclusive",
   },
 ];
 
 const FOR_YOU: ForYouCard[] = [
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-142.png", heading: "If you've felt like too much", subtext: "Or maybe not enough. This space holds both." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/heart.png", heading: "If your body remembers pain", subtext: "You can't quite name. This space speaks that language." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-135.png", heading: "If you've never seen yourself reflected", subtext: "In therapy rooms before. This space makes room for you." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-138.png", heading: "If you carry generational weight", subtext: "In blood, silence, or tradition. This space lets them breathe." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-137.png", heading: "If your queerness has been questioned", subtext: "Or erased in 'neutral' spaces. This space sees all of you." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-136.png", heading: "If you've lived between cultures", subtext: "And belonged to all, and none. This space honors the in-between." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-139.png", heading: "If your healing doesn't feel linear", subtext: "Or easy to explain. This space meets you where you are." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/leaf.png", heading: "If you're new to therapy", subtext: "And unsure what to expect. This space starts with ease." },
-  { icon: "/wp-content/wp-content/uploads/2025/06/Frame-141.png", heading: "If you want more than coping tools", subtext: "More than surface advice. This space invites depth." },
+  { icon: "/wp-content/uploads/2025/06/Frame-142.png", heading: "If you've felt like too much", subtext: "Or maybe not enough. This space holds both." },
+  { icon: "/wp-content/uploads/2025/06/heart.png", heading: "If your body remembers pain", subtext: "You can't quite name. This space speaks that language." },
+  { icon: "/wp-content/uploads/2025/06/Frame-135.png", heading: "If you've never seen yourself reflected", subtext: "In therapy rooms before. This space makes room for you." },
+  { icon: "/wp-content/uploads/2025/06/Frame-138.png", heading: "If you carry generational weight", subtext: "In blood, silence, or tradition. This space lets them breathe." },
+  { icon: "/wp-content/uploads/2025/06/Frame-137.png", heading: "If your queerness has been questioned", subtext: "Or erased in 'neutral' spaces. This space sees all of you." },
+  { icon: "/wp-content/uploads/2025/06/Frame-136.png", heading: "If you've lived between cultures", subtext: "And belonged to all, and none. This space honors the in-between." },
+  { icon: "/wp-content/uploads/2025/06/Frame-139.png", heading: "If your healing doesn't feel linear", subtext: "Or easy to explain. This space meets you where you are." },
+  { icon: "/wp-content/uploads/2025/06/leaf.png", heading: "If you're new to therapy", subtext: "And unsure what to expect. This space starts with ease." },
+  { icon: "/wp-content/uploads/2025/06/Frame-141.png", heading: "If you want more than coping tools", subtext: "More than surface advice. This space invites depth." },
 ];
 
 const HOW_IT_WORKS: HowItWorksStep[] = [
@@ -175,8 +175,8 @@ const HOW_IT_WORKS: HowItWorksStep[] = [
 
 const COMMUNITY_PANELS: CommunityPanel[] = [
   {
-    image: "/wp-content/wp-content/uploads/2025/06/img.png",
-    sticker: "/wp-content/wp-content/uploads/2025/06/Group-28.png",
+    image: "/wp-content/uploads/2025/06/img.png",
+    sticker: "/wp-content/uploads/2025/06/Group-28.png",
     alt: "Illustrated Oku community card",
     kicker: "Our Story",
     title: "A slower, softer way into therapy",
@@ -185,8 +185,8 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     cta: "Read our story",
   },
   {
-    image: "/wp-content/wp-content/uploads/2025/06/img-1.png",
-    sticker: "/wp-content/wp-content/uploads/2025/06/Group-29.png",
+    image: "/wp-content/uploads/2025/06/img-1.png",
+    sticker: "/wp-content/uploads/2025/06/Group-29.png",
     alt: "Illustrated Oku journal card",
     kicker: "The Journal",
     title: "Keep exploring at your own pace",
@@ -195,8 +195,8 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     cta: "Visit the journal",
   },
   {
-    image: "/wp-content/wp-content/uploads/2025/06/img-2.png",
-    sticker: "/wp-content/wp-content/uploads/2025/07/WApp.png",
+    image: "/wp-content/uploads/2025/06/img-2.png",
+    sticker: "/wp-content/uploads/2025/07/WApp.png",
     alt: "Illustrated therapist discovery card",
     kicker: "The Collective",
     title: "Find the therapist who feels right",
@@ -205,6 +205,27 @@ const COMMUNITY_PANELS: CommunityPanel[] = [
     cta: "Meet the collective",
   },
 ];
+
+const WHAT_SHAPES_OUR_WORK = [
+  {
+    title: "Care Over Fixing",
+    body: "We start with listening—not labelling. You're not a problem to be solved. Every session is shaped by what you need, not a predetermined plan.",
+    gif: "/wp-content/uploads/2025/06/compassion.gif",
+    alt: "Illustration representing compassionate care",
+  },
+  {
+    title: "Inclusive By Design",
+    body: "You shouldn't have to explain your identity, culture, or lived experience before feeling safe. We built this space so you don't have to shrink or translate yourself.",
+    gif: "/wp-content/uploads/2025/06/inclusion.gif",
+    alt: "Illustration representing inclusion",
+  },
+  {
+    title: "Not Quick Wins",
+    body: "We resist the pressure to 'fix fast.' Real healing unfolds slowly. We hold the pace you need—even when that pace is a pause.",
+    gif: "/wp-content/uploads/2025/06/soul.gif",
+    alt: "Illustration representing depth and soul work",
+  },
+]
 
 const ASSESSMENT_SIGNALS = [
   "No pressure, no labels",
@@ -324,7 +345,7 @@ export default function OkuHomepage() {
     <>
       {/* ── Global Styles ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        /* Fonts loaded via next/font in layout.tsx — no @import needed */
 
         :root {
           --ink: #2D2D2D;
@@ -340,10 +361,10 @@ export default function OkuHomepage() {
         }
 
         .oku-page-public {
-          background: url('/wp-content/wp-content/uploads/2025/06/BG.png') no-repeat center center fixed;
+          background: url('/wp-content/uploads/2025/06/BG.png') no-repeat center center fixed;
           background-size: cover;
           color: var(--ink);
-          font-family: 'DM Sans', sans-serif;
+          font-family: var(--font-sans), system-ui, sans-serif;
           line-height: 1.6;
           -webkit-font-smoothing: antialiased;
           overflow-x: hidden;
@@ -352,7 +373,7 @@ export default function OkuHomepage() {
 
         /* ── Typography ── */
         .heading-display {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-editorial), Georgia, serif;
           font-weight: 300;
           line-height: 1.05;
           letter-spacing: -0.02em;
@@ -362,7 +383,7 @@ export default function OkuHomepage() {
           font-style: italic;
         }
         .cursive-word {
-          font-family: 'Nothing You Could Do', cursive;
+          font-family: var(--font-handwriting), cursive;
           font-weight: 400;
           font-size: 1em;
           display: inline-block;
@@ -379,7 +400,7 @@ export default function OkuHomepage() {
           gap: 0;
           padding: 10px 36px;
           border-radius: 1000px;
-          font-family: 'DM Sans', sans-serif;
+          font-family: var(--font-sans), system-ui, sans-serif;
           font-size: 0.9rem;
           font-weight: 400;
           letter-spacing: 0.02em;
@@ -470,7 +491,7 @@ export default function OkuHomepage() {
           letter-spacing: 0.08em;
           text-transform: uppercase;
           color: var(--accent);
-          font-family: 'DM Sans', sans-serif;
+          font-family: var(--font-sans), system-ui, sans-serif;
         }
 
         /* ── Team card ── */
@@ -498,7 +519,7 @@ export default function OkuHomepage() {
           box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .team-card-overlay h3 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-editorial), Georgia, serif;
           font-size: 1.1rem;
           font-weight: 600;
           margin-bottom: 2px;
@@ -597,7 +618,7 @@ export default function OkuHomepage() {
           align-items: flex-start;
         }
         .step-number {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-editorial), Georgia, serif;
           font-size: 2.5rem;
           font-weight: 300;
           color: var(--blush);
@@ -722,7 +743,7 @@ export default function OkuHomepage() {
         .hero-trust-card h3,
         .feature-card h4,
         .community-panel h3 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-editorial), Georgia, serif;
           font-weight: 500;
           letter-spacing: -0.01em;
         }
@@ -829,7 +850,7 @@ export default function OkuHomepage() {
           color: var(--accent);
         }
         .entry-card h3 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-editorial), Georgia, serif;
           font-size: 1.6rem;
           line-height: 1.02;
           margin-bottom: 10px;
@@ -960,7 +981,7 @@ export default function OkuHomepage() {
           box-shadow: 0 14px 30px rgba(0,0,0,0.08);
         }
         .team-card-overlay h3 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-editorial), Georgia, serif;
           font-size: 1.45rem;
           font-weight: 500;
           margin-bottom: 4px;
@@ -1200,6 +1221,47 @@ export default function OkuHomepage() {
         .community-panel-link {
           color: var(--accent);
           font-size: 0.9rem;
+        }
+
+        /* ── What shapes our work ── */
+        .shapes-grid {
+          display: grid;
+          gap: 24px;
+          margin-top: 56px;
+        }
+        @media (min-width: 768px) {
+          .shapes-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        .shapes-card {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          padding: 40px 32px;
+          border-radius: 32px;
+          background: rgba(255,255,255,0.72);
+          border: 1px solid rgba(139,115,85,0.1);
+          box-shadow: 0 22px 52px rgba(0,0,0,0.05);
+          transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .shapes-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 32px 64px rgba(0,0,0,0.08);
+        }
+        .shapes-card img {
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
+        }
+        .shapes-card h3 {
+          font-family: var(--font-editorial), Georgia, serif;
+          font-size: 1.7rem;
+          font-weight: 500;
+          line-height: 1.05;
+          letter-spacing: -0.02em;
+          color: #2D2D2D;
+          margin: 0;
         }
 
         .assessment-shell {
@@ -1460,7 +1522,7 @@ export default function OkuHomepage() {
               <SectionReveal key={svc.title}>
                 <div className="service-block border-oku-darkgrey/5">
                   <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 8 }}>
-                    <span className="text-oku-purple-dark/40" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", fontWeight: 300, lineHeight: 1 }}>{svc.number}</span>
+                    <span className="text-oku-purple-dark/40" style={{ fontFamily: "var(--font-editorial), Georgia, serif", fontSize: "3.5rem", fontWeight: 300, lineHeight: 1 }}>{svc.number}</span>
                     <h3 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}>{svc.title}</h3>
                   </div>
                   <p className="text-oku-darkgrey/70 italic leading-relaxed" style={{ maxWidth: 560, marginBottom: 32 }}>{svc.description}</p>
@@ -1483,6 +1545,38 @@ export default function OkuHomepage() {
                 </div>
               </SectionReveal>
             ))}
+          </div>
+        </section>
+
+        {/* ── What Shapes Our Work ── */}
+        <section className="section" id="shapes" style={{ background: "var(--warm)" }}>
+          <div className="max-w">
+            <SectionReveal>
+              <span className="chip bg-white/60 border-white/80" style={{ marginBottom: 24, display: "inline-block" }}>Our Principles</span>
+              <h2 className="heading-display text-oku-darkgrey" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>
+                What <strong>shapes our work,</strong>
+              </h2>
+              <h3 className="heading-display text-oku-purple-dark" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)", fontStyle: "italic", marginBottom: 8 }}>
+                and your experience of it.
+              </h3>
+              <p className="text-oku-darkgrey/70" style={{ maxWidth: 560, lineHeight: 1.8, marginTop: 16 }}>
+                These aren't just values we list. They're the principles that shape every session, every interaction, and every decision we make.
+              </p>
+            </SectionReveal>
+            <div className="shapes-grid">
+              {WHAT_SHAPES_OUR_WORK.map((block, i) => {
+                const colors = ['bg-oku-lavender/20', 'bg-oku-mint/20', 'bg-oku-blush/20']
+                return (
+                  <SectionReveal key={block.title}>
+                    <div className={`shapes-card ${colors[i % colors.length]}`}>
+                      <img src={block.gif} alt={block.alt} />
+                      <h3>{block.title}</h3>
+                      <p className="text-oku-darkgrey/70" style={{ lineHeight: 1.75, fontSize: "0.95rem" }}>{block.body}</p>
+                    </div>
+                  </SectionReveal>
+                )
+              })}
+            </div>
           </div>
         </section>
 
@@ -1566,18 +1660,18 @@ export default function OkuHomepage() {
                 </div>
                 <div className="community-collage">
                   <div className="community-collage-card primary shadow-2xl border-4 border-white/80">
-                    <img src="/wp-content/wp-content/uploads/2025/06/img.png" alt="Oku illustrated community moment" loading="lazy" />
+                    <img src="/wp-content/uploads/2025/06/img.png" alt="Oku illustrated community moment" loading="lazy" />
                   </div>
                   <div className="community-collage-card secondary shadow-2xl border-4 border-white/80">
-                    <img src="/wp-content/wp-content/uploads/2025/06/img-1.png" alt="Oku illustrated journal moment" loading="lazy" />
+                    <img src="/wp-content/uploads/2025/06/img-1.png" alt="Oku illustrated journal moment" loading="lazy" />
                   </div>
                   <div className="community-collage-card tertiary shadow-2xl border-4 border-white/80">
-                    <img src="/wp-content/wp-content/uploads/2025/06/img-2.png" alt="Oku illustrated therapist discovery moment" loading="lazy" />
+                    <img src="/wp-content/uploads/2025/06/img-2.png" alt="Oku illustrated therapist discovery moment" loading="lazy" />
                   </div>
-                  <img className="community-sticker one animate-float-3d" src="/wp-content/wp-content/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker two animate-float-3d" style={{ animationDelay: '0.4s' }} src="/wp-content/wp-content/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker three animate-float-3d" style={{ animationDelay: '0.8s' }} src="/wp-content/wp-content/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
-                  <img className="community-sticker four animate-float-3d" style={{ animationDelay: '1.2s' }} src="/wp-content/wp-content/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker one animate-float-3d" src="/wp-content/uploads/2025/06/Group-27.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker two animate-float-3d" style={{ animationDelay: '0.4s' }} src="/wp-content/uploads/2025/06/Group-28.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker three animate-float-3d" style={{ animationDelay: '0.8s' }} src="/wp-content/uploads/2025/06/Group-29.png" alt="" aria-hidden="true" />
+                  <img className="community-sticker four animate-float-3d" style={{ animationDelay: '1.2s' }} src="/wp-content/uploads/2025/07/WApp.png" alt="" aria-hidden="true" />
                 </div>
               </div>
             </SectionReveal>

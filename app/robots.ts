@@ -23,8 +23,6 @@ export default function robots(): MetadataRoute.Robots {
           '/people',
           '/contact',
           '/match',
-          '/pricing',
-          '/for-therapists',
         ],
         disallow: [
           '/dashboard/',
