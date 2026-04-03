@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import Link from 'next/link'
-import { Users, ShieldCheck, DollarSign, ChevronLeft, Check, X } from 'lucide-react'
+import { Users, ShieldCheck, DollarSign, ChevronLeft, Check, X, FileText } from 'lucide-react'
 import { toggleTherapistVerification, updateTherapistRate } from '../actions'
 import { getPractitionerDisciplineLabel } from '@/lib/practitioner-type'
 import { formatCurrency } from '@/lib/currency'
@@ -16,7 +16,7 @@ export default async function AdminPractitionersPage() {
     redirect('/auth/login')
   }
 
-  const [practitioners, stats] = await Promise.all([
+  const [practitioners, stats, kycDocs] = await Promise.all([
     prisma.user.findMany({
       where: { role: UserRole.THERAPIST },
       include: {
@@ -30,7 +30,20 @@ export default async function AdminPractitionersPage() {
       prisma.practitionerProfile.count({ where: { isVerified: true } }),
       prisma.practitionerProfile.count({ where: { isVerified: false } }),
     ]).then(([total, verified, pending]) => ({ total, verified, pending })),
+    prisma.document.findMany({
+      where: { type: 'KYC_LICENSE' },
+      orderBy: { createdAt: 'desc' },
+      select: { practitionerId: true, name: true, createdAt: true, id: true },
+    }),
   ])
+
+  // Group KYC docs by practitioner
+  const kycByPractitioner = kycDocs.reduce<Record<string, typeof kycDocs>>((acc, doc) => {
+    if (!doc.practitionerId) return acc
+    acc[doc.practitionerId] = acc[doc.practitionerId] || []
+    acc[doc.practitionerId].push(doc)
+    return acc
+  }, {})
 
   return (
     <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5">
@@ -78,6 +91,7 @@ export default async function AdminPractitionersPage() {
                 <th className="px-8 py-5">License</th>
                 <th className="px-8 py-5">Sessions</th>
                 <th className="px-8 py-5">Rate (INR/hr)</th>
+                <th className="px-8 py-5">KYC Docs</th>
                 <th className="px-8 py-5">KYC Status</th>
                 <th className="px-8 py-5 text-right">Verify</th>
               </tr>
@@ -85,12 +99,13 @@ export default async function AdminPractitionersPage() {
             <tbody className="divide-y divide-white/40">
               {practitioners.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-8 py-16 text-center text-oku-darkgrey/30 font-display italic">
+                  <td colSpan={8} className="px-8 py-16 text-center text-oku-darkgrey/30 font-display italic">
                     No practitioners registered yet.
                   </td>
                 </tr>
               ) : practitioners.map((p) => {
                 const profile = p.practitionerProfile
+                const docs = kycByPractitioner[p.id] || []
                 return (
                   <tr key={p.id} className="hover:bg-white/30 transition-all">
                     <td className="px-8 py-5">
@@ -108,6 +123,22 @@ export default async function AdminPractitionersPage() {
                     </td>
                     <td className="px-8 py-5 text-xs text-oku-darkgrey/60">
                       {profile?.hourlyRate ? formatCurrency(profile.hourlyRate, 'INR') : '—'}
+                    </td>
+                    <td className="px-8 py-5">
+                      {docs.length === 0 ? (
+                        <span className="text-[9px] text-oku-darkgrey/30 font-black uppercase tracking-widest">None</span>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          {docs.slice(0, 2).map((doc) => (
+                            <span key={doc.id} className="inline-flex items-center gap-1.5 text-[9px] font-black text-oku-purple-dark">
+                              <FileText size={10} /> {doc.name.length > 20 ? doc.name.slice(0, 20) + '…' : doc.name}
+                            </span>
+                          ))}
+                          {docs.length > 2 && (
+                            <span className="text-[9px] text-oku-darkgrey/40">+{docs.length - 2} more</span>
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td className="px-8 py-5">
                       <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${

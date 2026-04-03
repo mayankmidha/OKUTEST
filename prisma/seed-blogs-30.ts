@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const posts = [
+export const posts = [
   // ─── ADHD ─────────────────────────────────────────────────────────────────
   {
     slug: 'adult-adhd-diagnosis-late-identification',

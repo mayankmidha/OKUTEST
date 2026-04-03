@@ -28,6 +28,7 @@ import { AppointmentStatus, UserRole } from '@prisma/client'
 import { formatCurrency } from '@/lib/currency'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { CirclesManager } from '@/app/admin/dashboard/CirclesManager'
+import { PractitionerOnboardingBanner } from '@/components/PractitionerOnboardingBanner'
 
 export const dynamic = 'force-dynamic'
 
@@ -102,8 +103,12 @@ export default async function PractitionerDashboardPage({
         orderBy: { startTime: 'asc' }
     }),
     prisma.user.findMany({ where: { role: UserRole.CLIENT } }),
-    prisma.user.findMany({ where: { role: UserRole.THERAPIST } })
+    prisma.user.findMany({ where: { role: UserRole.THERAPIST } }),
   ])
+
+  const hasAvailability = practitioner
+    ? await prisma.availability.findFirst({ where: { practitionerProfileId: practitioner.id } }).then(Boolean)
+    : false
 
   if (!practitioner) redirect('/auth/login')
 
@@ -127,6 +132,15 @@ export default async function PractitionerDashboardPage({
           />
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 relative z-10">
+            {/* ── ONBOARDING BANNER ── */}
+            {!practitioner.isOnboarded && (
+              <PractitionerOnboardingBanner
+                hasBio={!!practitioner.bio}
+                hasRates={!!(practitioner.hourlyRate || practitioner.indiaSessionRate)}
+                hasAvailability={!!hasAvailability}
+              />
+            )}
+
             {/* ── VERIFICATION BANNER ── */}
             {!practitioner.isVerified && (
               <div className="xl:col-span-12 flex items-start gap-4 p-6 bg-amber-50 border border-amber-200 rounded-3xl">

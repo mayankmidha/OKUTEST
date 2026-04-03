@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import { BlogManager } from '@/components/BlogManager'
+import { SeedBlogsButton } from '@/components/SeedBlogsButton'
 import { toggleTherapistBlogPower } from '../actions'
 import { BookOpen, Users, PenLine, Eye } from 'lucide-react'
 import Link from 'next/link'
@@ -43,9 +44,12 @@ export default async function AdminBlogPage() {
             <h1 className="heading-display text-5xl text-oku-darkgrey">Journal Management</h1>
             <p className="text-oku-darkgrey/50 font-display italic mt-1">Manage blog posts, grant editorial access, and publish to the OKU Journal.</p>
           </div>
-          <Link href="/blog" target="_blank" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-oku-darkgrey/10 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey hover:bg-oku-mint/30 transition-all">
-            <Eye size={12} /> View Live Blog
-          </Link>
+          <div className="flex items-center gap-3">
+            {publishedCount < 5 && <SeedBlogsButton />}
+            <Link href="/blog" target="_blank" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-oku-darkgrey/10 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey hover:bg-oku-mint/30 transition-all">
+              <Eye size={12} /> View Live Blog
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}

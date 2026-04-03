@@ -22,7 +22,16 @@ export async function GET(req: Request) {
       return new NextResponse("User not found", { status: 404 })
     }
 
-    return NextResponse.json(user)
+    // Resolve the client's most-recently-booked therapist for ADHD gate messaging
+    const lastAppt = user.role === 'CLIENT'
+      ? await prisma.appointment.findFirst({
+          where: { clientId: session.user.id },
+          orderBy: { startTime: 'desc' },
+          select: { practitionerId: true },
+        })
+      : null
+
+    return NextResponse.json({ ...user, practitionerId: lastAppt?.practitionerId ?? null })
   } catch (error) {
     console.error("Profile fetch error:", error)
     return new NextResponse("Internal Server Error", { status: 500 })

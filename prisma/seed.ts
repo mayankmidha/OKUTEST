@@ -1,5 +1,6 @@
 import { PrismaClient, UserRole, AppointmentStatus } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { posts as blogPosts } from './seed-blogs-30'
 
 const prisma = new PrismaClient()
 
@@ -7,7 +8,7 @@ async function main() {
   const hashedPassword = await bcrypt.hash('password123', 10)
 
   // 1. Create ADMIN
-  await prisma.user.upsert({
+  const adminUser = await prisma.user.upsert({
     where: { email: 'admin@okutherapy.com' },
     update: {},
     create: {
@@ -318,6 +319,26 @@ async function main() {
   }
 
   console.log('Circles seeded successfully!')
+
+  // 5. Seed blog posts
+  let blogSeeded = 0
+  for (const post of blogPosts) {
+    await prisma.post.upsert({
+      where: { slug: post.slug },
+      update: {},
+      create: {
+        slug: post.slug,
+        title: post.title,
+        category: post.category,
+        excerpt: post.excerpt,
+        content: post.content,
+        published: true,
+        authorId: adminUser.id,
+      },
+    })
+    blogSeeded++
+  }
+  console.log(`Blog posts seeded: ${blogSeeded}`)
 }
 
 main()

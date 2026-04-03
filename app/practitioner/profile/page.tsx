@@ -10,6 +10,8 @@ import {
 import { UserRole } from '@prisma/client'
 import EditProfileForm from './EditProfileForm'
 import { PasswordChangeForm } from '@/components/PasswordChangeForm'
+import { AvatarUpload } from '@/components/AvatarUpload'
+import { KYCDocumentUpload } from '@/components/KYCDocumentUpload'
 import { formatCurrency } from '@/lib/currency'
 import { resolvePractitionerPricing } from '@/lib/pricing'
 
@@ -39,7 +41,7 @@ export default async function PractitionerProfilePage() {
       heroActions={
         <>
           <Link
-            className="inline-flex items-center rounded-full bg-oku-dark px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+            className="inline-flex items-center rounded-full bg-oku-darkgrey px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
             href="/practitioner/dashboard"
           >
             Dashboard
@@ -54,15 +56,16 @@ export default async function PractitionerProfilePage() {
           </PractitionerSectionCard>
 
           <PractitionerSectionCard title="Credentials & Verification">
-            <div className="flex items-center justify-between p-6 bg-white rounded-2xl border border-oku-taupe/5 shadow-sm">
+            <div className="flex items-center justify-between p-6 bg-white rounded-2xl border border-oku-darkgrey/5 shadow-sm mb-6">
                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40 mb-1">License Number</p>
-                  <p className="text-oku-dark font-mono text-sm">{practitioner.licenseNumber || 'Not provided'}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-1">License Number</p>
+                  <p className="text-oku-darkgrey font-mono text-sm">{practitioner.licenseNumber || 'Not provided'}</p>
                </div>
                <PractitionerPill tone={practitioner.isVerified ? "sage" : "pink"}>
                   {practitioner.isVerified ? 'Verified Account' : 'Awaiting Verification'}
                </PractitionerPill>
             </div>
+            <KYCDocumentUpload />
           </PractitionerSectionCard>
 
           <PractitionerSectionCard title="Security & Credentials">
@@ -73,13 +76,13 @@ export default async function PractitionerProfilePage() {
         </div>
 
         <div className="lg:col-span-1">
-           <div className="bg-oku-dark text-white p-8 rounded-[2.5rem] shadow-xl sticky top-28">
+           <div className="bg-oku-darkgrey text-white p-8 rounded-[2.5rem] shadow-xl sticky top-28">
               <div className="text-center mb-8">
-                 <div className="w-24 h-24 rounded-full bg-white/10 mx-auto mb-4 overflow-hidden border-2 border-white/20">
-                    {practitioner.user.avatar ? <img src={practitioner.user.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🧘</div>}
+                 <div className="flex justify-center mb-4">
+                    <AvatarUpload currentAvatar={practitioner.user.avatar} name={practitioner.user.name || 'Practitioner'} />
                  </div>
                  <h3 className="text-xl font-display font-bold">{practitioner.user.name}</h3>
-                 <p className="text-oku-purple font-script text-lg">Public Preview</p>
+                 <p className="text-oku-purple-dark font-display italic text-sm mt-1">Public Preview</p>
               </div>
               
               <div className="space-y-4">
