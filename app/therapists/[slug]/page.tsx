@@ -1,43 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import type { Metadata } from 'next'
-import {
+import { 
   Briefcase, Award, BookOpen, ArrowRight, ShieldCheck,
   ChevronLeft, Star, Globe, Heart
 } from 'lucide-react'
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL || 'https://okutherapy.com'
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const p = await prisma.practitionerProfile.findUnique({
-    where: { id: slug },
-    select: { user: { select: { name: true, avatar: true } }, bio: true, specialization: true, experienceYears: true },
-  })
-  if (!p) return {}
-
-  const name = p.user.name || 'Therapist'
-  const specialties = (p.specialization || []).join(', ')
-  const title = `${name} — Online Therapist in India | OKU Therapy`
-  const description = p.bio
-    ? `${p.bio.slice(0, 140)}…`
-    : `${name} is a verified therapist at OKU Therapy offering online sessions across India including Delhi, Mumbai, and Bangalore. Specialises in ${specialties}.`
-
-  return {
-    title,
-    description,
-    keywords: `${name}, online therapist India, therapist Delhi, mental health counsellor India, ${specialties}, online therapy India, OKU Therapy`,
-    openGraph: {
-      title,
-      description,
-      url: `${BASE}/therapists/${slug}`,
-      images: p.user.avatar ? [{ url: p.user.avatar }] : [],
-      type: 'profile',
-    },
-    twitter: { card: 'summary_large_image', title, description },
-  }
-}
 
 export default async function TherapistProfilePage({
   params,

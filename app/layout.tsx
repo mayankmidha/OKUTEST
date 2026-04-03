@@ -58,20 +58,17 @@ const nothingYouCouldDo = Nothing_You_Could_Do({
 })
 
 export const metadata: Metadata = {
-  title: {
-    default: 'OKU Therapy — Online Therapy in India | Delhi, Mumbai, Bangalore',
-    template: '%s | OKU Therapy',
-  },
-  description: 'OKU Therapy is India\'s inclusive online psychotherapy platform. Book a certified therapist in Delhi, Mumbai, Bangalore & across India. Trauma-informed, LGBTQ+ affirmative, ADHD-specialist care. First session from ₹1,500.',
+  title: 'OKU Therapy - Inclusive, Trauma-Informed Care',
+  description: 'OKU is a psychotherapy collective offering inclusive, trauma-informed care for all parts of who you are. Book a free consultation to begin gently.',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.ico',
   },
-  keywords: 'online therapy India, online therapist Delhi, mental health counsellor India, psychotherapy Delhi, therapist Delhi, anxiety therapist India, depression therapy online India, ADHD therapist India, trauma therapy India, LGBTQ therapist India, queer affirmative therapy India, OKU Therapy, online counselling India, best therapist Delhi, affordable therapy India',
+  keywords: 'therapy, psychotherapy, mental health, trauma-informed, queer-affirmative, inclusive care',
   openGraph: {
-    title: 'OKU Therapy — Online Therapy in India',
-    description: 'Book a certified therapist online in Delhi, Mumbai, Bangalore & across India. Trauma-informed, inclusive, ADHD-specialist care from ₹1,500.',
+    title: 'OKU Therapy',
+    description: 'Inclusive, trauma-informed mental health care.',
     url: 'https://okutherapy.com',
     siteName: 'OKU Therapy',
     images: [
@@ -79,44 +76,17 @@ export const metadata: Metadata = {
         url: 'https://okutherapy.com/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'OKU Therapy — Online Therapy in India',
       },
     ],
-    locale: 'en_IN',
+    locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'OKU Therapy — Online Therapy in India',
-    description: 'Book a certified therapist online across India. Trauma-informed, inclusive care from ₹1,500.',
+    title: 'OKU Therapy',
+    description: 'Inclusive, trauma-informed mental health care.',
     images: ['https://okutherapy.com/og-image.jpg'],
   },
-  alternates: {
-    canonical: 'https://okutherapy.com',
-  },
-}
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'MedicalBusiness',
-  name: 'OKU Therapy',
-  url: 'https://okutherapy.com',
-  logo: 'https://okutherapy.com/og-image.jpg',
-  description: 'Inclusive online psychotherapy platform in India offering trauma-informed, LGBTQ+ affirmative, and ADHD-specialist care.',
-  telephone: '',
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Delhi',
-    addressRegion: 'Delhi',
-    addressCountry: 'IN',
-  },
-  areaServed: ['Delhi', 'Mumbai', 'Bangalore', 'India'],
-  medicalSpecialty: ['Psychiatry', 'Psychology', 'Psychotherapy'],
-  priceRange: '₹₹',
-  openingHours: 'Mo-Su 08:00-22:00',
-  sameAs: [
-    'https://www.instagram.com/okutherapy',
-  ],
 }
 
 export default function RootLayout({
@@ -126,12 +96,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`scroll-smooth ${bricolage.variable} ${cormorant.variable} ${instrumentSerif.variable} ${caveat.variable} ${dmSans.variable} ${nothingYouCouldDo.variable}`}>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
       <body className="bg-white font-sans text-oku-dark antialiased">
         <ErrorBoundary>
           <RootLayoutClient>
