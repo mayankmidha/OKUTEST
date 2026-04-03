@@ -49,7 +49,7 @@ export default async function TherapistProfilePage({
             <div className="relative group tilt-card">
               <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white/80">
                 <img 
-                  src={practitioner.user.avatar || '/uploads/2025/07/placeholder.jpg'} 
+                  src={practitioner.user.avatar || '/wp-content/wp-content/uploads/2025/07/placeholder.jpg'} 
                   alt={name} 
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 tilt-card-content"
                 />

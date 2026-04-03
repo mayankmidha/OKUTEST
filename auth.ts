@@ -25,6 +25,10 @@ declare module "next-auth" {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
+  session: {
+    strategy: 'jwt',
+    maxAge: 15 * 60, // 15 minutes (HIPAA compliance)
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

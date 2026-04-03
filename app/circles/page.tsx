@@ -75,7 +75,7 @@ export default async function CirclesPage() {
                     <div className="flex items-center justify-between">
                        <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-white shadow-md">
-                             <img src={circle.practitioner?.avatar || '/uploads/2025/07/placeholder.jpg'} className="w-full h-full object-cover" />
+                             <img src={circle.practitioner?.avatar || '/wp-content/wp-content/uploads/2025/07/placeholder.jpg'} className="w-full h-full object-cover" />
                           </div>
                           <div>
                              <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">{circle.practitioner?.name}</p>

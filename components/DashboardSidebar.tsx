@@ -75,7 +75,7 @@ export function DashboardSidebar() {
       <div className="px-4 py-8 flex items-center justify-between">
         <Link href="/" className="block group animate-float-3d">
           <img 
-            src="/uploads/2025/07/Logoo.png" 
+            src="/wp-content/uploads/2025/07/Logoo.png" 
             alt="OKU" 
             className="h-10 w-auto opacity-90"
           />

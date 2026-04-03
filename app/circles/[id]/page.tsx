@@ -84,7 +84,7 @@ export default async function CircleDetailPage({ params }: PageProps) {
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-14 h-14 rounded-[1.2rem] overflow-hidden border-2 border-white shadow-md">
                     <img
-                      src={circle.practitioner?.avatar || '/uploads/2025/07/placeholder.jpg'}
+                      src={circle.practitioner?.avatar || '/wp-content/wp-content/uploads/2025/07/placeholder.jpg'}
                       alt={circle.practitioner?.name || 'Facilitator'}
                       className="w-full h-full object-cover"
                     />

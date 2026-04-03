@@ -12,7 +12,7 @@ export default function NotFound() {
         <div className="mb-12">
           <Link href="/" className="inline-block">
             <img
-              src="/uploads/2025/07/Logoo.png"
+              src="/wp-content/wp-content/uploads/2025/07/Logoo.png"
               alt="OKU Therapy"
               className="h-10 w-auto opacity-60 mx-auto"
             />

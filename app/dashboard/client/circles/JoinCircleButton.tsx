@@ -18,27 +18,10 @@ export function JoinCircleButton({ circleId, isFull }: JoinCircleButtonProps) {
     if (isFull || status === 'loading' || status === 'success') return
 
     setStatus('loading')
-    setErrorMsg('')
-
-    try {
-      const res = await fetch(`/api/circles/${circleId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (res.ok) {
-        setStatus('success')
-        // Refresh server-side data after a short delay so the badge appears
-        setTimeout(() => router.refresh(), 800)
-      } else {
-        const text = await res.text()
-        setErrorMsg(text || 'Could not join. Please try again.')
-        setStatus('error')
-      }
-    } catch {
-      setErrorMsg('Network error. Please try again.')
-      setStatus('error')
-    }
+    
+    // Redirect to the Universal Checkout Engine
+    // type=GROUP_SESSION triggers the INR 500 flow
+    router.push(`/dashboard/client/checkout?type=GROUP_SESSION&id=${circleId}`)
   }
 
   if (isFull) {
