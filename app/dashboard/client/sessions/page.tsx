@@ -79,7 +79,7 @@ export default async function ClientSessionsPage() {
           </div>
 
           <Link
-            href="/dashboard/client/book"
+            href="/dashboard/client/therapists"
             className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-10 pulse-cta self-start lg:self-auto"
           >
             <Plus size={16} className="mr-3" /> Book New Session
@@ -108,7 +108,7 @@ export default async function ClientSessionsPage() {
               Upcoming <span className="italic text-oku-purple-dark">Windows</span>
             </h2>
             <Link
-              href="/dashboard/client/book"
+              href="/dashboard/client/therapists"
               className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline flex items-center gap-2"
             >
               Book More <ArrowUpRight size={14} />
@@ -122,7 +122,7 @@ export default async function ClientSessionsPage() {
                 <p className="text-2xl font-display italic text-oku-darkgrey/30">The schedule is open.</p>
                 <p className="text-sm text-oku-darkgrey/20 mt-3 font-display italic">Find a specialist and begin your journey.</p>
                 <Link
-                  href="/dashboard/client/book"
+                  href="/dashboard/client/therapists"
                   className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !py-4 mt-8 inline-flex"
                 >
                   <Plus size={14} className="mr-2" /> Book a Session
