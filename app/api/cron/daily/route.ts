@@ -11,7 +11,10 @@ export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
 
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  // In production CRON_SECRET must be set. Vercel Cron automatically sends
+  // Authorization: Bearer <CRON_SECRET> with every invocation.
+  // Locally you can hit the endpoint manually without the header.
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
