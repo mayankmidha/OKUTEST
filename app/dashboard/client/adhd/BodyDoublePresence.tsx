@@ -87,8 +87,11 @@ export function BodyDoublePresence({ currentTask, isActive }: { currentTask?: st
            </div>
         ) : others.length === 0 ? (
           <div className="py-10 text-center">
-             <Wind className="mx-auto text-oku-darkgrey/10 mb-4 animate-pulse" size={32} />
-             <p className="text-sm font-display italic text-oku-darkgrey/40">You&apos;re the first one here. <br/> The room is ready when others join anonymously.</p>
+             <div className="w-16 h-16 bg-oku-lavender/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Zap className="text-oku-purple-dark animate-pulse" size={32} />
+             </div>
+             <h4 className="font-bold text-oku-darkgrey text-lg mb-2">Personal Focus Window</h4>
+             <p className="text-sm font-display italic text-oku-darkgrey/40">You&apos;re in the flow. The room is active and mirroring will begin as soon as others join anonymously.</p>
           </div>
         ) : (
           others.map((other, i) => (

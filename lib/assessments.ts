@@ -395,6 +395,105 @@ export const ASSESSMENTS: Assessment[] = [
       { min: 8, max: 14, result: "Mild Executive Dysfunction", description: "You may experience occasional issues with planning or focus." },
       { min: 15, max: 30, result: "Significant Executive Dysfunction", description: "Significant challenges in cognitive regulation identified." }
     ]
+  },
+  {
+    id: 'ace-q',
+    slug: 'trauma-ace',
+    title: "Adverse Childhood Experiences (ACE)",
+    category: 'Trauma',
+    description: "Screening tool for early childhood trauma and its long-term health impacts.",
+    longDescription: "The ACE questionnaire helps identify traumatic events occurring before age 18, which research shows are linked to physical and mental health outcomes in adulthood.",
+    timeEstimate: "4 mins",
+    questionCount: 10,
+    timeframe: "Before your 18th birthday, did a parent or other adult in the household...",
+    questions: [
+      { id: '1', text: "Often or very often swear at you, insult you, put you down, or humiliate you?" },
+      { id: '2', text: "Often or very often push, grab, slap, or throw something at you?" },
+      { id: '3', text: "Ever touch or fondle you or have you touch them in a sexual way?" },
+      { id: '4', text: "Often or very often feel that no one in your family loved you or thought you were important or special?" },
+      { id: '5', text: "Often or very often feel that you didn't have enough to eat, had to wear dirty clothes, or had no one to protect you?" },
+      { id: '6', text: "Were your parents ever separated or divorced?" },
+      { id: '7', text: "Was your mother or stepmother often or very often pushed, grabbed, slapped, or had something thrown at her?" },
+      { id: '8', text: "Did you live with anyone who was a problem drinker or alcoholic, or who used street drugs?" },
+      { id: '9', text: "Was a household member depressed or mentally ill, or did a household member attempt suicide?" },
+      { id: '10', text: "Did a household member go to prison?" }
+    ],
+    options: [
+      { label: "Yes", value: 1 },
+      { label: "No", value: 0 }
+    ],
+    scoring: [
+      { min: 0, max: 0, result: "Low Risk", description: "No adverse childhood experiences reported." },
+      { min: 1, max: 3, result: "Moderate Risk", description: "Some early trauma identified. Trauma-informed care may be beneficial." },
+      { min: 4, max: 10, result: "High Risk", description: "Significant early trauma identified. High correlation with chronic health and mental health challenges. Trauma-focused therapy is strongly recommended." }
+    ]
+  },
+  {
+    id: 'isi-7',
+    slug: 'wellness-insomnia',
+    title: "Insomnia Severity Index (ISI)",
+    category: 'General',
+    description: "Validated tool for assessing the nature, severity, and impact of insomnia.",
+    longDescription: "The ISI is a reliable screening instrument for insomnia and is used to evaluate the effectiveness of sleep interventions.",
+    timeEstimate: "3 mins",
+    questionCount: 7,
+    timeframe: "Please rate the current severity of your insomnia-related problems.",
+    questions: [
+      { id: '1', text: "Difficulty falling asleep" },
+      { id: '2', text: "Difficulty staying asleep" },
+      { id: '3', text: "Problems waking up too early" },
+      { id: '4', text: "How SATISFIED/DISSATISFIED are you with your current sleep pattern?" },
+      { id: '5', text: "How NOTICEABLE to others do you think your sleep problem is?" },
+      { id: '6', text: "How WORRIED/DISTRESSED are you about your current sleep problem?" },
+      { id: '7', text: "To what extent do you consider your sleep problem to INTERFERE with daily functioning?" }
+    ],
+    options: [
+      { label: "None / Very Satisfied", value: 0 },
+      { label: "Mild / Satisfied", value: 1 },
+      { label: "Moderate / Neutral", value: 2 },
+      { label: "Severe / Dissatisfied", value: 3 },
+      { label: "Very Severe / Very Dissatisfied", value: 4 }
+    ],
+    scoring: [
+      { min: 0, max: 7, result: "No Insomnia", description: "Your sleep pattern appears healthy." },
+      { min: 8, max: 14, result: "Sub-threshold Insomnia", description: "Some mild sleep difficulties identified." },
+      { min: 15, max: 21, result: "Moderate Insomnia", description: "Clinical insomnia identified. Cognitive Behavioral Therapy for Insomnia (CBT-I) is recommended." },
+      { min: 22, max: 28, result: "Severe Insomnia", description: "Severe sleep disturbance. Please consult a sleep specialist or therapist." }
+    ]
+  },
+  {
+    id: 'mdq',
+    slug: 'mood-disorder-mdq',
+    title: "Mood Disorder Questionnaire (MDQ)",
+    category: 'Anxiety & Depression',
+    description: "Screening tool for Bipolar Spectrum Disorders.",
+    longDescription: "The MDQ is a brief self-report screening instrument that can quickly identify individuals likely to have bipolar disorder.",
+    timeEstimate: "5 mins",
+    questionCount: 13,
+    timeframe: "Has there ever been a period of time when you were not your usual self and...",
+    questions: [
+      { id: '1', text: "You felt so good or so hyper that other people thought you were not your normal self?" },
+      { id: '2', text: "You were so irritable that you shouted at people or started fights or arguments?" },
+      { id: '3', text: "You felt much more self-confident than usual?" },
+      { id: '4', text: "You got much less sleep than usual and found you didn’t really miss it?" },
+      { id: '5', text: "You were much more talkative or spoke much faster than usual?" },
+      { id: '6', text: "Thoughts raced through your head or you couldn’t slow your mind down?" },
+      { id: '7', text: "You were so easily distracted by things around you that you had trouble staying on track?" },
+      { id: '8', text: "You had much more energy than usual?" },
+      { id: '9', text: "You were much more active or did many more things than usual?" },
+      { id: '10', text: "You were much more social or outgoing than usual?" },
+      { id: '11', text: "You were much more interested in sex than usual?" },
+      { id: '12', text: "You did things that were unusual for you or that other people might have thought were excessive, foolish, or risky?" },
+      { id: '13', text: "Spending money got you or your family into trouble?" }
+    ],
+    options: [
+      { label: "Yes", value: 1 },
+      { label: "No", value: 0 }
+    ],
+    scoring: [
+      { min: 0, max: 6, result: "Negative Screen", description: "Responses do not suggest a mood disorder." },
+      { min: 7, max: 13, result: "Positive Screen", description: "Responses indicate a possible mood disorder. A comprehensive clinical evaluation is recommended to rule out Bipolar Disorder." }
+    ]
   }
 ];
 

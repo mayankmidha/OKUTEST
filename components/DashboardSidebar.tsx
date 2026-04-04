@@ -41,6 +41,8 @@ export function DashboardSidebar() {
   const clientLinks = [
     { label: 'Home',             href: '/dashboard/client',                   icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
     { label: 'Find Care',        href: '/dashboard/client/therapists',        icon: <Search size={18} strokeWidth={1.5} /> },
+    { label: 'Circles',          href: '/dashboard/client/circles',           icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'ADHD Workspace',   href: '/dashboard/client/adhd',              icon: <Brain size={18} strokeWidth={1.5} /> },
     { label: 'Sessions',         href: '/dashboard/client/sessions',          icon: <Calendar size={18} strokeWidth={1.5} /> },
     { label: 'Messages',         href: '/dashboard/client/messages',          icon: <MessageSquare size={18} strokeWidth={1.5} /> },
     { label: 'Records',          href: '/dashboard/client/clinical',          icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
@@ -51,6 +53,8 @@ export function DashboardSidebar() {
     { label: 'Home',             href: '/practitioner/dashboard',             icon: <Activity size={18} strokeWidth={1.5} /> },
     { label: 'Schedule',         href: '/practitioner/schedule',              icon: <Calendar size={18} strokeWidth={1.5} /> },
     { label: 'Clients',          href: '/practitioner/clients',               icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Circles',          href: '/circles',                            icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'ADHD Workspace',   href: '/practitioner/adhd',                  icon: <Brain size={18} strokeWidth={1.5} /> },
     { label: 'Messages',         href: '/practitioner/messages',              icon: <MessageSquare size={18} strokeWidth={1.5} /> },
     { label: 'Finance',          href: '/practitioner/billing',               icon: <DollarSign size={18} strokeWidth={1.5} /> },
     { label: 'Advanced',         href: '/practitioner/intelligence',          icon: <Brain size={18} strokeWidth={1.5} /> },

@@ -15,26 +15,30 @@ export async function POST(req: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
 
     const prompt = `
-      You are an expert ADHD Executive Function Strategist.
+      You are an elite ADHD Executive Function Strategist.
       
       USER CONTEXT:
       - Current Tasks: ${JSON.stringify(tasks.map((t: any) => t.title))}
       - Current Energy (Spoons): ${energy}%
       
       GOAL:
-      Provide a highly encouraging, non-judgmental, and strategically smart "Focus Protocol" for this user.
-      1. Which task should they start with based on energy?
-      2. A "gentle reminder" about dopamine or transitions.
-      3. A sensory suggestion (e.g., lighting, sound).
+      The user is feeling "chaos" in their work. Your job is to SORT THE CHAOS.
+      1. Identify the ONE most critical task to start with based on the energy levels provided.
+      2. Provide a "Linear Path" - a clear 1-2-3 sequence to follow.
+      3. A "Gentle Override" - if they are too overwhelmed, suggest a 5-minute "Reset" task that isn't on the list.
+      4. A sensory strategy to shield their focus.
+      
+      PHILOSOPHY:
+      We don't do "busy work." We do "meaningful progress" with low working memory load.
       
       FORMAT:
       Return a JSON object:
       {
-        "strategy": "...",
-        "focusTask": "...",
-        "tip": "..."
+        "strategy": "A brief, powerful sorting of their current chaos...",
+        "focusTask": "The specific task title to focus on first",
+        "tip": "One high-impact ADHD hack for right now"
       }
-      Keep it brief and beautiful.
+      Keep it brief, beautiful, and authoritative yet kind.
     `
 
     const result = await model.generateContent(prompt)

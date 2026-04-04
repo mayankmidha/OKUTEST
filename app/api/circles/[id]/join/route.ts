@@ -31,20 +31,21 @@ export async function POST(_req: Request, { params }: RouteContext) {
     }
 
     if (circle.status !== 'CONFIRMED') {
-      return new NextResponse('Circle is not open for joining', { status: 409 })
+      return NextResponse.json({ message: 'This circle is currently not accepting new participants.' }, { status: 409 })
     }
 
+    const now = new Date()
     const gracePeriod = 15 * 60 * 1000 // 15 minutes grace
     const cutOffTime = new Date(circle.startTime.getTime() + gracePeriod)
     
-    if (new Date() > cutOffTime) {
-      return new NextResponse('Circle session has ended or grace period expired', { status: 409 })
+    if (now > cutOffTime) {
+      return NextResponse.json({ message: 'Registration for this circle has closed as the session has already begun.' }, { status: 409 })
     }
 
     // Check capacity
     const spotsLeft = (circle.maxParticipants || 10) - circle.participants.length
     if (spotsLeft <= 0) {
-      return new NextResponse('Circle is at full capacity', { status: 409 })
+      return NextResponse.json({ message: 'This circle is at full capacity. Please browse other upcoming sessions.' }, { status: 409 })
     }
 
     // Check if user already joined
@@ -52,7 +53,7 @@ export async function POST(_req: Request, { params }: RouteContext) {
       (p) => p.userId === session.user.id
     )
     if (alreadyJoined) {
-      return new NextResponse('Already joined this circle', { status: 409 })
+      return NextResponse.json({ message: 'You have already secured a spot in this circle. Check your dashboard.' }, { status: 409 })
     }
 
     // Create GroupParticipant record

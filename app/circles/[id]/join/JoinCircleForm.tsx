@@ -56,7 +56,7 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
       })
 
       if (!joinRes.ok) {
-        const data = await joinRes.json()
+        const data = await joinRes.json().catch(() => ({ message: "Could not join circle." }))
         throw new Error(data.message || "Could not join circle.")
       }
 

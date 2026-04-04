@@ -50,6 +50,7 @@ export async function GET(req: Request) {
       include: {
         user: {
           select: {
+            role: true,
             clientProfile: { select: { anonymousAlias: true } },
           },
         },
@@ -63,7 +64,7 @@ export async function GET(req: Request) {
         id: activeSession.id,
         alias:
           activeSession.user.clientProfile?.anonymousAlias ||
-          buildAnonymousAlias(activeSession.id, index),
+          (activeSession.user.role === 'THERAPIST' ? 'Healing peer' : 'Focus peer') + ` ${activeSession.id.slice(-3).toUpperCase()}`,
         status: activeSession.type || 'FOCUSING',
         statusLabel:
           activeSession.type === 'BREAK' ? 'on a short break' : 'in a focus sprint',
