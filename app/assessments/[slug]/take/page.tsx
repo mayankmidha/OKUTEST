@@ -33,52 +33,7 @@ export default function TypeformAssessmentPlayer() {
     return () => document.body.classList.remove('hide-global-header');
   }, []);
 
-  const handleNext = useCallback(() => {
-    if (currentStep < (assessment?.questions.length || 0) - 1) {
-      setCurrentStep(prev => prev + 1)
-    } else if (currentStep !== -1) {
-      finishAssessment()
-    } else {
-      setCurrentStep(0)
-    }
-  }, [currentStep, assessment])
-
-  const handleBack = useCallback(() => {
-    if (currentStep > -1) {
-      setCurrentStep(prev => prev - 1)
-    }
-  }, [currentStep])
-
-  const selectOption = (questionId: string, value: number) => {
-    setAnswers(prev => ({ ...prev, [questionId]: value }))
-    setTimeout(() => handleNext(), 400)
-  }
-
-  // Keyboard Shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isFinished || isSyncing) return
-      
-      if (e.key === 'Enter' && currentStep === -1) handleNext()
-      if (e.key === 'ArrowDown') handleNext()
-      if (e.key === 'ArrowUp') handleBack()
-      
-      // Numbers 1-5 for options
-      if (currentStep >= 0 && !isFinished) {
-        const val = parseInt(e.key)
-        if (val >= 1 && val <= (assessment?.options.length || 0)) {
-          const option = assessment?.options[val - 1]
-          if (option && assessment) {
-            selectOption(assessment.questions[currentStep].id, option.value)
-          }
-        }
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentStep, isFinished, isSyncing, assessment, handleNext, handleBack])
-
-  const finishAssessment = async () => {
+  const finishAssessment = useCallback(async () => {
     if (!assessment) return
     setIsSyncing(true)
     
@@ -108,7 +63,52 @@ export default function TypeformAssessmentPlayer() {
         setIsSyncing(false)
         setIsFinished(true)
     }, 1500)
-  }
+  }, [answers, assessment, router, session?.user, slug])
+
+  const handleNext = useCallback(() => {
+    if (currentStep < (assessment?.questions.length || 0) - 1) {
+      setCurrentStep(prev => prev + 1)
+    } else if (currentStep !== -1) {
+      void finishAssessment()
+    } else {
+      setCurrentStep(0)
+    }
+  }, [assessment, currentStep, finishAssessment])
+
+  const handleBack = useCallback(() => {
+    if (currentStep > -1) {
+      setCurrentStep(prev => prev - 1)
+    }
+  }, [currentStep])
+
+  const selectOption = useCallback((questionId: string, value: number) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }))
+    setTimeout(() => handleNext(), 400)
+  }, [handleNext])
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isFinished || isSyncing) return
+      
+      if (e.key === 'Enter' && currentStep === -1) handleNext()
+      if (e.key === 'ArrowDown') handleNext()
+      if (e.key === 'ArrowUp') handleBack()
+      
+      // Numbers 1-5 for options
+      if (currentStep >= 0 && !isFinished) {
+        const val = parseInt(e.key)
+        if (val >= 1 && val <= (assessment?.options.length || 0)) {
+          const option = assessment?.options[val - 1]
+          if (option && assessment) {
+            selectOption(assessment.questions[currentStep].id, option.value)
+          }
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [assessment, currentStep, handleBack, handleNext, isFinished, isSyncing, selectOption])
 
   if (!assessment) return null
 

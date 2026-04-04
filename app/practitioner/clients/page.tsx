@@ -1,8 +1,6 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import Link from 'next/link'
-import { Search, User, Calendar, FileText, ArrowRight, Activity, Mail } from 'lucide-react'
 import { AppointmentStatus, UserRole } from '@prisma/client'
 import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
 import { ClientRosterList } from '@/components/ClientRosterList'
@@ -75,23 +73,23 @@ export default async function PractitionerClientsPage() {
       currentPath="/practitioner/clients"
       canPostBlogs={profile?.canPostBlogs}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="card-glass-3d !bg-oku-darkgrey !p-8 relative overflow-hidden animate-float-3d">
+      <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:mb-12 xl:grid-cols-3">
+        <div className="card-glass-3d relative overflow-hidden !bg-oku-darkgrey !p-6 animate-float-3d sm:!p-8">
           <div className="relative z-10">
             <p className="text-[10px] uppercase tracking-widest font-black text-white/40 mb-2">Total Patients</p>
-            <p className="text-5xl heading-display text-white">{clients.length}</p>
+            <p className="heading-display text-4xl text-white sm:text-5xl">{clients.length}</p>
           </div>
           <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple-dark/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
         </div>
-        <div className="card-glass-3d !bg-oku-mint/60 !p-8 animate-float-3d" style={{ animationDelay: '0.2s' }}>
+        <div className="card-glass-3d !bg-oku-mint/60 !p-6 animate-float-3d sm:!p-8" style={{ animationDelay: '0.2s' }}>
           <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/40 mb-2">Avg. Retention</p>
-          <p className="text-5xl heading-display text-oku-darkgrey">
+          <p className="heading-display text-4xl text-oku-darkgrey sm:text-5xl">
             {avgRetention} <span className="text-lg text-oku-darkgrey/40">sessions</span>
           </p>
         </div>
-        <div className="card-glass-3d !bg-oku-peach/60 !p-8 animate-float-3d" style={{ animationDelay: '0.4s' }}>
+        <div className="card-glass-3d !bg-oku-peach/60 !p-6 animate-float-3d sm:col-span-2 sm:!p-8 xl:col-span-1" style={{ animationDelay: '0.4s' }}>
           <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/40 mb-2">Missing Notes</p>
-          <p className={`text-5xl heading-display ${missingNotes > 0 ? 'text-red-500' : 'text-oku-darkgrey'}`}>
+          <p className={`heading-display text-4xl sm:text-5xl ${missingNotes > 0 ? 'text-red-500' : 'text-oku-darkgrey'}`}>
             {missingNotes}
           </p>
         </div>

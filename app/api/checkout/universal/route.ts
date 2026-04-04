@@ -5,7 +5,7 @@ import { PaymentStatus, RecurringPattern } from '@prisma/client'
 import { applyReferralCreditToAppointment } from '@/lib/referrals'
 import { getPlatformSettings, getSessionRevenueSplit } from '@/lib/provider-finance'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient, isStripeConfigured } from '@/lib/stripe'
 
 /**
  * Universal Checkout Engine
@@ -104,6 +104,15 @@ export async function POST(req: Request) {
       }
 
       if (method === 'stripe') {
+        if (!isStripeConfigured) {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: { status: PaymentStatus.FAILED },
+          })
+          return new NextResponse('Stripe checkout is not configured for this environment.', { status: 503 })
+        }
+
+        const stripe = getStripeClient()
         const stripeSession = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{
@@ -116,16 +125,19 @@ export async function POST(req: Request) {
             }],
             mode: 'payment',
             success_url: `${origin}/dashboard/client/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=${type}&id=${id}`,
-            cancel_url: `${origin}/dashboard/client/checkout?cancelled=true&id=${id}`,
+            cancel_url: `${origin}/dashboard/client/checkout?cancelled=true&type=${type}&id=${id}`,
             metadata,
         })
         await prisma.payment.update({ where: { id: payment.id }, data: { stripePaymentId: stripeSession.id } })
         return NextResponse.redirect(stripeSession.url!, 303)
       }
 
-      // Razorpay Bridge (Client-side usually handles RZP, but we provide a redirect hook)
       if (method === 'razorpay') {
-          return NextResponse.redirect(new URL(`/dashboard/client/checkout/razorpay?id=${id}&type=${type}`, req.url), 303)
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: { status: PaymentStatus.FAILED },
+        })
+        return new NextResponse('Razorpay checkout is not available in this flow yet.', { status: 501 })
       }
       
       return new NextResponse('Invalid state', { status: 400 })

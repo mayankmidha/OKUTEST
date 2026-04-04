@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { pathToFileURL } from 'url'
 
 const prisma = new PrismaClient()
 
@@ -1548,6 +1549,8 @@ async function main() {
   console.log(`Done. Created: ${created}, Skipped (already exist): ${skipped}`)
 }
 
-main()
-  .catch(e => { console.error(e); process.exit(1) })
-  .finally(() => prisma.$disconnect())
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  main()
+    .catch(e => { console.error(e); process.exit(1) })
+    .finally(() => prisma.$disconnect())
+}

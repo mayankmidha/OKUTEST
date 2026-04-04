@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { motion as m } from 'motion/react'
 import {
   Brain,
@@ -143,14 +144,14 @@ export function ADHDUnlockGate() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/assessments?slug=adhd-screening"
             className="flex items-center justify-center gap-3 px-8 py-5 rounded-full bg-oku-darkgrey text-white font-bold text-sm tracking-tight hover:bg-oku-purple-dark transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98]"
           >
             <Brain size={18} />
             Take ADHD Assessment
             <ArrowRight size={16} />
-          </a>
+          </Link>
 
           {messageSent ? (
             <div className="flex items-center justify-center gap-3 px-8 py-5 rounded-full bg-oku-mint border border-oku-mint text-oku-darkgrey font-bold text-sm tracking-tight">

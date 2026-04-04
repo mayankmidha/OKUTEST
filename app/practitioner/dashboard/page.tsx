@@ -3,37 +3,30 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import {
-  ArrowUpRight,
-  Brain,
-  Clock,
+  AlertTriangle,
+  ArrowRight,
+  ClipboardCheck,
   FileText,
-  Users,
-  Calendar,
-  Activity,
-  Plus,
   MessageSquare,
   Sparkles,
-  ChevronRight,
-  DollarSign,
-  TrendingUp,
-  ClipboardCheck,
+  Users,
   Video,
-  ShieldCheck,
-  Search,
-  Bell,
-  CheckCircle2,
-  AlertTriangle
 } from 'lucide-react'
 import { AppointmentStatus, UserRole } from '@prisma/client'
-import { formatCurrency } from '@/lib/currency'
-import { PractitionerShell } from '@/components/practitioner-shell/practitioner-shell'
+import {
+  PractitionerActionTile,
+  PractitionerPill,
+  PractitionerSectionCard,
+  PractitionerShell,
+  PractitionerStatCard,
+} from '@/components/practitioner-shell/practitioner-shell'
 import { CirclesManager } from '@/app/admin/dashboard/CirclesManager'
 import { PractitionerOnboardingBanner } from '@/components/PractitionerOnboardingBanner'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PractitionerDashboardPage({
-  searchParams
+  searchParams,
 }: {
   searchParams: Promise<{ tab?: string }>
 }) {
@@ -44,282 +37,719 @@ export default async function PractitionerDashboardPage({
     redirect('/auth/login')
   }
 
+  const practitioner = await prisma.practitionerProfile.findUnique({
+    where: { userId: session.user.id },
+    include: { user: true },
+  })
+
+  if (!practitioner) {
+    redirect('/auth/login')
+  }
+
+  const hasAvailability = await prisma.availability
+    .findFirst({ where: { practitionerProfileId: practitioner.id } })
+    .then(Boolean)
+
+  if (tab === 'circles') {
+    const [circles, allClients, practitioners] = await Promise.all([
+      prisma.appointment.findMany({
+        where: { practitionerId: session.user.id, isGroupSession: true },
+        include: {
+          service: true,
+          participants: { include: { user: true } },
+        },
+        orderBy: { startTime: 'asc' },
+      }),
+      prisma.user.findMany({ where: { role: UserRole.CLIENT } }),
+      prisma.user.findMany({ where: { role: UserRole.THERAPIST } }),
+    ])
+
+    return (
+      <PractitionerShell
+        title="Circles Host"
+        badge="Community"
+        currentPath="/practitioner/dashboard"
+        description="Facilitate group spaces, manage capacity, and keep community sessions organized."
+        heroActions={
+          <Link
+            href="/practitioner/dashboard"
+            className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-8 !py-4 text-[10px]"
+          >
+            Return to workbench
+          </Link>
+        }
+      >
+        <CirclesManager
+          existingCircles={circles}
+          allClients={allClients}
+          practitioners={practitioners}
+        />
+      </PractitionerShell>
+    )
+  }
+
+  const now = new Date()
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const tomorrowStart = new Date(todayStart)
+  tomorrowStart.setDate(todayStart.getDate() + 1)
+  const weekEnd = new Date(todayStart)
+  weekEnd.setDate(todayStart.getDate() + 7)
+
   const [
-    practitioner,
-    totalCompleted,
-    caseloadCount,
-    pendingNotes,
+    todaySessions,
     upcomingSessions,
-    unreviewedAssessments,
-    circles,
-    allClients,
-    allTherapists,
+    pendingNotes,
+    unreadMessageCount,
+    unreadMessages,
+    pendingAssignmentCount,
+    pendingAssignments,
+    recentAssessmentAnswers,
+    recentTranscripts,
+    caseloadClients,
+    completedSessions,
+    circlesThisWeek,
+    adhdCareClients,
   ] = await Promise.all([
-    prisma.practitionerProfile.findUnique({
-      where: { userId: session.user.id },
-      include: { user: true }
-    }),
-    prisma.appointment.count({
-      where: { practitionerId: session.user.id, status: AppointmentStatus.COMPLETED },
-    }),
     prisma.appointment.findMany({
-      where: { practitionerId: session.user.id },
-      distinct: ['clientId'],
-    }).then((results) => results.length),
-    prisma.appointment.findMany({
-      where: { 
-        practitionerId: session.user.id, 
-        status: AppointmentStatus.COMPLETED,
-        soapNote: null
+      where: {
+        practitionerId: session.user.id,
+        isGroupSession: false,
+        startTime: { gte: todayStart, lt: tomorrowStart },
+        status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
       },
-      include: { client: true, service: true },
-      take: 5,
+      include: {
+        client: { select: { id: true, name: true } },
+        service: { select: { name: true } },
+      },
+      orderBy: { startTime: 'asc' },
+      take: 6,
     }),
     prisma.appointment.findMany({
       where: {
         practitionerId: session.user.id,
-        startTime: { gte: new Date() },
+        isGroupSession: false,
+        startTime: { gte: now },
         status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
       },
-      include: { client: true, service: true },
+      include: {
+        client: { select: { id: true, name: true } },
+        service: { select: { name: true } },
+      },
       orderBy: { startTime: 'asc' },
-      take: 5
-    }),
-    prisma.assessmentAnswer.findMany({
-        where: {
-          user: {
-            clientAppointments: {
-              some: { practitionerId: session.user.id }
-            }
-          }
-        },
-        include: { user: true, assessment: true },
-        orderBy: { completedAt: 'desc' },
-        take: 5
+      take: 6,
     }),
     prisma.appointment.findMany({
-        where: { practitionerId: session.user.id, isGroupSession: true },
-        include: { service: true, participants: { include: { user: true } } },
-        orderBy: { startTime: 'asc' }
+      where: {
+        practitionerId: session.user.id,
+        status: AppointmentStatus.COMPLETED,
+        soapNote: null,
+      },
+      include: {
+        client: { select: { id: true, name: true } },
+        service: { select: { name: true } },
+      },
+      orderBy: { startTime: 'desc' },
+      take: 5,
     }),
-    prisma.user.findMany({ where: { role: UserRole.CLIENT } }),
-    prisma.user.findMany({ where: { role: UserRole.THERAPIST } }),
+    prisma.message.count({
+      where: {
+        receiverId: session.user.id,
+        isRead: false,
+      },
+    }),
+    prisma.message.findMany({
+      where: {
+        receiverId: session.user.id,
+        isRead: false,
+      },
+      include: {
+        sender: { select: { id: true, name: true, avatar: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    }),
+    prisma.assignedAssessment.count({
+      where: {
+        practitionerId: session.user.id,
+        status: 'PENDING',
+      },
+    }),
+    prisma.assignedAssessment.findMany({
+      where: {
+        practitionerId: session.user.id,
+        status: 'PENDING',
+      },
+      include: {
+        assessment: { select: { title: true } },
+        client: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    }),
+    prisma.assessmentAnswer.findMany({
+      where: {
+        user: {
+          clientAppointments: {
+            some: { practitionerId: session.user.id },
+          },
+        },
+      },
+      include: {
+        assessment: { select: { title: true } },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            clientProfile: { select: { adhdDiagnosed: true } },
+          },
+        },
+      },
+      orderBy: { completedAt: 'desc' },
+      take: 8,
+    }),
+    prisma.transcript.findMany({
+      where: {
+        appointment: { practitionerId: session.user.id },
+      },
+      include: {
+        appointment: {
+          select: {
+            id: true,
+            startTime: true,
+            client: { select: { id: true, name: true } },
+            service: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 10,
+    }),
+    prisma.appointment
+      .findMany({
+        where: {
+          practitionerId: session.user.id,
+          clientId: { not: null },
+        },
+        select: { clientId: true },
+        distinct: ['clientId'],
+      })
+      .then((rows) => rows.length),
+    prisma.appointment.count({
+      where: {
+        practitionerId: session.user.id,
+        isGroupSession: false,
+        status: AppointmentStatus.COMPLETED,
+      },
+    }),
+    prisma.appointment.findMany({
+      where: {
+        practitionerId: session.user.id,
+        isGroupSession: true,
+        startTime: { gte: todayStart, lte: weekEnd },
+        status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
+      },
+      include: {
+        participants: { select: { id: true } },
+        service: { select: { name: true } },
+      },
+      orderBy: { startTime: 'asc' },
+      take: 4,
+    }),
+    prisma.clientProfile.count({
+      where: {
+        adhdDiagnosed: true,
+        user: {
+          clientAppointments: {
+            some: { practitionerId: session.user.id },
+          },
+        },
+      },
+    }),
   ])
 
-  const hasAvailability = practitioner
-    ? await prisma.availability.findFirst({ where: { practitionerProfileId: practitioner.id } }).then(Boolean)
-    : false
-
-  if (!practitioner) redirect('/auth/login')
-
-  const nextSession = upcomingSessions[0]
-  const todaySessions = upcomingSessions.filter(s =>
-    new Date(s.startTime).setHours(0,0,0,0) === new Date().setHours(0,0,0,0)
+  const nextSession = upcomingSessions[0] || null
+  const adhdSignalTranscripts = recentTranscripts.filter(
+    (transcript) =>
+      Array.isArray(transcript.adhdSignals) && transcript.adhdSignals.length > 0
+  )
+  const adhdAssessmentCandidates = recentAssessmentAnswers.filter(
+    (answer) =>
+      isAdhdAssessment(answer.assessment.title) &&
+      !answer.user.clientProfile?.adhdDiagnosed
   )
 
   return (
     <PractitionerShell
-        title={tab === 'circles' ? 'Circles Host' : 'Clinical Pulse'}
-        badge={tab === 'circles' ? 'Community' : 'Clinical'}
-        currentPath="/practitioner/dashboard"
-        description={tab === 'circles' ? 'Facilitate your group sessions and community circles.' : 'Your clinical windows and patient intelligence for today.'}
+      title="Therapist Workbench"
+      badge="Clinical"
+      currentPath="/practitioner/dashboard"
+      description="Start with today’s care queue, then move through notes, assessments, circles, and ADHD-related signals without losing context."
+      heroActions={
+        <>
+          <Link
+            href="/practitioner/schedule"
+            className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-8 !py-4 text-[10px]"
+          >
+            Open schedule
+          </Link>
+          <Link
+            href="/practitioner/clients"
+            className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-8 !py-4 text-[10px]"
+          >
+            Open clients
+          </Link>
+        </>
+      }
     >
-      {tab === 'circles' ? (
-          <CirclesManager 
-            existingCircles={circles} 
-            allClients={allClients}
-            practitioners={allTherapists}
+      <div className="space-y-8">
+        {!practitioner.isOnboarded && (
+          <PractitionerOnboardingBanner
+            hasBio={Boolean(practitioner.bio)}
+            hasRates={Boolean(practitioner.hourlyRate || practitioner.indiaSessionRate)}
+            hasAvailability={hasAvailability}
           />
-      ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 relative z-10">
-            {/* ── ONBOARDING BANNER ── */}
-            {!practitioner.isOnboarded && (
-              <PractitionerOnboardingBanner
-                hasBio={!!practitioner.bio}
-                hasRates={!!(practitioner.hourlyRate || practitioner.indiaSessionRate)}
-                hasAvailability={!!hasAvailability}
-              />
-            )}
+        )}
 
-            {/* ── VERIFICATION BANNER ── */}
-            {!practitioner.isVerified && (
-              <div className="xl:col-span-12 flex items-start gap-4 p-6 bg-amber-50 border border-amber-200 rounded-3xl">
-                <AlertTriangle size={20} className="text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-bold text-amber-800 text-sm">Profile Under Review</p>
-                  <p className="text-amber-700 text-xs mt-1 leading-relaxed">
-                    Your profile is pending admin verification. Once approved, you&apos;ll appear in the practitioner directory and clients can book sessions with you. We typically verify within 1–2 business days.
+        {!practitioner.isVerified && (
+          <div className="rounded-[2rem] border border-amber-200 bg-amber-50 px-5 py-5 text-amber-900 sm:px-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle size={20} className="mt-0.5 shrink-0 text-amber-600" />
+              <div>
+                <p className="text-sm font-black">Profile under review</p>
+                <p className="mt-1 text-sm leading-relaxed text-amber-800/80">
+                  Your profile is not yet verified for marketplace visibility. You can still prepare your schedule, notes, assessments, and circles from this workspace.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-5">
+          <PractitionerStatCard
+            label="Sessions today"
+            value={todaySessions.length}
+            detail={todaySessions.length > 0 ? 'live care windows' : 'quiet day'}
+            accent="bg-oku-purple-dark"
+          />
+          <PractitionerStatCard
+            label="Pending notes"
+            value={pendingNotes.length}
+            detail={pendingNotes.length > 0 ? 'documentation backlog' : 'up to date'}
+            accent="bg-oku-peach-dark"
+          />
+          <PractitionerStatCard
+            label="Assessment queue"
+            value={pendingAssignmentCount}
+            detail={pendingAssignmentCount > 0 ? 'awaiting completion' : 'clear'}
+            accent="bg-oku-mint-dark"
+          />
+          <PractitionerStatCard
+            label="Unread messages"
+            value={unreadMessageCount}
+            detail={unreadMessageCount > 0 ? 'client replies waiting' : 'inbox calm'}
+            accent="bg-oku-babyblue-dark"
+          />
+          <PractitionerStatCard
+            label="ADHD care clients"
+            value={adhdCareClients}
+            detail={`${completedSessions} sessions completed`}
+            accent="bg-oku-darkgrey"
+          />
+        </div>
+
+        <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+          <PractitionerSectionCard
+            title="Today’s Queue"
+            description="Your next care windows, with fast entry into rooms and notes."
+            action={
+              <Link
+                href="/practitioner/schedule"
+                className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-6 !py-3 text-[10px]"
+              >
+                View calendar
+              </Link>
+            }
+          >
+            {todaySessions.length === 0 ? (
+              <EmptyCard
+                title={nextSession ? 'No more sessions today.' : 'No sessions scheduled today.'}
+                description={
+                  nextSession
+                    ? `Next up is ${nextSession.client?.name || 'your next client'} on ${formatDateTime(nextSession.startTime)}.`
+                    : 'Use the gap for notes, assessment reviews, or circle prep.'
+                }
+                href={nextSession ? `/session/${nextSession.id}` : '/practitioner/schedule'}
+                cta={nextSession ? 'Open next session' : 'Open calendar'}
+              />
+            ) : (
+              <div className="space-y-4">
+                {todaySessions.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="rounded-[1.6rem] border border-white/70 bg-white/70 p-5 shadow-sm"
+                  >
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark">
+                          {formatTime(appointment.startTime)} • {appointment.service?.name || 'Session'}
+                        </p>
+                        <h3 className="text-2xl font-black tracking-tight text-oku-darkgrey">
+                          {appointment.client?.name || 'Client'}
+                        </h3>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        <Link
+                          href={`/session/${appointment.id}`}
+                          className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-6 !py-3 text-[10px]"
+                        >
+                          <Video size={14} className="mr-2" />
+                          Launch room
+                        </Link>
+                        <Link
+                          href={`/practitioner/sessions/${appointment.id}/notes`}
+                          className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-6 !py-3 text-[10px]"
+                        >
+                          <FileText size={14} className="mr-2" />
+                          Open notes
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </PractitionerSectionCard>
+
+          <div className="space-y-8">
+            <PractitionerSectionCard
+              title="Focus Areas"
+              description="Jump straight into the core practitioner surfaces."
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <PractitionerActionTile
+                  href="/practitioner/clients"
+                  title="Clients"
+                  description="Review files, ADHD access, progress, and clinical history."
+                  icon={<Users size={20} />}
+                />
+                <PractitionerActionTile
+                  href="/practitioner/assessments"
+                  title="Assessments"
+                  description="Create tools, assign them, and review recent screening results."
+                  icon={<ClipboardCheck size={20} />}
+                />
+                <PractitionerActionTile
+                  href="/practitioner/messages"
+                  title="Messages"
+                  description="Respond to clients and clear the unread queue."
+                  icon={<MessageSquare size={20} />}
+                />
+                <PractitionerActionTile
+                  href="/practitioner/dashboard?tab=circles"
+                  title="Circles"
+                  description="Manage group spaces, capacity, and facilitation flow."
+                  icon={<Sparkles size={20} />}
+                />
+              </div>
+            </PractitionerSectionCard>
+
+            <PractitionerSectionCard
+              title="Circles This Week"
+              description="Upcoming group sessions you are facilitating."
+              action={
+                <Link
+                  href="/practitioner/dashboard?tab=circles"
+                  className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark"
+                >
+                  Open circles
+                </Link>
+              }
+            >
+              {circlesThisWeek.length === 0 ? (
+                <EmptyMiniState text="No circles scheduled in the next 7 days." />
+              ) : (
+                <div className="space-y-3">
+                  {circlesThisWeek.map((circle) => (
+                    <InfoRow
+                      key={circle.id}
+                      title={circle.service?.name || 'Facilitated circle'}
+                      subtitle={formatDateTime(circle.startTime)}
+                      meta={`${circle.participants.length}/${circle.maxParticipants} joined`}
+                      href="/practitioner/dashboard?tab=circles"
+                    />
+                  ))}
+                </div>
+              )}
+            </PractitionerSectionCard>
+          </div>
+        </div>
+
+        <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
+          <PractitionerSectionCard
+            title="Documentation and Assessments"
+            description="What still needs your review or completion."
+          >
+              <div className="grid gap-8 lg:grid-cols-2">
+              <div>
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
+                    Pending notes
+                  </p>
+                  <PractitionerPill tone={pendingNotes.length > 0 ? 'pink' : 'sage'}>
+                    {pendingNotes.length}
+                  </PractitionerPill>
+                </div>
+                {pendingNotes.length === 0 ? (
+                  <EmptyMiniState text="All completed sessions have notes." />
+                ) : (
+                  <div className="space-y-3">
+                    {pendingNotes.map((appointment) => (
+                      <InfoRow
+                        key={appointment.id}
+                        title={appointment.client?.name || 'Client'}
+                        subtitle={`${appointment.service?.name || 'Session'} • ${formatDateTime(appointment.startTime)}`}
+                        meta="Open SOAP note"
+                        href={`/practitioner/sessions/${appointment.id}/notes`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
+                    Assessment queue
+                  </p>
+                  <PractitionerPill tone={pendingAssignmentCount > 0 ? 'purple' : 'sage'}>
+                    {pendingAssignmentCount}
+                  </PractitionerPill>
+                </div>
+                {pendingAssignments.length === 0 ? (
+                  <EmptyMiniState text="No assigned assessments are waiting right now." />
+                ) : (
+                  <div className="space-y-3">
+                    {pendingAssignments.map((assignment) => (
+                      <InfoRow
+                        key={assignment.id}
+                        title={assignment.client.name || 'Client'}
+                        subtitle={assignment.assessment.title}
+                        meta="Waiting for completion"
+                        href={`/practitioner/clients/${assignment.client.id}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-[1.6rem] border border-white/70 bg-[#faf7f2] p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
+                  Recent screening results
+                </p>
+                <Link
+                  href="/practitioner/assessments"
+                  className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark"
+                >
+                  Open assessments
+                </Link>
+              </div>
+              {recentAssessmentAnswers.length === 0 ? (
+                <EmptyMiniState text="No recent screening completions from your caseload." />
+              ) : (
+                <div className="space-y-3">
+                  {recentAssessmentAnswers.slice(0, 4).map((answer) => (
+                    <InfoRow
+                      key={answer.id}
+                      title={answer.user.name || 'Client'}
+                      subtitle={answer.assessment.title}
+                      meta={answer.score !== null ? `Score ${answer.score}` : 'Review result'}
+                      href={`/practitioner/clients/${answer.user.id}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </PractitionerSectionCard>
+
+          <div className="space-y-8">
+            <PractitionerSectionCard
+              title="Unread Messages"
+              description="Client threads that still need your reply."
+              action={
+                <Link
+                  href="/practitioner/messages"
+                  className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark"
+                >
+                  Open inbox
+                </Link>
+              }
+            >
+              {unreadMessages.length === 0 ? (
+                <EmptyMiniState text="No unread client messages." />
+              ) : (
+                <div className="space-y-3">
+                  {unreadMessages.map((message) => (
+                    <InfoRow
+                      key={message.id}
+                      title={message.sender.name || 'Client'}
+                      subtitle={truncateText(message.content, 96)}
+                      meta={formatDateTime(message.createdAt)}
+                      href={`/practitioner/messages?c=${message.sender.id}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </PractitionerSectionCard>
+
+            <PractitionerSectionCard
+              title="ADHD Signals"
+              description="Current ADHD care load plus recent items worth reviewing."
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
+                    ADHD-enabled clients
+                  </p>
+                  <p className="mt-2 text-3xl font-black tracking-tight text-oku-darkgrey">
+                    {adhdCareClients}
+                  </p>
+                  <p className="mt-2 text-sm text-oku-darkgrey/55">
+                    Clients with ADHD workspace access already enabled.
+                  </p>
+                </div>
+                <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
+                    Transcript flags
+                  </p>
+                  <p className="mt-2 text-3xl font-black tracking-tight text-oku-darkgrey">
+                    {adhdSignalTranscripts.length}
+                  </p>
+                  <p className="mt-2 text-sm text-oku-darkgrey/55">
+                    Recent transcripts carrying ADHD-related AI signals.
                   </p>
                 </div>
               </div>
-            )}
 
-            {/* ── LEFT: THE CLINICAL QUEUE (TODAY) ── */}
-            <div className="xl:col-span-8 space-y-12">
-            
-            <section className="card-glass-3d !p-12 !bg-white/40 overflow-hidden relative">
-                <div className="flex items-center justify-between mb-12">
-                    <h2 className="heading-display text-4xl tracking-tight">Today&apos;s <span className="italic text-oku-purple-dark">Schedule</span></h2>
-                    <div className="flex items-center gap-4">
-                        <button className="p-3 rounded-xl bg-white border border-white/60 text-oku-darkgrey/40 hover:text-oku-purple-dark transition-all"><Search size={18} /></button>
-                        <button className="p-3 rounded-xl bg-white border border-white/60 text-oku-darkgrey/40 hover:text-oku-purple-dark transition-all relative">
-                            <Bell size={18} />
-                            <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-oku-purple shadow-sm" />
-                        </button>
-                    </div>
-                </div>
+              <div className="mt-6 space-y-3">
+                {adhdSignalTranscripts.slice(0, 3).map((transcript) => (
+                  <InfoRow
+                    key={transcript.id}
+                    title={transcript.appointment.client?.name || 'Client'}
+                    subtitle={Array.isArray(transcript.adhdSignals) ? transcript.adhdSignals.slice(0, 2).join(' • ') : 'Transcript flagged'}
+                    meta={transcript.appointment.service?.name || 'Session'}
+                    href={`/practitioner/clients/${transcript.appointment.client?.id || ''}`}
+                  />
+                ))}
 
-                {todaySessions.length === 0 ? (
-                    <div className="py-24 text-center">
-                        <p className="text-2xl font-display italic text-oku-darkgrey/20">A quiet day for deep work.</p>
-                        <Link href="/practitioner/schedule" className="btn-pill-3d bg-oku-darkgrey text-white mt-8 !px-10">Open Calendar</Link>
-                    </div>
-                ) : (
-                    <div className="space-y-6">
-                        {todaySessions.map((session, i) => (
-                            <div key={session.id} className="group relative">
-                                <div className={`p-8 rounded-[2.5rem] border-2 transition-all duration-500 flex flex-col md:flex-row items-center justify-between gap-8 ${i === 0 ? 'bg-oku-dark text-white border-oku-dark shadow-2xl scale-[1.02]' : 'bg-white border-white/60 hover:border-oku-purple/30 shadow-sm'}`}>
-                                    <div className="flex items-center gap-8">
-                                        <div className={`w-20 h-20 rounded-[1.5rem] flex items-center justify-center text-2xl font-black shadow-inner ${i === 0 ? 'bg-white/10 border border-white/20' : 'bg-oku-lavender/40 text-oku-purple-dark'}`}>
-                                            {new Date(session.startTime).getHours()}:{new Date(session.startTime).getMinutes().toString().padStart(2, '0')}
-                                        </div>
-                                        <div>
-                                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] mb-2 ${i === 0 ? 'text-oku-lavender' : 'text-oku-darkgrey/30'}`}>
-                                                {session.service.name} • {session.isTrial ? 'Free Consultation' : 'Standard Session'}
-                                            </p>
-                                            <h3 className="text-3xl font-display font-bold tracking-tight">{session.client?.name}</h3>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Link 
-                                            href={`/session/${session.id}`}
-                                            className={`btn-pill-3d !py-4 !px-10 flex items-center gap-3 ${i === 0 ? 'bg-white text-oku-dark' : 'bg-oku-dark text-white'}`}
-                                        >
-                                            <Video size={18} /> Launch Room
-                                        </Link>
-                                        <button className={`p-4 rounded-full border transition-all ${i === 0 ? 'border-white/20 text-white/40 hover:bg-white/10' : 'border-oku-darkgrey/10 text-oku-darkgrey/20 hover:bg-oku-lavender/40'}`}>
-                                            <FileText size={20} />
-                                        </button>
-                                    </div>
-                                </div>
-                                {i < todaySessions.length - 1 && <div className="absolute left-[40px] -bottom-[24px] w-0.5 h-6 bg-oku-darkgrey/5" />}
-                            </div>
-                        ))}
-                    </div>
+                {adhdAssessmentCandidates.slice(0, 3).map((answer) => (
+                  <InfoRow
+                    key={answer.id}
+                    title={answer.user.name || 'Client'}
+                    subtitle={`${answer.assessment.title} completed`}
+                    meta="Review for ADHD workflow access"
+                    href={`/practitioner/clients/${answer.user.id}`}
+                  />
+                ))}
+
+                {adhdSignalTranscripts.length === 0 && adhdAssessmentCandidates.length === 0 && (
+                  <EmptyMiniState text="No recent ADHD-specific flags or unlock candidates." />
                 )}
-            </section>
-
-            {/* PATIENT PROGRESS RADAR */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <section className="card-glass-3d !p-10 !bg-oku-mint/20 border-oku-mint/10">
-                    <div className="flex items-center justify-between mb-8">
-                        <h3 className="heading-display text-2xl tracking-tight">Active <span className="italic">Caseload</span></h3>
-                        <Users size={20} className="text-oku-mint-dark/40" />
-                    </div>
-                    <p className="text-6xl heading-display text-oku-darkgrey mb-2">{caseloadCount}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-10">Seekers in your care</p>
-                    <Link href="/practitioner/clients" className="flex items-center justify-between p-5 bg-white/60 rounded-2xl border border-white group hover:bg-white transition-all">
-                        <span className="text-[10px] font-black uppercase tracking-widest">Open Patient Ledger</span>
-                        <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
-                    </Link>
-                </section>
-
-                <section className="card-glass-3d !p-10 !bg-oku-lavender/20 border-oku-lavender/10">
-                    <div className="flex items-center justify-between mb-8">
-                        <h3 className="heading-display text-2xl tracking-tight">Clinical <span className="italic">Output</span></h3>
-                        <TrendingUp size={20} className="text-oku-purple-dark/40" />
-                    </div>
-                    <p className="text-6xl heading-display text-oku-darkgrey mb-2">{totalCompleted}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-10">Total care windows fulfilled</p>
-                    <Link href="/practitioner/billing" className="flex items-center justify-between p-5 bg-white/60 rounded-2xl border border-white group hover:bg-white transition-all">
-                        <span className="text-[10px] font-black uppercase tracking-widest">Earnings & Financials</span>
-                        <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
-                    </Link>
-                </section>
-            </div>
-            </div>
-
-            {/* ── RIGHT: CLINICAL MEMORY & INSIGHTS ── */}
-            <div className="xl:col-span-4 space-y-12">
-            
-            {/* WORKING MEMORY (PENDING NOTES) */}
-            <section className="card-glass-3d !p-10 !bg-oku-butter/40 border-dashed border-2">
-                <div className="flex items-center justify-between mb-8">
-                    <h3 className="heading-display text-2xl tracking-tight">Working <span className="italic text-oku-purple-dark">Memory</span></h3>
-                    <Sparkles size={20} className="text-oku-purple-dark/20" />
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mb-6">Pending SOAP Notes</p>
-                
-                {pendingNotes.length === 0 ? (
-                    <div className="p-6 bg-white/40 rounded-2xl border border-white/60 text-center">
-                        <CheckCircle2 size={24} className="mx-auto text-oku-mint-dark mb-2" />
-                        <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">Documentation Complete</p>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {pendingNotes.map(note => (
-                            <Link 
-                                key={note.id} 
-                                href={`/practitioner/sessions/${note.id}/notes`}
-                                className="flex items-center justify-between p-5 bg-white/60 rounded-2xl border border-white/60 hover:bg-white transition-all group"
-                            >
-                                <div>
-                                    <p className="text-xs font-bold">{note.client?.name}</p>
-                                    <p className="text-[8px] opacity-40 uppercase tracking-widest mt-1">{new Date(note.startTime).toLocaleDateString()}</p>
-                                </div>
-                                <ChevronRight size={14} className="text-oku-darkgrey/20 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </section>
-
-            {/* ASSESSMENT RADAR */}
-            <section className="card-glass-3d !p-10 !bg-white/40">
-                <div className="flex items-center justify-between mb-8">
-                    <h3 className="heading-display text-2xl tracking-tight">Patient <span className="italic text-oku-purple-dark">Signals</span></h3>
-                    <Activity size={20} className="text-oku-darkgrey/20" />
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mb-6">Recent Screenings</p>
-                
-                <div className="space-y-4">
-                    {unreviewedAssessments.map(ans => (
-                        <div key={ans.id} className="p-5 bg-white/60 rounded-2xl border border-white/60 relative overflow-hidden group">
-                            <div className="flex justify-between items-start relative z-10">
-                                <div>
-                                    <p className="text-xs font-bold">{ans.user.name}</p>
-                                    <p className="text-[10px] text-oku-purple-dark font-display italic mt-1">{ans.assessment.title}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className={`text-xl font-display font-black ${ans.score && ans.score > 15 ? 'text-red-500' : 'text-oku-darkgrey'}`}>
-                                        {ans.score || '—'}
-                                    </p>
-                                    <p className="text-[8px] opacity-40 uppercase tracking-widest">Score</p>
-                                </div>
-                            </div>
-                            {ans.score && ans.score > 15 && (
-                                <div className="absolute top-0 right-0 p-2">
-                                    <AlertTriangle size={12} className="text-red-500 animate-pulse" />
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* AI ASSISTANT CLI */}
-            <div className="card-glass-3d !p-10 !bg-oku-dark text-white relative overflow-hidden group">
-                <Brain size={24} className="text-oku-lavender mb-6 animate-float-3d" />
-                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">OCI Intelligent Scribe</p>
-                <p className="text-sm font-bold text-white/80 italic leading-relaxed">
-                &ldquo;Drafting session summaries based on patient history. Review pending for {nextSession?.client?.name || 'next patient'}.&rdquo;
-                </p>
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-oku-purple/10 rounded-full blur-3xl" />
-            </div>
-
-            </div>
+              </div>
+            </PractitionerSectionCard>
+          </div>
         </div>
-      )}
+      </div>
     </PractitionerShell>
   )
+}
+
+function EmptyCard({
+  title,
+  description,
+  href,
+  cta,
+}: {
+  title: string
+  description: string
+  href: string
+  cta: string
+}) {
+  return (
+    <div className="rounded-[1.8rem] border border-dashed border-oku-darkgrey/10 bg-[#faf7f2] p-6 sm:p-8">
+      <p className="text-lg font-black text-oku-darkgrey">{title}</p>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-oku-darkgrey/60">
+        {description}
+      </p>
+      <Link
+        href={href}
+        className="btn-pill-3d mt-5 inline-flex bg-oku-darkgrey border-oku-darkgrey text-white !px-7 !py-3 text-[10px]"
+      >
+        {cta}
+        <ArrowRight size={14} className="ml-2" />
+      </Link>
+    </div>
+  )
+}
+
+function EmptyMiniState({ text }: { text: string }) {
+  return (
+    <div className="rounded-[1.25rem] border border-dashed border-oku-darkgrey/10 bg-[#faf7f2] px-4 py-5 text-sm text-oku-darkgrey/55">
+      {text}
+    </div>
+  )
+}
+
+function InfoRow({
+  href,
+  title,
+  subtitle,
+  meta,
+}: {
+  href: string
+  title: string
+  subtitle: string
+  meta: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col gap-3 rounded-[1.25rem] border border-white/70 bg-white/70 p-4 transition-colors hover:bg-white sm:flex-row sm:items-start sm:justify-between"
+    >
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-black text-oku-darkgrey">{title}</p>
+        <p className="mt-1 text-sm leading-relaxed text-oku-darkgrey/55">{subtitle}</p>
+      </div>
+      <span className="text-left text-[10px] font-black uppercase tracking-[0.2em] text-oku-purple-dark/70 sm:shrink-0 sm:text-right">
+        {meta}
+      </span>
+    </Link>
+  )
+}
+
+function formatTime(date: Date) {
+  return new Date(date).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function formatDateTime(date: Date) {
+  return new Date(date).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text
+  return `${text.slice(0, maxLength - 1)}…`
+}
+
+function isAdhdAssessment(title: string) {
+  const value = title.toLowerCase()
+  return value.includes('adhd') || value.includes('asrs') || value.includes('conners') || value.includes('vanderbilt')
 }

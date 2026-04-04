@@ -5,9 +5,9 @@ import { getCheckoutReferralCredit } from '@/lib/referrals'
 import { detectCurrency, formatCurrency, getLiveExchangeRates, localizeAmount } from '@/lib/currency'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
 import { 
-  CreditCard, ShieldCheck, Zap, 
-  Sparkles, ArrowRight, Lock, 
-  ChevronLeft, Calendar, User
+  CreditCard, ShieldCheck,
+  Sparkles, Lock,
+  ChevronLeft
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -163,14 +163,6 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
                                     </button>
                                 </form>
 
-                                <form action="/api/checkout/universal" method="POST">
-                                    <input type="hidden" name="id" value={id} />
-                                    <input type="hidden" name="type" value={type} />
-                                    <input type="hidden" name="method" value="razorpay" />
-                                    <button className="btn-pill-3d bg-transparent border-white/20 text-white w-full !py-5 flex items-center justify-center gap-3 hover:bg-white/5 transition-all">
-                                        Pay with UPI / QR <Zap size={18} />
-                                    </button>
-                                </form>
                             </div>
 
                             <p className="mt-8 text-center text-[9px] font-black uppercase tracking-[0.2em] text-white/30 leading-loose">
@@ -187,6 +179,9 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
                         </div>
                         <p className="text-xs text-oku-darkgrey/60 font-display italic leading-relaxed">
                             Every transaction on Oku contributes to our therapist empowerment fund, helping clinicians provide sliding-scale care to those in need.
+                        </p>
+                        <p className="text-xs text-oku-darkgrey/50">
+                            UPI and Razorpay are temporarily hidden here until the universal checkout flow supports them end to end.
                         </p>
                     </div>
                 </div>

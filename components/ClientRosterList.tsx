@@ -28,7 +28,7 @@ export function ClientRosterList({ clients }: { clients: ClientEntry[] }) {
   return (
     <div className="space-y-6">
       {/* Search bar */}
-      <div className="card-glass-3d !p-6 !bg-white/60">
+      <div className="card-glass-3d !bg-white/60 !p-5 sm:!p-6">
         <div className="relative">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-oku-darkgrey/30" size={16} />
           <input
@@ -60,25 +60,25 @@ export function ClientRosterList({ clients }: { clients: ClientEntry[] }) {
           </div>
         ) : (
           filtered.map((c) => (
-            <div key={c.client.id} className="card-glass-3d !p-8 !bg-white/60 group hover:shadow-2xl transition-all duration-500">
-              <div className="grid md:grid-cols-12 gap-8 items-center">
+            <div key={c.client.id} className="card-glass-3d group !bg-white/60 !p-6 transition-all duration-500 hover:shadow-2xl sm:!p-8">
+              <div className="grid gap-6 xl:grid-cols-12 xl:items-center xl:gap-8">
 
                 {/* Patient Identity */}
-                <div className="md:col-span-4 flex items-center gap-6">
+                <div className="flex items-center gap-4 sm:gap-6 xl:col-span-4">
                   <div className="w-14 h-14 rounded-2xl bg-oku-lavender/60 flex items-center justify-center text-oku-darkgrey font-bold text-xl border-2 border-white shadow-inner">
                     {c.client.name?.substring(0, 1) || '?'}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="text-lg font-bold text-oku-darkgrey group-hover:text-oku-purple-dark transition-colors">{c.client.name || 'Unknown'}</h3>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="mt-1 flex items-center gap-2">
                       <Mail size={11} className="text-oku-darkgrey/30" />
-                      <span className="text-xs text-oku-darkgrey/40">{c.client.email}</span>
+                      <span className="truncate text-xs text-oku-darkgrey/40">{c.client.email}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Clinical Stats */}
-                <div className="md:col-span-5 grid grid-cols-3 gap-4 border-x border-white/60 px-8">
+                <div className="grid grid-cols-2 gap-4 border-y border-white/60 py-5 sm:grid-cols-3 xl:col-span-5 xl:border-y-0 xl:border-x xl:px-8 xl:py-0">
                   <div>
                     <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/30 mb-1">Sessions</p>
                     <p className="text-xl font-bold text-oku-darkgrey">{c.totalSessions}</p>
@@ -100,14 +100,14 @@ export function ClientRosterList({ clients }: { clients: ClientEntry[] }) {
                 </div>
 
                 {/* Actions */}
-                <div className="md:col-span-3 flex items-center justify-end gap-4">
+                <div className="flex items-center justify-between gap-4 xl:col-span-3 xl:justify-end">
                   {c.nextSession ? (
-                    <div className="text-right mr-4">
+                    <div className="xl:mr-4 xl:text-right">
                       <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/30 mb-1">Next Session</p>
                       <p className="text-xs font-bold text-oku-purple-dark">{new Date(c.nextSession).toLocaleDateString()}</p>
                     </div>
                   ) : (
-                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/30 mr-4">No upcoming</p>
+                    <p className="text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/30 xl:mr-4">No upcoming</p>
                   )}
                   <Link
                     href={`/practitioner/clients/${c.client.id}`}

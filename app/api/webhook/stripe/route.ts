@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient, getStripeWebhookSecret } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
 import { AppointmentStatus, PaymentStatus, RecurringPattern } from '@prisma/client'
@@ -17,10 +17,11 @@ export async function POST(req: Request) {
   let event
 
   try {
+    const stripe = getStripeClient()
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      getStripeWebhookSecret()
     )
   } catch (err: any) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
@@ -41,7 +42,9 @@ export async function POST(req: Request) {
             where: { id: paymentId },
             data: { 
                 status: PaymentStatus.COMPLETED,
-                stripePaymentId: session.id,
+                stripePaymentId: typeof session.payment_intent === 'string'
+                  ? session.payment_intent
+                  : session.id,
                 updatedAt: new Date()
             }
         })

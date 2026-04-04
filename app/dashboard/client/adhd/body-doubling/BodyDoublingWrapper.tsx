@@ -14,7 +14,7 @@ export function BodyDoublingWrapper() {
   }
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr] xl:gap-8">
       <BodyDoublingClient onSessionChange={handleSessionChange} />
       <BodyDoublePresence isActive={isActive} currentTask={currentTask} />
     </div>

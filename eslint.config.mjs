@@ -10,6 +10,8 @@ const config = [
   },
   {
     ignores: [
+      '.next/**',
+      '.next.build-cache-stale/**',
       'audit-results/**',
       'public/uploads/**',
       'prisma/dev.db',

@@ -53,7 +53,7 @@ export default async function ADHDHelperPage() {
       />
 
       {/* 1. Quick Action Matrix */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="bg-oku-darkgrey text-white p-8 rounded-[2.5rem] relative overflow-hidden group shadow-2xl">
            <div className="relative z-10">
               <Sparkles className="text-oku-lavender mb-4" />
@@ -80,7 +80,7 @@ export default async function ADHDHelperPage() {
       </div>
 
       {/* OS Navigation: Sub-tools */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
         <Link href="/dashboard/client/adhd/tasks" className="card-glass-3d !p-8 !bg-white/60 hover:bg-white transition-all flex items-center justify-between group">
             <div className="flex items-center gap-6">
                 <div className="w-12 h-12 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark shadow-inner">

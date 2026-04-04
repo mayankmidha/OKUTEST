@@ -3,11 +3,27 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, Calendar, Users,
-  Settings, Heart, ClipboardCheck,
-  Shield, FileText, Bell, LogOut,
-  ChevronRight, Activity, DollarSign, ShieldCheck, BookOpen, Search, Video,
-  Briefcase, History, Clock, HelpCircle, Sparkles, MessageSquare, Gift, Brain, Menu, X, TrendingUp, Zap, Star
+  Activity,
+  Brain,
+  Calendar,
+  ClipboardCheck,
+  DollarSign,
+  FileText,
+  Heart,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Search,
+  Settings,
+  Shield,
+  ShieldCheck,
+  Star,
+  TrendingUp,
+  Users,
+  Video,
+  X,
+  Zap,
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'motion/react'
@@ -26,48 +42,45 @@ export function DashboardSidebar() {
   }, [pathname])
 
   const clientLinks = [
-    { label: 'Pulse',            href: '/dashboard/client',                   icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
-    { label: 'Care Path',        href: '/dashboard/client/therapists',        icon: <Search size={18} strokeWidth={1.5} /> },
+    { label: 'Home',             href: '/dashboard/client',                   icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
+    { label: 'Find Care',        href: '/dashboard/client/therapists',        icon: <Search size={18} strokeWidth={1.5} /> },
     { label: 'Sessions',         href: '/dashboard/client/sessions',          icon: <Calendar size={18} strokeWidth={1.5} /> },
+    { label: 'Assessments',      href: '/dashboard/client/clinical',          icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
     { label: 'Circles',          href: '/dashboard/client/circles',           icon: <Users size={18} strokeWidth={1.5} /> },
-    { label: 'Assessment Hub',   href: '/dashboard/client/clinical',          icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
     // ADHD Manager — gate
     ...(adhdUnlocked
-      ? [{ label: 'ADHD Helper', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} /> }]
+      ? [{ label: 'ADHD', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} /> }]
       : []),
-    { label: 'My Progress',      href: '/dashboard/client/progress',          icon: <TrendingUp size={18} strokeWidth={1.5} /> },
-    { label: 'Wellness Hub',     href: '/dashboard/client/wellness',          icon: <Heart size={18} strokeWidth={1.5} /> },
-    { label: 'Library',          href: '/dashboard/client/resources',         icon: <BookOpen size={18} strokeWidth={1.5} /> },
-    { label: 'The Vault',        href: '/dashboard/client/documents',         icon: <FileText size={18} strokeWidth={1.5} /> },
+    { label: 'Wellness',         href: '/dashboard/client/wellness',          icon: <Heart size={18} strokeWidth={1.5} /> },
     { label: 'Messages',         href: '/dashboard/client/messages',          icon: <MessageSquare size={18} strokeWidth={1.5} /> },
-    { label: 'Referrals',        href: '/dashboard/client/referrals',         icon: <Gift size={18} strokeWidth={1.5} /> },
+    { label: 'Documents',        href: '/dashboard/client/documents',         icon: <FileText size={18} strokeWidth={1.5} /> },
     { label: 'Profile',          href: '/dashboard/client/profile',           icon: <Activity size={18} strokeWidth={1.5} /> },
   ]
 
   const therapistLinks = [
-    { label: 'Pulse', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
-    { label: 'Caseload', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Home', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
     { label: 'Schedule', href: '/practitioner/schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
-    { label: 'Circles Host', href: '/practitioner/dashboard?tab=circles', icon: <Video size={18} strokeWidth={1.5} /> },
-    { label: 'Clinical Tools', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Clients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Assessments', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Circles', href: '/practitioner/dashboard?tab=circles', icon: <Video size={18} strokeWidth={1.5} /> },
     { label: 'Intelligence', href: '/practitioner/intelligence', icon: <Brain size={18} strokeWidth={1.5} /> },
     { label: 'Outcomes', href: '/practitioner/outcomes', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
     { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
-    { label: 'Financials', href: '/practitioner/billing', icon: <DollarSign size={18} strokeWidth={1.5} /> },
-    { label: 'Settings', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} /> },
+    { label: 'Billing', href: '/practitioner/billing', icon: <DollarSign size={18} strokeWidth={1.5} /> },
+    { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} /> },
   ]
 
   const adminLinks = [
-    { label: 'Pulse', href: '/admin/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
-    { label: 'Health', href: '/admin/health', icon: <Activity size={18} strokeWidth={1.5} /> },
-    { label: 'Compliance', href: '/admin/compliance', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
-    { label: 'Analytics', href: '/admin/analytics', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
-    { label: 'Intelligence', href: '/admin/bi', icon: <Brain size={18} strokeWidth={1.5} /> },
-    { label: 'Quality', href: '/admin/quality', icon: <Star size={18} strokeWidth={1.5} /> },
+    { label: 'Overview', href: '/admin/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Users', href: '/admin/users', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Practitioners', href: '/admin/practitioners', icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Sessions', href: '/admin/sessions', icon: <Calendar size={18} strokeWidth={1.5} /> },
     { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} /> },
-    { label: 'Network', href: '/admin/practitioners', icon: <Users size={18} strokeWidth={1.5} /> },
-    { label: 'Automation', href: '/admin/automation', icon: <Zap size={18} strokeWidth={1.5} /> },
+    { label: 'Analytics', href: '/admin/analytics', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
+    { label: 'Compliance', href: '/admin/compliance', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Quality', href: '/admin/quality', icon: <Star size={18} strokeWidth={1.5} /> },
     { label: 'Security', href: '/admin/security', icon: <Shield size={18} strokeWidth={1.5} /> },
+    { label: 'Automation', href: '/admin/automation', icon: <Zap size={18} strokeWidth={1.5} /> },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks

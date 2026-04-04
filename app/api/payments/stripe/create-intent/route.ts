@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
-import { prisma } from '@/lib/prisma'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient, isStripeConfigured } from '@/lib/stripe'
 import { normalizeCurrencyCode } from '@/lib/currency'
 
 export async function POST(req: Request) {
@@ -17,6 +16,12 @@ export async function POST(req: Request) {
       return new NextResponse('Missing amount or sessionId', { status: 400 })
     }
     const normalizedCurrency = normalizeCurrencyCode(currency || 'INR').toLowerCase()
+
+    if (!isStripeConfigured) {
+      return new NextResponse('Stripe payments are not configured for this environment.', { status: 503 })
+    }
+
+    const stripe = getStripeClient()
 
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({

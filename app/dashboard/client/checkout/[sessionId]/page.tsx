@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 import { getCheckoutReferralCredit } from '@/lib/referrals'
 import { detectCurrency, formatCurrency, getLiveExchangeRates, localizeAmount } from '@/lib/currency'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
-import { IS_RAZORPAY_ENABLED } from '@/lib/razorpay'
 
 export default async function CheckoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const session = await auth()
@@ -112,18 +111,13 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
                                     Pay {totalDueLabel} with Card (Stripe)
                                 </button>
                             </form>
-                            {IS_RAZORPAY_ENABLED && (
-                                <form action="/api/checkout" method="POST">
-                                    <input type="hidden" name="sessionId" value={booking.id} />
-                                    <input type="hidden" name="method" value="razorpay" />
-                                    <button className="w-full py-4 bg-oku-blue text-blue-800 rounded-pill font-black text-[10px] uppercase tracking-[0.3em] hover:bg-opacity-90 transition-all shadow-md">
-                                        Pay {totalDueLabel} with UPI (Razorpay)
-                                    </button>
-                                </form>
-                            )}
                         </>
                     )}
                 </div>
+
+                <p className="mt-4 text-center text-xs text-oku-taupe">
+                    UPI and Razorpay are being held back here until the end-to-end checkout flow is production-ready.
+                </p>
             </div>
         </div>
     </div>

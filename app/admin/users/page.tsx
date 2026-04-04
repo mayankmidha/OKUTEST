@@ -14,6 +14,10 @@ export default async function AdminUsersPage() {
     redirect('/auth/login')
   }
 
+  const now = new Date()
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+
   const [clients, stats] = await Promise.all([
     prisma.user.findMany({
       where: { role: UserRole.CLIENT },
@@ -28,14 +32,14 @@ export default async function AdminUsersPage() {
       prisma.user.count({
         where: {
           role: UserRole.CLIENT,
-          createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+          createdAt: { gte: sevenDaysAgo },
         },
       }),
       prisma.user.count({
         where: {
           role: UserRole.CLIENT,
           clientAppointments: {
-            some: { startTime: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+            some: { startTime: { gte: thirtyDaysAgo } },
           },
         },
       }),

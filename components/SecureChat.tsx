@@ -34,25 +34,31 @@ export function SecureChat({
   const [isSending, setIsSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const fetchMessages = async () => {
-    try {
-      const res = await fetch(`/api/messages?contactId=${contactId}`)
-      if (res.ok) {
-        const data = await res.json()
-        setMessages(data)
-      }
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   useEffect(() => {
-    fetchMessages()
-    // Simple polling for new messages every 5 seconds
-    const interval = setInterval(fetchMessages, 5000)
-    return () => clearInterval(interval)
+    setIsLoading(true)
+    let active = true
+
+    const syncMessages = async () => {
+      try {
+        const data = await readMessages(contactId)
+        if (active && data) {
+          setMessages(data)
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        if (active) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    syncMessages()
+    const interval = setInterval(syncMessages, 5000)
+    return () => {
+      active = false
+      clearInterval(interval)
+    }
   }, [contactId])
 
   useEffect(() => {
@@ -81,7 +87,10 @@ export function SecureChat({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ receiverId: contactId, content: optimisticMessage.content })
       })
-      await fetchMessages() // Sync with server
+      const refreshedMessages = await readMessages(contactId)
+      if (refreshedMessages) {
+        setMessages(refreshedMessages)
+      }
     } catch (e) {
       console.error('Failed to send message', e)
     } finally {
@@ -90,16 +99,16 @@ export function SecureChat({
   }
 
   return (
-    <div className="flex flex-col h-[600px] bg-white rounded-[3rem] border border-oku-taupe/10 shadow-xl overflow-hidden">
+    <div className="flex h-[70vh] min-h-[32rem] flex-col overflow-hidden rounded-[2rem] border border-oku-taupe/10 bg-white shadow-xl sm:h-[600px] sm:rounded-[3rem]">
       
       {/* Chat Header */}
-      <div className="bg-oku-purple p-6 px-8 flex items-center justify-between z-10 shadow-sm border-b border-oku-purple-dark/10">
-        <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-white/50 border-2 border-white/20 flex items-center justify-center shadow-inner">
+      <div className="z-10 flex items-center justify-between border-b border-oku-purple-dark/10 bg-oku-purple p-4 shadow-sm sm:p-6 sm:px-8">
+        <div className="flex min-w-0 items-center gap-4">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-white/50 shadow-inner sm:h-12 sm:w-12">
                 {contactAvatar ? <img src={contactAvatar} alt={contactName} className="w-full h-full object-cover" /> : <User size={20} className="text-oku-purple-dark" />}
             </div>
-            <div>
-                <h3 className="font-display font-bold text-lg text-oku-dark">{contactName}</h3>
+            <div className="min-w-0">
+                <h3 className="truncate font-display text-base font-bold text-oku-dark sm:text-lg">{contactName}</h3>
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-oku-green-dark mt-0.5">
                     <Lock size={10} /> Secure Connection
                 </div>
@@ -108,7 +117,7 @@ export function SecureChat({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6 bg-oku-cream/30 custom-scrollbar">
+      <div className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-oku-cream/30 p-4 sm:space-y-6 sm:p-8">
         {isLoading ? (
             <div className="h-full flex items-center justify-center text-oku-taupe">
                 <Loader2 className="animate-spin" size={24} />
@@ -132,17 +141,17 @@ export function SecureChat({
                             animate={{ opacity: 1, y: 0 }}
                             className={`flex ${isMe ? 'justify-end' : 'justify-start'} group`}
                         >
-                            <div className="flex items-end gap-3 max-w-[75%]">
+                            <div className="flex max-w-[85%] items-end gap-2.5 sm:max-w-[75%] sm:gap-3">
                                 {!isMe && (
-                                    <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden bg-oku-purple/10 flex items-center justify-center mb-1 shadow-sm">
+                                    <div className="mb-1 flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-oku-purple/10 shadow-sm sm:h-8 sm:w-8">
                                         {showAvatar ? (
-                                            msg.sender.avatar ? <img src={msg.sender.avatar} className="w-full h-full object-cover" /> : <User size={14} className="text-oku-purple" />
+                                            msg.sender.avatar ? <img src={msg.sender.avatar} alt={msg.sender.name || 'Contact avatar'} className="w-full h-full object-cover" /> : <User size={14} className="text-oku-purple" />
                                         ) : null}
                                     </div>
                                 )}
                                 <div>
                                     <div 
-                                        className={`p-4 text-sm leading-relaxed ${
+                                        className={`p-3.5 text-sm leading-relaxed sm:p-4 ${
                                             isMe 
                                             ? 'bg-oku-dark text-white rounded-[2rem] rounded-br-md' 
                                             : 'bg-white text-oku-dark border border-oku-taupe/10 rounded-[2rem] rounded-bl-md shadow-sm'
@@ -165,19 +174,19 @@ export function SecureChat({
       </div>
 
       {/* Input Area */}
-      <div className="p-6 bg-white border-t border-oku-taupe/10">
+      <div className="border-t border-oku-taupe/10 bg-white p-4 sm:p-6">
         <form onSubmit={handleSend} className="relative flex items-center">
             <input 
                 type="text" 
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a secure message..."
-                className="w-full bg-oku-cream/50 border border-oku-taupe/10 rounded-full py-4 pl-6 pr-16 text-sm focus:outline-none focus:ring-4 focus:ring-oku-purple/10 focus:border-oku-purple transition-all"
+                className="w-full rounded-full border border-oku-taupe/10 bg-oku-cream/50 py-3.5 pl-5 pr-14 text-sm transition-all focus:border-oku-purple focus:outline-none focus:ring-4 focus:ring-oku-purple/10 sm:py-4 sm:pl-6 sm:pr-16"
             />
             <button 
                 type="submit"
                 disabled={!newMessage.trim() || isSending}
-                className="absolute right-2 p-3 bg-oku-purple text-white rounded-full hover:bg-oku-dark transition-all disabled:opacity-50 disabled:hover:bg-oku-purple"
+                className="absolute right-2 rounded-full bg-oku-purple p-2.5 text-white transition-all hover:bg-oku-dark disabled:opacity-50 disabled:hover:bg-oku-purple sm:p-3"
             >
                 {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-0.5" />}
             </button>
@@ -185,4 +194,13 @@ export function SecureChat({
       </div>
     </div>
   )
+}
+
+async function readMessages(contactId: string): Promise<Message[] | null> {
+  const res = await fetch(`/api/messages?contactId=${contactId}`)
+  if (!res.ok) {
+    return null
+  }
+
+  return res.json()
 }

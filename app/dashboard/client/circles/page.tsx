@@ -46,44 +46,44 @@ export default async function ClientCirclesPage() {
   )
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/10 px-4 pb-12 pt-24 sm:px-6 sm:pb-16 sm:pt-28 lg:px-10 lg:py-12 xl:px-12">
       {/* Background blobs */}
       <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-oku-lavender/30 rounded-full blur-[120px] animate-pulse pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[35%] h-[35%] bg-oku-mint/20 rounded-full blur-[100px] animate-float-3d pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+        <div className="mb-12 flex flex-col justify-between gap-8 sm:mb-16 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/dashboard/client"
-                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 hover:text-oku-darkgrey transition-colors bg-white/40 px-5 py-2.5 rounded-full border border-white/60 shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/40 px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 shadow-sm transition-colors hover:text-oku-darkgrey sm:px-5"
               >
                 <ChevronLeft size={13} /> Dashboard
               </Link>
               <span className="chip bg-white/60 border-white/80">Community Healing</span>
             </div>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               Your <span className="text-oku-purple-dark italic">Circles.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            <p className="border-l-4 border-oku-purple-dark/10 pl-4 text-base text-oku-darkgrey/60 font-display italic sm:pl-6 sm:text-lg lg:pl-8 lg:text-xl">
               Safe, facilitated group spaces for shared healing.
             </p>
           </div>
 
-          <Link href="/circles" className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-10 self-start lg:self-auto">
+          <Link href="/circles" className="btn-pill-3d inline-flex w-full items-center justify-center self-start bg-white border-white text-oku-darkgrey !px-7 !py-4 sm:w-auto sm:!px-10 lg:self-auto">
             <Sparkles size={16} className="mr-3 text-oku-purple-dark" /> Browse All Circles
           </Link>
         </div>
 
         {/* Joined circles section */}
         {joinedCircleIds.size > 0 && (
-          <section className="mb-20">
-            <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-10">
+          <section className="mb-12 sm:mb-16 lg:mb-20">
+            <h2 className="heading-display mb-8 text-3xl tracking-tight text-oku-darkgrey sm:mb-10 sm:text-4xl">
               Joined <span className="text-oku-purple-dark italic">Circles</span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-8">
               {circles
                 .filter((c) => joinedCircleIds.has(c.id))
                 .map((circle) => {
@@ -97,7 +97,6 @@ export default async function ClientCirclesPage() {
                       desc={desc}
                       spotsLeft={spotsLeft}
                       isJoined
-                      userId={userId}
                     />
                   )
                 })}
@@ -107,7 +106,7 @@ export default async function ClientCirclesPage() {
 
         {/* Available circles section */}
         <section>
-          <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-10">
+          <h2 className="heading-display mb-8 text-3xl tracking-tight text-oku-darkgrey sm:mb-10 sm:text-4xl">
             {joinedCircleIds.size > 0
               ? <>More <span className="text-oku-purple-dark italic">Circles</span></>
               : <>Upcoming <span className="text-oku-purple-dark italic">Circles</span></>
@@ -115,19 +114,19 @@ export default async function ClientCirclesPage() {
           </h2>
 
           {circles.filter((c) => !joinedCircleIds.has(c.id)).length === 0 ? (
-            <div className="py-32 text-center card-glass-3d !bg-white/40">
+            <div className="card-glass-3d !bg-white/40 px-4 py-20 text-center sm:px-6 sm:py-24 lg:py-32">
               <Wind className="mx-auto text-oku-purple-dark/20 mb-8 animate-float-3d" size={64} />
-              <h3 className="heading-display text-3xl text-oku-darkgrey">
+              <h3 className="heading-display text-2xl text-oku-darkgrey sm:text-3xl">
                 {joinedCircleIds.size > 0
                   ? "You've joined all available circles."
                   : 'New circles are forming...'}
               </h3>
-              <p className="text-oku-darkgrey/40 italic font-display mt-4 text-xl">
+              <p className="mt-4 text-base text-oku-darkgrey/40 font-display italic sm:text-lg lg:text-xl">
                 Check back soon for upcoming sessions.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-8">
               {circles
                 .filter((c) => !joinedCircleIds.has(c.id))
                 .map((circle) => {
@@ -141,7 +140,6 @@ export default async function ClientCirclesPage() {
                       desc={desc}
                       spotsLeft={spotsLeft}
                       isJoined={false}
-                      userId={userId}
                     />
                   )
                 })}
@@ -172,25 +170,24 @@ interface CircleCardProps {
   desc: string
   spotsLeft: number
   isJoined: boolean
-  userId: string
 }
 
 function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProps) {
   const isFull = spotsLeft <= 0
 
   return (
-    <div className={`card-glass-3d !p-10 group hover:shadow-2xl transition-all duration-700 relative flex flex-col ${isJoined ? '!bg-oku-lavender/40 border-2 border-oku-purple-dark/20' : '!bg-white/60'}`}>
+    <div className={`card-glass-3d group relative flex flex-col transition-all duration-700 hover:shadow-2xl !p-6 sm:!p-8 lg:!p-10 ${isJoined ? '!bg-oku-lavender/40 border-2 border-oku-purple-dark/20' : '!bg-white/60'}`}>
       {/* Joined badge */}
       {isJoined && (
-        <div className="absolute -top-3 left-8">
+        <div className="absolute -top-3 left-6 sm:left-8">
           <span className="bg-oku-purple-dark text-white px-5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg">
             Joined
           </span>
         </div>
       )}
 
-      <div className="flex justify-between items-start mb-10 mt-2">
-        <div className="w-14 h-14 rounded-[1.2rem] bg-oku-lavender flex items-center justify-center text-oku-purple-dark shadow-sm">
+      <div className="mt-2 mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-oku-lavender text-oku-purple-dark shadow-sm sm:h-14 sm:w-14 sm:rounded-[1.2rem]">
           <Users size={28} />
         </div>
         {isFull ? (
@@ -205,27 +202,27 @@ function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProp
       </div>
 
       <Link href={`/circles/${circle.id}`} className="group/title">
-        <h3 className="heading-display text-2xl text-oku-darkgrey mb-3 group-hover/title:text-oku-purple-dark transition-colors">
+        <h3 className="heading-display mb-3 text-xl text-oku-darkgrey transition-colors group-hover/title:text-oku-purple-dark sm:text-2xl">
           {title || 'Community Circle'}
         </h3>
       </Link>
-      <p className="text-oku-darkgrey/60 text-sm leading-relaxed mb-10 italic font-display flex-1">
+      <p className="mb-8 flex-1 text-sm leading-relaxed text-oku-darkgrey/60 italic font-display sm:mb-10">
         {desc || 'A facilitated space for shared growth and exploration.'}
       </p>
 
-      <div className="space-y-5 pt-8 border-t border-oku-darkgrey/5">
+      <div className="space-y-5 border-t border-oku-darkgrey/5 pt-6 sm:pt-8">
         {/* Facilitator + price */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl overflow-hidden border-2 border-white shadow-md flex-shrink-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="h-9 w-9 shrink-0 overflow-hidden rounded-xl border-2 border-white shadow-md">
               <img
                 src={circle.practitioner?.avatar || '/wp-content/uploads/2025/07/placeholder.jpg'}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
                 alt={circle.practitioner?.name || 'Facilitator'}
               />
             </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">
                 {circle.practitioner?.name}
               </p>
               <p className="text-[8px] font-black uppercase tracking-widest text-oku-purple-dark opacity-60">
@@ -233,14 +230,14 @@ function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProp
               </p>
             </div>
           </div>
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <p className="text-lg font-bold text-oku-darkgrey">₹{circle.priceSnapshot || 1500}</p>
             <p className="text-[8px] font-black uppercase tracking-widest text-oku-darkgrey/30">per session</p>
           </div>
         </div>
 
         {/* Date + time */}
-        <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40 px-1">
+        <div className="flex flex-col gap-3 px-1 text-[9px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/40 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Calendar size={12} />
             {new Date(circle.startTime).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
@@ -253,7 +250,7 @@ function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProp
 
         {/* Join button (client component) or joined state */}
         {isJoined ? (
-          <div className="btn-pill-3d w-full !py-4 bg-oku-lavender/60 text-oku-purple-dark border-oku-lavender/60 text-center text-xs font-black uppercase tracking-widest pointer-events-none">
+          <div className="btn-pill-3d w-full !py-4 bg-oku-lavender/60 text-center text-[11px] font-black uppercase tracking-widest text-oku-purple-dark border-oku-lavender/60 pointer-events-none sm:text-xs">
             You are in this circle
           </div>
         ) : (

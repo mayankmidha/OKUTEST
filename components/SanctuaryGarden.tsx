@@ -10,6 +10,14 @@ interface GardenState {
   assessmentCount: number
 }
 
+function getFireflyMotion(index: number) {
+  return {
+    x: [(index * 53) % 400, (index * 97 + 140) % 400],
+    y: [(index * 41) % 300, (index * 73 + 90) % 300],
+    duration: 5 + (index % 5),
+  }
+}
+
 export function SanctuaryGarden({ state }: { state: GardenState }) {
   // Logic to determine garden "growth level"
   const treeScale = Math.min(1 + (state.sessionCount * 0.1), 2.5)
@@ -79,16 +87,22 @@ export function SanctuaryGarden({ state }: { state: GardenState }) {
 
       {/* ── FIREFLIES (Insights based on Assessments) ── */}
       {Array.from({ length: insightFireflies }).map((_, i) => (
-        <motion.div
-          key={`ff-${i}`}
-          animate={{ 
-            x: [Math.random() * 400, Math.random() * 400],
-            y: [Math.random() * 300, Math.random() * 300],
-            opacity: [0, 1, 0]
-          }}
-          transition={{ duration: 5 + Math.random() * 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute w-1 h-1 bg-oku-purple rounded-full blur-[1px] z-20 shadow-[0_0_10px_#A594F9]"
-        />
+        (() => {
+          const motionPath = getFireflyMotion(i)
+
+          return (
+            <motion.div
+              key={`ff-${i}`}
+              animate={{
+                x: motionPath.x,
+                y: motionPath.y,
+                opacity: [0, 1, 0],
+              }}
+              transition={{ duration: motionPath.duration, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute w-1 h-1 bg-oku-purple rounded-full blur-[1px] z-20 shadow-[0_0_10px_#A594F9]"
+            />
+          )
+        })()
       ))}
 
       {/* ── GROUND ── */}

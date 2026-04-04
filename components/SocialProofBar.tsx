@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { motion } from 'motion/react'
 import { ShieldCheck, Star, Users, Zap } from 'lucide-react'
 
@@ -43,12 +44,12 @@ export function SocialProofBar({ practitionerCount, sessionCount, clientCount }:
                 <p className="text-[10px] font-black text-oku-darkgrey leading-none">₹1,500 / hr</p>
               </div>
             </div>
-            <a
+            <Link
               href="/therapists"
               className="shrink-0 bg-oku-darkgrey text-white px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-oku-purple-dark transition-colors"
             >
               Browse →
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>

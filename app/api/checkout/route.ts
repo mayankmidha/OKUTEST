@@ -5,7 +5,7 @@ import { PaymentStatus } from '@prisma/client'
 import { applyReferralCreditToAppointment } from '@/lib/referrals'
 import { getPlatformSettings, getSessionRevenueSplit } from '@/lib/provider-finance'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient, isStripeConfigured } from '@/lib/stripe'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -83,6 +83,15 @@ export async function POST(req: Request) {
 
       // 2. Handle Stripe
       if (processor === 'stripe') {
+        if (!isStripeConfigured) {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: { status: PaymentStatus.FAILED },
+          })
+          return new NextResponse('Stripe checkout is not configured for this environment.', { status: 503 })
+        }
+
+        const stripe = getStripeClient()
         const stripeSession = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -121,13 +130,12 @@ export async function POST(req: Request) {
         return NextResponse.redirect(stripeSession.url, 303)
       }
 
-      // 3. Handle Razorpay (Placeholder for now, redirecting to success for MVP flow demo if needed, but should be actual RZP flow)
       if (processor === 'razorpay') {
-          // For Razorpay, we usually need a client-side checkout. 
-          // For a server-side redirect, we'd use Payment Links, but that's more complex.
-          // For now, let's just log and redirect to a "waiting" or "instruction" page.
-          console.log("Razorpay requested - implementing server-side redirect or client-side bridge required.")
-          return NextResponse.redirect(new URL(`/dashboard/client/checkout/${sessionId}/success?method=razorpay&status=pending`, req.url), 303)
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: { status: PaymentStatus.FAILED },
+        })
+        return new NextResponse('Razorpay checkout is not available in this flow yet.', { status: 501 })
       }
       
       return new NextResponse('Unsupported payment processor', { status: 400 })

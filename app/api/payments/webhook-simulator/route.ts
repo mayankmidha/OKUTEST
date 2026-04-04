@@ -5,6 +5,10 @@ import { AppointmentStatus, PaymentStatus } from '@prisma/client'
 import { awardReferralRewardForAppointment } from '@/lib/referrals'
 
 export async function POST(req: Request) {
+  if (process.env.NODE_ENV === 'production' || process.env.ALLOW_WEBHOOK_SIMULATION !== 'true') {
+    return new NextResponse('Webhook simulation is disabled.', { status: 410 })
+  }
+
   try {
     const { sessionId, method } = await req.json()
 

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient, isStripeConfigured } from '@/lib/stripe'
 import { AppointmentStatus, PaymentStatus } from '@prisma/client'
 import { sendCancellationEmail } from '@/lib/notifications'
 
@@ -72,6 +72,11 @@ export async function POST(
 
       if (completedPayment?.stripePaymentId) {
         try {
+          if (!isStripeConfigured) {
+            throw new Error('Stripe refunds are not configured in this environment.')
+          }
+
+          const stripe = getStripeClient()
           await stripe.refunds.create({
             payment_intent: completedPayment.stripePaymentId,
           })

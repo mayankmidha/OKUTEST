@@ -42,26 +42,26 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
       canPostBlogs={profile?.canPostBlogs}
     >
       {clients.length === 0 ? (
-        <div className="bg-white p-12 rounded-[3rem] border border-oku-taupe/10 shadow-xl text-center">
+        <div className="rounded-[2rem] border border-oku-taupe/10 bg-white p-8 text-center shadow-xl sm:rounded-[3rem] sm:p-12">
             <MessageSquare size={48} className="text-oku-taupe/20 mx-auto mb-6" strokeWidth={1} />
             <h2 className="text-2xl font-display font-bold text-oku-dark mb-4">No active patients</h2>
             <p className="text-oku-taupe italic max-w-md mx-auto mb-8">Once patients book sessions with you, they will appear here for secure messaging.</p>
         </div>
       ) : (
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid gap-6 lg:grid-cols-4 lg:gap-8">
             {/* Contacts Sidebar */}
             <div className="space-y-4">
-                <div className="bg-oku-cream-warm/50 p-6 rounded-[2.5rem] border border-oku-taupe/5 max-h-[500px] overflow-y-auto custom-scrollbar">
+                <div className="custom-scrollbar rounded-[2rem] border border-oku-taupe/5 bg-oku-cream-warm/50 p-4 sm:max-h-[500px] sm:overflow-y-auto sm:p-6 sm:rounded-[2.5rem]">
                     <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe mb-4 ml-2">Patient Roster</p>
-                    <div className="space-y-2">
+                    <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2 sm:block sm:space-y-2 sm:overflow-visible sm:px-0 sm:pb-0">
                         {clients.map(c => (
                             <Link 
                                 key={c.id} 
                                 href={`/practitioner/messages?c=${c.id}`}
-                                className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${activeClientId === c.id ? 'bg-oku-dark text-white shadow-lg' : 'bg-white text-oku-dark border border-oku-taupe/10 hover:border-oku-purple'}`}
+                                className={`flex min-w-[220px] items-center gap-4 rounded-2xl p-4 transition-all sm:min-w-0 ${activeClientId === c.id ? 'bg-oku-dark text-white shadow-lg' : 'border border-oku-taupe/10 bg-white text-oku-dark hover:border-oku-purple'}`}
                             >
                                 <div className="w-10 h-10 rounded-full bg-oku-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-oku-purple text-xs">
-                                    {c.avatar ? <img src={c.avatar} className="w-full h-full object-cover" /> : c.name?.substring(0,2).toUpperCase()}
+                                    {c.avatar ? <img src={c.avatar} alt={c.name || 'Patient avatar'} className="w-full h-full object-cover" /> : c.name?.substring(0,2).toUpperCase()}
                                 </div>
                                 <div className="overflow-hidden">
                                     <p className="font-bold truncate text-sm">{c.name}</p>
@@ -71,7 +71,7 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
                     </div>
                 </div>
 
-                <div className="bg-oku-dark text-white p-6 rounded-[2.5rem] shadow-xl">
+                <div className="rounded-[2rem] bg-oku-dark p-4 text-white shadow-xl sm:rounded-[2.5rem] sm:p-6">
                     <ShieldCheck size={20} className="text-oku-purple mb-3" />
                     <p className="text-xs text-white/60 leading-relaxed font-medium">
                         All communications are E2E encrypted. Please ensure clinical boundaries are maintained during asynchronous chat.
@@ -89,7 +89,7 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
                         contactAvatar={activeClient.avatar}
                     />
                 ) : (
-                    <div className="h-[600px] bg-white rounded-[3rem] border border-oku-taupe/10 flex items-center justify-center shadow-sm">
+                    <div className="flex min-h-[24rem] items-center justify-center rounded-[2rem] border border-oku-taupe/10 bg-white shadow-sm sm:rounded-[3rem] sm:min-h-[37.5rem]">
                         <p className="text-oku-taupe font-display italic">Select a patient to view messages.</p>
                     </div>
                 )}

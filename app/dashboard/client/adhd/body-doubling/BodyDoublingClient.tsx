@@ -30,6 +30,14 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
     } catch {}
   }, [])
 
+  const clearPresence = useCallback(async () => {
+    try {
+      await fetch('/api/adhd/body-double', {
+        method: 'DELETE',
+      })
+    } catch {}
+  }, [])
+
   useEffect(() => {
     if (!isActive) {
       if (intervalRef.current) clearInterval(intervalRef.current)
@@ -60,6 +68,13 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [isActive, phase, task, syncPresence])
 
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      void clearPresence()
+    }
+  }, [clearPresence])
+
   const handleStart = () => {
     const activeTask = task.trim() || 'Deep work'
     setTask(activeTask)
@@ -73,7 +88,14 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
   const handlePause = () => {
     setIsActive(false)
     if (intervalRef.current) clearInterval(intervalRef.current)
+    void clearPresence()
     onSessionChange?.(false, task)
+  }
+
+  const handleResume = () => {
+    setIsActive(true)
+    void syncPresence(task || 'Deep work', phase === 'break' ? 'BREAK' : 'FOCUSING')
+    onSessionChange?.(true, task || 'Deep work')
   }
 
   const handleReset = () => {
@@ -81,6 +103,8 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
     if (intervalRef.current) clearInterval(intervalRef.current)
     setPhase('idle')
     setSecondsLeft(FOCUS_SECONDS)
+    setTask('')
+    void clearPresence()
     onSessionChange?.(false, '')
   }
 
@@ -90,7 +114,7 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
   const progress = ((totalSecs - secondsLeft) / totalSecs) * 100
 
   return (
-    <div className="card-glass-3d !bg-white/60 !p-10 space-y-8">
+    <div className="card-glass-3d !bg-white/60 !p-6 sm:!p-8 lg:!p-10 space-y-8">
       <div>
         <h3 className="text-sm font-black uppercase tracking-widest text-oku-darkgrey mb-2">Set Your Intention</h3>
         <input
@@ -105,8 +129,8 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
       {/* Timer display */}
       <div className="text-center relative">
         {/* Circular progress */}
-        <div className="relative w-40 h-40 mx-auto mb-4">
-          <svg viewBox="0 0 36 36" className="w-40 h-40 -rotate-90">
+        <div className="relative mx-auto mb-4 h-32 w-32 sm:h-40 sm:w-40">
+          <svg viewBox="0 0 36 36" className="h-32 w-32 sm:h-40 sm:w-40 -rotate-90">
             <circle cx="18" cy="18" r="15.9" fill="none" stroke={phase === 'break' ? '#d1fae5' : '#ede9fe'} strokeWidth="2.5" />
             <circle
               cx="18" cy="18" r="15.9" fill="none"
@@ -118,7 +142,7 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="heading-display text-4xl text-oku-darkgrey">
+            <span className="heading-display text-3xl sm:text-4xl text-oku-darkgrey">
               {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
             </span>
             <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30 mt-1">
@@ -144,7 +168,7 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
       </div>
 
       {/* Controls */}
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         {phase === 'idle' ? (
           <button
             onClick={handleStart}
@@ -155,7 +179,7 @@ export function BodyDoublingClient({ onSessionChange }: BodyDoublingClientProps)
         ) : (
           <>
             <button
-              onClick={isActive ? handlePause : () => setIsActive(true)}
+              onClick={isActive ? handlePause : handleResume}
               className="flex-1 btn-pill-3d bg-oku-darkgrey text-white !py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
             >
               {isActive ? <><Pause size={14} /> Pause</> : <><Play size={14} /> Resume</>}
