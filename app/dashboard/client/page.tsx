@@ -272,6 +272,22 @@ export default async function ClientDashboardPage() {
   )
 }
 
+function formatTime(date: Date) {
+  return new Date(date).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function formatDateTime(date: Date) {
+  return new Date(date).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 function StatCard({
   label,
   value,
