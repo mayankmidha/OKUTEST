@@ -16,12 +16,13 @@ import {
   ParticipantView,
 } from '@stream-io/video-react-sdk'
 import '@stream-io/video-react-sdk/dist/css/styles.css'
+import { motion as m, AnimatePresence } from 'motion/react'
 import { 
   Loader2, Clock, RefreshCw, ShieldCheck, LogOut, AlertTriangle, 
   Mic, MicOff, Video, VideoOff, ScreenShare, StopCircle, 
   PenTool, Eraser, Download, Brain, Sparkles, FileText,
   MoreVertical, MessageSquare, Smile, Frown, Meh, X,
-  Maximize2, Minimize2, Users, ChevronRight,
+  Maximize2, Minimize2, Users, ChevronRight, Settings,
   Wifi, WifiOff, Signal, SignalHigh, SignalMedium, SignalLow
 } from 'lucide-react'
 
@@ -626,316 +627,260 @@ export function EnhancedVideoRoom({
   }
 
   return (
-    <div className={`flex flex-col bg-oku-darkgrey overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50' : 'flex-1'}`}>
+    <div className={`flex flex-col bg-[#0D0C0B] overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50' : 'flex-1'}`}>
       <StreamVideo client={client}>
         <StreamCall call={call}>
           <StreamTheme>
-            {/* Header Bar */}
-            <div className="h-16 bg-black/40 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4">
+            {/* ── HEADER: CLINICAL INTELLIGENCE ── */}
+            <div className="h-16 bg-[#141312]/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-xs font-medium text-white/80">1080p HD</span>
+                <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                  <div className="w-2 h-2 bg-oku-green rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Secure HD Uplink</span>
                 </div>
                 
-                {/* Connection Quality Indicator */}
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                  connectionQuality === 'excellent' ? 'bg-green-500/20' :
-                  connectionQuality === 'good' ? 'bg-blue-500/20' :
-                  connectionQuality === 'fair' ? 'bg-yellow-500/20' :
-                  'bg-red-500/20'
-                }`}>
-                  {connectionQuality === 'excellent' && <SignalHigh size={14} className="text-green-400" />}
-                  {connectionQuality === 'good' && <SignalMedium size={14} className="text-blue-400" />}
-                  {connectionQuality === 'fair' && <SignalLow size={14} className="text-yellow-400" />}
-                  {connectionQuality === 'poor' && <WifiOff size={14} className="text-red-400 animate-pulse" />}
-                  <span className={`text-xs font-medium capitalize ${
-                    connectionQuality === 'excellent' ? 'text-green-400' :
-                    connectionQuality === 'good' ? 'text-blue-400' :
-                    connectionQuality === 'fair' ? 'text-yellow-400' :
-                    'text-red-400'
-                  }`}>
-                    {isReconnecting ? 'Reconnecting...' : connectionQuality}
+                <div className={`flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/5`}>
+                  <Users size={14} className="text-oku-lavender" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">
+                    Session Group: {call.state.participantCount}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
-                  <ShieldCheck size={14} className="text-oku-success" />
-                  <span className="text-xs font-medium text-white/80">Encrypted</span>
+                <div className="hidden lg:flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                  <ShieldCheck size={14} className="text-oku-green" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Clinical Data Shield</span>
                 </div>
-                {isRecording && (
-                  <div className="flex items-center gap-2 bg-red-500/20 px-3 py-1.5 rounded-full animate-pulse">
-                    <div className="w-2 h-2 bg-red-500 rounded-full" />
-                    <span className="text-xs font-medium text-red-300">Recording</span>
-                  </div>
-                )}
-                {isTrial && timeLeft !== null && (
-                  <div className="flex items-center gap-2 bg-oku-warning/20 px-3 py-1.5 rounded-full">
-                    <Clock size={14} className="text-oku-warning" />
-                    <span className="text-xs font-medium text-oku-warning">{formatTime(timeLeft)}</span>
-                  </div>
-                )}
               </div>
 
-              <div className="flex items-center gap-2">
-                {/* Recording */}
-                <button
-                  onClick={toggleRecording}
-                  className={`p-2.5 rounded-full transition-all ${isRecording ? 'bg-red-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white/80'}`}
-                >
-                  <StopCircle size={18} />
-                </button>
-
-                {/* Transcription */}
-                <button
-                  onClick={() => setShowTranscript(!showTranscript)}
-                  className={`p-2.5 rounded-full transition-all ${showTranscript ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white/80'}`}
-                >
-                  <FileText size={18} />
-                </button>
-
-                {/* Whiteboard */}
-                <button
-                  onClick={() => setActiveTab(activeTab === 'whiteboard' ? 'video' : 'whiteboard')}
-                  className={`p-2.5 rounded-full transition-all ${activeTab === 'whiteboard' ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white/80'}`}
-                >
-                  <PenTool size={18} />
-                </button>
-
-                {/* AI Summary */}
-                <button
-                  onClick={() => setActiveTab(activeTab === 'notes' ? 'video' : 'notes')}
-                  className={`p-2.5 rounded-full transition-all ${activeTab === 'notes' ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white/80'}`}
-                >
-                  <Brain size={18} />
-                </button>
-
-                {/* Fullscreen */}
+              <div className="flex items-center gap-3">
+                {isTrial && timeLeft !== null && (
+                  <div className="flex items-center gap-3 bg-oku-danger/20 px-4 py-2 rounded-full border border-oku-danger/20">
+                    <Clock size={14} className="text-oku-danger animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-danger">{formatTime(timeLeft)}</span>
+                  </div>
+                )}
+                
+                <div className="h-8 w-px bg-white/10 mx-2" />
+                
                 <button
                   onClick={() => setIsFullscreen(!isFullscreen)}
-                  className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 transition-all"
+                  className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-white/60 transition-all"
+                  title="Toggle Fullscreen"
                 >
                   {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                 </button>
+              </div>
+            </div>
 
-                {/* Emergency */}
+            {/* ── MAIN WORKSPACE ── */}
+            <div className="flex-1 flex overflow-hidden">
+              <div className="flex-1 relative p-6">
+                <div className="absolute inset-6 rounded-[2.5rem] overflow-hidden bg-[#1A1817] shadow-2xl border border-white/5 group">
+                  <SpeakerLayout participantsBarPosition="bottom" />
+                  
+                  {/* Connection Quality Indicator (Overlay) */}
+                  <div className="absolute top-6 left-6 z-20">
+                     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 ${
+                        connectionQuality === 'excellent' ? 'bg-green-500/10 text-green-400' :
+                        connectionQuality === 'good' ? 'bg-blue-500/10 text-blue-400' :
+                        connectionQuality === 'fair' ? 'bg-yellow-500/10 text-yellow-400' :
+                        'bg-red-500/10 text-red-400'
+                      }`}>
+                        <Signal size={12} />
+                        <span className="text-[9px] font-black uppercase tracking-widest">{isReconnecting ? 'Syncing...' : connectionQuality}</span>
+                     </div>
+                  </div>
+
+                  {/* Collaborative Tools (Overlay Tabs) */}
+                  <div className="absolute top-6 right-6 z-20 flex gap-2">
+                     <ToolTab active={activeTab === 'video'} onClick={() => setActiveTab('video')} icon={<Video size={16} />} label="Video" />
+                     <ToolTab active={activeTab === 'whiteboard'} onClick={() => setActiveTab('whiteboard')} icon={<PenTool size={16} />} label="Board" />
+                     <ToolTab active={activeTab === 'notes'} onClick={() => setActiveTab('notes')} icon={<Brain size={16} />} label="Scribe" />
+                  </div>
+
+                  {/* Connection Lost Overlay */}
+                  {(connectionLost || isReconnecting) && (
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50">
+                      <div className="text-center max-w-sm">
+                        {isReconnecting ? (
+                          <>
+                            <Loader2 className="animate-spin mx-auto mb-6 text-oku-purple" size={48} />
+                            <h3 className="text-2xl font-display font-bold text-white mb-2">Re-establishing Link</h3>
+                            <p className="text-white/40 text-sm italic">Synchronizing secure clinical tunnel...</p>
+                          </>
+                        ) : (
+                          <>
+                            <WifiOff className="mx-auto mb-6 text-red-400" size={48} />
+                            <h3 className="text-2xl font-display font-bold text-white mb-2">Link Severed</h3>
+                            <p className="text-white/40 text-sm mb-8 italic">Your local network has disconnected.</p>
+                            <button
+                              onClick={handleRetry}
+                              className="btn-pill-3d bg-white text-oku-darkgrey !px-10"
+                            >
+                              <RefreshCw size={16} className="inline mr-2" /> Reconnect Now
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Specialized Views */}
+                  {activeTab === 'whiteboard' && (
+                    <div className="absolute inset-0 bg-white z-30 flex flex-col animate-in fade-in duration-500">
+                      <div className="h-14 bg-oku-cream border-b flex items-center justify-between px-6">
+                        <span className="font-bold text-oku-darkgrey text-sm uppercase tracking-widest">Collaborative Canvas</span>
+                        <div className="flex items-center gap-4">
+                          <input type="color" value={brushColor} onChange={(e) => setBrushColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer border-2 border-white shadow-sm" />
+                          <button onClick={clearWhiteboard} className="p-2 hover:bg-oku-lavender/40 rounded-xl transition-colors"><Eraser size={18} /></button>
+                          <button onClick={() => setActiveTab('video')} className="p-2 hover:bg-oku-lavender/40 rounded-xl transition-colors"><X size={18} /></button>
+                        </div>
+                      </div>
+                      <canvas ref={canvasRef} width={1200} height={800} onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} className="flex-1 cursor-crosshair" />
+                    </div>
+                  )}
+
+                  {activeTab === 'notes' && (
+                    <div className="absolute inset-0 bg-[#F7F4EF] z-30 flex flex-col animate-in slide-in-from-right duration-500">
+                      <div className="h-14 bg-white/80 backdrop-blur-md border-b flex items-center justify-between px-6">
+                        <span className="font-black text-oku-darkgrey text-[10px] uppercase tracking-[0.3em] flex items-center gap-3">
+                          <Brain size={16} className="text-oku-purple-dark" /> AI Clinical Scribe
+                        </span>
+                        <button
+                          onClick={() => runAiClinicalAnalysis(transcriptLines.join(" "))}
+                          disabled={isAiThinking || transcriptLines.length === 0}
+                          className="btn-pill-3d bg-oku-darkgrey text-white !py-2.5 !px-6 !text-[9px] disabled:opacity-30"
+                        >
+                          {isAiThinking ? 'Analyzing Architecture...' : 'Generate Clinical Draft'}
+                        </button>
+                      </div>
+                      <div className="flex-1 p-8 space-y-8 overflow-auto custom-scrollbar">
+                        {aiAnalysis && (
+                          <div className="bg-white p-8 rounded-[2.5rem] border border-oku-purple/10 shadow-sm relative overflow-hidden">
+                            <div className="relative z-10 flex items-center justify-between mb-6">
+                              <h4 className="font-bold text-oku-purple-dark flex items-center gap-2">
+                                <Sparkles size={18} /> Clinical Insights
+                              </h4>
+                              <span className={`text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest ${
+                                aiAnalysis.riskLevel === 'LOW' ? 'bg-emerald-50 text-emerald-700' :
+                                aiAnalysis.riskLevel === 'MEDIUM' ? 'bg-amber-50 text-amber-700' :
+                                'bg-red-50 text-red-700'
+                              }`}>
+                                {aiAnalysis.riskLevel} Clinical Risk
+                              </span>
+                            </div>
+                            <p className="text-oku-darkgrey text-sm mb-8 leading-relaxed font-display italic">"{aiAnalysis.summary}"</p>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-oku-lavender/10 p-4 rounded-2xl">
+                                <span className="text-[8px] uppercase font-black tracking-widest text-oku-darkgrey/40">Patient Sentiment</span>
+                                <p className="text-xs font-bold text-oku-darkgrey mt-1">{aiAnalysis.sentiment}</p>
+                              </div>
+                              <div className="bg-oku-mint/10 p-4 rounded-2xl">
+                                <span className="text-[8px] uppercase font-black tracking-widest text-oku-darkgrey/40">Communication Flow</span>
+                                <p className="text-xs font-bold text-oku-darkgrey mt-1">Sustained Engagement</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <textarea
+                          value={sessionNotes}
+                          onChange={(e) => setSessionNotes(e.target.value)}
+                          placeholder="Document your clinical observations here... (Real-time cloud sync enabled)"
+                          className="w-full h-96 p-8 bg-white/40 border-none rounded-[2.5rem] resize-none focus:outline-none focus:ring-2 focus:ring-oku-purple/20 text-oku-darkgrey font-display italic text-lg leading-relaxed placeholder:text-oku-darkgrey/20"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Live Transcript (GMeet Style Sidebar) */}
+              <AnimatePresence>
+                {showTranscript && (
+                  <m.div 
+                    initial={{ x: 320 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: 320 }}
+                    className="w-80 bg-[#141312]/90 backdrop-blur-2xl border-l border-white/5 flex flex-col"
+                  >
+                    <div className="h-16 border-b border-white/5 flex items-center justify-between px-6">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2">
+                        <FileText size={14} /> Live Transcript
+                      </span>
+                      <button onClick={() => setShowTranscript(false)} className="text-white/20 hover:text-white"><X size={16} /></button>
+                    </div>
+                    <div className="flex-1 overflow-auto p-6 space-y-4 custom-scrollbar">
+                      {transcriptLines.length === 0 ? (
+                        <div className="py-20 text-center">
+                           <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Loader2 size={20} className="text-oku-purple animate-spin" />
+                           </div>
+                           <p className="text-[10px] uppercase tracking-widest text-white/20">Listening for Audio...</p>
+                        </div>
+                      ) : (
+                        transcriptLines.map((line, i) => (
+                          <m.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={i} className="text-[11px] leading-relaxed text-white/60 bg-white/5 p-4 rounded-2xl border border-white/5">
+                            {line}
+                          </m.div>
+                        ))
+                      )}
+                    </div>
+                  </m.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* ── FOOTER: GOOGLE MEET STYLE CONTROLS ── */}
+            <div className="h-24 bg-[#0D0C0B] flex items-center justify-between px-10 relative z-40">
+              <div className="hidden lg:block text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
+                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} | Session: {sessionId.slice(0, 8)}
+              </div>
+
+              <div className="flex items-center gap-4">
+                <ControlButton active={call?.microphone.state.status !== 'disabled'} onClick={toggleMic} icon={call?.microphone.state.status === 'disabled' ? <MicOff size={22} /> : <Mic size={22} />} danger={call?.microphone.state.status === 'disabled'} />
+                <ControlButton active={call?.camera.state.status !== 'disabled'} onClick={toggleCamera} icon={call?.camera.state.status === 'disabled' ? <VideoOff size={22} /> : <Video size={22} />} danger={call?.camera.state.status === 'disabled'} />
+                <ControlButton active={call?.screenShare.state.status === 'enabled'} onClick={toggleScreenShare} icon={<ScreenShare size={22} />} />
+                <ControlButton active={showTranscript} onClick={() => setShowTranscript(!showTranscript)} icon={<MessageSquare size={22} />} />
+                
+                <div className="h-10 w-px bg-white/10 mx-2" />
+                
                 {role.toUpperCase() === 'PRACTITIONER' && (
                   <button
                     onClick={handleEmergency}
-                    className="p-2.5 rounded-full bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white transition-all"
+                    className="w-14 h-14 rounded-full bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center border border-red-600/30 shadow-lg shadow-red-900/20"
+                    title="Emergency Protocol"
                   >
-                    <AlertTriangle size={18} />
+                    <AlertTriangle size={24} />
                   </button>
                 )}
 
-                {/* Leave */}
-                <button
-                  onClick={handleLeave}
-                  className="px-4 py-2 rounded-full bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-all"
-                >
-                  End Session
-                </button>
-              </div>
-            </div>
-
-            {/* Main Content Area */}
-            <div className="flex-1 flex overflow-hidden">
-              {/* Video/Whiteboard Area */}
-              <div className="flex-1 relative">
-                {activeTab === 'video' && (
-                  <div className="absolute inset-4 rounded-2xl overflow-hidden bg-black/50">
-                    <SpeakerLayout participantsBarPosition="bottom" />
-                    
-                    {/* Connection Lost Overlay */}
-                    {(connectionLost || isReconnecting) && (
-                      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-                        <div className="text-center p-8">
-                          {isReconnecting ? (
-                            <>
-                              <Loader2 className="animate-spin mx-auto mb-4 text-oku-purple" size={48} />
-                              <h3 className="text-xl font-bold text-white mb-2">Reconnecting...</h3>
-                              <p className="text-white/60">Attempt {reconnectAttempts + 1} of 10</p>
-                              <p className="text-white/40 text-sm mt-2">Session will resume automatically</p>
-                            </>
-                          ) : (
-                            <>
-                              <WifiOff className="mx-auto mb-4 text-red-400" size={48} />
-                              <h3 className="text-xl font-bold text-white mb-2">Connection Lost</h3>
-                              <p className="text-white/60 mb-4">Network connection interrupted</p>
-                              <button
-                                onClick={handleRetry}
-                                className="px-6 py-3 bg-oku-purple text-white rounded-full font-bold hover:bg-oku-purple-dark transition-all"
-                              >
-                                <RefreshCw size={18} className="inline mr-2" /> Reconnect Now
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {activeTab === 'whiteboard' && (
-                  <div className="absolute inset-4 rounded-2xl overflow-hidden bg-white flex flex-col">
-                    <div className="h-12 bg-oku-cream border-b flex items-center justify-between px-4">
-                      <span className="font-bold text-oku-darkgrey">Collaborative Whiteboard</span>
-                      <div className="flex items-center gap-2">
-                        <input 
-                          type="color" 
-                          value={brushColor}
-                          onChange={(e) => setBrushColor(e.target.value)}
-                          className="w-8 h-8 rounded cursor-pointer"
-                        />
-                        <input 
-                          type="range" 
-                          min="1" 
-                          max="20"
-                          value={brushSize}
-                          onChange={(e) => setBrushSize(Number(e.target.value))}
-                          className="w-20"
-                        />
-                        <button onClick={clearWhiteboard} className="p-2 hover:bg-oku-lavender/20 rounded">
-                          <Eraser size={18} />
-                        </button>
-                      </div>
-                    </div>
-                    <canvas
-                      ref={canvasRef}
-                      width={1200}
-                      height={800}
-                      onMouseDown={startDrawing}
-                      onMouseMove={draw}
-                      onMouseUp={stopDrawing}
-                      onMouseLeave={stopDrawing}
-                      className="flex-1 cursor-crosshair"
-                    />
-                  </div>
-                )}
-
-                {activeTab === 'notes' && (
-                  <div className="absolute inset-4 rounded-2xl overflow-hidden bg-white flex flex-col">
-                    <div className="h-12 bg-oku-cream border-b flex items-center justify-between px-4">
-                      <span className="font-bold text-oku-darkgrey flex items-center gap-2">
-                        <Brain size={18} /> Smart Session Intelligence
-                      </span>
-                      <button
-                        onClick={() => runAiClinicalAnalysis(transcriptLines.join(" "))}
-                        disabled={isAiThinking || transcriptLines.length === 0}
-                        className="px-4 py-1.5 bg-oku-purple text-white rounded-full text-sm font-bold disabled:opacity-50"
-                      >
-                        {isAiThinking ? 'AI Thinking...' : 'Generate Analysis'}
-                      </button>
-                    </div>
-                    <div className="flex-1 p-4 space-y-4 overflow-auto">
-                      {aiAnalysis && (
-                        <div className="bg-oku-lavender/20 p-6 rounded-2xl border border-oku-purple/10">
-                          <div className="flex items-center justify-between mb-4">
-                            <h4 className="font-bold text-oku-purple-dark flex items-center gap-2">
-                              <Sparkles size={18} /> Clinical Intelligence
-                            </h4>
-                            <span className={`text-[10px] font-black px-2 py-1 rounded-full ${
-                              aiAnalysis.riskLevel === 'LOW' ? 'bg-green-100 text-green-700' :
-                              aiAnalysis.riskLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-red-100 text-red-700'
-                            }`}>
-                              {aiAnalysis.riskLevel} RISK
-                            </span>
-                          </div>
-                          <p className="text-oku-darkgrey text-sm mb-4 leading-relaxed">{aiAnalysis.summary}</p>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white/60 p-3 rounded-xl">
-                              <span className="text-[9px] uppercase font-black text-oku-taupe">Sentiment</span>
-                              <p className="text-xs font-bold text-oku-darkgrey">{aiAnalysis.sentiment}</p>
-                            </div>
-                            <div className="bg-white/60 p-3 rounded-xl">
-                              <span className="text-[9px] uppercase font-black text-oku-taupe">Language</span>
-                              <p className="text-xs font-bold text-oku-darkgrey">{aiAnalysis.detectedLanguage}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <textarea
-                        value={sessionNotes}
-                        onChange={(e) => setSessionNotes(e.target.value)}
-                        placeholder="Take clinical session notes here... (Auto-saved)"
-                        className="w-full h-64 p-4 border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-oku-purple"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Sidebar - Transcript */}
-              {showTranscript && (
-                <div className="w-80 bg-black/40 backdrop-blur-xl border-l border-white/10 flex flex-col">
-                  <div className="h-12 border-b border-white/10 flex items-center px-4">
-                    <FileText size={16} className="text-white/60 mr-2" />
-                    <span className="text-sm font-medium text-white/80">Live Transcript</span>
-                  </div>
-                  <div className="flex-1 overflow-auto p-4 space-y-3">
-                    {transcriptLines.length === 0 ? (
-                      <p className="text-white/40 text-sm text-center italic">Session audio being processed...</p>
-                    ) : (
-                      transcriptLines.map((line, i) => (
-                        <div key={i} className="text-xs text-white/70 bg-white/5 p-2 rounded">
-                          {line}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Bottom Controls */}
-            <div className="h-20 bg-black/60 backdrop-blur-xl border-t border-white/10 flex items-center justify-center px-4">
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={toggleMic}
-                  className={`p-4 rounded-full transition-all ${call?.microphone.state.status === 'disabled' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-                >
-                  {call?.microphone.state.status === 'disabled' ? <MicOff size={20} /> : <Mic size={20} />}
-                </button>
-                <button 
-                  onClick={toggleCamera}
-                  className={`p-4 rounded-full transition-all ${call?.camera.state.status === 'disabled' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-                >
-                  {call?.camera.state.status === 'disabled' ? <VideoOff size={20} /> : <Video size={20} />}
-                </button>
-                <button 
-                  onClick={toggleScreenShare}
-                  className={`p-4 rounded-full transition-all ${call?.screenShare.state.status === 'enabled' ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-                >
-                  <ScreenShare size={20} />
-                </button>
-                <button 
-                  onClick={() => setShowTranscript(!showTranscript)}
-                  className={`p-4 rounded-full transition-all ${showTranscript ? 'bg-oku-purple text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-                >
-                  <FileText size={20} />
-                </button>
-                <div className="h-8 w-px bg-white/20 mx-2" />
                 <button 
                   onClick={handleLeave}
-                  className="px-6 py-3 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition-all flex items-center gap-2"
+                  className="px-10 h-14 rounded-full bg-red-500 text-white font-black text-[10px] uppercase tracking-[0.4em] hover:bg-red-600 transition-all flex items-center gap-3 shadow-2xl shadow-red-900/40 group"
                 >
-                  <LogOut size={18} /> <span>End Session</span>
+                  <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" /> <span>End Call</span>
                 </button>
+              </div>
+
+              <div className="hidden lg:flex items-center gap-4">
+                 <button className="p-3 text-white/40 hover:text-white transition-colors" title="Settings"><Settings size={20} /></button>
+                 <button className="p-3 text-white/40 hover:text-white transition-colors" title="Information"><AlertTriangle size={20} /></button>
               </div>
             </div>
 
             {/* Crisis Alert Overlay */}
             {crisisAlert && (
-              <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-[60]">
-                <div className="bg-red-600 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-4 animate-bounce">
-                  <AlertTriangle size={24} className="shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-bold">CRISIS SIGNAL DETECTED</p>
-                    <p className="text-sm opacity-90">{crisisAlert}</p>
+              <div className="absolute top-24 left-1/2 -translate-x-1/2 w-full max-w-xl px-6 z-[60]">
+                <m.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-red-600 text-white p-6 rounded-[2rem] shadow-2xl flex items-start gap-6 border-2 border-red-400">
+                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+                    <AlertTriangle size={28} className="animate-pulse" />
                   </div>
-                  <button onClick={() => setCrisisAlert(null)}><X size={20} /></button>
-                </div>
+                  <div className="flex-1">
+                    <p className="font-black text-[10px] uppercase tracking-[0.2em] mb-1">Critical Intervention Triggered</p>
+                    <p className="text-sm font-display italic leading-relaxed opacity-90">{crisisAlert}</p>
+                  </div>
+                  <button onClick={() => setCrisisAlert(null)} className="p-2 hover:bg-white/10 rounded-full"><X size={20} /></button>
+                </m.div>
               </div>
             )}
           </StreamTheme>
@@ -953,10 +898,43 @@ export function EnhancedVideoRoom({
           background: transparent !important;
         }
         .str-video__participant-view {
-          border-radius: 1rem !important;
+          border-radius: 2rem !important;
           overflow: hidden;
+          border: 4px solid rgba(255,255,255,0.05);
         }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
       ` }} />
     </div>
+  )
+}
+
+function ControlButton({ active, onClick, icon, danger }: { active: boolean, onClick: () => void, icon: React.ReactNode, danger?: boolean }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={`w-14 h-14 rounded-full transition-all flex items-center justify-center border ${
+        danger ? 'bg-red-500 text-white border-red-500' :
+        active ? 'bg-white/10 text-white border-white/10 hover:bg-white/20' : 
+        'bg-[#3C4043] text-white border-transparent hover:bg-[#434649]'
+      }`}
+    >
+      {icon}
+    </button>
+  )
+}
+
+function ToolTab({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={`flex items-center gap-3 px-5 py-2.5 rounded-full backdrop-blur-md transition-all border ${
+        active ? 'bg-oku-purple text-white border-oku-purple shadow-lg' : 'bg-black/40 text-white/60 border-white/10 hover:bg-black/60'
+      }`}
+    >
+      {icon}
+      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+    </button>
   )
 }

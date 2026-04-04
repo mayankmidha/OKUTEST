@@ -17,9 +17,11 @@ import { Loader2, ShieldCheck, Users, MessageSquare, Send, X } from 'lucide-reac
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 
+import { generateAnonymousAlias } from '@/lib/aliases'
+
 interface CircleRoomProps {
   circleId: string
-  user: { id: string, name: string, image?: string }
+  user: { id: string, name: string, image?: string, role?: string }
   circleName: string
 }
 
@@ -33,6 +35,8 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
   const [messages, setMessages] = useState<any[]>([
     { id: 1, user: 'Guide', text: 'Welcome to our sanctuary. Take a deep breath.', time: 'now' }
   ])
+  const [isAnonymized, setIsAnonymized] = useState(true)
+  const [anonymousName] = useState(() => generateAnonymousAlias())
   const router = useRouter()
 
   const clientRef = useRef<StreamVideoClient | null>(null)
@@ -40,7 +44,8 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
 
   const sendMessage = () => {
     if (!chatMessage.trim()) return
-    setMessages([...messages, { id: Date.now(), user: user.name.split(' ')[0], text: chatMessage, time: 'just now' }])
+    const displayName = user.role === 'THERAPIST' ? `Guide (${user.name.split(' ')[0]})` : anonymousName
+    setMessages([...messages, { id: Date.now(), user: displayName, text: chatMessage, time: 'just now' }])
     setChatMessage('')
   }
 
@@ -69,15 +74,18 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
         const payload = await res.json()
         if (!payload.token || !payload.apiKey) throw new Error('Invalid token payload')
 
-        // Anonymize the name if needed (can be customized further)
-        const anonymizedUser = {
-          ...user,
-          name: user.name?.split(' ')[0] || 'Anonymous' // First name only
+        // Use Randomized Name for Privacy in Circles
+        const sessionName = user.role === 'THERAPIST' ? `Guide (${user.name.split(' ')[0]})` : anonymousName
+
+        const streamUser = {
+          id: user.id,
+          name: sessionName,
+          image: user.role === 'THERAPIST' ? user.image : undefined
         }
 
         const newClient = new StreamVideoClient({
           apiKey: payload.apiKey,
-          user: anonymizedUser,
+          user: streamUser,
           token: payload.token,
         })
 
@@ -117,7 +125,7 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
       controller.abort()
       cleanupStream()
     }
-  }, [circleId, user])
+  }, [circleId, user, anonymousName])
 
   const handleLeave = async () => {
     await cleanupStream()
