@@ -24,33 +24,40 @@ import { AssessmentTemplateManager } from './AssessmentTemplateManager'
 
 function AdminDashboardContent({ 
   stats, 
-  therapists, 
-  services,
-  clients,
-  circles,
-  allAppointments,
+  therapists = [], 
+  services = [],
+  clients = [],
+  circles = [],
+  allAppointments = [],
   settings: initialSettings
 }: { 
   stats: {
-    totalRevenue: number,
-    totalAppointments: number,
-    auditLogs: any[],
-    recentActivities: any[],
-    allTranscripts: any[],
-    allPosts: any[],
-    circleReports: any[]
+    totalRevenue?: number,
+    totalAppointments?: number,
+    auditLogs?: any[],
+    recentActivities?: any[],
+    allTranscripts?: any[],
+    allPosts?: any[],
+    circleReports?: any[]
   }, 
-  therapists: any[], 
-  services: any[],
-  clients: any[],
-  circles: any[],
-  allAppointments: any[],
+  therapists?: any[], 
+  services?: any[],
+  clients?: any[],
+  circles?: any[],
+  allAppointments?: any[],
   settings: any
 }) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isUpdating, setIsUpdating] = useState(false)
   const [platformSettings, setPlatformSettings] = useState(initialSettings)
+  
+  // Safe access with defaults
+  const recentActivities = stats?.recentActivities || []
+  const allTranscripts = stats?.allTranscripts || []
+  const circleReports = stats?.circleReports || []
+  const totalRevenue = stats?.totalRevenue || 0
+  const totalAppointments = stats?.totalAppointments || 0
   
   // Use 'pillar' for high-level nav and 'sub' for nested tabs
   const currentPillar = searchParams.get('pillar') || 'pulse'
@@ -62,7 +69,7 @@ function AdminDashboardContent({
 
   // Action Center Derived Data
   const pendingKYC = therapists.filter(t => !t.practitionerProfile?.isVerified)
-  const highRiskSignals = stats.allTranscripts.filter(t => t.riskLevel === 'HIGH' || t.riskLevel === 'CRITICAL')
+  const highRiskSignals = allTranscripts.filter(t => t.riskLevel === 'HIGH' || t.riskLevel === 'CRITICAL')
   const pendingRefunds = allAppointments.filter(a => a.refundStatus === 'PENDING')
 
   const handleToggleVerification = async (id: string, currentStatus: boolean) => {
@@ -141,12 +148,12 @@ function AdminDashboardContent({
                     </div>
                     <div className="card-glass-3d !p-10 !bg-oku-mint/60">
                         <DollarSign size={24} className="text-emerald-600 mb-8" />
-                        <p className="text-4xl heading-display mb-2">{formatCurrency(autoConvert(stats.totalRevenue, undefined, 'INR').amount, 'INR')}</p>
+                        <p className="text-4xl heading-display mb-2">{formatCurrency(autoConvert(totalRevenue, undefined, 'INR').amount, 'INR')}</p>
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Gross Volume (LTD)</p>
                     </div>
                     <div className="card-glass-3d !p-10 !bg-oku-peach/60">
                         <Activity size={24} className="text-oku-peach-dark mb-8" />
-                        <p className="text-6xl heading-display mb-2">{stats.totalAppointments}</p>
+                        <p className="text-6xl heading-display mb-2">{totalAppointments}</p>
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Care Sessions</p>
                     </div>
                     <div className="card-glass-3d !p-10 !bg-oku-babyblue/60">
@@ -161,7 +168,7 @@ function AdminDashboardContent({
                     <div className="lg:col-span-8 card-glass-3d !p-12 !bg-white/40">
                         <h2 className="heading-display text-4xl mb-12">System <span className="italic">Activities</span></h2>
                         <div className="space-y-4">
-                            {stats.recentActivities.slice(0, 8).map((act: any, i: number) => (
+                            {recentActivities.slice(0, 8).map((act: any, i: number) => (
                                 <div key={i} className="flex items-center justify-between p-6 bg-white/60 rounded-[2rem] border border-white shadow-sm group hover:bg-white transition-all">
                                     <div className="flex items-center gap-6">
                                         <div className="w-10 h-10 rounded-xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark text-xs font-black">
@@ -374,10 +381,10 @@ function AdminDashboardContent({
                         <h3 className="heading-display text-2xl mb-8">Community <span className="italic">Oversight</span></h3>
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">Circle Reports</p>
                         <div className="space-y-4">
-                            {stats.circleReports.length === 0 ? (
+                            {circleReports.length === 0 ? (
                                 <p className="text-sm opacity-40 italic font-display">No circle reports pending.</p>
                             ) : (
-                                stats.circleReports.map((report: any, i: number) => (
+                                circleReports.map((report: any, i: number) => (
                                     <div key={i} className="p-6 bg-white/60 rounded-3xl border border-white flex flex-col gap-4">
                                         <p className="text-xs font-bold text-red-500 uppercase">{report.reason}</p>
                                         <p className="text-[10px] opacity-60 leading-relaxed italic">{report.details}</p>
