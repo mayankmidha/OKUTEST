@@ -27,10 +27,10 @@ export function PractitionerShell({
   return (
     <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-oku-mint/5">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/40 px-4 py-4 backdrop-blur-md sm:px-6 lg:px-10">
+      <header className="sticky top-0 z-40 border-b border-white/70 bg-white/55 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <div className="hidden xl:flex items-center gap-4 rounded-full border border-white bg-white/60 px-6 py-3 shadow-sm backdrop-blur-md">
+            <div className="hidden xl:flex items-center gap-4 rounded-full border border-white/80 bg-white/80 px-6 py-3 shadow-sm backdrop-blur-md">
                 <Search size={14} className="text-oku-darkgrey/40" />
                 <input type="text" placeholder="Search patients..." className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest placeholder:text-oku-darkgrey/20 w-64" />
             </div>
@@ -38,7 +38,7 @@ export function PractitionerShell({
 
           <div className="flex items-center gap-3 sm:gap-4">
             {headerActions}
-            <button className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white bg-white/60 text-oku-darkgrey/40 shadow-sm backdrop-blur-md transition-all hover:text-oku-purple-dark sm:h-12 sm:w-12">
+            <button className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white/80 bg-white/80 text-oku-darkgrey/40 shadow-sm backdrop-blur-md transition-all hover:text-oku-purple-dark sm:h-12 sm:w-12">
               <Bell size={18} strokeWidth={1.5} />
               <span className="absolute top-3 right-3 w-2 h-2 bg-oku-purple-dark rounded-full border-2 border-white animate-pulse" />
             </button>
@@ -46,27 +46,27 @@ export function PractitionerShell({
         </div>
       </header>
 
-      <div className="px-4 py-6 sm:px-6 sm:py-8 lg:p-10">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6 sm:pb-10 sm:pt-28 lg:p-10">
         <motion.section 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="mb-10 sm:mb-16"
         >
-          <div className="mb-10 flex flex-col justify-between gap-8 lg:mb-12 lg:flex-row lg:items-end lg:gap-12">
+          <div className="clinic-hero-card mb-10 flex flex-col justify-between gap-8 lg:mb-12 lg:flex-row lg:items-end lg:gap-12">
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                  <span className="chip bg-white/60 border-white/80">{badge}</span>
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Workspace Dashboard</span>
+                 <span className="clinic-kicker">Workspace Dashboard</span>
               </div>
-              <h1 className="heading-display text-4xl leading-[0.9] tracking-tighter text-oku-darkgrey sm:text-6xl lg:text-8xl lg:leading-[0.85]">
+              <h1 className="heading-display text-4xl leading-[0.92] tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl">
                 {title.split(' ')[0]} <span className="text-oku-purple-dark italic">{title.split(' ').slice(1).join(' ')}</span>
               </h1>
-              <p className="max-w-2xl border-l-4 border-oku-purple-dark/10 pl-5 text-lg leading-relaxed text-oku-darkgrey/60 sm:pl-8 sm:text-xl lg:text-2xl">
+              <p className="clinic-copy max-w-2xl border-l-4 border-oku-purple-dark/10 pl-5 font-display italic sm:pl-8">
                 {description}
               </p>
             </div>
-            {heroActions && <div className="flex w-full flex-wrap gap-3 sm:gap-4 lg:w-auto lg:justify-end">{heroActions}</div>}
+            {heroActions && <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4 lg:w-auto lg:justify-end">{heroActions}</div>}
           </div>
         </motion.section>
 
@@ -96,10 +96,11 @@ export function PractitionerSectionCard({
   title: string
 }) {
   return (
-    <section className={`card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-10 ${className}`}>
+    <section className={`clinic-surface ${className}`}>
       <div className="mb-8 flex flex-col gap-6 sm:mb-10 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="heading-display text-3xl text-oku-darkgrey tracking-tight">{title}</h2>
+          <p className="clinic-kicker">Practitioner Surface</p>
+          <h2 className="heading-display mt-2 text-3xl text-oku-darkgrey tracking-tight">{title}</h2>
           {description && <p className="mt-2 text-sm text-oku-darkgrey/60 font-display italic leading-relaxed">{description}</p>}
         </div>
         {(action || actions) && (
@@ -116,11 +117,11 @@ export function PractitionerSectionCard({
 
 export function PractitionerStatCard({ accent = 'bg-oku-purple-dark', detail, label, value }: { accent?: string, detail?: string, label: string, value: string | number }) {
   return (
-    <div className="card-glass-3d group animate-float-3d !bg-white/60 !p-6 sm:!p-8">
-      <div className={`h-1.5 w-12 rounded-full mb-8 opacity-40 group-hover:opacity-100 transition-all duration-500 ${accent}`} />
-      <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-2">{label}</p>
+    <div className="clinic-stat-card group bg-white/80">
+      <div className={`mb-6 h-1.5 w-12 rounded-full opacity-50 transition-all duration-300 group-hover:opacity-100 ${accent}`} />
+      <p className="clinic-kicker mb-2">{label}</p>
       <p className="heading-display text-3xl text-oku-darkgrey sm:text-4xl">{value}</p>
-      {detail && <p className="mt-4 text-[9px] font-black uppercase tracking-widest text-oku-purple-dark opacity-60">{detail}</p>}
+      {detail && <p className="mt-4 text-[9px] font-black uppercase tracking-[0.22em] text-oku-purple-dark/65">{detail}</p>}
     </div>
   )
 }
@@ -139,16 +140,16 @@ export function PractitionerActionTile({
   return (
     <Link
       href={href}
-      className="group card-glass-3d !p-8 md:!p-10 !bg-white/40 flex flex-col h-full"
+      className="group clinic-surface flex h-full flex-col bg-white/80 transition-all hover:-translate-y-1"
     >
-      <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-darkgrey group-hover:bg-oku-darkgrey group-hover:text-white transition-all duration-500 mb-8 md:mb-10 shadow-inner">
+      <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl bg-oku-lavender text-oku-darkgrey shadow-inner transition-all duration-300 group-hover:bg-oku-darkgrey group-hover:text-white md:mb-10 md:h-14 md:w-14 md:rounded-2xl">
         {icon}
       </div>
       <div className="flex-1">
         <h3 className="heading-display text-2xl text-oku-darkgrey mb-2">{title}</h3>
         <p className="text-sm text-oku-darkgrey/60 font-display italic leading-relaxed">{description}</p>
       </div>
-      <div className="mt-8 md:mt-10 flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-oku-purple-dark opacity-40 group-hover:opacity-100 transition-all">
+      <div className="mt-8 flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.22em] text-oku-purple-dark/55 transition-all group-hover:text-oku-purple-dark md:mt-10">
         Open Workspace <ChevronRight size={12} className="ml-2" />
       </div>
     </Link>

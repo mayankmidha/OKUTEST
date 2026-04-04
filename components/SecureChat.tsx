@@ -99,17 +99,18 @@ export function SecureChat({
   }
 
   return (
-    <div className="flex h-[70vh] min-h-[32rem] flex-col overflow-hidden rounded-[2rem] border border-oku-taupe/10 bg-white shadow-xl sm:h-[600px] sm:rounded-[3rem]">
+    <div className="clinic-surface flex h-[70vh] min-h-[32rem] flex-col overflow-hidden p-0 sm:h-[600px]">
       
       {/* Chat Header */}
-      <div className="z-10 flex items-center justify-between border-b border-oku-purple-dark/10 bg-oku-purple p-4 shadow-sm sm:p-6 sm:px-8">
+      <div className="z-10 flex items-center justify-between border-b border-white/80 bg-gradient-to-r from-[#f1ebff] via-white to-[#f6f1eb] px-4 py-4 shadow-sm sm:px-8 sm:py-6">
         <div className="flex min-w-0 items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-white/50 shadow-inner sm:h-12 sm:w-12">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white bg-white shadow-sm sm:h-12 sm:w-12">
                 {contactAvatar ? <img src={contactAvatar} alt={contactName} className="w-full h-full object-cover" /> : <User size={20} className="text-oku-purple-dark" />}
             </div>
             <div className="min-w-0">
-                <h3 className="truncate font-display text-base font-bold text-oku-dark sm:text-lg">{contactName}</h3>
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-oku-green-dark mt-0.5">
+                <p className="clinic-kicker text-oku-purple-dark/60">Secure Messages</p>
+                <h3 className="mt-1 truncate font-display text-base font-bold text-oku-darkgrey sm:text-lg">{contactName}</h3>
+                <div className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-[9px] font-black uppercase tracking-[0.22em] text-oku-purple-dark">
                     <Lock size={10} /> Secure Connection
                 </div>
             </div>
@@ -117,7 +118,7 @@ export function SecureChat({
       </div>
 
       {/* Messages Area */}
-      <div className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-oku-cream/30 p-4 sm:space-y-6 sm:p-8">
+      <div className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-[#fcfaf7] p-4 sm:space-y-6 sm:p-8">
         {isLoading ? (
             <div className="h-full flex items-center justify-center text-oku-taupe">
                 <Loader2 className="animate-spin" size={24} />
@@ -153,7 +154,7 @@ export function SecureChat({
                                     <div 
                                         className={`p-3.5 text-sm leading-relaxed sm:p-4 ${
                                             isMe 
-                                            ? 'bg-oku-dark text-white rounded-[2rem] rounded-br-md' 
+                                            ? 'bg-oku-darkgrey text-white rounded-[2rem] rounded-br-md' 
                                             : 'bg-white text-oku-dark border border-oku-taupe/10 rounded-[2rem] rounded-bl-md shadow-sm'
                                         }`}
                                     >
@@ -174,7 +175,7 @@ export function SecureChat({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-oku-taupe/10 bg-white p-4 sm:p-6">
+      <div className="border-t border-white/80 bg-white/88 p-4 sm:p-6">
         <form onSubmit={handleSend} className="relative flex items-center">
             <input 
                 type="text" 

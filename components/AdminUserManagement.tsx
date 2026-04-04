@@ -72,6 +72,7 @@ export function AdminUserManagement({ users }: { users?: any[] }) {
     setIsSubmitting(userId)
     try {
       await updateUserRole(userId, newRole as any)
+      router.refresh()
     } finally {
       setIsSubmitting(null)
     }
@@ -82,6 +83,7 @@ export function AdminUserManagement({ users }: { users?: any[] }) {
     setIsSubmitting(userId)
     try {
       await deleteUser(userId)
+      router.refresh()
     } finally {
       setIsSubmitting(null)
     }

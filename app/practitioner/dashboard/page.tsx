@@ -324,95 +324,73 @@ export default async function PractitionerDashboardPage({
           </div>
         )}
 
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <PractitionerStatCard
-            label="Sessions today"
+            label="Today's Sessions"
             value={todaySessions.length}
-            detail={todaySessions.length > 0 ? 'live care windows' : 'quiet day'}
+            detail={todaySessions.length > 0 ? 'Live care windows' : 'Quiet day'}
             accent="bg-oku-purple-dark"
           />
           <PractitionerStatCard
-            label="Pending notes"
+            label="Pending Notes"
             value={pendingNotes.length}
-            detail={pendingNotes.length > 0 ? 'documentation backlog' : 'up to date'}
+            detail={pendingNotes.length > 0 ? 'Documentation backlog' : 'Up to date'}
             accent="bg-oku-peach-dark"
           />
           <PractitionerStatCard
-            label="Assessment queue"
-            value={pendingAssignmentCount}
-            detail={pendingAssignmentCount > 0 ? 'awaiting completion' : 'clear'}
-            accent="bg-oku-mint-dark"
-          />
-          <PractitionerStatCard
-            label="Unread messages"
+            label="Unread Messages"
             value={unreadMessageCount}
-            detail={unreadMessageCount > 0 ? 'client replies waiting' : 'inbox calm'}
+            detail={unreadMessageCount > 0 ? 'Client replies waiting' : 'Inbox calm'}
             accent="bg-oku-babyblue-dark"
           />
           <PractitionerStatCard
-            label="ADHD care clients"
-            value={adhdCareClients}
-            detail={`${completedSessions} sessions completed`}
+            label="Active Caseload"
+            value={caseloadClients}
+            detail={`${completedSessions} total sessions`}
             accent="bg-oku-darkgrey"
           />
         </div>
 
-        <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
           <PractitionerSectionCard
-            title="Today’s Queue"
-            description="Your next care windows, with fast entry into rooms and notes."
-            action={
-              <Link
-                href="/practitioner/schedule"
-                className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-6 !py-3 text-[10px]"
-              >
-                View calendar
-              </Link>
-            }
+            title="Immediate Queue"
+            description="Your next care windows and urgent clinical documentation."
           >
-            {todaySessions.length === 0 ? (
+            {todaySessions.length === 0 && pendingNotes.length === 0 ? (
               <EmptyCard
-                title={nextSession ? 'No more sessions today.' : 'No sessions scheduled today.'}
-                description={
-                  nextSession
-                    ? `Next up is ${nextSession.client?.name || 'your next client'} on ${formatDateTime(nextSession.startTime)}.`
-                    : 'Use the gap for notes, assessment reviews, or circle prep.'
-                }
-                href={nextSession ? `/session/${nextSession.id}` : '/practitioner/schedule'}
-                cta={nextSession ? 'Open next session' : 'Open calendar'}
+                title="Your queue is clear."
+                description="Use the quiet time for research, supervision, or personal rest."
+                href="/practitioner/schedule"
+                cta="View Full Schedule"
               />
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {todaySessions.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="rounded-[1.6rem] border border-white/70 bg-white/70 p-5 shadow-sm"
-                  >
+                  <div key={appointment.id} className="rounded-[1.6rem] border border-white/70 bg-white/70 p-5 shadow-sm">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark">
-                          {formatTime(appointment.startTime)} • {appointment.service?.name || 'Session'}
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark mb-1">
+                          {formatTime(appointment.startTime)} • {appointment.service?.name}
                         </p>
-                        <h3 className="text-2xl font-black tracking-tight text-oku-darkgrey">
-                          {appointment.client?.name || 'Client'}
-                        </h3>
+                        <h3 className="text-2xl font-black tracking-tight text-oku-darkgrey">{appointment.client?.name}</h3>
                       </div>
-                      <div className="flex flex-wrap gap-3">
-                        <Link
-                          href={`/session/${appointment.id}`}
-                          className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-6 !py-3 text-[10px]"
-                        >
-                          <Video size={14} className="mr-2" />
-                          Launch room
-                        </Link>
-                        <Link
-                          href={`/practitioner/sessions/${appointment.id}/notes`}
-                          className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-6 !py-3 text-[10px]"
-                        >
-                          <FileText size={14} className="mr-2" />
-                          Open notes
-                        </Link>
-                      </div>
+                      <Link href={`/session/${appointment.id}`} className="btn-pill-3d bg-oku-darkgrey text-white !px-6 !py-3">
+                        Launch Room
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+                
+                {pendingNotes.slice(0, 2).map((note) => (
+                  <div key={note.id} className="rounded-[1.6rem] border border-dashed border-oku-peach-dark/30 bg-oku-peach/5 p-5">
+                    <div className="flex justify-between items-center">
+                       <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-oku-peach-dark mb-1">Documentation Required</p>
+                          <h4 className="font-bold text-oku-darkgrey">{note.client?.name} <span className="text-oku-darkgrey/40 font-normal ml-2">({formatDateTime(note.startTime)})</span></h4>
+                       </div>
+                       <Link href={`/practitioner/sessions/${note.id}/notes`} className="text-[10px] font-black uppercase tracking-widest text-oku-peach-dark hover:underline">
+                          Write SOAP Note →
+                       </Link>
                     </div>
                   </div>
                 ))}
@@ -422,94 +400,41 @@ export default async function PractitionerDashboardPage({
 
           <div className="space-y-8">
             <PractitionerSectionCard
-              title="Focus Areas"
-              description="Jump straight into the core practitioner surfaces."
+              title="Clinical Tools"
+              description="Jump into core practitioner surfaces."
             >
               <div className="grid gap-4 sm:grid-cols-2">
-                <PractitionerActionTile
-                  href="/practitioner/clients"
-                  title="Clients"
-                  description="Review files, ADHD access, progress, and clinical history."
-                  icon={<Users size={20} />}
-                />
-                <PractitionerActionTile
-                  href="/practitioner/assessments"
-                  title="Assessments"
-                  description="Create tools, assign them, and review recent screening results."
-                  icon={<ClipboardCheck size={20} />}
-                />
-                <PractitionerActionTile
-                  href="/practitioner/messages"
-                  title="Messages"
-                  description="Respond to clients and clear the unread queue."
-                  icon={<MessageSquare size={20} />}
-                />
-                <PractitionerActionTile
-                  href="/practitioner/dashboard?tab=circles"
-                  title="Circles"
-                  description="Manage group spaces, capacity, and facilitation flow."
-                  icon={<Sparkles size={20} />}
-                />
+                <PractitionerActionTile href="/practitioner/clients" title="Clients" description=" Caseload & History" icon={<Users size={20} />} />
+                <PractitionerActionTile href="/practitioner/messages" title="Inbox" description="Client Messages" icon={<MessageSquare size={20} />} />
+                <PractitionerActionTile href="/practitioner/assessments" title="Assessments" description="Tools & Results" icon={<ClipboardCheck size={20} />} />
+                <PractitionerActionTile href="/practitioner/intelligence" title="AI Signals" description="Clinical Intelligence" icon={<Brain size={20} />} />
               </div>
-            </PractitionerSectionCard>
-
-            <PractitionerSectionCard
-              title="Circles This Week"
-              description="Upcoming group sessions you are facilitating."
-              action={
-                <Link
-                  href="/practitioner/dashboard?tab=circles"
-                  className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark"
-                >
-                  Open circles
-                </Link>
-              }
-            >
-              {circlesThisWeek.length === 0 ? (
-                <EmptyMiniState text="No circles scheduled in the next 7 days." />
-              ) : (
-                <div className="space-y-3">
-                  {circlesThisWeek.map((circle) => (
-                    <InfoRow
-                      key={circle.id}
-                      title={circle.service?.name || 'Facilitated circle'}
-                      subtitle={formatDateTime(circle.startTime)}
-                      meta={`${circle.participants.length}/${circle.maxParticipants} joined`}
-                      href="/practitioner/dashboard?tab=circles"
-                    />
-                  ))}
-                </div>
-              )}
             </PractitionerSectionCard>
           </div>
         </div>
 
-        <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-          <PractitionerSectionCard
-            title="Documentation and Assessments"
-            description="What still needs your review or completion."
-          >
-              <div className="grid gap-8 lg:grid-cols-2">
+        <PractitionerSectionCard
+          title="Recent Activity"
+          description="Recent assessment answers and clinical flags."
+        >
+          <div className="grid gap-8 lg:grid-cols-2">
               <div>
                 <div className="mb-4 flex items-center justify-between">
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
-                    Pending notes
+                    Assessment results
                   </p>
-                  <PractitionerPill tone={pendingNotes.length > 0 ? 'pink' : 'sage'}>
-                    {pendingNotes.length}
-                  </PractitionerPill>
                 </div>
-                {pendingNotes.length === 0 ? (
-                  <EmptyMiniState text="All completed sessions have notes." />
+                {recentAssessmentAnswers.length === 0 ? (
+                  <EmptyMiniState text="No recent screening completions." />
                 ) : (
                   <div className="space-y-3">
-                    {pendingNotes.map((appointment) => (
+                    {recentAssessmentAnswers.slice(0, 3).map((answer) => (
                       <InfoRow
-                        key={appointment.id}
-                        title={appointment.client?.name || 'Client'}
-                        subtitle={`${appointment.service?.name || 'Session'} • ${formatDateTime(appointment.startTime)}`}
-                        meta="Open SOAP note"
-                        href={`/practitioner/sessions/${appointment.id}/notes`}
+                        key={answer.id}
+                        title={answer.user.name || 'Client'}
+                        subtitle={answer.assessment.title}
+                        meta={answer.score !== null ? `Score ${answer.score}` : 'Review'}
+                        href={`/practitioner/clients/${answer.user.id}`}
                       />
                     ))}
                   </div>
@@ -519,147 +444,27 @@ export default async function PractitionerDashboardPage({
               <div>
                 <div className="mb-4 flex items-center justify-between">
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
-                    Assessment queue
+                    Upcoming Circles
                   </p>
-                  <PractitionerPill tone={pendingAssignmentCount > 0 ? 'purple' : 'sage'}>
-                    {pendingAssignmentCount}
-                  </PractitionerPill>
                 </div>
-                {pendingAssignments.length === 0 ? (
-                  <EmptyMiniState text="No assigned assessments are waiting right now." />
+                {circlesThisWeek.length === 0 ? (
+                  <EmptyMiniState text="No circles this week." />
                 ) : (
                   <div className="space-y-3">
-                    {pendingAssignments.map((assignment) => (
+                    {circlesThisWeek.map((circle) => (
                       <InfoRow
-                        key={assignment.id}
-                        title={assignment.client.name || 'Client'}
-                        subtitle={assignment.assessment.title}
-                        meta="Waiting for completion"
-                        href={`/practitioner/clients/${assignment.client.id}`}
+                        key={circle.id}
+                        title={circle.service?.name}
+                        subtitle={formatDateTime(circle.startTime)}
+                        meta={`${circle.participants.length} joined`}
+                        href="/practitioner/dashboard?tab=circles"
                       />
                     ))}
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="mt-8 rounded-[1.6rem] border border-white/70 bg-[#faf7f2] p-5">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
-                  Recent screening results
-                </p>
-                <Link
-                  href="/practitioner/assessments"
-                  className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark"
-                >
-                  Open assessments
-                </Link>
-              </div>
-              {recentAssessmentAnswers.length === 0 ? (
-                <EmptyMiniState text="No recent screening completions from your caseload." />
-              ) : (
-                <div className="space-y-3">
-                  {recentAssessmentAnswers.slice(0, 4).map((answer) => (
-                    <InfoRow
-                      key={answer.id}
-                      title={answer.user.name || 'Client'}
-                      subtitle={answer.assessment.title}
-                      meta={answer.score !== null ? `Score ${answer.score}` : 'Review result'}
-                      href={`/practitioner/clients/${answer.user.id}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </PractitionerSectionCard>
-
-          <div className="space-y-8">
-            <PractitionerSectionCard
-              title="Unread Messages"
-              description="Client threads that still need your reply."
-              action={
-                <Link
-                  href="/practitioner/messages"
-                  className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-purple-dark"
-                >
-                  Open inbox
-                </Link>
-              }
-            >
-              {unreadMessages.length === 0 ? (
-                <EmptyMiniState text="No unread client messages." />
-              ) : (
-                <div className="space-y-3">
-                  {unreadMessages.map((message) => (
-                    <InfoRow
-                      key={message.id}
-                      title={message.sender.name || 'Client'}
-                      subtitle={truncateText(message.content, 96)}
-                      meta={formatDateTime(message.createdAt)}
-                      href={`/practitioner/messages?c=${message.sender.id}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </PractitionerSectionCard>
-
-            <PractitionerSectionCard
-              title="ADHD Signals"
-              description="Current ADHD care load plus recent items worth reviewing."
-            >
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
-                    ADHD-enabled clients
-                  </p>
-                  <p className="mt-2 text-3xl font-black tracking-tight text-oku-darkgrey">
-                    {adhdCareClients}
-                  </p>
-                  <p className="mt-2 text-sm text-oku-darkgrey/55">
-                    Clients with ADHD workspace access already enabled.
-                  </p>
-                </div>
-                <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
-                    Transcript flags
-                  </p>
-                  <p className="mt-2 text-3xl font-black tracking-tight text-oku-darkgrey">
-                    {adhdSignalTranscripts.length}
-                  </p>
-                  <p className="mt-2 text-sm text-oku-darkgrey/55">
-                    Recent transcripts carrying ADHD-related AI signals.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                {adhdSignalTranscripts.slice(0, 3).map((transcript) => (
-                  <InfoRow
-                    key={transcript.id}
-                    title={transcript.appointment.client?.name || 'Client'}
-                    subtitle={Array.isArray(transcript.adhdSignals) ? transcript.adhdSignals.slice(0, 2).join(' • ') : 'Transcript flagged'}
-                    meta={transcript.appointment.service?.name || 'Session'}
-                    href={`/practitioner/clients/${transcript.appointment.client?.id || ''}`}
-                  />
-                ))}
-
-                {adhdAssessmentCandidates.slice(0, 3).map((answer) => (
-                  <InfoRow
-                    key={answer.id}
-                    title={answer.user.name || 'Client'}
-                    subtitle={`${answer.assessment.title} completed`}
-                    meta="Review for ADHD workflow access"
-                    href={`/practitioner/clients/${answer.user.id}`}
-                  />
-                ))}
-
-                {adhdSignalTranscripts.length === 0 && adhdAssessmentCandidates.length === 0 && (
-                  <EmptyMiniState text="No recent ADHD-specific flags or unlock candidates." />
-                )}
-              </div>
-            </PractitionerSectionCard>
           </div>
-        </div>
+        </PractitionerSectionCard>
       </div>
     </PractitionerShell>
   )

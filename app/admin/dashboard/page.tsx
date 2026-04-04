@@ -231,20 +231,18 @@ export default async function AdminDashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-oku-lavender/5 px-4 py-8 sm:px-6 sm:py-12 lg:px-12">
-      <div className="mx-auto max-w-[1600px] space-y-8">
-        <section className="rounded-[2.75rem] border border-white/80 bg-gradient-to-br from-white via-[#faf7f2] to-[#eef3f1] p-6 shadow-sm sm:p-8">
+    <div className="min-h-screen bg-oku-lavender/5">
+      <div className="clinic-shell-wide">
+        <section className="clinic-hero-card">
           <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
             <div className="space-y-5">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-full bg-white/80 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.32em] text-oku-purple-dark">
-                  Admin Control Plane
-                </span>
+                <span className="chip">Admin Control Plane</span>
                 <span
-                  className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.32em] ${
+                  className={`chip ${
                     settings?.maintenanceMode
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-emerald-100 text-emerald-700'
+                      ? '!bg-amber-100 !text-amber-700'
+                      : '!bg-emerald-100 !text-emerald-700'
                   }`}
                 >
                   {settings?.maintenanceMode ? 'Maintenance mode' : 'Live operations'}
@@ -255,14 +253,14 @@ export default async function AdminDashboardPage() {
                 <h1 className="heading-display text-4xl tracking-tight text-oku-darkgrey sm:text-5xl lg:text-7xl">
                   Launch <span className="italic text-oku-purple-dark">Control.</span>
                 </h1>
-                <p className="mt-4 max-w-3xl text-base leading-relaxed text-oku-darkgrey/60 sm:text-lg">
+                <p className="clinic-copy mt-4">
                   This overview is tuned for clinic launch work: platform health,
                   operator queues, verification, revenue, risk, and the surfaces
                   that can block a real clinic day.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <QuickHeroLink href="/admin/practitioners" label="Verification queue" />
                 <QuickHeroLink href="/admin/sessions" label="Session ledger" />
                 <QuickHeroLink href="/admin/financials" label="Financials" />
@@ -305,7 +303,7 @@ export default async function AdminDashboardPage() {
                         : 'border-white/80 bg-white/70'
                   }`}
                 >
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-oku-darkgrey/35">
+                  <p className="clinic-kicker">
                     {item.label}
                   </p>
                   <p className="mt-3 text-4xl font-black tracking-tight text-oku-darkgrey">
@@ -601,7 +599,7 @@ function QuickHeroLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-7 !py-4 text-[10px]"
+      className="btn-pill-3d flex w-full items-center justify-center bg-white text-oku-darkgrey !px-7 !py-4 text-[10px] sm:w-auto"
     >
       {label}
     </Link>
@@ -625,8 +623,8 @@ function MetricCard({
         : 'bg-white/75'
 
   return (
-    <div className={`rounded-[1.5rem] border border-white/80 p-4 shadow-sm sm:p-5 ${toneClass}`}>
-      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-oku-darkgrey/35">
+    <div className={`clinic-stat-card p-4 sm:p-5 ${toneClass}`}>
+      <p className="clinic-kicker">
         {label}
       </p>
       <p className="mt-2 text-2xl font-black tracking-tight text-oku-darkgrey sm:text-3xl">
@@ -652,10 +650,11 @@ function SectionCard({
   actions?: ReactNode
 }) {
   return (
-    <section className="rounded-[2rem] border border-white/80 bg-white/70 p-5 shadow-sm backdrop-blur sm:p-7">
+    <section className="clinic-surface">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-2xl font-black tracking-tight text-oku-darkgrey">{title}</h2>
+          <p className="clinic-kicker">Operations</p>
+          <h2 className="heading-display mt-2 text-3xl tracking-tight text-oku-darkgrey">{title}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-oku-darkgrey/60">
             {description}
           </p>
@@ -674,7 +673,7 @@ function SmallLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="btn-pill-3d flex w-full items-center justify-center bg-white border-white text-oku-darkgrey !px-6 !py-4 text-[10px] sm:w-auto"
+      className="btn-pill-3d flex w-full items-center justify-center bg-white text-oku-darkgrey !px-6 !py-4 text-[10px] sm:w-auto"
     >
       {label}
     </Link>
@@ -695,14 +694,14 @@ function QueueRow({
   return (
     <Link
       href={href}
-      className="flex flex-col gap-3 rounded-[1.2rem] border border-white/80 bg-white/70 px-4 py-4 transition-colors hover:bg-white sm:flex-row sm:items-center sm:justify-between"
+      className="clinic-surface-muted flex flex-col gap-3 px-4 py-4 transition-colors hover:bg-white sm:flex-row sm:items-center sm:justify-between"
     >
       <div className="min-w-0">
         <p className="truncate text-sm font-black text-oku-darkgrey">{title}</p>
         <p className="mt-1 text-xs leading-relaxed text-oku-darkgrey/50">{subtitle}</p>
       </div>
       <div className="text-left sm:text-right">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/35">
+        <p className="clinic-kicker">
           {meta}
         </p>
         <ArrowRight size={14} className="mt-2 text-oku-darkgrey/30 sm:ml-auto" />
@@ -721,7 +720,7 @@ function StateRow({
   value: string
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-[1.2rem] border border-white/80 bg-white/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="clinic-surface-muted flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-oku-lavender/25 text-oku-purple-dark">
           {icon}
@@ -749,7 +748,7 @@ function SurfaceLink({
   return (
     <Link
       href={href}
-      className="group rounded-[1.6rem] border border-white/80 bg-white/70 p-5 shadow-sm transition-all hover:-translate-y-1 hover:bg-white"
+      className="group clinic-surface p-5 transition-all hover:-translate-y-1 hover:bg-white"
     >
       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-oku-lavender/25 text-oku-purple-dark shadow-sm">
         {icon}
@@ -762,7 +761,7 @@ function SurfaceLink({
 
 function CompactEmpty({ label }: { label: string }) {
   return (
-    <div className="rounded-[1.25rem] border border-dashed border-oku-darkgrey/10 bg-[#faf7f2] px-4 py-5 text-sm text-oku-darkgrey/50">
+    <div className="clinic-surface-muted text-sm text-oku-darkgrey/50">
       {label}
     </div>
   )

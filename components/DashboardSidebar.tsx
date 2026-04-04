@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import {
   Activity,
   Brain,
@@ -27,107 +27,80 @@ import {
 } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { data: session } = useSession()
   const role = session?.user?.role
   const adhdUnlocked = (session?.user as any)?.adhdDiagnosed || (session?.user as any)?.clientProfile?.adhdDiagnosed
   const [isOpen, setIsOpen] = useState(false)
-
-  // Close sidebar on navigation
-  useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
+  const currentUrl = searchParams?.toString() ? `${pathname}?${searchParams.toString()}` : pathname
 
   const clientLinks = [
     { label: 'Home',             href: '/dashboard/client',                   icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
     { label: 'Find Care',        href: '/dashboard/client/therapists',        icon: <Search size={18} strokeWidth={1.5} /> },
     { label: 'Sessions',         href: '/dashboard/client/sessions',          icon: <Calendar size={18} strokeWidth={1.5} /> },
-    { label: 'Assessments',      href: '/dashboard/client/clinical',          icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
-    { label: 'Circles',          href: '/dashboard/client/circles',           icon: <Users size={18} strokeWidth={1.5} /> },
-    // ADHD Manager — gate
-    ...(adhdUnlocked
-      ? [{ label: 'ADHD', href: '/dashboard/client/adhd', icon: <Brain size={18} strokeWidth={1.5} /> }]
-      : []),
-    { label: 'Wellness',         href: '/dashboard/client/wellness',          icon: <Heart size={18} strokeWidth={1.5} /> },
     { label: 'Messages',         href: '/dashboard/client/messages',          icon: <MessageSquare size={18} strokeWidth={1.5} /> },
-    { label: 'Documents',        href: '/dashboard/client/documents',         icon: <FileText size={18} strokeWidth={1.5} /> },
-    { label: 'Profile',          href: '/dashboard/client/profile',           icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Records',          href: '/dashboard/client/clinical',          icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Account',          href: '/dashboard/client/profile',           icon: <Settings size={18} strokeWidth={1.5} /> },
   ]
 
   const therapistLinks = [
-    { label: 'Home', href: '/practitioner/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
-    { label: 'Schedule', href: '/practitioner/schedule', icon: <Calendar size={18} strokeWidth={1.5} /> },
-    { label: 'Clients', href: '/practitioner/clients', icon: <Users size={18} strokeWidth={1.5} /> },
-    { label: 'Assessments', href: '/practitioner/assessments', icon: <ClipboardCheck size={18} strokeWidth={1.5} /> },
-    { label: 'Circles', href: '/practitioner/dashboard?tab=circles', icon: <Video size={18} strokeWidth={1.5} /> },
-    { label: 'Intelligence', href: '/practitioner/intelligence', icon: <Brain size={18} strokeWidth={1.5} /> },
-    { label: 'Outcomes', href: '/practitioner/outcomes', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
-    { label: 'Messages', href: '/practitioner/messages', icon: <MessageSquare size={18} strokeWidth={1.5} /> },
-    { label: 'Billing', href: '/practitioner/billing', icon: <DollarSign size={18} strokeWidth={1.5} /> },
-    { label: 'Profile', href: '/practitioner/profile', icon: <Settings size={18} strokeWidth={1.5} /> },
+    { label: 'Home',             href: '/practitioner/dashboard',             icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Schedule',         href: '/practitioner/schedule',              icon: <Calendar size={18} strokeWidth={1.5} /> },
+    { label: 'Clients',          href: '/practitioner/clients',               icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Messages',         href: '/practitioner/messages',              icon: <MessageSquare size={18} strokeWidth={1.5} /> },
+    { label: 'Finance',          href: '/practitioner/billing',               icon: <DollarSign size={18} strokeWidth={1.5} /> },
+    { label: 'Advanced',         href: '/practitioner/intelligence',          icon: <Brain size={18} strokeWidth={1.5} /> },
   ]
 
   const adminLinks = [
-    { label: 'Overview', href: '/admin/dashboard', icon: <Activity size={18} strokeWidth={1.5} /> },
-    { label: 'Users', href: '/admin/users', icon: <Users size={18} strokeWidth={1.5} /> },
-    { label: 'Practitioners', href: '/admin/practitioners', icon: <Users size={18} strokeWidth={1.5} /> },
-    { label: 'Sessions', href: '/admin/sessions', icon: <Calendar size={18} strokeWidth={1.5} /> },
-    { label: 'Financials', href: '/admin/financials', icon: <DollarSign size={18} strokeWidth={1.5} /> },
-    { label: 'Analytics', href: '/admin/analytics', icon: <TrendingUp size={18} strokeWidth={1.5} /> },
-    { label: 'Compliance', href: '/admin/compliance', icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
-    { label: 'Quality', href: '/admin/quality', icon: <Star size={18} strokeWidth={1.5} /> },
-    { label: 'Security', href: '/admin/security', icon: <Shield size={18} strokeWidth={1.5} /> },
-    { label: 'Automation', href: '/admin/automation', icon: <Zap size={18} strokeWidth={1.5} /> },
+    { label: 'Overview',         href: '/admin/dashboard',                    icon: <Activity size={18} strokeWidth={1.5} /> },
+    { label: 'Users',            href: '/admin/users',                        icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Practitioners',    href: '/admin/practitioners',                icon: <Users size={18} strokeWidth={1.5} /> },
+    { label: 'Sessions',         href: '/admin/sessions',                     icon: <Calendar size={18} strokeWidth={1.5} /> },
+    { label: 'Financials',       href: '/admin/financials',                   icon: <DollarSign size={18} strokeWidth={1.5} /> },
+    { label: 'Compliance',       href: '/admin/compliance',                   icon: <ShieldCheck size={18} strokeWidth={1.5} /> },
+    { label: 'Operations',       href: '/admin/automation',                   icon: <Zap size={18} strokeWidth={1.5} /> },
   ]
 
   const links = role === 'ADMIN' ? adminLinks : role === 'THERAPIST' ? therapistLinks : clientLinks
+  const handleClose = () => setIsOpen(false)
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-gradient-to-b from-oku-lavender/80 to-oku-blush/80 backdrop-blur-3xl p-6 rounded-[3rem] border border-white/60 m-4 shadow-2xl">
-      <div className="px-4 py-8 flex items-center justify-between">
-        <Link href="/" className="block group animate-float-3d">
+    <div className="clinic-sidebar-shell m-4">
+      <div className="flex items-center justify-between px-3 py-5">
+        <Link href="/" className="block group" onClick={handleClose}>
           <img 
             src="/wp-content/uploads/2025/07/Logoo.png" 
             alt="OKU" 
             className="h-10 w-auto opacity-90"
           />
         </Link>
-        <button onClick={() => setIsOpen(false)} className="lg:hidden text-oku-darkgrey/40">
+        <button onClick={handleClose} className="lg:hidden text-oku-darkgrey/40">
             <X size={24} />
         </button>
       </div>
 
-      <nav className="flex-1 space-y-3 px-2 overflow-y-auto mt-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30 mb-8 ml-4">Sanctuary</p>
+      <nav className="mt-6 flex-1 space-y-3 overflow-y-auto px-1">
+        <p className="clinic-kicker mb-5 ml-4">Sanctuary</p>
         <div className="space-y-2">
           {links.map((link) => {
-            const active = pathname === link.href || (link.href.includes('?') && pathname + '?' + link.href.split('?')[1] === link.href)
+            const active = currentUrl === link.href || pathname === link.href || (link.href.includes('?') && pathname === link.href.split('?')[0] && currentUrl === link.href)
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative group block"
+                className={`clinic-sidebar-link group block ${active ? 'clinic-sidebar-link-active' : ''}`}
+                onClick={handleClose}
               >
-                <div className={`relative flex items-center justify-between p-4 rounded-2xl transition-all duration-500 ${
-                  active 
-                    ? 'bg-white shadow-xl scale-[1.05] border border-white text-oku-darkgrey'
-                    : 'text-oku-darkgrey/50 hover:bg-white/40 hover:translate-x-2'
-                }`}>
-                  <div className="flex items-center gap-5">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${
-                      active 
-                      ? 'bg-oku-lavender shadow-inner' 
-                      : 'bg-white/40 group-hover:bg-white'
-                    }`}>
-                       <div className={active ? 'text-oku-purple-dark' : 'text-oku-darkgrey/40 group-hover:text-oku-purple-dark'}>
-                          {link.icon}
-                       </div>
-                    </div>
-                    <span className={`text-[11px] uppercase tracking-[0.2em] font-black ${active ? 'text-oku-darkgrey' : ''}`}>{link.label}</span>
+                <div className="flex items-center gap-4">
+                  <div className={`clinic-sidebar-icon ${active ? 'border-transparent bg-oku-lavender text-oku-purple-dark shadow-sm' : 'group-hover:border-white group-hover:bg-white'}`}>
+                    {link.icon}
                   </div>
+                  <span className={`text-[11px] font-black uppercase tracking-[0.18em] ${active ? 'text-oku-darkgrey' : 'text-oku-darkgrey/60'}`}>{link.label}</span>
                 </div>
               </Link>
             )
@@ -135,20 +108,20 @@ export function DashboardSidebar() {
         </div>
       </nav>
 
-      <div className="mt-auto pt-8">
-        <div className="card-glass-3d !p-6 !bg-white/60 !rounded-[2.5rem] shadow-xl group transition-all duration-500 hover:scale-[1.02]">
-           <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-darkgrey font-display font-black text-xl animate-float-3d shadow-sm">
+      <div className="mt-auto pt-6">
+        <div className="rounded-[1.8rem] border border-white/80 bg-white/72 p-5 shadow-sm">
+           <div className="mb-5 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-oku-lavender text-lg font-display font-black text-oku-darkgrey shadow-sm">
                  {session?.user?.name?.substring(0, 1)}
               </div>
               <div className="flex-1 min-w-0">
-                 <p className="text-[11px] font-black uppercase tracking-widest text-oku-darkgrey truncate">{session?.user?.name}</p>
-                 <p className="text-[9px] uppercase tracking-widest text-oku-purple-dark font-black">{role?.toLowerCase()}</p>
+                 <p className="truncate text-[11px] font-black uppercase tracking-[0.16em] text-oku-darkgrey">{session?.user?.name}</p>
+                 <p className="mt-1 text-[9px] font-black uppercase tracking-[0.24em] text-oku-purple-dark/70">{role?.toLowerCase()}</p>
               </div>
            </div>
            <button 
              onClick={() => signOut({ callbackUrl: '/' })}
-             className="btn-pill-3d bg-white/80 border-oku-darkgrey/5 hover:bg-red-50 hover:text-red-500 transition-all w-full !py-4 text-[10px]"
+             className="btn-pill-3d w-full bg-white text-[10px] text-oku-darkgrey transition-all hover:bg-red-50 hover:text-red-500 !py-4"
            >
              <LogOut size={14} strokeWidth={2} className="mr-2" />
              <span>Sign Out</span>
@@ -164,7 +137,7 @@ export function DashboardSidebar() {
       <div className="lg:hidden fixed top-6 left-6 z-[60]">
         <button 
           onClick={() => setIsOpen(true)}
-          className="p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white shadow-2xl text-oku-darkgrey animate-float-3d"
+          className="rounded-2xl border border-white/80 bg-white/90 p-4 text-oku-darkgrey shadow-lg backdrop-blur-xl"
         >
           <Menu size={24} />
         </button>
@@ -193,7 +166,7 @@ export function DashboardSidebar() {
         initial={{ x: '-100%' }}
         animate={{ x: isOpen ? 0 : '-100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="fixed inset-y-0 left-0 w-[320px] z-[70] lg:hidden"
+        className="fixed inset-y-0 left-0 z-[70] w-[320px] lg:hidden"
       >
         {sidebarContent}
       </motion.aside>

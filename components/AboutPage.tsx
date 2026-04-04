@@ -33,127 +33,137 @@ function SectionReveal({ children, className = "" }: { children: React.ReactNode
 export default function AboutPage() {
   return (
     <div className="oku-page-public">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
-
-        .oku-page-public {
-          background: #F7F4EF;
-          color: #2D2D2D;
-          font-family: 'DM Sans', sans-serif;
-          line-height: 1.6;
-          -webkit-font-smoothing: antialiased;
-          overflow-x: hidden;
-        }
-
-        .heading-display {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          line-height: 1.05;
-          letter-spacing: -0.02em;
-        }
-      `}</style>
-
       {/* Hero Section */}
-      <div className="max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24 pt-48 pb-32">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 pt-48 pb-32">
         <SectionReveal>
           <div className="max-w-4xl mb-32">
-            <span className="inline-block px-6 py-2 mb-10 text-[11px] font-black tracking-[0.4em] uppercase text-oku-taupe bg-white/50 backdrop-blur-md border border-oku-taupe/10 rounded-full">
-              Our Essence
-            </span>
-            <h1 className="heading-display text-7xl md:text-9xl text-oku-dark leading-[0.85] tracking-tight mb-12">
-              The Heart <br />
-              <span className="italic text-oku-taupe">of things.</span>
-            </h1>
-            <p className="text-xl md:text-3xl text-oku-taupe font-display italic leading-relaxed max-w-2xl border-l-2 border-oku-purple/20 pl-8">
-              "Oku" is a concept of inner space. We created this collective to provide a sanctuary for that space to breathe, unfold, and heal.
-            </p>
+            <h2 className="heading-display text-5xl md:text-7xl text-oku-darkgrey tracking-tighter mb-4">
+              <b>The heart</b> behind
+            </h2>
+            <div className="flex items-center gap-4">
+               <h3 className="heading-display text-7xl md:text-9xl text-oku-purple-dark italic leading-[0.85] tracking-tight">
+                 oku therapy
+               </h3>
+            </div>
           </div>
         </SectionReveal>
 
         {/* Narrative Section */}
-        <div className="grid lg:grid-cols-2 gap-24 items-center mb-48">
+        <div className="grid lg:grid-cols-2 gap-24 items-start mb-48">
           <SectionReveal>
-            <div className="aspect-[4/5] bg-oku-cream rounded-[4rem] overflow-hidden relative group shadow-sm border border-oku-taupe/10">
-              <img 
-                src="/uploads/2025/06/x31_.png" 
-                alt="Oku Philosophy" 
-                className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-oku-navy/60 via-transparent to-transparent opacity-60" />
-              <div className="absolute inset-0 flex items-center justify-center p-12 text-center">
-                 <div className="bg-white/90 backdrop-blur-xl p-8 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000 shadow-2xl border border-white">
-                    <p className="text-oku-dark font-display italic text-2xl leading-relaxed">
-                        "Healing is not a destination, but a returning."
+            <div className="space-y-10 pr-12">
+                <div className="flex items-center gap-3">
+                   <h2 className="heading-display text-5xl md:text-6xl text-oku-darkgrey leading-tight tracking-tighter">The <b>Oku</b></h2>
+                </div>
+                <h2 className="heading-display text-5xl md:text-6xl text-oku-purple-dark italic -mt-6">philosophy</h2>
+                
+                <div className="space-y-8 text-oku-darkgrey/70 text-lg leading-relaxed font-display italic">
+                    <p>
+                        At Oku, therapy isn’t about managing symptoms. It’s about listening to what those symptoms are trying to say.
                     </p>
-                 </div>
+                    <p>
+                        We believe the patterns you repeat, the fears you carry, the ways you shut down — they’re not faults. They’re maps. Maps of what hasn’t yet been heard.
+                    </p>
+                    <p>
+                        That’s why we don’t rush toward change. We begin with curiosity. With what it feels like to be you — in your body, in your relationships, in your history.
+                    </p>
+                    <p>
+                        Rooted in depth-oriented psychotherapy, we hold space for what doesn’t yet have words, for the layers beneath survival.
+                    </p>
+                    <p className="text-xl text-oku-darkgrey font-bold not-italic">
+                        Because healing doesn’t happen in performance. <br />
+                        It happens in presence.
+                    </p>
+                </div>
+            </div>
+          </SectionReveal>
+
+          <SectionReveal>
+            <div className="aspect-video bg-oku-cream rounded-[4rem] overflow-hidden relative group shadow-2xl border border-white/40">
+              <video 
+                src="/wp-content/uploads/2025/07/Calm.mp4" 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-full h-full object-cover" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-oku-darkgrey/40 to-transparent" />
+              <div className="absolute bottom-12 left-12 right-12">
+                 <p className="heading-display text-3xl md:text-4xl text-white italic leading-tight">
+                    "Healing is not a destination, but a returning."
+                 </p>
               </div>
             </div>
           </SectionReveal>
-          
-          <SectionReveal>
+        </div>
+
+        {/* People Section */}
+        <div className="grid lg:grid-cols-2 gap-24 items-center mb-48">
+           <SectionReveal>
+             <div className="relative">
+                <img 
+                  src="/wp-content/uploads/2025/07/Group-33.png" 
+                  alt="People" 
+                  className="w-full h-auto rounded-[3rem] shadow-xl"
+                />
+                <img 
+                  src="/wp-content/uploads/2025/07/Frame-200.png" 
+                  alt="Sticker" 
+                  className="absolute -bottom-10 -right-10 w-64 h-auto drop-shadow-2xl animate-float"
+                />
+             </div>
+           </SectionReveal>
+
+           <SectionReveal>
             <div className="space-y-10">
-                <h2 className="heading-display text-5xl md:text-6xl text-oku-dark leading-tight tracking-tighter">Beyond the <br /><strong>clinical</strong> surface.</h2>
-                <div className="space-y-8 text-oku-taupe text-lg leading-relaxed font-display italic">
-                    <p>
-                        In a world that demands performance, Oku offers a space for the opposite. We move at the pace your story asks for—never rushed, never prescribed.
-                    </p>
-                    <p>
-                        Our collective was born from a need for therapy that actually sees you. Not just your symptoms, but your culture, your identity, your history, and your body.
-                    </p>
-                </div>
+                <h2 className="heading-display text-5xl md:text-6xl text-oku-darkgrey leading-tight tracking-tighter">A little <br /><b>about us</b></h2>
+                <h3 className="heading-display text-4xl text-oku-purple-dark italic -mt-6">as people first</h3>
                 
-                <div className="pt-10 grid grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                        <div className="w-12 h-12 rounded-2xl bg-oku-purple/20 flex items-center justify-center text-oku-purple-dark shadow-inner">
-                            <Heart size={20} />
-                        </div>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-dark">Radical Empathy</h4>
-                        <p className="text-xs text-oku-taupe leading-relaxed">Sitting beside your story with deep, non-judgmental presence.</p>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="w-12 h-12 rounded-2xl bg-oku-ocean flex items-center justify-center text-oku-navy shadow-inner">
-                            <Wind size={20} />
-                        </div>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-oku-dark">Somatic Depth</h4>
-                        <p className="text-xs text-oku-taupe leading-relaxed">Acknowledging the wisdom of the body in the healing process.</p>
-                    </div>
+                <div className="space-y-8 text-oku-darkgrey/70 text-lg leading-relaxed font-display italic">
+                    <p>
+                        We are a collective of clinical psychologists, psycho-dynamic psychotherapists, trauma-informed, queer affirmative practitioners, narrative practitioners, and more.
+                    </p>
+                    <p>
+                        But more than that, we are people who have known ache—who bring our humanity into the room with you. Your therapist will not disappear behind jargon or expertise.
+                    </p>
+                    <p>
+                        They will sit with you. They will care.
+                    </p>
+                    <p>
+                        We are a collective because we believe in collaboration. We meet as a team, we offer case discussions, we stay supervised.
+                    </p>
                 </div>
             </div>
           </SectionReveal>
         </div>
 
-        {/* Commitment Banner */}
+        {/* Closing Section */}
         <SectionReveal>
-            <div className="bg-oku-navy rounded-[4rem] p-16 md:p-24 lg:p-32 text-white relative overflow-hidden group">
+            <div className="bg-oku-darkgrey rounded-[4rem] p-12 md:p-24 lg:p-32 text-white relative overflow-hidden group shadow-2xl">
                 <div className="relative z-10 max-w-4xl">
-                    <div className="flex items-center gap-3 mb-8">
-                        <ShieldCheck size={20} className="text-oku-purple animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Our Professional Oath</span>
-                    </div>
-                    <h2 className="heading-display text-5xl md:text-7xl mb-12 tracking-tight">Qualified, Ethical, and <br /><span className="italic text-oku-purple">Deeply Human.</span></h2>
+                    <h2 className="heading-display text-5xl md:text-8xl mb-12 tracking-tight leading-[0.9]">
+                       <b>who stay</b> <br />
+                       <span className="italic text-oku-purple">when it hurts</span>
+                    </h2>
                     <p className="text-xl text-white/60 font-display italic leading-relaxed mb-16 max-w-2xl">
-                        Every practitioner in our collective is fully licensed and professionally vetted. We combine clinical precision with cultural humility to ensure you are in grounded hands.
+                        At OKU, we don’t assume who you are before you arrive. We wait with you — curiously, respectfully — until your story is ready to unfold.
                     </p>
                     <Link 
                         href="/therapists" 
-                        className="inline-flex items-center gap-4 bg-white text-oku-navy py-6 px-12 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-purple transition-all shadow-2xl active:scale-95"
+                        className="inline-flex items-center gap-6 bg-white text-oku-darkgrey py-6 px-12 rounded-full font-black text-[11px] uppercase tracking-[0.4em] hover:bg-oku-lavender transition-all shadow-2xl active:scale-95 group"
                     >
-                        Meet the Collective <ArrowRight size={16} />
+                        Meet the Collective <ArrowRight size={16} className="transition-transform group-hover:translate-x-2" />
                     </Link>
                 </div>
                 
-                <Zap size={300} className="absolute right-[-50px] bottom-[-50px] text-white opacity-5 group-hover:rotate-12 transition-transform duration-[3s]" />
+                <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none">
+                   <img 
+                     src="/wp-content/uploads/2025/06/Vector-1.png" 
+                     className="w-full h-full object-contain scale-150 rotate-12"
+                   />
+                </div>
             </div>
-        </SectionReveal>
-
-        {/* CTA Section */}
-        <SectionReveal>
-          <div className="text-center py-32 mt-24">
-            <h2 className="heading-display text-5xl md:text-7xl text-oku-dark mb-12 leading-tight">Ready to begin?</h2>
-            <Link href="/auth/signup" className="inline-flex items-center gap-4 bg-oku-dark text-white py-6 px-16 rounded-full font-black text-[11px] uppercase tracking-[0.3em] hover:bg-oku-navy transition-all shadow-2xl active:scale-95">
-              Start Your Journey <ArrowRight size={16} />
-            </Link>
-          </div>
         </SectionReveal>
       </div>
     </div>

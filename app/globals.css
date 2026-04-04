@@ -125,8 +125,20 @@ body {
   /* ── BUTTONS ── */
 
   .btn-pill-3d {
-    @apply relative inline-flex items-center justify-center px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.22em] transition-all duration-200 shadow-lg border-b-[3px] active:border-b-0 active:translate-y-[3px] select-none;
+    @apply relative inline-flex items-center justify-center rounded-full border px-8 py-4 text-[10px] font-black uppercase tracking-[0.18em] transition-all duration-200 select-none;
     font-family: var(--font-sans), system-ui, sans-serif;
+    border-color: rgb(255 255 255 / 0.78);
+    box-shadow: 0 18px 36px -24px rgba(74, 68, 88, 0.42);
+  }
+
+  .btn-pill-3d:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 24px 42px -26px rgba(74, 68, 88, 0.48);
+  }
+
+  .btn-pill-3d:active {
+    transform: translateY(0);
+    box-shadow: 0 10px 24px -16px rgba(74, 68, 88, 0.35);
   }
 
   .btn-pebble {
@@ -136,8 +148,13 @@ body {
   /* ── CARDS ── */
 
   .card-glass-3d {
-    @apply bg-white/40 backdrop-blur-[16px] rounded-[3rem] border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.015];
-    perspective: 1000px;
+    @apply rounded-[2rem] border border-white/70 bg-white/55 backdrop-blur-[18px] transition-all duration-300;
+    box-shadow: 0 26px 60px -40px rgba(74, 68, 88, 0.38);
+  }
+
+  .card-glass-3d:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 32px 72px -42px rgba(74, 68, 88, 0.42);
   }
 
   .card-pebble {
@@ -170,6 +187,71 @@ body {
 
   .oku-page-public {
     padding-top: 0;
+  }
+
+  .clinic-shell {
+    @apply mx-auto max-w-7xl space-y-8 px-4 pb-10 pt-24 sm:px-6 sm:pb-12 sm:pt-28 lg:px-8 lg:py-12;
+  }
+
+  .clinic-shell-wide {
+    @apply mx-auto max-w-[1600px] space-y-8 px-4 pb-10 pt-24 sm:px-6 sm:pb-12 sm:pt-28 lg:px-10 lg:py-12 xl:px-12;
+  }
+
+  .clinic-hero-card {
+    @apply overflow-hidden rounded-[2.4rem] border border-white/80 p-6 shadow-sm sm:p-8 lg:p-10;
+    background:
+      radial-gradient(circle at top right, rgba(165, 153, 224, 0.16), transparent 34%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(249, 247, 242, 0.96), rgba(239, 243, 241, 0.93));
+    box-shadow: 0 30px 70px -44px rgba(74, 68, 88, 0.4);
+  }
+
+  .clinic-surface {
+    @apply rounded-[2rem] border border-white/80 p-5 backdrop-blur-xl sm:p-6 lg:p-7;
+    background: rgba(255, 255, 255, 0.74);
+    box-shadow: 0 24px 56px -38px rgba(74, 68, 88, 0.3);
+  }
+
+  .clinic-surface-muted {
+    @apply rounded-[1.5rem] border border-oku-darkgrey/5 p-4;
+    background: rgba(250, 247, 242, 0.92);
+  }
+
+  .clinic-kicker {
+    @apply text-[10px] font-black uppercase tracking-[0.28em] text-oku-darkgrey/35;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  .clinic-copy {
+    @apply max-w-3xl text-sm leading-relaxed text-oku-darkgrey/60 sm:text-base lg:text-lg;
+  }
+
+  .clinic-stat-card {
+    @apply rounded-[1.5rem] border border-white/80 p-5;
+    box-shadow: 0 16px 38px -30px rgba(74, 68, 88, 0.24);
+  }
+
+  .clinic-sidebar-shell {
+    @apply flex h-full flex-col rounded-[2.25rem] border border-white/70 p-5;
+    background: linear-gradient(180deg, rgba(250, 247, 242, 0.97), rgba(244, 240, 252, 0.95));
+    box-shadow: 0 30px 70px -46px rgba(74, 68, 88, 0.42);
+  }
+
+  .clinic-sidebar-link {
+    @apply relative flex items-center justify-between gap-4 rounded-[1.35rem] px-4 py-3 text-oku-darkgrey/60 transition-all duration-200;
+  }
+
+  .clinic-sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.72);
+    transform: translateX(4px);
+  }
+
+  .clinic-sidebar-link-active {
+    @apply border border-white/80 bg-white text-oku-darkgrey;
+    box-shadow: 0 16px 34px -24px rgba(74, 68, 88, 0.32);
+  }
+
+  .clinic-sidebar-icon {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-white/70 text-oku-darkgrey/45 transition-all duration-200;
   }
 
   /* ── CUSTOM SCROLLBAR ── */

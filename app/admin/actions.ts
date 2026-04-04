@@ -14,13 +14,21 @@ async function checkAdmin() {
   return session
 }
 
+async function refreshAdminPaths() {
+  revalidatePath('/admin/dashboard')
+  revalidatePath('/admin/users')
+  revalidatePath('/admin/practitioners')
+  revalidatePath('/admin/financials')
+  revalidatePath('/admin/sessions')
+}
+
 export async function toggleTherapistVerification(practitionerId: string, isVerified: boolean) {
   await checkAdmin()
   await prisma.practitionerProfile.update({
     where: { id: practitionerId },
     data: { isVerified }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function updateUserRole(userId: string, role: UserRole) {
@@ -29,7 +37,7 @@ export async function updateUserRole(userId: string, role: UserRole) {
     where: { id: userId },
     data: { role }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function deleteUser(userId: string) {
@@ -37,7 +45,7 @@ export async function deleteUser(userId: string) {
   await prisma.user.delete({
     where: { id: userId }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function toggleTherapistBlogPower(practitionerId: string, canPostBlogs: boolean) {
@@ -46,7 +54,7 @@ export async function toggleTherapistBlogPower(practitionerId: string, canPostBl
     where: { id: practitionerId },
     data: { canPostBlogs }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function updateTherapistRate(practitionerId: string, hourlyRate: number) {
@@ -58,7 +66,7 @@ export async function updateTherapistRate(practitionerId: string, hourlyRate: nu
       internationalSessionRate: hourlyRate,
     }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function updateServicePrice(serviceId: string, price: number) {
@@ -67,7 +75,7 @@ export async function updateServicePrice(serviceId: string, price: number) {
     where: { id: serviceId },
     data: { price }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function createService(data: { name: string, duration: number, price: number, description?: string }) {
@@ -81,7 +89,7 @@ export async function createService(data: { name: string, duration: number, pric
       isActive: true
     }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function toggleServiceStatus(serviceId: string, isActive: boolean) {
@@ -90,7 +98,7 @@ export async function toggleServiceStatus(serviceId: string, isActive: boolean) 
     where: { id: serviceId },
     data: { isActive }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function updateServiceDefinition(
@@ -108,7 +116,7 @@ export async function updateServiceDefinition(
       isActive: data.isActive,
     }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function deleteServiceDefinition(serviceId: string) {
@@ -124,7 +132,7 @@ export async function deleteServiceDefinition(serviceId: string) {
       data: { isActive: false }
     })
 
-    revalidatePath('/admin/dashboard')
+    await refreshAdminPaths()
     return { mode: 'archived' as const }
   }
 
@@ -132,7 +140,7 @@ export async function deleteServiceDefinition(serviceId: string) {
     where: { id: serviceId }
   })
 
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   return { mode: 'deleted' as const }
 }
 
@@ -174,7 +182,7 @@ export async function updatePlatformSettings(data: {
       maxReferralRewards: data.maxReferralRewards ?? 3,
     }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   revalidatePath('/admin/financials')
   revalidatePath('/practitioner/dashboard')
   revalidatePath('/practitioner/billing')
@@ -209,7 +217,7 @@ export async function createPost(data: { title: string, content: string, excerpt
       authorId: session.user.id
     }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   revalidatePath('/practitioner/blogs')
   revalidatePath('/blog')
 }
@@ -224,7 +232,7 @@ export async function updatePost(id: string, data: { title?: string, content?: s
     where: { id },
     data
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   revalidatePath('/practitioner/blogs')
   revalidatePath('/blog')
 }
@@ -234,7 +242,7 @@ export async function deletePost(id: string) {
   await prisma.post.delete({
     where: { id }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   revalidatePath('/practitioner/blogs')
   revalidatePath('/blog')
 }
@@ -347,7 +355,7 @@ export async function createCircle(data: {
     }
   })
 
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   revalidatePath('/circles')
 }
 
@@ -356,7 +364,7 @@ export async function deleteCircle(appointmentId: string) {
   await prisma.appointment.delete({
     where: { id: appointmentId }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
   revalidatePath('/circles')
 }
 
@@ -378,7 +386,7 @@ export async function createManualAppointment(data: {
       status: data.status || 'SCHEDULED'
     }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function rescheduleAppointment(appointmentId: string, startTime: Date, endTime: Date) {
@@ -387,7 +395,7 @@ export async function rescheduleAppointment(appointmentId: string, startTime: Da
     where: { id: appointmentId },
     data: { startTime, endTime }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function updateAppointmentStatus(appointmentId: string, status: AppointmentStatus) {
@@ -396,7 +404,7 @@ export async function updateAppointmentStatus(appointmentId: string, status: App
     where: { id: appointmentId },
     data: { status }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function deleteAppointment(appointmentId: string) {
@@ -404,7 +412,7 @@ export async function deleteAppointment(appointmentId: string) {
   await prisma.appointment.delete({
     where: { id: appointmentId }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function addParticipantToCircle(appointmentId: string, userId: string) {
@@ -416,7 +424,7 @@ export async function addParticipantToCircle(appointmentId: string, userId: stri
     update: {},
     create: { appointmentId, userId }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }
 
 export async function removeParticipantFromCircle(participantId: string) {
@@ -424,5 +432,5 @@ export async function removeParticipantFromCircle(participantId: string) {
   await prisma.groupParticipant.delete({
     where: { id: participantId }
   })
-  revalidatePath('/admin/dashboard')
+  await refreshAdminPaths()
 }

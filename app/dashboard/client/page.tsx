@@ -121,45 +121,41 @@ export default async function ClientDashboardPage() {
       : 'Ready for active care'
 
   return (
-    <div className="mx-auto min-h-screen max-w-7xl space-y-8 px-6 py-10 lg:px-10">
-      <section className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-gradient-to-br from-white via-[#faf7f2] to-[#f0ece6] p-8 shadow-sm">
+    <div className="clinic-shell min-h-screen">
+      <section className="clinic-hero-card">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-white/80 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple-dark">
-                Client Workspace
-              </span>
-              <span className="rounded-full bg-oku-darkgrey/5 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">
-                {careStatus}
-              </span>
+              <span className="chip">Client Workspace</span>
+              <span className="chip !bg-oku-darkgrey/5 !text-oku-darkgrey/45">{careStatus}</span>
             </div>
 
             <div>
-              <h1 className="heading-display text-5xl tracking-tight text-oku-darkgrey lg:text-7xl">
+              <h1 className="heading-display text-4xl tracking-tight text-oku-darkgrey sm:text-5xl lg:text-7xl">
                 Welcome back,{' '}
                 <span className="italic text-oku-purple-dark">
                   {user.name?.split(' ')[0] || 'friend'}
                 </span>
                 .
               </h1>
-              <p className="mt-4 max-w-3xl text-lg leading-relaxed text-oku-darkgrey/60">
+              <p className="clinic-copy mt-4">
                 This version of OKU is organized around what you actually need:
                 start care, complete clinical tasks, stay connected, and keep
                 your progress in one place.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href={nextSession ? `/session/${nextSession.id}` : '/dashboard/client/therapists'}
-                className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-8 !py-4 text-[10px]"
+                className="btn-pill-3d w-full bg-oku-darkgrey border-oku-darkgrey text-white !px-8 !py-4 text-[10px] sm:w-auto"
               >
                 {nextSession ? 'Join next session' : 'Find care'}
                 <ArrowRight size={14} className="ml-2" />
               </Link>
               <Link
                 href="/dashboard/client/clinical"
-                className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-8 !py-4 text-[10px]"
+                className="btn-pill-3d w-full bg-white border-white text-oku-darkgrey !px-8 !py-4 text-[10px] sm:w-auto"
               >
                 Open clinical record
               </Link>
@@ -198,235 +194,80 @@ export default async function ClientDashboardPage() {
         autoOpen={isNewUser || !hasIntake}
       />
 
-      <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="rounded-[2rem] border border-white/80 bg-white/70 p-7 shadow-sm backdrop-blur">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-oku-darkgrey/35">
-                First week in OKU
-              </p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight text-oku-darkgrey">
-                Your next best moves
-              </h2>
-            </div>
-            <div className="rounded-2xl bg-oku-darkgrey/5 px-4 py-3 text-center">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-oku-darkgrey/35">
-                Done
-              </p>
-              <p className="mt-1 text-lg font-black text-oku-darkgrey">
-                {completedSteps}/{gettingStarted.length}
-              </p>
-            </div>
+      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="clinic-surface space-y-8">
+          <div>
+            <p className="clinic-kicker">Next Steps</p>
+            <h2 className="heading-display mt-2 text-3xl tracking-tight text-oku-darkgrey">
+               {completedSteps < gettingStarted.length ? "Setting up your sanctuary" : "Your active care queue"}
+            </h2>
           </div>
-
-          <div className="mt-6 space-y-3">
-            {gettingStarted.map((step, index) => (
-              <Link
-                key={step.label}
-                href={step.href}
-                className={`flex items-start gap-4 rounded-[1.4rem] border p-4 transition-colors ${
-                  step.done
-                    ? 'border-emerald-200 bg-emerald-50/80'
-                    : 'border-oku-darkgrey/5 bg-[#faf7f2] hover:bg-white'
-                }`}
-              >
-                <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-black ${
-                    step.done
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-oku-darkgrey/7 text-oku-darkgrey/55'
-                  }`}
-                >
-                  {step.done ? 'OK' : index + 1}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-black text-oku-darkgrey">{step.label}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-oku-darkgrey/55">
-                    {step.desc}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="rounded-[2rem] border border-white/80 bg-white/70 p-7 shadow-sm backdrop-blur">
-          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-oku-darkgrey/35">
-            Care overview
-          </p>
 
           {nextSession ? (
-            <div className="mt-5 rounded-[1.6rem] bg-oku-darkgrey p-6 text-white">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/45">
-                Next session
-              </p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight">
-                {nextSession.practitioner.name}
-              </h2>
-              <p className="mt-2 text-sm text-white/65">
-                {new Date(nextSession.startTime).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}{' '}
-                at{' '}
-                {new Date(nextSession.startTime).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </p>
-              <p className="mt-4 text-sm text-white/55">
-                {nextSession.service?.name || 'Therapy session'}
-              </p>
-              <Link
-                href={`/session/${nextSession.id}`}
-                className="btn-pill-3d mt-6 inline-flex bg-white border-white text-oku-darkgrey !px-7 !py-4 text-[10px]"
-              >
-                Enter session room
-              </Link>
-            </div>
-          ) : (
-            <div className="mt-5 rounded-[1.6rem] border border-dashed border-oku-darkgrey/10 bg-[#faf7f2] p-6">
-              <p className="text-sm font-black text-oku-darkgrey">
-                No session booked yet.
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-oku-darkgrey/55">
-                Start with a therapist match, or join a circle if you want a softer
-                first step into the platform.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link
-                  href="/dashboard/client/therapists"
-                  className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-7 !py-4 text-[10px]"
-                >
-                  Browse therapists
-                </Link>
-                <Link
-                  href="/dashboard/client/circles"
-                  className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-7 !py-4 text-[10px]"
-                >
-                  Explore circles
+            <div className="rounded-[2rem] bg-oku-darkgrey p-8 text-white shadow-2xl relative overflow-hidden group">
+              <div className="relative z-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mb-4">Upcoming Session</p>
+                <h3 className="text-4xl font-black tracking-tight mb-2">{nextSession.practitioner.name}</h3>
+                <p className="text-white/60 font-display italic text-lg mb-8">
+                  {formatDateTime(nextSession.startTime)} • {nextSession.service?.name}
+                </p>
+                <Link href={`/session/${nextSession.id}`} className="btn-pill-3d bg-white text-oku-darkgrey !px-10 !py-5">
+                   Join Session Room <ArrowRight size={14} className="ml-2" />
                 </Link>
               </div>
+              <div className="absolute top-0 right-0 w-1/2 h-full bg-oku-purple/10 blur-3xl -z-0 group-hover:bg-oku-purple/20 transition-all duration-1000" />
+            </div>
+          ) : (
+            <div className="rounded-[2rem] border border-dashed border-oku-darkgrey/10 bg-[#faf7f2] p-8">
+               <p className="font-bold text-oku-darkgrey text-xl mb-2">No session booked yet.</p>
+               <p className="text-oku-darkgrey/50 text-sm leading-relaxed mb-6 italic">Ready to start? You can browse our collective or join a community circle.</p>
+               <div className="flex gap-4">
+                  <Link href="/dashboard/client/therapists" className="btn-pill-3d bg-oku-darkgrey text-white !px-8 !py-4 text-[10px]">Find a Therapist</Link>
+                  <Link href="/dashboard/client/circles" className="btn-pill-3d bg-white text-oku-darkgrey !px-8 !py-4 text-[10px]">Explore Circles</Link>
+               </div>
             </div>
           )}
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <MiniInfoCard
-              label="Unread messages"
-              value={String(unreadMessages)}
-              helper="Secure support and practitioner replies"
-            />
-            <MiniInfoCard
-              label="Active circles"
-              value={String(activeCircles)}
-              helper="Upcoming group spaces you belong to"
-            />
-            <MiniInfoCard
-              label="Latest mood"
-              value={latestMood ? `${latestMood}/10` : 'None'}
-              helper="Your most recent logged check-in"
-            />
-            <MiniInfoCard
-              label="ADHD workspace"
-              value={user.clientProfile?.adhdDiagnosed ? 'Unlocked' : 'Locked'}
-              helper={
-                user.clientProfile?.adhdDiagnosed
-                  ? 'Task help, routines, and body doubling'
-                  : 'Unlocks after confirmed ADHD diagnosis'
-              }
-            />
+          <div className="space-y-4">
+             {gettingStarted.filter(s => !s.done).slice(0, 2).map((step, idx) => (
+                <Link key={step.label} href={step.href} className="flex items-center justify-between p-6 bg-white rounded-2xl border border-oku-taupe/5 hover:border-oku-purple/20 transition-all shadow-sm">
+                   <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-oku-lavender/30 flex items-center justify-center text-oku-purple-dark text-[10px] font-black">{idx + 1}</div>
+                      <div>
+                         <p className="font-bold text-oku-darkgrey text-sm">{step.label}</p>
+                         <p className="text-[11px] text-oku-darkgrey/40">{step.desc}</p>
+                      </div>
+                   </div>
+                   <ArrowRight size={16} className="text-oku-darkgrey/10" />
+                </Link>
+             ))}
           </div>
         </section>
+
+        <section className="space-y-8">
+           <div className="grid gap-6 sm:grid-cols-2">
+              <ModuleCard href="/dashboard/client/clinical" title="Records" description="Assessments & results" badge={pendingAssignments > 0 ? "Pending" : "Health"} icon={<ClipboardCheck size={20} />} tone="lavender" />
+              <ModuleCard href="/dashboard/client/messages" title="Messages" description="Secure care channel" badge={unreadMessages > 0 ? "New" : "Inbox"} icon={<MessageSquare size={14} />} tone="white" />
+              <ModuleCard href="/dashboard/client/wellness" title="Wellness" description="Track your progress" badge="Growth" icon={<Heart size={20} />} tone="mint" />
+              <ModuleCard href="/dashboard/client/documents" title="Vault" description="Clinical paperwork" badge="Safe" icon={<FileText size={20} />} tone="white" />
+           </div>
+           
+           {user.clientProfile?.adhdDiagnosed && (
+             <Link href="/dashboard/client/adhd" className="block p-8 rounded-[2rem] bg-oku-peach/10 border border-oku-peach/20 hover:bg-oku-peach/15 transition-all group">
+                <div className="flex justify-between items-start">
+                   <div className="flex items-center gap-4">
+                      <div className="p-3 bg-white rounded-xl text-oku-peach-dark shadow-sm"><Brain size={20} /></div>
+                      <div>
+                         <h4 className="font-bold text-oku-darkgrey">ADHD Workspace</h4>
+                         <p className="text-sm text-oku-darkgrey/50 italic">Task help, routines, and body doubling.</p>
+                      </div>
+                   </div>
+                   <ArrowRight size={20} className="text-oku-peach-dark/30 group-hover:translate-x-2 transition-all" />
+                </div>
+             </Link>
+           )}
+        </section>
       </div>
-
-      <section className="space-y-4">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-oku-darkgrey/35">
-            Core areas
-          </p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-oku-darkgrey">
-            Everything important, without the clutter
-          </h2>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <ModuleCard
-            href="/dashboard/client/therapists"
-            title="Find care"
-            description="Browse practitioners and start booking from one clean place."
-            badge="Start here"
-            icon={<Sparkles size={20} />}
-            tone="lavender"
-          />
-          <ModuleCard
-            href="/dashboard/client/clinical"
-            title="Assessments"
-            description="Complete screenings, review results, and track assigned clinical tasks."
-            badge={pendingAssignments > 0 ? `${pendingAssignments} pending` : 'Clinical'}
-            icon={<ClipboardCheck size={20} />}
-            tone="white"
-          />
-          <ModuleCard
-            href="/dashboard/client/messages"
-            title="Messages"
-            description="Keep conversations with your care team in one secure channel."
-            badge={unreadMessages > 0 ? `${unreadMessages} unread` : 'Secure'}
-            icon={<MessageSquare size={20} />}
-            tone="white"
-          />
-          <ModuleCard
-            href="/dashboard/client/circles"
-            title="Circles"
-            description="Join group spaces, peer support, and facilitated community sessions."
-            badge={activeCircles > 0 ? `${activeCircles} active` : 'Community'}
-            icon={<Users size={20} />}
-            tone="mint"
-          />
-          <ModuleCard
-            href="/dashboard/client/wellness"
-            title="Wellness"
-            description="Mood check-ins, safety planning, and a simple view of your progress."
-            badge="Tracking"
-            icon={<Heart size={20} />}
-            tone="white"
-          />
-          <ModuleCard
-            href="/dashboard/client/documents"
-            title="Documents"
-            description="Invoices, records, uploads, and the paperwork that supports care."
-            badge="Vault"
-            icon={<FileText size={20} />}
-            tone="white"
-          />
-          {user.clientProfile?.adhdDiagnosed && (
-            <ModuleCard
-              href="/dashboard/client/adhd"
-              title="ADHD workspace"
-              description="Focus tools, routines, body doubling, and structured low-overwhelm support."
-              badge="Unlocked"
-              icon={<Brain size={20} />}
-              tone="peach"
-            />
-          )}
-          <ModuleCard
-            href="/dashboard/client/referrals"
-            title="Referrals"
-            description="Share OKU, track credits, and apply them automatically at checkout."
-            badge={referralCredit > 0 ? 'Credit available' : 'Growth'}
-            icon={<Gift size={20} />}
-            tone="white"
-          />
-          <ModuleCard
-            href="/dashboard/client/profile"
-            title="Profile and safety"
-            description="Manage your account, emergency contacts, preferences, and personal care details."
-            badge="Settings"
-            icon={<ShieldCheck size={20} />}
-            tone="white"
-          />
-        </div>
-      </section>
     </div>
   )
 }
@@ -448,8 +289,8 @@ function StatCard({
         : 'bg-white/75'
 
   return (
-    <div className={`rounded-[1.5rem] border border-white/80 p-5 shadow-sm ${toneClass}`}>
-      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-oku-darkgrey/35">
+    <div className={`clinic-stat-card ${toneClass}`}>
+      <p className="clinic-kicker">
         {label}
       </p>
       <p className="mt-2 text-3xl font-black tracking-tight text-oku-darkgrey">
@@ -469,8 +310,8 @@ function MiniInfoCard({
   helper: string
 }) {
   return (
-    <div className="rounded-[1.3rem] border border-oku-darkgrey/5 bg-[#faf7f2] p-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-oku-darkgrey/35">
+    <div className="clinic-surface-muted">
+      <p className="clinic-kicker">
         {label}
       </p>
       <p className="mt-2 text-xl font-black tracking-tight text-oku-darkgrey">
@@ -508,7 +349,7 @@ function ModuleCard({
   return (
     <Link
       href={href}
-      className={`group rounded-[1.8rem] border border-white/80 p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md ${toneClass}`}
+      className={`group clinic-surface p-6 transition-all hover:-translate-y-1 ${toneClass}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/85 text-oku-purple-dark shadow-sm">

@@ -46,14 +46,14 @@ export default async function ClientCirclesPage() {
   )
 
   return (
-    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/10 px-4 pb-12 pt-24 sm:px-6 sm:pb-16 sm:pt-28 lg:px-10 lg:py-12 xl:px-12">
+    <div className="clinic-shell-wide relative min-h-screen overflow-hidden bg-oku-lavender/10">
       {/* Background blobs */}
       <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-oku-lavender/30 rounded-full blur-[120px] animate-pulse pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[35%] h-[35%] bg-oku-mint/20 rounded-full blur-[100px] animate-float-3d pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="mb-12 flex flex-col justify-between gap-8 sm:mb-16 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
+        <div className="clinic-hero-card mb-12 flex flex-col justify-between gap-8 sm:mb-16 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
               <Link
@@ -114,7 +114,7 @@ export default async function ClientCirclesPage() {
           </h2>
 
           {circles.filter((c) => !joinedCircleIds.has(c.id)).length === 0 ? (
-            <div className="card-glass-3d !bg-white/40 px-4 py-20 text-center sm:px-6 sm:py-24 lg:py-32">
+            <div className="clinic-surface px-4 py-20 text-center sm:px-6 sm:py-24 lg:py-32">
               <Wind className="mx-auto text-oku-purple-dark/20 mb-8 animate-float-3d" size={64} />
               <h3 className="heading-display text-2xl text-oku-darkgrey sm:text-3xl">
                 {joinedCircleIds.size > 0
@@ -176,7 +176,7 @@ function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProp
   const isFull = spotsLeft <= 0
 
   return (
-    <div className={`card-glass-3d group relative flex flex-col transition-all duration-700 hover:shadow-2xl !p-6 sm:!p-8 lg:!p-10 ${isJoined ? '!bg-oku-lavender/40 border-2 border-oku-purple-dark/20' : '!bg-white/60'}`}>
+    <div className={`group clinic-surface relative flex flex-col !p-6 transition-all duration-300 sm:!p-8 lg:!p-10 ${isJoined ? 'border-oku-purple-dark/20 bg-oku-lavender/32' : 'bg-white/80'}`}>
       {/* Joined badge */}
       {isJoined && (
         <div className="absolute -top-3 left-6 sm:left-8">
