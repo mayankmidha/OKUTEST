@@ -241,7 +241,8 @@ export function BodyDoubleRoom({ user, isTherapist = false }: BodyDoubleRoomProp
                               </div>
                               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                            </m.div>
-                        ))
+                        ))}
+                        </div>
                      )}
                   </div>
                </div>
