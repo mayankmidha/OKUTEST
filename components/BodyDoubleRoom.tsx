@@ -25,6 +25,10 @@ export function BodyDoubleRoom({ user, isTherapist = false }: BodyDoubleRoomProp
   const [loading, setLoading] = useState(true)
   const [isSignaling, setIsSignaling] = useState(false)
   
+  // AI Chaos Breaker State
+  const [aiChaosResult, setAiChaosResult] = useState<any>(null)
+  const [isAiBreaking, setIsAiLoading] = useState(false)
+  
   // Soundscape
   const [soundscape, setSoundscape] = useState('none')
 
@@ -83,6 +87,22 @@ export function BodyDoubleRoom({ user, isTherapist = false }: BodyDoubleRoomProp
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const breakChaos = async () => {
+    setIsAiLoading(true)
+    try {
+      const res = await fetch('/api/adhd/strategy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tasks: [{ title: 'Current Chaos' }], energy: 50 })
+      })
+      if (res.ok) setAiChaosResult(await res.json())
+    } catch (e) {
+      console.error("AI Error", e)
+    } finally {
+      setIsAiLoading(false)
+    }
   }
 
   return (
@@ -168,16 +188,44 @@ export function BodyDoubleRoom({ user, isTherapist = false }: BodyDoubleRoomProp
                   </div>
 
                   <div className="space-y-4 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">
-                     {others.length === 0 ? (
+                     {others.length === 0 && !aiChaosResult ? (
                         <div className="py-12 text-center">
                            <div className="w-16 h-16 bg-oku-lavender/30 rounded-full flex items-center justify-center mx-auto mb-6">
                               <Zap className="text-oku-purple-dark animate-pulse" size={32} />
                            </div>
                            <h4 className="font-bold text-oku-darkgrey text-lg mb-2">Personal Focus Window</h4>
-                           <p className="text-xs font-display italic text-oku-darkgrey/40 px-8">You&apos;re in the flow. Mirroring will begin as soon as others join anonymously.</p>
+                           <p className="text-xs font-display italic text-oku-darkgrey/40 px-8 mb-8">You&apos;re in the flow. Mirroring will begin as soon as others join anonymously.</p>
+                           
+                           <button 
+                             onClick={breakChaos}
+                             disabled={isAiBreaking}
+                             className="btn-pill-3d bg-oku-darkgrey text-white !py-3 !px-8 flex items-center gap-2 mx-auto disabled:opacity-50"
+                           >
+                              {isAiBreaking ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                              Break the Chaos with AI
+                           </button>
                         </div>
                      ) : (
-                        others.map((other, i) => (
+                        <div className="space-y-4">
+                           {aiChaosResult && (
+                              <m.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-6 bg-oku-darkgrey text-white rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden group mb-4">
+                                 <div className="relative z-10">
+                                    <div className="flex items-center justify-between mb-4">
+                                       <div className="flex items-center gap-3">
+                                          <div className="w-8 h-8 rounded-full bg-oku-purple-dark flex items-center justify-center text-white text-[10px] font-black shadow-lg">AI</div>
+                                          <span className="text-[9px] font-black uppercase tracking-widest text-oku-lavender">Clinical Strategist</span>
+                                       </div>
+                                       <button onClick={() => setAiChaosResult(null)} className="text-white/20 hover:text-white"><X size={14} /></button>
+                                    </div>
+                                    <p className="text-sm font-display italic leading-relaxed mb-4">"{aiChaosResult.strategy}"</p>
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40 bg-white/5 p-3 rounded-xl border border-white/5">
+                                       <Zap size={12} className="text-oku-mint" /> Focus Task: {aiChaosResult.focusTask}
+                                    </div>
+                                 </div>
+                                 <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                              </m.div>
+                           )}
+                           {others.map((other, i) => (
                            <m.div 
                              key={other.id}
                              initial={{ opacity: 0, x: 20 }}

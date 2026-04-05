@@ -188,43 +188,8 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
   }
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen text-oku-darkgrey bg-oku-lavender/5 relative overflow-hidden">
-      
-      {/* ── HEADER (Unified UIUX) ── */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20 relative z-10">
-        <m.div 
-          initial={{ opacity: 0, x: -20 }} 
-          animate={{ opacity: 1, x: 0 }}
-          className="space-y-4"
-        >
-          <div className="flex items-center gap-3">
-             <span className="px-4 py-1.5 bg-white/60 backdrop-blur-md border border-white/80 rounded-full text-[9px] font-black uppercase tracking-widest text-oku-purple-dark shadow-sm">Executive Support</span>
-             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">ADHD Workspace</span>
-          </div>
-          <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter leading-[0.85]">
-            Focus <span className="text-oku-purple-dark italic">Protocol.</span>
-          </h1>
-          <p className="text-2xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8 max-w-2xl leading-relaxed">
-            A gentle sanctuary designed for the neurodivergent flow. Navigate overwhelm through tiny wins and persistent energy awareness.
-          </p>
-        </m.div>
-
-        <m.div 
-          initial={{ opacity: 0, scale: 0.9 }} 
-          animate={{ opacity: 1, scale: 1 }}
-          className="card-glass-3d !p-10 !bg-oku-darkgrey text-white flex items-center gap-8 shadow-2xl"
-        >
-           <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-oku-lavender">
-              <Zap size={32} strokeWidth={1.5} />
-           </div>
-           <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Dopamine Streak</p>
-              <p className="text-4xl font-bold tracking-tighter">{streak} <span className="text-sm font-display italic opacity-60 ml-2">Wins</span></p>
-           </div>
-        </m.div>
-      </div>
-
-      <div className="grid lg:grid-cols-12 gap-12 relative z-10">
+    <div className="relative z-10">
+      <div className="grid lg:grid-cols-12 gap-12">
         
         {/* 1. PRIMARY WORKSPACE */}
         <div className="lg:col-span-8 space-y-12">
@@ -358,67 +323,11 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
           <RoutineManager />
         </div>
 
-        {/* 2. SIDECAR: SENSORY & ENERGY */}
+        {/* 2. SIDECAR: ENERGY & LOGS */}
         <div className="lg:col-span-4 space-y-12">
-          
           <DailyTracker />
-
-          {/* Pomodoro Protocol */}
-          <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-oku-darkgrey text-white p-12 rounded-[4rem] shadow-2xl relative overflow-hidden group">
-             <div className="relative z-10 text-center">
-                <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-12 border border-white/5 backdrop-blur-md">
-                   <Clock size={14} className="text-oku-lavender animate-spin-slow" /> {timerMode === 'work' ? 'Phase: Deep Flow' : 'Phase: Dopamine Reset'}
-                </div>
-                <p className="text-9xl font-display font-bold tracking-tighter mb-12 tabular-nums text-white shadow-text-glow">{formatTime(timeLeft)}</p>
-                <div className="flex items-center justify-center gap-8">
-                   <button 
-                     onClick={() => setIsActive(!isActive)} 
-                     className={`w-24 h-24 rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl active:scale-90 ${isActive ? 'bg-white/10 text-white border border-white/20' : 'bg-white text-oku-darkgrey hover:scale-110'}`}
-                   >
-                      {isActive ? <Pause size={40} fill="currentColor" /> : <Play size={40} fill="currentColor" className="ml-2" />}
-                   </button>
-                   <button onClick={() => { setIsActive(false); setTimeLeft(25*60); }} className="p-6 bg-white/5 rounded-full hover:bg-white/10 transition-all border border-white/5">
-                      <RotateCcw size={28} />
-                   </button>
-                </div>
-             </div>
-             <m.div 
-                className="absolute bottom-0 left-0 w-full h-2 bg-oku-purple-dark" 
-                initial={{ width: '0%' }} 
-                animate={{ width: `${(timeLeft / (timerMode === 'work' ? 25*60 : 5*60)) * 100}%` }}
-             />
-          </m.section>
-
-          {/* Sensory Support */}
-          <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="card-glass-3d !p-12 !bg-oku-babyblue/30 border-none !rounded-[3rem]">
-             <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center text-oku-purple-dark">
-                    <Volume2 size={24} />
-                </div>
-                <div>
-                    <h3 className="font-bold text-oku-darkgrey tracking-tight">Soundscape</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">Sensory Shield</p>
-                </div>
-             </div>
-             <div className="grid grid-cols-2 gap-4">
-                {['White Noise', 'Soft Rain', 'Deep Forest', 'Brownian'].map(sound => (
-                    <button 
-                        key={sound}
-                        onClick={() => setSoundscape(sound.toLowerCase())}
-                        className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${soundscape === sound.toLowerCase() ? 'bg-oku-darkgrey text-white border-oku-darkgrey' : 'bg-white/40 text-oku-darkgrey/40 border-white hover:bg-white'}`}
-                    >
-                        {sound}
-                    </button>
-                ))}
-             </div>
-          </m.section>
-
         </div>
       </div>
-
-      {/* AMBIENT BLOBS */}
-      <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-oku-lavender/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
     </div>
   )
 }
