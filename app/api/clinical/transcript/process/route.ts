@@ -2,8 +2,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { UserRole } from "@prisma/client";
-import { analyzeClinicalTranscript, getOkuAiSettings } from "@/lib/oku-ai";
+import { getOkuAiSettings } from "@/lib/oku-ai";
 import { triggerEmergencyAlert } from "@/lib/notifications";
+import { analyzeTranscriptWithMemory } from "@/lib/ai-memory";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -71,18 +72,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "TRANSCRIPTION_CONSENT_REQUIRED" }, { status: 403 })
     }
 
-    // Anonymize patient context for AI privacy
-    const aiResponse = await analyzeClinicalTranscript({
+    if (!appointment.client?.id) {
+      return new NextResponse("Client record missing", { status: 400 });
+    }
+
+    // MASTER AI UPGRADE: Analyze with historical memory and multilingual awareness
+    const aiResponse = await analyzeTranscriptWithMemory({
+      appointmentId,
       transcriptContent,
-      patientName: `Client-${appointment.client?.id?.slice(-4)}`,
-      sessionType: appointment.service?.name,
-      practitionerName: appointment.practitioner?.name,
-      recentAssessments: appointment.client?.assessmentAnswers?.map((answer) => ({
-        title: answer.assessment?.title,
-        result: answer.result,
-        score: answer.score,
-      })),
-      settings,
+      clientId: appointment.client.id,
     });
 
     await prisma.transcript.upsert({

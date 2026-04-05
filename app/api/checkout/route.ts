@@ -42,9 +42,12 @@ export async function POST(req: Request) {
       }
 
       const appointmentAmount = getAppointmentBillingAmount(appointment)
+      
+      // MASTER UPGRADE: Enforce Referral Math
       const checkoutSummary = await applyReferralCreditToAppointment(appointment.id)
       const netAmount = checkoutSummary?.netAmount ?? appointmentAmount
-      const processor = netAmount === 0 ? 'referral-credit' : method
+      
+      const processor = netAmount <= 0 ? 'referral-credit' : method
       const settings = await getPlatformSettings()
       const revenueSplit = getSessionRevenueSplit({
         grossAmount: netAmount,
