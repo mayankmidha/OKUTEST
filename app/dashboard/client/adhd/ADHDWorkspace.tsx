@@ -363,19 +363,6 @@ export function ADHDWorkspace({ initialTasks }: { initialTasks: any[] }) {
           
           <DailyTracker />
 
-          <div className="relative group">
-            <BodyDoublePresence 
-              isActive={isSignalingFocus || (isActive && timerMode === 'work')} 
-              currentTask={tasks.find(t => !t.isCompleted)?.title} 
-            />
-            <button 
-                onClick={() => setIsSignalingFocus(!isSignalingFocus)}
-                className={`absolute top-10 right-10 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all shadow-sm ${isSignalingFocus ? 'bg-oku-mint text-white' : 'bg-oku-lavender text-oku-purple-dark hover:bg-white border border-oku-lavender'}`}
-            >
-                {isSignalingFocus ? 'Focus Signaling Active' : 'Signal Focus'}
-            </button>
-          </div>
-
           {/* Pomodoro Protocol */}
           <m.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-oku-darkgrey text-white p-12 rounded-[4rem] shadow-2xl relative overflow-hidden group">
              <div className="relative z-10 text-center">
