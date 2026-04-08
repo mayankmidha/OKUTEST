@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { getCheckoutReferralCredit } from '@/lib/referrals'
 import { detectCurrency, formatCurrency, getLiveExchangeRates, localizeAmount } from '@/lib/currency'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
+import { BOOKING_HOLD_MINUTES } from '@/lib/appointment-conflicts'
 
 export default async function CheckoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const session = await auth()
@@ -116,7 +117,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ sessi
                 </div>
 
                 <p className="mt-4 text-center text-xs text-oku-taupe">
-                    UPI and Razorpay are being held back here until the end-to-end checkout flow is production-ready.
+                    Your slot is held for {BOOKING_HOLD_MINUTES} minutes while payment is completed. UPI and Razorpay are still disabled in this flow until the full production checkout path is ready.
                 </p>
             </div>
         </div>

@@ -86,7 +86,7 @@ export default async function ClientProgressPage() {
       <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-oku-lavender/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-oku-mint/20 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto px-6 pt-12 pb-24 relative z-10">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:pt-12">
         <Link
           href="/dashboard/client"
           className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 hover:text-oku-darkgrey mb-10"
@@ -95,23 +95,23 @@ export default async function ClientProgressPage() {
         </Link>
 
         {/* Header */}
-        <div className="mb-14">
+        <div className="mb-12 sm:mb-14">
           <div className="flex items-center gap-3 mb-4">
             <span className="px-4 py-1.5 bg-white/60 backdrop-blur-md border border-white/80 rounded-full text-[9px] font-black uppercase tracking-widest text-oku-purple-dark shadow-sm">
               Progress
             </span>
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-oku-darkgrey/30">Your Journey</span>
           </div>
-          <h1 className="heading-display text-5xl lg:text-7xl text-oku-darkgrey tracking-tighter">
+          <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl">
             My <span className="text-oku-purple-dark italic">Progress.</span>
           </h1>
-          <p className="text-lg text-oku-darkgrey/60 font-display italic mt-3 max-w-lg">
+          <p className="mt-3 max-w-lg font-display text-base italic text-oku-darkgrey/60 sm:text-lg">
             30 days of your mental wellness journey — mood trends, clinical assessments, and session milestones.
           </p>
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
           <div className="card-glass-3d !bg-oku-lavender/60 !p-6 text-center">
             <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-2">Avg. Mood</p>
             <p className="heading-display text-4xl text-oku-darkgrey">{avgMood ?? '—'}</p>
@@ -136,8 +136,8 @@ export default async function ClientProgressPage() {
 
         {/* Mood Chart — 30 day bar */}
         {moodEntries.length > 0 && (
-          <div className="card-glass-3d !bg-white/60 !p-8 mb-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="card-glass-3d mb-8 !bg-white/60 !p-6 sm:!p-8">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-1">Mood Journey</p>
                 <h2 className="text-2xl font-black text-oku-darkgrey flex items-center gap-2">
@@ -156,30 +156,32 @@ export default async function ClientProgressPage() {
             </div>
 
             {/* Bar chart */}
-            <div className="flex items-end gap-1 h-24">
-              {moodEntries.map((entry, i) => (
-                <div key={entry.id} className="flex-1 flex flex-col items-center gap-1 group relative">
-                  <div
-                    className={`w-full rounded-t-lg ${moodColor(entry.mood)} opacity-80 group-hover:opacity-100 transition-all`}
-                    style={{ height: `${(entry.mood / 10) * 100}%`, minHeight: '4px' }}
-                  />
-                  {/* Tooltip on hover */}
-                  <div className="absolute bottom-full mb-2 bg-oku-darkgrey text-white text-[9px] font-black px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap z-10">
-                    {moodEmoji(entry.mood)} {entry.mood}/10
-                    <br />
-                    {entry.createdAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' })}
+            <div className="-mx-1 overflow-x-auto px-1 pb-2">
+              <div className="flex h-24 min-w-[520px] items-end gap-1">
+                {moodEntries.map((entry) => (
+                  <div key={entry.id} className="group relative flex flex-1 flex-col items-center gap-1">
+                    <div
+                      className={`w-full rounded-t-lg ${moodColor(entry.mood)} opacity-80 transition-all group-hover:opacity-100`}
+                      style={{ height: `${(entry.mood / 10) * 100}%`, minHeight: '4px' }}
+                    />
+                    {/* Tooltip on hover */}
+                    <div className="absolute bottom-full z-10 mb-2 whitespace-nowrap rounded-lg bg-oku-darkgrey px-2 py-1 text-[9px] font-black text-white opacity-0 transition-all group-hover:opacity-100">
+                      {moodEmoji(entry.mood)} {entry.mood}/10
+                      <br />
+                      {entry.createdAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' })}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between mt-2 text-[9px] text-oku-darkgrey/30 font-black uppercase tracking-widest">
-              <span>{moodEntries[0]?.createdAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' })}</span>
-              <span>Today</span>
+                ))}
+              </div>
+              <div className="mt-2 flex min-w-[520px] justify-between text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30">
+                <span>{moodEntries[0]?.createdAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' })}</span>
+                <span>Today</span>
+              </div>
             </div>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid gap-8 lg:grid-cols-2">
           {/* Assessment History */}
           <div>
             <h2 className="text-lg font-black text-oku-darkgrey uppercase tracking-widest mb-4 flex items-center gap-2">

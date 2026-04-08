@@ -22,6 +22,9 @@ export async function POST() {
     const missing: string[] = []
     if (!profile.bio) missing.push('bio')
     if (!profile.hourlyRate && !profile.indiaSessionRate) missing.push('rates')
+    if (!profile.licenseNumber) missing.push('license')
+    if (!profile.education) missing.push('education')
+    if (!profile.specialization || profile.specialization.length === 0) missing.push('specialization')
 
     const hasAvailability = await prisma.availability.findFirst({
       where: { practitionerProfileId: profile.id },

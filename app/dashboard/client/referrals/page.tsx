@@ -40,14 +40,14 @@ export default async function ClientReferralHubPage() {
   const inviteUrl = `${protocol}://${host}/auth/signup?ref=${referralCode}`
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/5 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Ambient blobs */}
       <div className="absolute top-[10%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-16">
+        <div className="mb-14 flex flex-col justify-between gap-8 lg:mb-16 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Link
@@ -58,16 +58,16 @@ export default async function ClientReferralHubPage() {
               </Link>
               <span className="chip bg-white/60 border-white/80">Growth Circle</span>
             </div>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               Share the <span className="text-oku-purple-dark italic">Light.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8 max-w-2xl leading-relaxed">
+            <p className="max-w-2xl border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic leading-relaxed text-oku-darkgrey/60 sm:pl-8 sm:text-lg lg:text-xl">
               Invite those you care about into the sanctuary. When they begin their journey, we honour your shared commitment to healing.
             </p>
           </div>
 
           {/* Balance card */}
-          <div className="card-glass-3d !p-10 !bg-oku-darkgrey text-white flex items-center gap-8 shadow-2xl self-start lg:self-auto">
+          <div className="card-glass-3d flex w-full items-center gap-4 self-start !bg-oku-darkgrey !p-6 text-white shadow-2xl sm:w-auto sm:gap-8 sm:!p-8 lg:!p-10 lg:self-auto">
             <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
               <Wallet size={32} strokeWidth={1.5} />
             </div>
@@ -81,14 +81,14 @@ export default async function ClientReferralHubPage() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-14">
+        <div className="mb-14 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-6">
           {[
             { label: 'People Referred',    value: referralSummary.referralCount,                            bg: 'bg-oku-peach/60',    icon: <Users size={20} /> },
             { label: 'Started Paid Care',  value: referralSummary.convertedReferralCount,                   bg: 'bg-oku-babyblue/60', icon: <Sparkles size={20} /> },
             { label: 'Rewards Earned',     value: `$${referralSummary.totalEarned.toFixed(2)}`,             bg: 'bg-oku-mint/60',     icon: <Gift size={20} /> },
             { label: 'Credit Available',   value: `$${referralSummary.availableCredit.toFixed(2)}`,         bg: 'bg-oku-lavender/60', icon: <Wallet size={20} /> },
           ].map((stat, i) => (
-            <div key={i} className={`card-glass-3d !p-8 ${stat.bg} flex flex-col justify-between`}>
+            <div key={i} className={`card-glass-3d flex flex-col justify-between !p-6 sm:!p-8 ${stat.bg}`}>
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">{stat.label}</p>
                 <span className="text-oku-darkgrey/30">{stat.icon}</span>
@@ -99,7 +99,7 @@ export default async function ClientReferralHubPage() {
         </div>
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
           {/* Left: Share card + referral tracking */}
           <div className="lg:col-span-7 space-y-10">
             <ReferralShareCard
@@ -112,8 +112,8 @@ export default async function ClientReferralHubPage() {
             />
 
             {/* Friend-by-friend tracking */}
-            <section className="card-glass-3d !p-12 !bg-white/40">
-              <div className="flex items-center justify-between gap-4 mb-10">
+            <section className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">Referral Tracking</p>
                   <h2 className="heading-display text-3xl text-oku-darkgrey mt-3">
@@ -136,7 +136,7 @@ export default async function ClientReferralHubPage() {
               ) : (
                 <div className="space-y-6">
                   {referralSummary.referredClients.map((client) => (
-                    <div key={client.id} className="rounded-[2rem] border border-oku-darkgrey/5 bg-white/70 p-8 shadow-sm hover:shadow-lg transition-all duration-300">
+                    <div key={client.id} className="rounded-[2rem] border border-oku-darkgrey/5 bg-white/70 p-6 shadow-sm transition-all duration-300 hover:shadow-lg sm:p-8">
                       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                         <div>
                           <p className="text-xl font-bold text-oku-darkgrey">
@@ -147,7 +147,7 @@ export default async function ClientReferralHubPage() {
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 md:min-w-[240px]">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:min-w-[240px]">
                           <div className="rounded-2xl bg-oku-lavender/30 px-4 py-3">
                             <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40">Paid Sessions</p>
                             <p className="mt-2 text-2xl font-display font-bold text-oku-darkgrey">{client.paidSessionsCount}</p>
@@ -210,8 +210,8 @@ export default async function ClientReferralHubPage() {
           {/* Right: Credit wallet + reward history */}
           <div className="lg:col-span-5 space-y-10">
             {/* Credit wallet */}
-            <section className="card-glass-3d !p-12 !bg-oku-babyblue/30">
-              <div className="flex items-center justify-between mb-8">
+            <section className="card-glass-3d !bg-oku-babyblue/30 !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">Credit Wallet</p>
                   <h2 className="heading-display text-3xl text-oku-darkgrey mt-3">
@@ -221,7 +221,7 @@ export default async function ClientReferralHubPage() {
                 <Coins className="text-oku-darkgrey/40" size={22} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.75rem] border border-white bg-white/70 px-5 py-5">
                   <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40">Available Now</p>
                   <p className="mt-3 text-3xl font-display font-bold text-oku-darkgrey">${referralSummary.availableCredit.toFixed(2)}</p>
@@ -256,8 +256,8 @@ export default async function ClientReferralHubPage() {
             </section>
 
             {/* Reward history */}
-            <section className="card-glass-3d !p-12 !bg-white/40">
-              <div className="flex items-center justify-between gap-4 mb-10">
+            <section className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">Reward History</p>
                   <h2 className="heading-display text-3xl text-oku-darkgrey mt-3">

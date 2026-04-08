@@ -1,10 +1,17 @@
 import NextAuth, { DefaultSession } from "next-auth"
+import { PrismaAdapter } from "@auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 import Apple from "next-auth/providers/apple"
+import { CredentialsSignin } from "next-auth"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import speakeasy from "speakeasy"
+import { ensureUserAppSetup, getAuthUserState, hasPendingEmailVerification, normalizeAuthEmail } from "@/lib/auth-user"
+
+class EmailNotVerifiedError extends CredentialsSignin {
+  code = "email_not_verified"
+}
 
 declare module "next-auth" {
   interface Session {
@@ -13,6 +20,10 @@ declare module "next-auth" {
       role: string
       hasSignedConsent: boolean
       adhdDiagnosed: boolean
+      practitionerVerified: boolean
+      practitionerOnboarded: boolean
+      isDeleted: boolean
+      emailVerified: boolean
     } & DefaultSession["user"]
   }
   
@@ -20,11 +31,16 @@ declare module "next-auth" {
     role: string
     hasSignedConsent: boolean
     adhdDiagnosed: boolean
+    practitionerVerified: boolean
+    practitionerOnboarded: boolean
+    isDeleted: boolean
+    emailVerified: boolean
   }
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
+  adapter: PrismaAdapter(prisma) as any,
   session: {
     strategy: 'jwt',
     maxAge: 15 * 60, // 15 minutes (HIPAA compliance)
@@ -33,10 +49,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     Apple({
       clientId: process.env.APPLE_ID,
       clientSecret: process.env.APPLE_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       credentials: {
@@ -49,18 +67,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null
         }
 
-        const email = credentials.email as string
+        const email = normalizeAuthEmail(credentials.email as string)
         const password = credentials.password as string
         const twoFactorCode = credentials.twoFactorCode as string | undefined
 
         try {
           const user = await prisma.user.findUnique({
             where: { email },
-            include: { clientProfile: true }
+            include: {
+              clientProfile: true,
+              practitionerProfile: {
+                select: {
+                  isVerified: true,
+                  isOnboarded: true,
+                },
+              },
+            }
           })
 
-          if (!user || !user.password) {
+          if (!user || !user.password || user.deletionRequestedAt) {
             return null
+          }
+
+          if (!user.emailVerified && await hasPendingEmailVerification(email)) {
+            throw new EmailNotVerifiedError()
           }
 
           const isPasswordValid = await bcrypt.compare(password, user.password)
@@ -94,7 +124,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: user.name,
             role: user.role,
             hasSignedConsent: user.hasSignedConsent,
-            adhdDiagnosed: !!user.clientProfile?.adhdDiagnosed
+            adhdDiagnosed: !!user.clientProfile?.adhdDiagnosed,
+            practitionerVerified: !!user.practitionerProfile?.isVerified,
+            practitionerOnboarded: !!user.practitionerProfile?.isOnboarded,
+            isDeleted: !!user.deletionRequestedAt,
+            emailVerified: !!user.emailVerified,
           }
         } catch (error) {
           console.error("Auth error:", error)
@@ -109,12 +143,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
   trustHost: true,
   callbacks: {
+    async signIn({ user, account }: { user: any, account?: any }) {
+      if (!user?.id) {
+        return false
+      }
+
+      const authState = await getAuthUserState(user.id)
+
+      if (authState?.isDeleted) {
+        return false
+      }
+
+      if (account?.provider && account.provider !== 'credentials') {
+        await ensureUserAppSetup(user.id, {
+          name: user.name,
+          markEmailVerified: true,
+        })
+      }
+
+      return true
+    },
     async session({ session, token }: { session: any, token: any }) {
         if (session.user) {
           session.user.id = token.id || token.sub;
           session.user.role = token.role;
           session.user.hasSignedConsent = !!token.hasSignedConsent;
           session.user.adhdDiagnosed = !!token.adhdDiagnosed;
+          session.user.practitionerVerified = !!token.practitionerVerified;
+          session.user.practitionerOnboarded = !!token.practitionerOnboarded;
+          session.user.isDeleted = !!token.isDeleted;
+          session.user.emailVerified = !!token.emailVerified;
         }
         return session;
     },
@@ -124,6 +182,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
         token.hasSignedConsent = !!user.hasSignedConsent;
         token.adhdDiagnosed = !!user.adhdDiagnosed;
+        token.practitionerVerified = !!user.practitionerVerified;
+        token.practitionerOnboarded = !!user.practitionerOnboarded;
+        token.isDeleted = !!user.isDeleted;
+        token.emailVerified = !!user.emailVerified;
       }
       
       // Handle session updates
@@ -139,14 +201,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
 
-      // Secondary safety: If hasSignedConsent or adhdDiagnosed is missing, fetch from DB once
-      if (token.id && (token.hasSignedConsent === undefined || token.adhdDiagnosed === undefined)) {
-          const u = await prisma.user.findUnique({ 
-            where: { id: token.id }, 
-            select: { hasSignedConsent: true, clientProfile: { select: { adhdDiagnosed: true } } } 
-          });
+      // Secondary safety: hydrate mutable flags from the database.
+      if (
+        token.id &&
+        (
+          token.role === undefined ||
+          token.hasSignedConsent === undefined ||
+          token.adhdDiagnosed === undefined ||
+          token.practitionerVerified === undefined ||
+          token.practitionerOnboarded === undefined ||
+          token.emailVerified === undefined ||
+          token.role === 'THERAPIST' ||
+          token.isDeleted === undefined
+        )
+      ) {
+          const u = await getAuthUserState(token.id)
+          token.role = u?.role
           token.hasSignedConsent = !!u?.hasSignedConsent;
-          token.adhdDiagnosed = !!u?.clientProfile?.adhdDiagnosed;
+          token.adhdDiagnosed = !!u?.adhdDiagnosed;
+          token.practitionerVerified = !!u?.practitionerVerified;
+          token.practitionerOnboarded = !!u?.practitionerOnboarded;
+          token.isDeleted = !!u?.isDeleted;
+          token.emailVerified = !!u?.emailVerified;
       }
       
       return token;

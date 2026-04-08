@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: 'Is my data private and secure?',
-    a: 'Yes. All communications, session data, mood entries, and documents are HIPAA-encrypted. Your therapist is bound by strict professional confidentiality. We never share personal data with third parties.'
+    a: 'Your data is protected with encrypted transport, access controls, and therapist confidentiality obligations. We do not sell personal data or use therapy content for marketing.'
   },
   {
     q: 'How does the mood tracker help my therapy?',
@@ -81,14 +81,39 @@ export function ContactForm() {
   const [message, setMessage] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // Simulate submission — in production wire to /api/support
-    await new Promise((r) => setTimeout(r, 1200))
-    setLoading(false)
-    setSubmitted(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/support', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject,
+          message,
+        }),
+      })
+
+      const payload = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Could not send support message')
+      }
+
+      setSubmitted(true)
+      setMessage('')
+      setSubject('Booking Issue')
+    } catch (submissionError: any) {
+      setError(submissionError.message || 'Could not send support message')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
@@ -138,6 +163,10 @@ export function ContactForm() {
         />
       </div>
 
+      {error && (
+        <p className="text-sm font-bold text-red-600">{error}</p>
+      )}
+
       <button
         type="submit"
         disabled={loading || !message.trim()}
@@ -148,7 +177,7 @@ export function ContactForm() {
         ) : (
           <Send size={16} className="mr-3" />
         )}
-        Send Secure Message
+        Send Support Message
       </button>
     </form>
   )

@@ -36,10 +36,10 @@ export function WellnessVisualizer({ clientId }: { clientId?: string }) {
   const maxScore = Math.max(...activeData.map(d => d.score), 10)
 
   return (
-    <div className="bg-white p-10 rounded-[3rem] border border-oku-taupe/10 shadow-sm overflow-hidden relative group">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
+    <div className="group relative overflow-hidden rounded-[2rem] border border-oku-taupe/10 bg-white p-6 shadow-sm sm:rounded-[2.5rem] sm:p-8 lg:rounded-[3rem] lg:p-10">
+      <div className="relative z-10 mb-8 flex flex-col gap-5 md:mb-12 md:flex-row md:items-center md:justify-between md:gap-6">
         <div>
-          <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight flex items-center gap-3">
+          <h2 className="flex items-center gap-3 text-2xl font-display font-bold tracking-tight text-oku-dark sm:text-3xl">
             <Activity className="text-oku-purple" size={24} /> Journey Insights
           </h2>
           <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe/60 mt-1">Outcome Analytics & Longitudinal Data</p>
@@ -62,40 +62,42 @@ export function WellnessVisualizer({ clientId }: { clientId?: string }) {
         </div>
       </div>
 
-      <div className="relative h-64 flex items-end gap-4 px-4 z-10">
-         {/* Simple Visual Graph using pure CSS/Framer */}
-         {activeData.map((d, i) => {
-            const height = (d.score / maxScore) * 100
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center group/bar relative">
-                 <motion.div 
-                   initial={{ height: 0 }}
-                   animate={{ height: `${height}%` }}
-                   transition={{ duration: 1, delay: i * 0.1, ease: "circOut" }}
-                   className={`w-full max-w-[40px] rounded-t-2xl relative cursor-pointer ${
-                     i === activeData.length - 1 ? 'bg-oku-purple' : 'bg-oku-purple/20'
-                   } hover:bg-oku-purple transition-colors`}
-                 >
-                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-oku-dark text-white text-[10px] font-black py-1.5 px-3 rounded-lg whitespace-nowrap shadow-xl">
-                       Score: {d.score}
-                    </div>
-                 </motion.div>
-                 <p className="text-[8px] font-black uppercase tracking-widest text-oku-taupe mt-4 opacity-40 rotate-45 origin-left">
-                    {new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                 </p>
-              </div>
-            )
-         })}
+      <div className="-mx-1 overflow-x-auto px-1 pb-2">
+         <div className="relative z-10 flex h-56 min-w-[520px] items-end gap-3 px-2 sm:h-64 sm:min-w-0 sm:gap-4 sm:px-4">
+            {/* Simple Visual Graph using pure CSS/Framer */}
+            {activeData.map((d, i) => {
+               const height = (d.score / maxScore) * 100
+               return (
+                 <div key={i} className="group/bar relative flex flex-1 flex-col items-center">
+                    <motion.div 
+                      initial={{ height: 0 }}
+                      animate={{ height: `${height}%` }}
+                      transition={{ duration: 1, delay: i * 0.1, ease: "circOut" }}
+                      className={`relative w-full max-w-[32px] cursor-pointer rounded-t-2xl transition-colors hover:bg-oku-purple sm:max-w-[40px] ${
+                        i === activeData.length - 1 ? 'bg-oku-purple' : 'bg-oku-purple/20'
+                      }`}
+                    >
+                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-oku-dark px-3 py-1.5 text-[10px] font-black text-white opacity-0 shadow-xl transition-opacity group-hover/bar:opacity-100">
+                          Score: {d.score}
+                       </div>
+                    </motion.div>
+                    <p className="mt-4 origin-left rotate-45 text-[7px] font-black uppercase tracking-widest text-oku-taupe opacity-40 sm:text-[8px]">
+                       {new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </p>
+                 </div>
+               )
+            })}
 
-         {/* Grid Lines */}
-         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none border-b border-oku-taupe/10">
-            <div className="w-full border-t border-dashed border-oku-taupe/5" />
-            <div className="w-full border-t border-dashed border-oku-taupe/5" />
-            <div className="w-full border-t border-dashed border-oku-taupe/5" />
+            {/* Grid Lines */}
+            <div className="pointer-events-none absolute inset-0 flex flex-col justify-between border-b border-oku-taupe/10">
+               <div className="w-full border-t border-dashed border-oku-taupe/5" />
+               <div className="w-full border-t border-dashed border-oku-taupe/5" />
+               <div className="w-full border-t border-dashed border-oku-taupe/5" />
+            </div>
          </div>
       </div>
 
-      <div className="mt-20 pt-8 border-t border-oku-taupe/5 flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+      <div className="relative z-10 mt-12 flex flex-col gap-4 border-t border-oku-taupe/5 pt-6 sm:mt-20 sm:gap-6 sm:pt-8 md:flex-row md:items-center md:justify-between">
          <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-oku-success/10 text-oku-success flex items-center justify-center">
                <TrendingDown size={20} />
@@ -105,9 +107,9 @@ export function WellnessVisualizer({ clientId }: { clientId?: string }) {
                <p className="text-sm font-bold text-oku-dark">Score normalized over {activeData.length} checkpoints.</p>
             </div>
          </div>
-         <div className="bg-oku-purple/5 px-6 py-3 rounded-2xl border border-oku-purple/10 flex items-center gap-3">
+         <div className="flex items-center gap-3 rounded-2xl border border-oku-purple/10 bg-oku-purple/5 px-4 py-3 sm:px-6">
             <Sparkles size={14} className="text-oku-purple" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">AI Prediction: Sustainable Improvement</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-oku-purple-dark sm:text-[10px]">AI Prediction: Sustainable Improvement</p>
          </div>
       </div>
 

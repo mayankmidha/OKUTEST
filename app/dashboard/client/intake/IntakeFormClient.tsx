@@ -159,7 +159,7 @@ export default function IntakeFormClient({ initialData }: { initialData: any }) 
                             </label>
                             <label className="flex items-start gap-4 p-6 bg-oku-lavender/10 border border-oku-lavender/20 rounded-[2rem] cursor-pointer group">
                                 <input type="checkbox" className="mt-1 w-6 h-6 accent-oku-purple" checked={formData.hasAcceptedPrivacy} onChange={e => setFormData({...formData, hasAcceptedPrivacy: e.target.checked})} />
-                                <span className="text-[11px] font-black uppercase tracking-widest text-oku-dark group-hover:text-oku-purple transition-colors">I accept the HIPAA & Platform Privacy terms</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-oku-dark group-hover:text-oku-purple transition-colors">I accept the platform privacy policy and clinical data terms</span>
                             </label>
                         </div>
                     </div>

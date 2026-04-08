@@ -140,7 +140,7 @@ export function SafetyPlanForm({ initialPlan }: SafetyPlanProps) {
                     {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />} Commit to Secure Vault
                 </button>
                 <div className="flex items-center justify-center gap-2 mt-6 text-[8px] font-black uppercase tracking-widest text-white/20">
-                    <AlertCircle size={12} /> This plan is end-to-end encrypted
+                    <AlertCircle size={12} /> This plan is stored in your protected account space
                 </div>
             </div>
         </div>

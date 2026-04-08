@@ -47,6 +47,12 @@ export async function GET(req: Request) {
 
   try {
     const assessments = await prisma.assessment.findMany({
+      where: {
+        OR: [
+          { isCustom: false },
+          { creatorId: session.user.id },
+        ],
+      },
       orderBy: { createdAt: 'desc' }
     })
     return NextResponse.json(assessments)

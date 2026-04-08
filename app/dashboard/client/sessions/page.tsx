@@ -52,14 +52,14 @@ export default async function ClientSessionsPage() {
   )
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/10 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Ambient blobs */}
       <div className="absolute top-[10%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+        <div className="mb-14 flex flex-col justify-between gap-8 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Link
@@ -70,41 +70,41 @@ export default async function ClientSessionsPage() {
               </Link>
               <span className="chip bg-white/60 border-white/80">Your Journey</span>
             </div>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               Your <span className="text-oku-purple-dark italic">Sessions.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            <p className="border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic text-oku-darkgrey/60 sm:pl-8 sm:text-lg lg:text-xl">
               Every session is a step deeper into yourself.
             </p>
           </div>
 
           <Link
             href="/dashboard/client/therapists"
-            className="btn-pill-3d bg-oku-darkgrey border-oku-darkgrey text-white !px-10 pulse-cta self-start lg:self-auto"
+            className="btn-pill-3d pulse-cta w-full self-start bg-oku-darkgrey border-oku-darkgrey !px-6 text-center text-white sm:w-auto sm:!px-10 lg:self-auto"
           >
             <Plus size={16} className="mr-3" /> Book New Session
           </Link>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mb-16 xl:grid-cols-4 xl:gap-6">
           {[
             { label: 'Upcoming', value: upcoming.length, bg: 'bg-oku-babyblue/60' },
             { label: 'Completed', value: appointments.filter(a => a.status === 'COMPLETED').length, bg: 'bg-oku-mint/60' },
             { label: 'Total Sessions', value: appointments.length, bg: 'bg-oku-lavender/60' },
             { label: 'Hours in Care', value: Math.round(appointments.filter(a=>a.status==='COMPLETED').reduce((acc, a) => acc + (a.service?.duration || 50), 0) / 60), bg: 'bg-oku-peach/60' },
           ].map((stat, i) => (
-            <div key={i} className={`card-glass-3d !p-8 ${stat.bg} flex flex-col justify-between`} style={{ animationDelay: `${i * 0.1}s` }}>
+            <div key={i} className={`card-glass-3d flex flex-col justify-between !p-6 sm:!p-8 ${stat.bg}`} style={{ animationDelay: `${i * 0.1}s` }}>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">{stat.label}</p>
-              <p className="text-5xl heading-display text-oku-darkgrey mt-6">{stat.value}</p>
+              <p className="mt-4 text-4xl heading-display text-oku-darkgrey sm:mt-6 sm:text-5xl">{stat.value}</p>
             </div>
           ))}
         </div>
 
         {/* Upcoming Sessions */}
-        <section className="card-glass-3d !p-12 !bg-white/40 mb-12">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">
+        <section className="card-glass-3d mb-10 !bg-white/40 !p-6 sm:mb-12 sm:!p-8 lg:!p-12">
+          <div className="mb-8 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="heading-display text-3xl tracking-tight text-oku-darkgrey sm:text-4xl">
               Upcoming <span className="italic text-oku-purple-dark">Windows</span>
             </h2>
             <Link
@@ -135,10 +135,10 @@ export default async function ClientSessionsPage() {
                 return (
                   <div
                     key={appt.id}
-                    className="card-glass-3d !p-8 !bg-white/70 group hover:shadow-2xl transition-all duration-700"
+                    className="group card-glass-3d !bg-white/70 !p-6 transition-all duration-700 hover:shadow-2xl sm:!p-8"
                   >
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-                      <div className="flex items-center gap-8">
+                    <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-center xl:gap-8">
+                      <div className="flex items-start gap-5 sm:items-center sm:gap-8">
                         <div className="relative">
                           <div className="w-20 h-20 rounded-[1.5rem] bg-oku-babyblue overflow-hidden border-4 border-white shadow-xl">
                             {appt.practitioner?.avatar ? (
@@ -152,8 +152,8 @@ export default async function ClientSessionsPage() {
                           </div>
                         </div>
                         <div>
-                          <p className="text-2xl heading-display text-oku-darkgrey">{appt.practitioner?.name || 'Specialist'}</p>
-                          <div className="flex items-center gap-3 mt-2">
+                          <p className="text-xl heading-display text-oku-darkgrey sm:text-2xl">{appt.practitioner?.name || 'Specialist'}</p>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3">
                             <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-oku-purple-dark/10 text-oku-purple-dark rounded-full border border-oku-purple-dark/10">
                               {appt.service?.name || 'Session'}
                             </span>
@@ -161,15 +161,15 @@ export default async function ClientSessionsPage() {
                               <Clock size={10} /> {duration} min
                             </span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 flex items-center gap-1">
-                              <ShieldCheck size={10} /> HIPAA Secure
+                              <ShieldCheck size={10} /> Protected Session
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-8 border-t md:border-t-0 md:border-l border-oku-darkgrey/5 pt-6 md:pt-0 md:pl-8">
-                        <div className="text-right min-w-[100px]">
-                          <p className="text-xl font-bold text-oku-darkgrey">
+                      <div className="flex flex-col gap-4 border-t border-oku-darkgrey/5 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 xl:border-l xl:border-t-0 xl:pt-0 xl:pl-8">
+                        <div className="min-w-0 text-left sm:text-right">
+                          <p className="text-lg font-bold text-oku-darkgrey sm:text-xl">
                             {new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </p>
                           <p className="text-[10px] text-oku-darkgrey/40 font-black uppercase tracking-widest mt-1">
@@ -181,7 +181,7 @@ export default async function ClientSessionsPage() {
                         </div>
                         <Link
                           href={`/session/${appt.id}`}
-                          className="btn-pill-3d bg-oku-babyblue border-oku-babyblue text-oku-darkgrey min-w-[160px] pulse-cta"
+                          className="btn-pill-3d pulse-cta w-full bg-oku-babyblue border-oku-babyblue text-center text-oku-darkgrey sm:w-auto sm:min-w-[160px]"
                         >
                           Join Session Room
                         </Link>
@@ -195,8 +195,8 @@ export default async function ClientSessionsPage() {
         </section>
 
         {/* Past Sessions */}
-        <section className="card-glass-3d !p-12 !bg-white/40">
-          <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight mb-12">
+        <section className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-12">
+          <h2 className="mb-8 text-3xl heading-display tracking-tight text-oku-darkgrey sm:mb-12 sm:text-4xl">
             Session <span className="italic text-oku-purple-dark">Archive</span>
           </h2>
 
@@ -213,9 +213,9 @@ export default async function ClientSessionsPage() {
                 return (
                   <div
                     key={appt.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-[2rem] bg-white/40 border border-white/60 hover:bg-white/60 transition-all duration-300"
+                    className="flex flex-col justify-between gap-4 rounded-[2rem] border border-white/60 bg-white/40 p-5 transition-all duration-300 hover:bg-white/60 sm:flex-row sm:items-center sm:p-6"
                   >
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4 sm:gap-6">
                       <div className="w-14 h-14 rounded-[1rem] bg-oku-lavender/40 overflow-hidden border-2 border-white shadow-md flex-shrink-0">
                         {appt.practitioner?.avatar ? (
                           <img src={appt.practitioner?.avatar || ''} className="w-full h-full object-cover" alt={appt.practitioner?.name || 'Practitioner'} />
@@ -225,7 +225,7 @@ export default async function ClientSessionsPage() {
                       </div>
                       <div>
                         <p className="font-bold text-oku-darkgrey">{appt.practitioner?.name || 'Specialist'}</p>
-                        <div className="flex items-center gap-3 mt-1">
+                        <div className="mt-1 flex flex-wrap items-center gap-2 sm:gap-3">
                           <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">
                             {appt.service?.name || 'Session'}
                           </span>
@@ -236,8 +236,8 @@ export default async function ClientSessionsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6 sm:ml-auto">
-                      <div className="text-right">
+                    <div className="flex flex-col gap-3 sm:ml-auto sm:flex-row sm:items-center sm:gap-6">
+                      <div className="text-left sm:text-right">
                         <p className="text-sm font-bold text-oku-darkgrey">
                           {new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>

@@ -36,11 +36,11 @@ export function LoginSkeleton() {
         <div className="flex justify-center gap-8 mt-12 opacity-20">
             <div className="flex items-center gap-2">
                 <ShieldCheck size={14} />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em]">HIPAA Secure</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Protected Access</span>
             </div>
             <div className="flex items-center gap-2">
                 <Lock size={14} />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em]">AES-256</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Private Workspace</span>
             </div>
         </div>
       </div>

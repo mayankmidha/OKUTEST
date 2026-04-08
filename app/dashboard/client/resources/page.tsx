@@ -20,14 +20,14 @@ export default async function ResourcesPage() {
   ])
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5 relative overflow-hidden text-oku-darkgrey">
+    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/5 px-4 py-8 text-oku-darkgrey sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Ambient blobs */}
       <div className="absolute top-[10%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+        <div className="mb-14 flex flex-col justify-between gap-8 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Link
@@ -38,16 +38,16 @@ export default async function ResourcesPage() {
               </Link>
               <span className="chip bg-white/60 border-white/80">Library</span>
             </div>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               The <span className="text-oku-purple-dark italic">Collection.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            <p className="border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic text-oku-darkgrey/60 sm:pl-8 sm:text-lg lg:text-xl">
               Resources, exercises, and clinical summaries curated for your growth.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 gap-10 xl:grid-cols-12 xl:gap-12">
             {/* Exercises Column */}
             <div className="xl:col-span-8 space-y-12">
                 <section>
@@ -63,10 +63,10 @@ export default async function ResourcesPage() {
                             <p className="text-xl font-display italic text-oku-darkgrey/40">New exercises are being curated...</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {exercises.map(ex => (
-                                <div key={ex.id} className="card-glass-3d !p-8 !bg-white/60 group hover:shadow-2xl transition-all duration-500">
-                                    <div className="flex justify-between items-start mb-8">
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                {exercises.map(ex => (
+                                <div key={ex.id} className="group card-glass-3d !bg-white/60 !p-6 transition-all duration-500 hover:shadow-2xl sm:!p-8">
+                                    <div className="mb-8 flex items-start justify-between gap-4">
                                         <div className="w-12 h-12 rounded-2xl bg-oku-lavender/40 flex items-center justify-center text-oku-purple-dark shadow-inner">
                                             <PlayCircle size={24} />
                                         </div>
@@ -93,13 +93,13 @@ export default async function ResourcesPage() {
                     </div>
                     <div className="space-y-4">
                         {posts.map(post => (
-                            <Link key={post.id} href={`/blog/${post.slug}`} className="block card-glass-3d !p-8 !bg-white/40 hover:bg-white transition-all group">
-                                <div className="flex items-center justify-between gap-8">
-                                    <div className="flex items-center gap-6">
+                            <Link key={post.id} href={`/blog/${post.slug}`} className="group block card-glass-3d !bg-white/40 !p-6 transition-all hover:bg-white sm:!p-8">
+                                <div className="flex items-center justify-between gap-4 sm:gap-8">
+                                    <div className="flex min-w-0 items-center gap-4 sm:gap-6">
                                         <div className="w-14 h-14 rounded-2xl bg-oku-babyblue/20 flex items-center justify-center text-oku-babyblue-dark">
                                             <FileText size={24} />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <h3 className="text-xl font-display font-bold text-oku-darkgrey">{post.title}</h3>
                                             <p className="text-xs text-oku-darkgrey/40 italic">{post.excerpt}</p>
                                         </div>
@@ -114,7 +114,7 @@ export default async function ResourcesPage() {
 
             {/* Sidecar: Retention & Goals */}
             <div className="xl:col-span-4 space-y-12">
-                <section className="card-glass-3d !bg-oku-dark !p-10 text-white relative overflow-hidden group">
+                <section className="group relative overflow-hidden card-glass-3d !bg-oku-dark !p-6 text-white sm:!p-8 lg:!p-10">
                     <div className="relative z-10">
                         <Sparkles className="text-oku-lavender mb-6 animate-float-3d" />
                         <h3 className="heading-display text-3xl mb-4">Master your <span className="italic text-oku-lavender">Sanctuary.</span></h3>
@@ -132,7 +132,7 @@ export default async function ResourcesPage() {
                     <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-oku-purple/10 rounded-full blur-3xl" />
                 </section>
 
-                <div className="card-glass-3d !p-10 !bg-oku-mint/20 border-oku-mint/10">
+                <div className="card-glass-3d border-oku-mint/10 !bg-oku-mint/20 !p-6 sm:!p-8 lg:!p-10">
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-6">Daily Affirmation</h3>
                     <p className="text-xl font-display italic text-oku-darkgrey leading-relaxed">
                         &ldquo;I am capable of change, even when it feels heavy. Tiny steps create the path.&rdquo;

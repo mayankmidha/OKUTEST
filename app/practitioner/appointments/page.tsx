@@ -187,45 +187,78 @@ export default async function PractitionerAppointmentsPage() {
             {completed.length === 0 ? (
               <p className="p-20 text-center text-oku-darkgrey/40 italic">No completed session records found.</p>
             ) : (
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-oku-lavender/30 text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/40">
-                  <tr>
-                    <th className="p-8">Patient</th>
-                    <th className="p-8">Session Type</th>
-                    <th className="p-8">Date</th>
-                    <th className="p-8">Status</th>
-                    <th className="p-8 text-right">Clinical Note</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/40">
+              <>
+                <div className="space-y-4 p-4 md:hidden">
                   {completed.map((appt) => (
-                    <tr key={appt.id} className="hover:bg-white/40 transition-all group">
-                      <td className="p-8">
-                        <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 rounded-xl bg-oku-blush/60 flex items-center justify-center text-xs font-black text-oku-darkgrey/60">
-                            {appt.client?.name?.substring(0, 1) || '?'}
-                          </div>
-                          <p className="font-bold text-oku-darkgrey">{appt.client?.name || 'Unknown Patient'}</p>
+                    <div key={appt.id} className="rounded-[1.75rem] border border-white/70 bg-white/70 p-5 shadow-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-oku-blush/60 text-xs font-black text-oku-darkgrey/60">
+                          {appt.client?.name?.substring(0, 1) || '?'}
                         </div>
-                      </td>
-                      <td className="p-8 text-sm text-oku-darkgrey/60">{appt.service.name}</td>
-                      <td className="p-8 text-sm text-oku-darkgrey/60">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                      <td className="p-8">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                        <div>
+                          <p className="font-bold text-oku-darkgrey">{appt.client?.name || 'Unknown Patient'}</p>
+                          <p className="mt-1 text-xs font-black uppercase tracking-widest text-oku-darkgrey/40">{appt.service.name}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-3">
+                        <p className="text-xs text-oku-darkgrey/60">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                        <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
                           appt.status === AppointmentStatus.COMPLETED ? 'bg-oku-mint text-oku-darkgrey/60' : 'bg-red-50 text-red-600'
                         }`}>
                           {appt.status.replace('_', ' ')}
                         </span>
-                      </td>
-                      <td className="p-8 text-right">
-                        <Link href={`/practitioner/sessions/${appt.id}/notes`} className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline">
-                          <FileText size={14} /> {appt.soapNote ? 'Review Note' : 'Add SOAP Note'}
-                        </Link>
-                      </td>
-                    </tr>
+                      </div>
+
+                      <Link href={`/practitioner/sessions/${appt.id}/notes`} className="mt-5 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline">
+                        <FileText size={14} /> {appt.soapNote ? 'Review Note' : 'Add SOAP Note'}
+                      </Link>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="min-w-[760px] w-full text-left border-collapse">
+                    <thead className="bg-oku-lavender/30 text-[10px] uppercase tracking-widest font-black text-oku-darkgrey/40">
+                      <tr>
+                        <th className="p-8">Patient</th>
+                        <th className="p-8">Session Type</th>
+                        <th className="p-8">Date</th>
+                        <th className="p-8">Status</th>
+                        <th className="p-8 text-right">Clinical Note</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/40">
+                      {completed.map((appt) => (
+                        <tr key={appt.id} className="group transition-all hover:bg-white/40">
+                          <td className="p-8">
+                            <div className="flex items-center gap-4">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-oku-blush/60 text-xs font-black text-oku-darkgrey/60">
+                                {appt.client?.name?.substring(0, 1) || '?'}
+                              </div>
+                              <p className="font-bold text-oku-darkgrey">{appt.client?.name || 'Unknown Patient'}</p>
+                            </div>
+                          </td>
+                          <td className="p-8 text-sm text-oku-darkgrey/60">{appt.service.name}</td>
+                          <td className="p-8 text-sm text-oku-darkgrey/60">{new Date(appt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                          <td className="p-8">
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                              appt.status === AppointmentStatus.COMPLETED ? 'bg-oku-mint text-oku-darkgrey/60' : 'bg-red-50 text-red-600'
+                            }`}>
+                              {appt.status.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td className="p-8 text-right">
+                            <Link href={`/practitioner/sessions/${appt.id}/notes`} className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline">
+                              <FileText size={14} /> {appt.soapNote ? 'Review Note' : 'Add SOAP Note'}
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </section>

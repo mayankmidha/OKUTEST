@@ -27,7 +27,7 @@ export default async function AdminFinancialsPage() {
 
   const [payments, assessmentCharges, payoutRequests] = await Promise.all([
     prisma.payment.findMany({
-    where: { status: 'COMPLETED' },
+    where: { status: 'COMPLETED', appointmentId: { not: null } },
     include: {
       appointment: {
         include: {

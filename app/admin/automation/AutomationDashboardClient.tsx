@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { 
-  Zap, Play, Clock, Settings,
+  Zap, Clock,
   RotateCw, AlertCircle, CheckCircle2,
-  Calendar, Layers, Filter, Search
+  Calendar, Layers
 } from 'lucide-react'
 import { motion } from 'motion/react'
 
@@ -37,8 +37,8 @@ export default function AutomationDashboardClient() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
         <AutomationStat 
           title="Active Workflows" 
-          value={data?.tasks?.length || 0} 
-          sub="Currently running scheduled tasks" 
+          value={data?.summary?.activeCount || 0} 
+          sub="Queues operating normally" 
           icon={<RotateCw size={28} className="animate-spin-slow" />}
           color="bg-oku-lavender/60 text-oku-purple-dark"
         />
@@ -50,9 +50,9 @@ export default function AutomationDashboardClient() {
           color="bg-oku-mint/60 text-emerald-600"
         />
         <AutomationStat 
-          title="Payment Retries" 
-          value={data?.metrics?.pendingPayments || 0} 
-          sub="Pending automated recovery" 
+          title="Aged Payments" 
+          value={data?.metrics?.agedPendingPayments || 0} 
+          sub="Pending more than 30 mins" 
           icon={<Zap size={28} />}
           color="bg-oku-blush/60 text-oku-darkgrey"
         />
@@ -64,11 +64,11 @@ export default function AutomationDashboardClient() {
            <div className="flex items-center justify-between mb-12">
               <div className="space-y-1">
                 <h3 className="text-2xl font-display font-black text-oku-darkgrey tracking-tight">Active Automations</h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/30">Scheduled system routines</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/30">Live queues and scheduled routines</p>
               </div>
-              <button className="btn-pill-3d bg-white border-white text-oku-darkgrey !px-8 !py-4 text-[11px]">
-                 <Play size={16} className="mr-3" /> Run All Now
-              </button>
+              <span className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${getStatusStyles(data?.summary?.status)}`}>
+                {data?.summary?.status || 'IDLE'}
+              </span>
            </div>
 
            <div className="space-y-4">
@@ -81,37 +81,61 @@ export default function AutomationDashboardClient() {
                       <div>
                          <p className="text-lg font-black text-oku-darkgrey">{task.name}</p>
                          <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">{task.schedule}</p>
+                         <p className="text-xs text-oku-darkgrey/50 mt-2">{task.detail}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-6">
                       <div className="text-right">
-                         <p className="text-xs font-black text-oku-darkgrey/60">Last Run</p>
-                         <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">{new Date(task.lastRun).toLocaleTimeString()}</p>
+                         <p className="text-xs font-black text-oku-darkgrey/60">Last Activity</p>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">
+                           {task.lastRun ? new Date(task.lastRun).toLocaleString() : 'Not yet'}
+                         </p>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 mt-2">
+                           Workload: {task.workload || 0}
+                         </p>
                       </div>
-                      <button className="p-3 bg-white/80 border border-white rounded-xl shadow-sm text-oku-darkgrey hover:text-oku-purple-dark transition-colors">
-                         <Play size={16} />
-                      </button>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${getStatusStyles(task.status)}`}>
+                        {task.status}
+                      </span>
                    </div>
                 </div>
               ))}
            </div>
         </div>
 
-        {/* System Log / Quick Actions */}
+        {/* Queue Summary */}
         <div className="card-glass-3d !p-10 !rounded-[3rem] border border-white/60 shadow-xl">
-           <h3 className="text-xl font-display font-black text-oku-darkgrey mb-8">Quick Automation</h3>
+           <h3 className="text-xl font-display font-black text-oku-darkgrey mb-8">Operational Watch</h3>
            <div className="space-y-4">
-              <ActionButton label="Clear System Cache" icon={<RotateCw size={18} />} />
-              <ActionButton label="Re-sync Calendars" icon={<Calendar size={18} />} />
-              <ActionButton label="Generate Daily Report" icon={<FileText size={18} />} />
-              <ActionButton label="Purge Audit Logs (>1yr)" icon={<Settings size={18} />} />
+              <QueueCard
+                label="Reminder Queue"
+                value={data?.metrics?.dueReminders || 0}
+                icon={<Calendar size={18} />}
+              />
+              <QueueCard
+                label="No-Show Candidates"
+                value={data?.metrics?.noShowCandidates || 0}
+                icon={<AlertCircle size={18} />}
+              />
+              <QueueCard
+                label="Deletion Requests"
+                value={data?.metrics?.deletionRequests || 0}
+                icon={<CheckCircle2 size={18} />}
+              />
+              <QueueCard
+                label="Feed-Ready Practitioners"
+                value={`${data?.metrics?.feedReadyPractitioners || 0}/${data?.metrics?.syncEnabledPractitioners || 0}`}
+                icon={<Layers size={18} />}
+              />
            </div>
 
            <div className="mt-12 p-8 bg-oku-purple-dark rounded-[2rem] text-white">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-3">Health Status</p>
               <div className="flex items-center gap-3">
-                 <CheckCircle2 size={24} className="text-emerald-400" />
-                 <p className="text-sm font-light leading-relaxed">Automation engine is stable. 422 routines executed in the last 24h.</p>
+                 <CheckCircle2 size={24} className={`${data?.summary?.attentionCount > 0 ? 'text-amber-300' : 'text-emerald-400'}`} />
+                 <p className="text-sm font-light leading-relaxed">
+                    {data?.summary?.message || 'No automation summary available.'} {data?.summary?.executions24h ?? 0} queue events were processed in the last 24 hours.
+                 </p>
               </div>
            </div>
         </div>
@@ -138,36 +162,29 @@ function AutomationStat({ title, value, sub, icon, color }: any) {
   )
 }
 
-function ActionButton({ label, icon }: any) {
+function QueueCard({ label, value, icon }: any) {
   return (
-    <button className="w-full p-5 bg-white/40 border border-white rounded-2xl flex items-center gap-4 group hover:bg-white hover:shadow-lg transition-all text-left">
+    <div className="w-full p-5 bg-white/40 border border-white rounded-2xl flex items-center gap-4">
        <div className="p-2 bg-oku-lavender rounded-lg text-oku-purple-dark group-hover:scale-110 transition-transform">
           {icon}
        </div>
-       <span className="text-xs font-black text-oku-darkgrey uppercase tracking-widest">{label}</span>
-    </button>
+       <div className="flex-1">
+          <p className="text-xs font-black text-oku-darkgrey uppercase tracking-widest">{label}</p>
+          <p className="text-lg font-display font-black text-oku-darkgrey mt-2">{value}</p>
+       </div>
+    </div>
   )
 }
 
-function FileText(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <line x1="10" y1="9" x2="8" y2="9" />
-    </svg>
-  )
+function getStatusStyles(status?: string) {
+  switch (status) {
+    case 'ACTIVE':
+      return 'bg-emerald-100 text-emerald-700'
+    case 'PARTIAL':
+      return 'bg-sky-100 text-sky-700'
+    case 'ATTENTION':
+      return 'bg-amber-100 text-amber-700'
+    default:
+      return 'bg-white/70 text-oku-darkgrey/60 border border-white'
+  }
 }

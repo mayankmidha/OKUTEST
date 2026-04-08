@@ -138,12 +138,12 @@ export function DashboardSidebar() {
   return (
     <>
       {/* Mobile Trigger */}
-      <div className="lg:hidden fixed top-6 left-6 z-[60]">
+      <div className="fixed left-4 top-4 z-[60] lg:hidden sm:left-6 sm:top-6">
         <button 
           onClick={() => setIsOpen(true)}
-          className="rounded-2xl border border-white/80 bg-white/90 p-4 text-oku-darkgrey shadow-lg backdrop-blur-xl"
+          className="rounded-2xl border border-white/80 bg-white/90 p-3 text-oku-darkgrey shadow-lg backdrop-blur-xl sm:p-4"
         >
-          <Menu size={24} />
+          <Menu size={22} />
         </button>
       </div>
 
@@ -170,7 +170,7 @@ export function DashboardSidebar() {
         initial={{ x: '-100%' }}
         animate={{ x: isOpen ? 0 : '-100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="fixed inset-y-0 left-0 z-[70] w-[320px] lg:hidden"
+        className="fixed inset-y-0 left-0 z-[70] w-[86vw] max-w-[320px] lg:hidden"
       >
         {sidebarContent}
       </motion.aside>

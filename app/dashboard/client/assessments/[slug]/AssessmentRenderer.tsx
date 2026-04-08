@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle2, Loader2, Sparkles, AlertTriangle, ArrowRight, Phone } from 'lucide-react'
 import confetti from 'canvas-confetti'
@@ -17,7 +17,15 @@ function getScoringBand(scoring: any[], score: number) {
   return scoring.find((s: any) => score >= s.min && score <= s.max) ?? scoring[scoring.length - 1]
 }
 
-export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment: any; isAuthenticated: boolean }) {
+export function AssessmentRenderer({
+  assessment,
+  isAuthenticated,
+  assignmentId,
+}: {
+  assessment: any
+  isAuthenticated: boolean
+  assignmentId?: string | null
+}) {
   const { update } = useSession()
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -28,10 +36,6 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
   const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const assignmentId = searchParams.get('assignmentId')
-  const fee = Number(searchParams.get('fee') || 0)
-  const billingStatus = searchParams.get('billing')
 
   const questions: any[] = assessment.questions || []
   const options: any[] = assessment.options || []
@@ -41,8 +45,17 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
 
   const currentQ = questions[currentStep]
   const score = computeScore(answers)
-  const band = getScoringBand(scoring, score)
+  const band = scoring.length > 0 ? getScoringBand(scoring, score) : null
   const isHighRisk = highRiskThreshold !== undefined && score >= highRiskThreshold
+  const currentOptions = currentQ?.options?.length ? currentQ.options : options
+
+  if (questions.length === 0) {
+    return (
+      <div className="card-pebble !p-10 text-center">
+        <p className="text-sm font-bold text-oku-darkgrey">This assessment is missing its question set.</p>
+      </div>
+    )
+  }
 
   const handleSelect = (val: number) => {
     const updated = { ...answers, [currentQ.id]: val }
@@ -77,13 +90,13 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (res.ok) {
-        if (fee > 0 && billingStatus === 'PENDING') {
-          router.push(`/dashboard/client/clinical?paymentRequired=true&assessmentId=${assessment.id}&amount=${fee}`)
-        } else {
-          router.push('/dashboard/client/clinical?success=true')
-        }
+      if (!res.ok) {
+        const message = await res.text()
+        throw new Error(message || 'Could not save your assessment.')
       }
+      router.push('/dashboard/client/clinical?success=true')
+    } catch (err: any) {
+      setError(err.message || 'Could not save your assessment.')
     } finally {
       setIsSubmitting(false)
     }
@@ -113,7 +126,7 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
       await fetch('/api/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessmentId: assessment.id, answers }),
+        body: JSON.stringify({ assessmentId: assessment.id, type: assessment.slug, answers }),
       })
       confetti({ particleCount: 200, spread: 100 })
       router.push('/dashboard/client/clinical?success=true&welcome=true')
@@ -138,8 +151,10 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
           <div className="inline-flex items-center justify-center w-28 h-28 rounded-full bg-oku-lavender/30 border-4 border-oku-lavender mb-4">
             <span className="heading-display text-5xl text-oku-darkgrey">{score}</span>
           </div>
-          <h2 className="text-3xl font-display font-bold text-oku-darkgrey mb-2">{band?.result}</h2>
-          <p className="text-oku-darkgrey/60 font-display italic text-base max-w-md mx-auto leading-relaxed">{band?.description}</p>
+          <h2 className="text-3xl font-display font-bold text-oku-darkgrey mb-2">{band?.result || 'Screening Completed'}</h2>
+          <p className="text-oku-darkgrey/60 font-display italic text-base max-w-md mx-auto leading-relaxed">
+            {band?.description || 'Your responses are ready to save to your clinical record.'}
+          </p>
         </div>
 
         {/* High risk crisis note */}
@@ -160,21 +175,23 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
         )}
 
         {/* Scoring bands legend */}
-        <div className="grid grid-cols-2 gap-2">
-          {scoring.map((s: any) => (
-            <div
-              key={s.result}
-              className={`px-4 py-3 rounded-2xl border text-center transition-all ${
-                s.result === band?.result
-                  ? 'bg-oku-darkgrey text-white border-oku-darkgrey'
-                  : 'bg-white/50 text-oku-darkgrey/40 border-oku-taupe/10'
-              }`}
-            >
-              <p className="text-[9px] font-black uppercase tracking-widest">{s.result}</p>
-              <p className="text-[10px] opacity-60 mt-0.5">{s.min}–{s.max}</p>
-            </div>
-          ))}
-        </div>
+        {scoring.length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {scoring.map((s: any) => (
+              <div
+                key={s.result}
+                className={`px-4 py-3 rounded-2xl border text-center transition-all ${
+                  s.result === band?.result
+                    ? 'bg-oku-darkgrey text-white border-oku-darkgrey'
+                    : 'bg-white/50 text-oku-darkgrey/40 border-oku-taupe/10'
+                }`}
+              >
+                <p className="text-[9px] font-black uppercase tracking-widest">{s.result}</p>
+                <p className="text-[10px] opacity-60 mt-0.5">{s.min}–{s.max}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={handleSaveResults}
@@ -183,6 +200,7 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
         >
           {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <><ArrowRight size={16} /> Save Report & View Clinical Profile</>}
         </button>
+        {error && <p className="text-center text-xs font-bold text-red-500">{error}</p>}
         <p className="text-center text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/30">
           {isAuthenticated ? 'Results saved to your clinical record' : 'Create a free account to save your results'}
         </p>
@@ -256,7 +274,7 @@ export function AssessmentRenderer({ assessment, isAuthenticated }: { assessment
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {options.map((opt: any) => (
+            {currentOptions.map((opt: any) => (
               <button
                 key={opt.value}
                 onClick={() => handleSelect(opt.value)}

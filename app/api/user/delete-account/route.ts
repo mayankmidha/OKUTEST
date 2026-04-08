@@ -9,15 +9,58 @@ export async function DELETE() {
   try {
     const userId = session.user.id
 
-    // Clinical Compliance Check: 
-    // In many jurisdictions, clinical notes (SOAP, Treatment Plans) must be retained for 7-10 years.
-    // We "soft-delete" the user profile but keep the encrypted medical records tied to an anonymized ID if required.
-    // For this implementation, we will perform a cascade delete of the User record, 
-    // which Prisma handles via onDelete: Cascade in the schema for profiles, moods, etc.
-
-    await prisma.user.delete({
-      where: { id: userId }
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        deletionRequestedAt: true,
+      },
     })
+
+    if (!existingUser) {
+      return new NextResponse('Account not found', { status: 404 })
+    }
+
+    if (existingUser.deletionRequestedAt) {
+      return new NextResponse('Account already scheduled for deletion', { status: 409 })
+    }
+
+    const deletedAt = new Date()
+    const deletedEmail = `deleted+${userId}@oku.local`
+
+    await prisma.$transaction([
+      prisma.session.deleteMany({
+        where: { userId },
+      }),
+      prisma.account.deleteMany({
+        where: { userId },
+      }),
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          name: 'Deleted User',
+          email: deletedEmail,
+          password: null,
+          phone: null,
+          bio: null,
+          avatar: null,
+          image: null,
+          referralCode: null,
+          referredById: null,
+          location: null,
+          twoFactorSecret: null,
+          twoFactorEnabled: false,
+          deletionRequestedAt: deletedAt,
+        },
+      }),
+      prisma.practitionerProfile.updateMany({
+        where: { userId },
+        data: {
+          isVerified: false,
+          canPostBlogs: false,
+        },
+      }),
+    ])
 
     return new NextResponse('Account deleted successfully', { status: 200 })
 

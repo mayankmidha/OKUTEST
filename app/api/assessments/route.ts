@@ -4,6 +4,7 @@ import { NextResponse } from "next/server"
 import { AssessmentBillingStatus } from "@prisma/client"
 import { calculateAssessmentResult, isHighRisk } from "@/lib/clinical-intelligence"
 import { analyzeAssessmentResult } from "@/lib/oku-ai"
+import { findCatalogAssessment } from "@/lib/assessment-utils"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -36,9 +37,12 @@ export async function POST(req: Request) {
 
     // 2. Industrial-grade Server-side Scoring (Protects data integrity)
     // We try to match based on the assessmentDef.title to our logic
-    let assessmentIdForLogic = assessmentDef.title.toLowerCase().includes('phq-9') ? 'phq-9' : 
-                               assessmentDef.title.toLowerCase().includes('gad-7') ? 'gad-7' :
-                               assessmentDef.title.toLowerCase().includes('asrs') ? 'asrs-v1.1' : null
+    const catalogAssessment = findCatalogAssessment({
+      id: assessmentDef.id,
+      slug: type,
+      title: assessmentDef.title,
+    })
+    const assessmentIdForLogic = catalogAssessment?.id ?? null
     
     let calculatedScore = null
     let calculatedResult = "Completed"
@@ -61,11 +65,28 @@ export async function POST(req: Request) {
           select: {
             id: true,
             status: true,
+            assessmentId: true,
             chargeAmount: true,
             billingStatus: true,
           },
         })
       : null
+
+    if (assignmentId && !assignment) {
+      return new NextResponse("Assigned assessment not found", { status: 404 })
+    }
+
+    if (assignment && assignment.assessmentId !== assessmentDef.id) {
+      return new NextResponse("Assigned assessment does not match this screening", { status: 400 })
+    }
+
+    if ((assignment?.chargeAmount ?? 0) > 0 && assignment?.billingStatus !== AssessmentBillingStatus.COMPLETED) {
+      return new NextResponse("This premium assessment must be unlocked before submission.", { status: 402 })
+    }
+
+    if (!assignment && (assessmentDef.price || 0) > 0) {
+      return new NextResponse("Premium assessments require an active assignment before submission.", { status: 403 })
+    }
 
     // 4. OKU AI Curation Logic
     let aiCuration = null;
@@ -106,17 +127,11 @@ export async function POST(req: Request) {
     // If this was an assigned task, mark it as completed
     if (assignmentId && assignment) {
         const chargeUpdate =
-          assignment.chargeAmount > 0 && assignment.billingStatus !== AssessmentBillingStatus.COMPLETED
-            ? {
-                billingStatus: AssessmentBillingStatus.COMPLETED,
-                processor: 'assessment-completion',
-                chargedAt: new Date(),
+          (assignment.chargeAmount ?? 0) > 0
+            ? {}
+            : {
+                billingStatus: AssessmentBillingStatus.NOT_REQUIRED,
               }
-            : assignment.chargeAmount > 0
-              ? {}
-              : {
-                  billingStatus: AssessmentBillingStatus.NOT_REQUIRED,
-                }
 
         await prisma.assignedAssessment.update({
             where: { id: assignmentId },

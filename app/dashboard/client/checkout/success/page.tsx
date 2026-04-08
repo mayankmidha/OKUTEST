@@ -1,5 +1,12 @@
 import Link from 'next/link'
 import { CheckCircle, Clock3 } from 'lucide-react'
+import { RecurringPattern } from '@prisma/client'
+
+import { auth } from '@/auth'
+import { normalizeCheckoutType } from '@/lib/checkout'
+import { finalizeCheckoutPayment } from '@/lib/payment-finalization'
+import { getStripeClient, isStripeConfigured } from '@/lib/stripe'
+import { resolveAssessmentCheckoutAssignment } from '@/lib/assessment-checkout'
 
 interface UniversalCheckoutSuccessPageProps {
   searchParams: Promise<{
@@ -12,8 +19,58 @@ interface UniversalCheckoutSuccessPageProps {
 export default async function UniversalCheckoutSuccessPage({
   searchParams,
 }: UniversalCheckoutSuccessPageProps) {
+  const session = await auth()
   const { id, type = 'APPOINTMENT', session_id: stripeSessionId } = await searchParams
+  const normalizedType = normalizeCheckoutType(type)
   const isFreeCheckout = !stripeSessionId
+  let paymentSettled = isFreeCheckout
+  let primaryHref = '/dashboard/client'
+  let primaryLabel = 'Go to Dashboard'
+
+  if (stripeSessionId && isStripeConfigured) {
+    try {
+      const stripeSession = await getStripeClient().checkout.sessions.retrieve(stripeSessionId)
+
+      if (stripeSession.payment_status === 'paid' && stripeSession.metadata?.paymentId) {
+        const result = await finalizeCheckoutPayment({
+          paymentId: stripeSession.metadata.paymentId,
+          appointmentId: stripeSession.metadata.appointmentId,
+          assignmentId: stripeSession.metadata.assignmentId,
+          recurringPattern:
+            (stripeSession.metadata.recurringPattern as RecurringPattern | undefined) ??
+            RecurringPattern.NONE,
+          externalPaymentId:
+            typeof stripeSession.payment_intent === 'string'
+              ? stripeSession.payment_intent
+              : stripeSession.id,
+          checkoutSessionId: stripeSession.id,
+          processor: 'stripe',
+        })
+
+        paymentSettled = result.ok
+      }
+    } catch (error) {
+      console.error('[CHECKOUT_SUCCESS_FINALIZE_ERROR]', error)
+    }
+  }
+
+  if (normalizedType === 'GROUP_SESSION' && id) {
+    primaryHref = `/dashboard/client/circles/${id}`
+    primaryLabel = 'Open Circle'
+  } else if (normalizedType === 'ASSESSMENT' && id && session?.user?.id) {
+    const assignment = await resolveAssessmentCheckoutAssignment(id, session.user.id)
+
+    if (assignment) {
+      primaryHref = `/dashboard/client/assessments/${assignment.assessment.id}?assignmentId=${assignment.id}`
+      primaryLabel = paymentSettled ? 'Start Assessment' : 'Go to Clinical Record'
+    } else {
+      primaryHref = '/dashboard/client/clinical'
+      primaryLabel = 'Go to Clinical Record'
+    }
+  } else if (normalizedType === 'APPOINTMENT') {
+    primaryHref = '/dashboard/client/book'
+    primaryLabel = 'View Booking'
+  }
 
   return (
     <div className="min-h-screen bg-oku-cream flex flex-col">
@@ -34,15 +91,15 @@ export default async function UniversalCheckoutSuccessPage({
           </div>
 
           <h1 className="text-4xl font-display font-bold text-oku-dark mb-4 tracking-tighter">
-            {isFreeCheckout ? 'Access Confirmed' : 'Payment Received'}
+            {paymentSettled ? 'Access Confirmed' : 'Payment Received'}
           </h1>
           <p className="text-oku-taupe font-script text-2xl mb-6">
-            {isFreeCheckout
-              ? 'Your checkout completed without an external payment step.'
-              : 'We are waiting for the Stripe webhook before marking this purchase complete.'}
+            {paymentSettled
+              ? 'Your purchase is active and ready to use.'
+              : 'Your payment was captured. Final confirmation may take a moment.'}
           </p>
           <p className="mb-8 text-sm text-oku-taupe">
-            Type: {type}
+            Type: {normalizedType}
             {id ? ` • Reference: ${id}` : ''}
           </p>
 
@@ -54,10 +111,10 @@ export default async function UniversalCheckoutSuccessPage({
 
           <div className="space-y-3">
             <Link
-              href={id ? `/dashboard/client/checkout?id=${id}&type=${type}` : '/dashboard/client/checkout'}
+              href={primaryHref}
               className="block w-full py-5 bg-white border border-oku-taupe/10 text-oku-dark rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-oku-cream/70 transition-all"
             >
-              Return to Checkout
+              {primaryLabel}
             </Link>
             <Link
               href="/dashboard/client"

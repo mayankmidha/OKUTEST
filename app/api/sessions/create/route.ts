@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { createAuditLog } from '@/lib/audit'
-import { AppointmentStatus, UserRole } from '@prisma/client'
+import { AppointmentStatus, Prisma } from '@prisma/client'
 import { resolvePractitionerSessionPrice } from '@/lib/pricing'
-import { sendBookingConfirmation } from '@/lib/notifications'
+import { buildAppointmentConflictWhere } from '@/lib/appointment-conflicts'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -24,8 +24,10 @@ export async function POST(req: Request) {
       return new NextResponse('Missing required fields', { status: 400 })
     }
 
-    // Use ISO string directly for UTC session start
     const startTime = new Date(timeStr)
+    if (Number.isNaN(startTime.getTime())) {
+      return new NextResponse('Invalid booking time', { status: 400 })
+    }
 
     // Calculate end time (default 1 hour or service duration)
     let duration = 60
@@ -87,43 +89,39 @@ export async function POST(req: Request) {
     }
     const pricing = resolvePractitionerSessionPrice(profile, bookingClient?.location)
 
-    // 1. CONCURRENCY GUARD: Check for existing overlapping sessions
-    const conflict = await prisma.appointment.findFirst({
-        where: {
+    const appointment = await prisma.$transaction(
+      async (tx) => {
+        const conflict = await tx.appointment.findFirst({
+          where: buildAppointmentConflictWhere({
             practitionerId: finalPractitionerId,
-            status: { in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
-            OR: [
-                {
-                    // Starts during another session
-                    startTime: { lte: startTime },
-                    endTime: { gt: startTime }
-                },
-                {
-                    // Ends during another session
-                    startTime: { lt: endTime },
-                    endTime: { gte: endTime }
-                }
-            ]
+            startTime,
+            endTime,
+            includePendingHolds: true,
+          }),
+          select: { id: true },
+        })
+
+        if (conflict) {
+          throw new Error('BOOKING_CONFLICT')
         }
-    })
 
-    if (conflict) {
-        return new NextResponse('Conflict: This time slot is no longer available.', { status: 409 })
-    }
-
-    // Create Appointment with PENDING status (requires advance payment)
-    const appointment = await prisma.appointment.create({
-      data: {
-          clientId: session.user.id,
-          practitionerId: finalPractitionerId,
-          serviceId: finalServiceId,
-          startTime: startTime,
-          endTime: endTime,
-          status: AppointmentStatus.PENDING,
-          priceSnapshot: pricing.amountInInr,
-          pricingRegion: pricing.pricingRegion,
+        return tx.appointment.create({
+          data: {
+            clientId: session.user.id,
+            practitionerId: finalPractitionerId,
+            serviceId: finalServiceId,
+            startTime,
+            endTime,
+            status: AppointmentStatus.PENDING,
+            priceSnapshot: pricing.amountInInr,
+            pricingRegion: pricing.pricingRegion,
+          },
+        })
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
       }
-    })
+    )
 
     // Log the change
     await createAuditLog({
@@ -131,11 +129,8 @@ export async function POST(req: Request) {
         action: 'APPOINTMENT_CREATED',
         resourceType: 'APPOINTMENT',
         resourceId: appointment.id,
-        changes: JSON.stringify({ status: AppointmentStatus.SCHEDULED })
+        changes: JSON.stringify({ status: AppointmentStatus.PENDING })
     })
-
-    // Send booking confirmation (non-blocking)
-    sendBookingConfirmation(appointment.id).catch((e) => console.error('[SESSION_BOOKING_CONFIRMATION_ERROR]', e))
 
     const checkoutUrl = `/dashboard/client/checkout/${appointment.id}`
 
@@ -148,6 +143,15 @@ export async function POST(req: Request) {
     return NextResponse.redirect(new URL(checkoutUrl, req.url), 303)
 
   } catch (e) {
+      if (
+        e instanceof Error &&
+        (e.message === 'BOOKING_CONFLICT' ||
+          (typeof (e as { code?: string }).code === 'string' &&
+            (e as { code?: string }).code === 'P2034'))
+      ) {
+        return new NextResponse('Conflict: This time slot is no longer available.', { status: 409 })
+      }
+
       console.error('Appointment creation error:', e)
       return new NextResponse('Error creating appointment', { status: 500 })
   }

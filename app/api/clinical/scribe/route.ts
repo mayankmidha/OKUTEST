@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { analyzeClinicalTranscript, getOkuAiSettings } from "@/lib/oku-ai"
+import { analyzeClinicalTranscript, getOkuAiSettings, isOkuAiConfigured } from "@/lib/oku-ai"
 
 
 export async function POST(req: Request) {
@@ -37,6 +37,9 @@ export async function POST(req: Request) {
 
     if (!settings.okuAiEnabled) {
       return NextResponse.json({ error: "OKU_AI_DISABLED" }, { status: 503 })
+    }
+    if (!isOkuAiConfigured()) {
+      return NextResponse.json({ error: "OKU_AI_PROVIDER_UNAVAILABLE" }, { status: 503 })
     }
 
     // 2. Perform deep clinical analysis using Google GenAI

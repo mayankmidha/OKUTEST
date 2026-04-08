@@ -122,7 +122,7 @@ export default async function CirclesPage() {
                  </div>
                  <div className="flex items-center gap-4 text-sm font-bold text-oku-darkgrey">
                     <div className="w-2 h-2 rounded-full bg-oku-purple-dark" />
-                    Secure, clinical-grade video encryption
+                    Secure practitioner-hosted video sessions
                  </div>
                  <div className="flex items-center gap-4 text-sm font-bold text-oku-darkgrey">
                     <div className="w-2 h-2 rounded-full bg-oku-purple-dark" />

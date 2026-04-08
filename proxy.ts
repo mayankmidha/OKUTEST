@@ -61,6 +61,14 @@ function roleDashboard(role: string | undefined): string {
   return "/auth/login"
 }
 
+const PRACTITIONER_SETUP_EXACT = [
+  "/practitioner/profile",
+  "/practitioner/support",
+  "/api/practitioner/profile",
+  "/api/practitioner/kyc-upload",
+  "/api/practitioner/onboarding-complete",
+]
+
 // ---------------------------------------------------------------------------
 // Proxy function (Next.js 16 equivalent of middleware)
 // ---------------------------------------------------------------------------
@@ -72,11 +80,14 @@ export default auth(async function proxy(req) {
 
   const isAuthenticated = !!session
   const role: string | undefined = session?.user?.role
+  const isDeleted = !!session?.user?.isDeleted
+  const practitionerVerified = !!session?.user?.practitionerVerified
+  const practitionerOnboarded = !!session?.user?.practitionerOnboarded
 
   // 1. Allow public paths immediately
   if (isPublic(pathname)) {
     // If already authenticated and trying to access auth pages, bounce to dashboard
-    if (isAuthenticated && pathname.startsWith("/auth")) {
+    if (isAuthenticated && !isDeleted && pathname.startsWith("/auth")) {
       return NextResponse.redirect(new URL(roleDashboard(role), nextUrl.origin))
     }
     return NextResponse.next()
@@ -107,6 +118,13 @@ export default auth(async function proxy(req) {
     const loginUrl = new URL("/auth/login", nextUrl.origin)
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
+  }
+
+  if (isAuthenticated && isDeleted) {
+    if (isApiRoute(pathname)) {
+      return NextResponse.json({ error: "Account unavailable" }, { status: 401 })
+    }
+    return NextResponse.redirect(new URL("/auth/login?deleted=true", nextUrl.origin))
   }
 
   // 4. Consent gate — authenticated users who haven't signed consent
@@ -142,6 +160,23 @@ export default auth(async function proxy(req) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
       return NextResponse.redirect(new URL(roleDashboard(role), nextUrl.origin))
+    }
+
+    if (
+      role === "THERAPIST" &&
+      (!practitionerVerified || !practitionerOnboarded) &&
+      !PRACTITIONER_SETUP_EXACT.includes(pathname)
+    ) {
+      if (isApiRoute(pathname)) {
+        return NextResponse.json(
+          { error: "Practitioner profile setup and verification required" },
+          { status: 403 }
+        )
+      }
+
+      const setupUrl = new URL("/practitioner/profile", nextUrl.origin)
+      setupUrl.searchParams.set("setup", "required")
+      return NextResponse.redirect(setupUrl)
     }
   }
 

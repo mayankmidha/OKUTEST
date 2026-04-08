@@ -147,7 +147,7 @@ export function CircleRoom({ circleId, user, circleName }: CircleRoomProps) {
         <Loader2 className="animate-spin text-oku-purple mb-6" size={40} />
         <p className="text-oku-dark font-display text-xl animate-pulse">Connecting to Circle...</p>
         <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/50 mt-4 flex items-center gap-2">
-            <ShieldCheck size={14} /> End-to-end encrypted
+            <ShieldCheck size={14} /> Secure hosted video
         </p>
       </div>
     )

@@ -298,8 +298,8 @@ export function WaitingRoom({
               </h1>
               <p className="text-white/60 text-lg font-display italic leading-relaxed max-w-md">
                  {isClient
-                   ? `Take a breath. Your secure clinical space with ${practitionerName} is prepared and encrypted.`
-                   : `Your secure clinical space with ${practitionerName} is prepared and encrypted.`}
+                   ? `Take a breath. Your secure clinical space with ${practitionerName} is prepared.`
+                   : `Your secure clinical space with ${practitionerName} is prepared.`}
               </p>
            </div>
 
@@ -309,8 +309,8 @@ export function WaitingRoom({
                     <ShieldCheck size={24} />
                  </div>
                  <div>
-                    <p className="text-white font-bold text-sm">HIPAA Compliant Video</p>
-                    <p className="text-white/40 text-[10px] uppercase tracking-widest font-black mt-1">End-to-End Encrypted Tunnel</p>
+                    <p className="text-white font-bold text-sm">Secure Video Session</p>
+                    <p className="text-white/40 text-[10px] uppercase tracking-widest font-black mt-1">Browser-based access protected in transit</p>
                  </div>
               </div>
 

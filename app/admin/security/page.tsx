@@ -23,7 +23,7 @@ export default async function AdminSecurityPage() {
             Digital <span className="text-oku-purple-dark italic">Shield.</span>
           </h1>
           <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
-            Real-time threat detection, access control, and security auditing.
+            Security review, access control, and audit visibility for the live platform.
           </p>
         </div>
       </div>

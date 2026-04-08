@@ -33,7 +33,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Are sessions online or in-person?",
-    answer: "We offer both online and in-person sessions to accommodate your preferences and needs. Online sessions use secure, HIPAA-compliant video platforms. In-person sessions are held at our comfortable, private office spaces. Discuss location options with your chosen therapist to determine what works best for you."
+    answer: "We offer both online and in-person sessions to accommodate your preferences and needs. Online sessions use protected video access inside the platform experience. In-person sessions are held at our comfortable, private office spaces. Discuss location options with your chosen therapist to determine what works best for you."
   },
   {
     question: "How do I choose the right therapist?",

@@ -86,7 +86,7 @@ function SignupContent() {
         return
       }
 
-      router.push('/auth/login?message=Account created! Please sign in to complete your clinical profile.')
+      router.push('/auth/verify-email?sent=1')
     } catch {
       setError('Unable to create account right now. Please try again.')
     } finally {
@@ -132,12 +132,12 @@ function SignupContent() {
                <div className="card-glass-3d !p-8 !bg-white/40 !rounded-[2.5rem] animate-float-3d">
                   <Shield className="text-oku-purple-dark mb-4 opacity-60" size={32} strokeWidth={1} />
                   <p className="text-sm font-bold text-oku-darkgrey">Privacy First</p>
-                  <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40 mt-2 font-black">End-to-End Secure</p>
+                  <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40 mt-2 font-black">Protected Access</p>
                </div>
                <div className="card-glass-3d !p-8 !bg-white/40 !rounded-[2.5rem] animate-float-3d" style={{ animationDelay: '0.5s' }}>
                   <Heart className="text-oku-purple-dark mb-4 opacity-60" size={32} strokeWidth={1} />
                   <p className="text-sm font-bold text-oku-darkgrey">Care-Centric</p>
-                  <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40 mt-2 font-black">Clinical Excellence</p>
+                  <p className="text-[10px] uppercase tracking-widest text-oku-darkgrey/40 mt-2 font-black">Thoughtful Intake</p>
                </div>
             </div>
           </motion.div>

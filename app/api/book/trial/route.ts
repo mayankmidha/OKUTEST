@@ -4,6 +4,7 @@ import { NextResponse } from "next/server"
 import { AppointmentStatus } from "@prisma/client"
 import { checkPractitionerAvailability } from "@/lib/availability"
 import { sendBookingConfirmation } from "@/lib/notifications"
+import { captureLead } from "@/lib/lead-capture"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -76,7 +77,15 @@ export async function POST(req: Request) {
 
   // 4. If guest, acknowledge lead
   if (guestEmail) {
-    console.log(`[LEAD CAPTURED] Name: ${guestName}, Email: ${guestEmail}`)
+    await captureLead({
+      channel: 'trial',
+      name: guestName,
+      email: guestEmail,
+      metadata: {
+        practitionerId,
+        startTime: start.toISOString(),
+      },
+    })
   }
 
   return NextResponse.json({ 

@@ -64,6 +64,12 @@ export default async function ClientDocumentsPage() {
           practitioner: { select: { name: true } },
         },
       },
+      assignedAssessment: {
+        include: {
+          assessment: { select: { title: true } },
+          practitioner: { select: { name: true } },
+        },
+      },
     },
     orderBy: { createdAt: 'desc' },
   })
@@ -72,14 +78,14 @@ export default async function ClientDocumentsPage() {
   const isEmpty = totalDocs === 0
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1200px] overflow-hidden bg-oku-lavender/10 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Background blobs */}
       <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-oku-lavender/30 rounded-full blur-[120px] animate-pulse pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[35%] h-[35%] bg-oku-mint/20 rounded-full blur-[100px] animate-float-3d pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+        <div className="mb-14 flex flex-col justify-between gap-8 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <Link
               href="/dashboard/client"
@@ -87,10 +93,10 @@ export default async function ClientDocumentsPage() {
             >
               <ChevronLeft size={13} /> Dashboard
             </Link>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               The <span className="text-oku-purple-dark italic">Vault.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            <p className="border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic text-oku-darkgrey/60 sm:pl-8 sm:text-lg lg:text-xl">
               Your clinical and financial history, held in confidence.
             </p>
           </div>
@@ -98,7 +104,7 @@ export default async function ClientDocumentsPage() {
 
         {isEmpty ? (
           /* Empty state */
-          <div className="py-32 text-center card-glass-3d !bg-white/40">
+          <div className="card-glass-3d py-20 text-center !bg-white/40 sm:py-32">
             <FolderOpen className="mx-auto text-oku-purple-dark/20 mb-8 animate-float-3d" size={64} />
             <h3 className="heading-display text-3xl text-oku-darkgrey">
               Nothing here yet
@@ -108,14 +114,14 @@ export default async function ClientDocumentsPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-16">
+            <div className="space-y-12 sm:space-y-16">
             {/* Section 1: Session Summaries */}
             <section>
-              <div className="flex items-center gap-4 mb-8">
+              <div className="mb-8 flex flex-wrap items-center gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-oku-lavender flex items-center justify-center text-oku-purple-dark">
                   <FileText size={20} />
                 </div>
-                <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">
+                <h2 className="heading-display text-3xl tracking-tight text-oku-darkgrey sm:text-4xl">
                   Session <span className="text-oku-purple-dark italic">Summaries</span>
                 </h2>
                 {soapNotes.length > 0 && (
@@ -148,11 +154,11 @@ export default async function ClientDocumentsPage() {
 
             {/* Section 2: Assessment Reports */}
             <section>
-              <div className="flex items-center gap-4 mb-8">
+              <div className="mb-8 flex flex-wrap items-center gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-oku-mint/40 flex items-center justify-center text-oku-darkgrey">
                   <ClipboardList size={20} />
                 </div>
-                <h2 className="heading-display text-4xl text-oku-darkgrey tracking-tight">
+                <h2 className="heading-display text-3xl tracking-tight text-oku-darkgrey sm:text-4xl">
                   Assessment <span className="text-oku-purple-dark italic">Reports</span>
                 </h2>
                 {assessmentAnswers.length > 0 && (
@@ -209,9 +215,9 @@ export default async function ClientDocumentsPage() {
                     <DocumentRow
                       key={payment.id}
                       icon={<Receipt size={18} className="text-oku-purple-dark" />}
-                      title={`Invoice — ${payment.appointment?.service?.name || 'Session'}`}
-                      subtitle={payment.appointment?.practitioner?.name
-                        ? `With ${payment.appointment.practitioner.name}`
+                      title={`Invoice — ${payment.appointment?.service?.name || payment.assignedAssessment?.assessment?.title || 'Session'}`}
+                      subtitle={payment.appointment?.practitioner?.name || payment.assignedAssessment?.practitioner?.name
+                        ? `With ${payment.appointment?.practitioner?.name || payment.assignedAssessment?.practitioner?.name}`
                         : undefined}
                       date={payment.createdAt}
                       downloadUrl={`/api/payments/${payment.id}/invoice`}

@@ -23,7 +23,7 @@ export default function TermsPage() {
 
             <section>
                 <h3 className="text-2xl font-display font-bold text-oku-dark mb-4 tracking-tight">3. Privacy & Data</h3>
-                <p>Your data is handled in accordance with our Privacy Policy and relevant laws including HIPAA (US) and DPDP Act (India). We use AI to process transcripts for clinical summaries; this data is encrypted and never sold.</p>
+                <p>Your data is handled in accordance with our Privacy Policy and applicable privacy obligations. We use AI to process transcripts for clinical summaries and drafting support, and we do not sell this data for marketing purposes.</p>
             </section>
 
             <section>

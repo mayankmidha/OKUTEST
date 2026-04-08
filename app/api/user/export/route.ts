@@ -9,15 +9,50 @@ export async function GET() {
   try {
     const userId = session.user.id
 
-    const [user, profile, moods, assessments, messages] = await Promise.all([
+    const [user, clientProfile, practitionerProfile, moods, assessments, messages, documents, appointments] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
-        select: { name: true, email: true, createdAt: true, location: true }
+        select: {
+          name: true,
+          email: true,
+          createdAt: true,
+          location: true,
+          phone: true,
+          role: true,
+          hasSignedConsent: true,
+          emailVerified: true,
+          deletionRequestedAt: true,
+        }
       }),
       prisma.clientProfile.findUnique({
         where: { userId },
-        exclude: { id: true, userId: true } // Assuming helper or just select fields
-      } as any),
+        select: {
+          isOnboarded: true,
+          dateOfBirth: true,
+          gender: true,
+          medicalHistory: true,
+          emergencyContactName: true,
+          emergencyContactPhone: true,
+          preferredLanguage: true,
+          timezone: true,
+          anonymousAlias: true,
+        },
+      }),
+      prisma.practitionerProfile.findUnique({
+        where: { userId },
+        select: {
+          isOnboarded: true,
+          isVerified: true,
+          licenseNumber: true,
+          specialization: true,
+          bio: true,
+          education: true,
+          experienceYears: true,
+          indiaSessionRate: true,
+          internationalSessionRate: true,
+          timezone: true,
+        },
+      }),
       prisma.moodEntry.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } }),
       prisma.assessmentAnswer.findMany({ 
         where: { userId }, 
@@ -27,20 +62,55 @@ export async function GET() {
       prisma.message.findMany({
         where: { OR: [{ senderId: userId }, { receiverId: userId }] },
         orderBy: { createdAt: 'desc' }
-      })
+      }),
+      prisma.document.findMany({
+        where: { clientId: userId },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          uploadedBy: true,
+          isPrivate: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.appointment.findMany({
+        where: {
+          OR: [
+            { clientId: userId },
+            { practitionerId: userId },
+          ],
+        },
+        select: {
+          id: true,
+          startTime: true,
+          endTime: true,
+          status: true,
+          isTrial: true,
+          isGroupSession: true,
+          notes: true,
+        },
+        orderBy: { startTime: 'desc' },
+      }),
     ])
 
     const exportData = {
       exportInfo: {
         generatedAt: new Date().toISOString(),
         platform: "Oku Therapy Integrated",
-        compliance: "DPDP / HIPAA / GDPR"
+        format: "JSON export"
       },
       personalInfo: user,
-      profile,
+      profile: {
+        client: clientProfile,
+        practitioner: practitionerProfile,
+      },
       clinicalData: {
         moodHistory: moods,
         assessments,
+        appointments,
+        documents,
       },
       communication: {
         messages: messages.map(m => ({

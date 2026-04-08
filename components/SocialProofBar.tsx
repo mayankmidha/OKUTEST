@@ -33,11 +33,11 @@ export function SocialProofBar({ practitionerCount, sessionCount, clientCount }:
               </div>
               <div className="pl-5 flex items-center gap-2">
                 <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
-                <p className="text-[10px] font-black text-oku-darkgrey leading-none">All verified</p>
+                <p className="text-[10px] font-black text-oku-darkgrey leading-none">Verified options</p>
               </div>
               <div className="pl-5 flex items-center gap-2">
                 <Star size={13} className="text-oku-butter shrink-0" />
-                <p className="text-[10px] font-black text-oku-darkgrey leading-none">Free first consult</p>
+                <p className="text-[10px] font-black text-oku-darkgrey leading-none">Trial calls available</p>
               </div>
               <div className="pl-5 hidden sm:flex items-center gap-2">
                 <Zap size={13} className="text-oku-purple-dark shrink-0" />

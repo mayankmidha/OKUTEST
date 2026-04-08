@@ -46,14 +46,14 @@ export default function QualityDashboardClient() {
         <QualityStat 
           title="Clinical Improvement" 
           value={`${data?.metrics?.improvementRate || 0}%`} 
-          sub="Symptom reduction rate" 
+          sub="Tracked assessment trajectories improving" 
           icon={<Heart size={28} />}
           color="bg-oku-mint/60 text-emerald-600"
         />
         <QualityStat 
-          title="Compliance Score" 
-          value="98.2%" 
-          sub="Documentation completion rate" 
+          title="Documentation" 
+          value={`${data?.metrics?.documentationCompletionRate || 0}%`} 
+          sub="Completed sessions with notes or transcripts" 
           icon={<ShieldCheck size={28} />}
           color="bg-oku-blush/60 text-oku-darkgrey"
         />
@@ -74,16 +74,18 @@ export default function QualityDashboardClient() {
              Governance Pulse
            </h3>
            <div className="space-y-4">
-              <QualityMetric label="SOAP Notes Completion" value="94%" />
-              <QualityMetric label="Intake Form Coverage" value="100%" />
-              <QualityMetric label="Safety Plan Approval" value="88%" />
-              <QualityMetric label="Response Time (Avg)" value="4.2h" />
+              <QualityMetric label="Documentation Coverage" value={`${data?.metrics?.documentationCompletionRate || 0}%`} />
+              <QualityMetric label="Intake Form Coverage" value={`${data?.metrics?.intakeCoverageRate || 0}%`} />
+              <QualityMetric label="Safety Plan Coverage" value={`${data?.metrics?.safetyPlanCoverageRate || 0}%`} />
+              <QualityMetric label="Tracked Outcomes" value={String(data?.metrics?.trackedOutcomeTrajectories || 0)} />
            </div>
            
            <div className="mt-12 p-8 bg-oku-darkgrey rounded-[2rem] text-white">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-3">Clinical Insight</p>
               <p className="text-sm font-light leading-relaxed italic">
-                Higher session frequency correlates with a 24% faster improvement in GAD-7 scores this month.
+                {data?.metrics?.trackedOutcomeTrajectories
+                  ? `${data.metrics.trackedOutcomeTrajectories} scored assessment trajectories currently have enough history for change-over-time tracking.`
+                  : 'Outcome trend reporting will populate once clients have at least two scored assessments on file.'}
               </p>
            </div>
         </div>
@@ -101,7 +103,8 @@ export default function QualityDashboardClient() {
            </div>
 
            <div className="flex-1 overflow-y-auto max-h-[600px] custom-scrollbar">
-              <table className="w-full text-left border-collapse">
+              <div className="overflow-x-auto">
+              <table className="min-w-[760px] w-full text-left border-collapse">
                 <thead className="sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-oku-darkgrey/5">
                    <tr>
                       <th className="p-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Seeker</th>
@@ -139,6 +142,7 @@ export default function QualityDashboardClient() {
                    ))}
                 </tbody>
               </table>
+              </div>
            </div>
         </div>
       </div>

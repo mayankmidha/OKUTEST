@@ -58,8 +58,8 @@ export default function BrandedFooter() {
         <div className="pt-12 border-t border-oku-taupe/5 flex flex-col md:flex-row justify-between items-center gap-8">
             <p className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40">© 2026 OKU Therapy Collective. All rights reserved.</p>
             <div className="flex gap-12">
-                <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40">HIPAA Compliant</span>
-                <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40">AES-256 Encrypted</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40">Private Client Access</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe/40">Security Controls Evolving</span>
             </div>
         </div>
       </div>

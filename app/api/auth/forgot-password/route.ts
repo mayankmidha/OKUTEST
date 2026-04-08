@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
+import { appendPrivateInboxRecord } from '@/lib/private-storage'
 
 export async function POST(req: Request) {
   try {
@@ -33,7 +34,12 @@ export async function POST(req: Request) {
       const resendApiKey = process.env.RESEND_API_KEY
 
       if (!resendApiKey) {
-        console.log(`[FORGOT_PASSWORD_STUB] Reset link for ${normalizedEmail}: ${resetUrl}`)
+        await appendPrivateInboxRecord('password-resets.ndjson', {
+          email: normalizedEmail,
+          resetUrl,
+          expiresAt: expiresAt.toISOString(),
+          source: 'forgot-password-fallback',
+        })
       } else {
         try {
           const res = await fetch('https://api.resend.com/emails', {

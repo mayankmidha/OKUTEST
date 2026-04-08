@@ -26,7 +26,13 @@ export async function GET(
             service: true,
             practitioner: true
           }
-        }
+        },
+        assignedAssessment: {
+          include: {
+            assessment: true,
+            practitioner: true,
+          },
+        },
       }
     })
 
@@ -37,10 +43,15 @@ export async function GET(
     // Security: Only the user who paid, their therapist, or an admin
     const isOwner = payment.userId === session.user.id
     const isTherapist = payment.appointment?.practitionerId === session.user.id
+      || payment.assignedAssessment?.practitionerId === session.user.id
     const isAdmin = session.user.role === 'ADMIN'
 
     if (!isOwner && !isTherapist && !isAdmin) {
       return new NextResponse('Forbidden', { status: 403 })
+    }
+
+    if (payment.status !== 'COMPLETED' && payment.status !== 'REFUNDED') {
+      return new NextResponse('Invoice unavailable until payment is settled', { status: 409 })
     }
 
     // Generate PDF
@@ -74,8 +85,14 @@ export async function GET(
     doc.text('Amount', 160, 107)
     doc.line(20, 112, 190, 112)
 
-    const serviceName = payment.appointment?.service?.name || 'Therapy Session'
-    const practitionerName = payment.appointment?.practitioner?.name || 'OKU Specialist'
+    const serviceName =
+      payment.appointment?.service?.name ||
+      payment.assignedAssessment?.assessment?.title ||
+      'Therapy Session'
+    const practitionerName =
+      payment.appointment?.practitioner?.name ||
+      payment.assignedAssessment?.practitioner?.name ||
+      'OKU Specialist'
     
     doc.text(`${serviceName} with ${practitionerName}`, 25, 122)
     doc.text(`${formatCurrency(payment.amount, 'INR')}`, 160, 122)

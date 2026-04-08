@@ -5,8 +5,8 @@ import bcrypt from 'bcryptjs'
 import { UserRole } from '@prisma/client'
 import { createReferralCode, findReferralReferrer } from '@/lib/referrals'
 import { detectCurrency } from '@/lib/currency'
-import { sendWelcomeEmail } from '@/lib/notifications'
 import { generateAnonymousAlias } from '@/lib/aliases'
+import { normalizeAuthEmail, sendVerificationEmailForUser } from '@/lib/auth-user'
 
 export async function POST(req: Request) {
   try {
@@ -19,6 +19,13 @@ export async function POST(req: Request) {
       location: manualLocation,
       referralCode,
       dateOfBirth,
+      phone,
+      licenseNumber,
+      specialization,
+      experienceYears,
+      education,
+      bio,
+      consultationFee,
     } = body
 
     // 1. SMART DETECTION: Get location/timezone from headers or client
@@ -37,8 +44,10 @@ export async function POST(req: Request) {
       )
     }
 
+    const normalizedEmail = normalizeAuthEmail(email)
+
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     })
 
     if (existingUser) {
@@ -52,6 +61,24 @@ export async function POST(req: Request) {
 
     // Determine initial role
     const userRole = role === 'THERAPIST' ? UserRole.THERAPIST : UserRole.CLIENT
+    const therapistSpecializations = Array.isArray(specialization)
+      ? specialization.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      : typeof specialization === 'string' && specialization.trim().length > 0
+        ? [specialization.trim()]
+        : []
+    const parsedConsultationFee = Number.parseFloat(String(consultationFee ?? ''))
+    const parsedExperienceYears = Number.parseInt(String(experienceYears ?? '0'), 10) || 0
+
+    if (
+      userRole === UserRole.THERAPIST &&
+      (!licenseNumber || therapistSpecializations.length === 0 || !education || !bio)
+    ) {
+      return NextResponse.json(
+        { error: 'Missing required practitioner onboarding fields' },
+        { status: 400 }
+      )
+    }
+
     const referredBy = await findReferralReferrer(referralCode)
     const generatedReferralCode = await createReferralCode(name)
 
@@ -59,12 +86,13 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         referralCode: generatedReferralCode,
         referredById: referredBy?.role === UserRole.CLIENT ? referredBy.id : null,
         password: hashedPassword,
         role: userRole,
         location: finalLocation,
+        phone: typeof phone === 'string' ? phone : null,
         // Auto-create profile with smart defaults
         clientProfile: userRole === UserRole.CLIENT ? { 
             create: { 
@@ -77,7 +105,16 @@ export async function POST(req: Request) {
           create: {
             baseCurrency,
             timezone,
-            isVerified: false
+            isVerified: false,
+            licenseNumber,
+            specialization: therapistSpecializations,
+            bio,
+            education,
+            experienceYears: parsedExperienceYears,
+            indiaSessionRate: Number.isNaN(parsedConsultationFee) ? null : parsedConsultationFee,
+            hourlyRate: Number.isNaN(parsedConsultationFee) ? null : parsedConsultationFee,
+            internationalSessionRate: Number.isNaN(parsedConsultationFee) ? null : parsedConsultationFee,
+            isOnboarded: false,
           }
         } : undefined
       },
@@ -94,20 +131,23 @@ export async function POST(req: Request) {
           name: user.name,
           email: user.email,
           role: user.role,
+          emailVerified: !!user.emailVerified,
           location: user.location,
           timezone,
           baseCurrency,
           referredById: user.referredById,
           referralCode: user.referralCode,
+          practitionerIntakeCaptured: userRole === UserRole.THERAPIST,
         }),
       }
     })
 
-    // Send welcome email (non-blocking)
-    sendWelcomeEmail(user.id).catch((e) => console.error('[WELCOME_EMAIL_ERROR]', e))
+    sendVerificationEmailForUser(user.id).catch((error) => {
+      console.error('[EMAIL_VERIFICATION_SEND_ERROR]', error)
+    })
 
     return NextResponse.json(
-      { message: 'User created successfully', userId: user.id },
+      { message: 'User created successfully. Please verify your email before signing in.', userId: user.id },
       { status: 201 }
     )
   } catch (error) {

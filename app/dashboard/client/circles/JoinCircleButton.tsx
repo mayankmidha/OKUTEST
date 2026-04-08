@@ -7,9 +7,10 @@ import { ArrowRight, Loader2, CheckCircle2 } from 'lucide-react'
 interface JoinCircleButtonProps {
   circleId: string
   isFull: boolean
+  requiresPayment: boolean
 }
 
-export function JoinCircleButton({ circleId, isFull }: JoinCircleButtonProps) {
+export function JoinCircleButton({ circleId, isFull, requiresPayment }: JoinCircleButtonProps) {
   const router = useRouter()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -18,10 +19,29 @@ export function JoinCircleButton({ circleId, isFull }: JoinCircleButtonProps) {
     if (isFull || status === 'loading' || status === 'success') return
 
     setStatus('loading')
-    
-    // Redirect to the Universal Checkout Engine
-    // type=GROUP_SESSION triggers the INR 500 flow
-    router.push(`/dashboard/client/checkout?type=GROUP_SESSION&id=${circleId}`)
+
+    if (requiresPayment) {
+      router.push(`/dashboard/client/checkout?type=GROUP_SESSION&id=${circleId}`)
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/circles/${circleId}/join`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ message: 'Could not join circle.' }))
+        throw new Error(data.message || 'Could not join circle.')
+      }
+
+      setStatus('success')
+      router.push(`/dashboard/client/circles/${circleId}`)
+      router.refresh()
+    } catch (error: any) {
+      setErrorMsg(error.message || 'Could not join circle.')
+      setStatus('error')
+    }
   }
 
   if (isFull) {
@@ -53,7 +73,7 @@ export function JoinCircleButton({ circleId, isFull }: JoinCircleButtonProps) {
           </>
         ) : (
           <>
-            Join this Circle <ArrowRight size={16} />
+            {requiresPayment ? 'Pay & Join' : 'Join this Circle'} <ArrowRight size={16} />
           </>
         )}
       </button>

@@ -3,6 +3,18 @@ import { prisma } from '@/lib/prisma'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
+export function isOkuAiConfigured() {
+  return Boolean(process.env.GEMINI_API_KEY)
+}
+
+function getConfiguredModel(model: string) {
+  if (!isOkuAiConfigured()) {
+    throw new Error('OKU_AI_PROVIDER_UNAVAILABLE')
+  }
+
+  return genAI.getGenerativeModel({ model })
+}
+
 /**
  * PII Scrubber (The Privacy Shield)
  * Removes names, emails, and phone numbers before sending data to LLMs.
@@ -71,8 +83,7 @@ export async function analyzeClinicalTranscript({
   recentAssessments?: any[]
   settings: any
 }): Promise<ClinicalIntelligence> {
-  
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
+  const model = getConfiguredModel("gemini-1.5-pro")
 
   const prompt = `
     You are an advanced Clinical AI Brain for Oku Therapy. You are analyzing a therapy session transcript between ${practitionerName} and ${patientName}.
@@ -128,16 +139,12 @@ export async function analyzeClinicalTranscript({
 // ─── Restoring Required Legacy Functions ────────────────────────────────────
 
 export async function transcribeClinicalAudio(arg1: string | { audioBase64: string; mimeType: string; settings: any }): Promise<{ transcript: string; detectedLanguage: string }> {
-    // For now, return a placeholder or use Gemini 1.5 Flash for audio
-    console.log("[OCI_TRANSCRIBE] Audio processing requested.")
-    return { 
-        transcript: "This is a transcribed placeholder for the clinical session audio.",
-        detectedLanguage: "en"
-    }
+    console.warn("[OCI_TRANSCRIBE_UNAVAILABLE] Audio transcription provider is not configured.")
+    throw new Error('TRANSCRIPTION_PROVIDER_UNAVAILABLE')
 }
 
 export async function draftClinicalScribe(arg1: string | any, arg2: string = ''): Promise<string> {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
+    const model = getConfiguredModel("gemini-1.5-pro")
     let prompt = ''
     
     if (typeof arg1 === 'object') {
@@ -190,7 +197,7 @@ export function getRoleAwareAiInstruction(
 
     const therapistKnowledge = `
     PLATFORM FEATURES FOR THERAPISTS:
-    - To sync calendars: Go to 'Profile', scroll to 'Universal Calendar Sync', enter Google/Outlook/Apple/Calendly details, and copy the Magic Sync Link.
+    - To sync calendars: Go to 'Profile', open the calendar sync section, and copy the private iCal feed link for Apple, Google, or Outlook subscription.
     - To view SOAP notes: Go to the 'Intelligence' or 'Clinical Workspace' for a patient to see AI-generated SOAP notes.
     - To check payouts: Go to 'Billing & Payouts' to see platform fees, pending balances, and total earned.
     - To manage schedule: Go to 'Schedule' to set standard weekly hours, add specific date overrides, or block time off.

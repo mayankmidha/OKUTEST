@@ -164,7 +164,7 @@ export function AssessmentAiCurationModal({ isOpen, onClose, assessment }: Asses
                     <div className="pt-12 border-t border-oku-darkgrey/5 flex flex-col sm:flex-row justify-between items-center gap-8">
                         <div className="flex items-center gap-4 text-oku-darkgrey/40">
                              <ShieldCheck size={20} />
-                             <span className="text-[10px] font-black uppercase tracking-widest italic">HIPAA Verified Analysis</span>
+                             <span className="text-[10px] font-black uppercase tracking-widest italic">Protected Analysis Workspace</span>
                         </div>
                         <button 
                            onClick={onClose}

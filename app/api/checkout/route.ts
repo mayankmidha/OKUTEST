@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { PaymentStatus } from '@prisma/client'
+import { AppointmentStatus, PaymentStatus, RecurringPattern } from '@prisma/client'
 import { applyReferralCreditToAppointment } from '@/lib/referrals'
 import { getPlatformSettings, getSessionRevenueSplit } from '@/lib/provider-finance'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
 import { getStripeClient, isStripeConfigured } from '@/lib/stripe'
+import { finalizeCheckoutPayment } from '@/lib/payment-finalization'
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -28,6 +29,13 @@ export async function POST(req: Request) {
       const appointment = await prisma.appointment.findUnique({
         where: { id: sessionId },
         include: {
+          payments: {
+            select: {
+              id: true,
+              status: true,
+              processor: true,
+            },
+          },
           service: true,
           practitioner: {
             include: {
@@ -39,6 +47,23 @@ export async function POST(req: Request) {
 
       if (!appointment) {
         return new NextResponse('Appointment not found', { status: 404 })
+      }
+      if (appointment.clientId !== session.user.id) {
+        return new NextResponse('Forbidden', { status: 403 })
+      }
+      if (
+        appointment.status === AppointmentStatus.CANCELLED ||
+        appointment.status === AppointmentStatus.COMPLETED ||
+        appointment.status === AppointmentStatus.NO_SHOW
+      ) {
+        return new NextResponse('This appointment can no longer be paid for.', { status: 409 })
+      }
+
+      const completedPayment = appointment.payments.find(
+        (payment) => payment.status === PaymentStatus.COMPLETED
+      )
+      if (completedPayment) {
+        return NextResponse.redirect(new URL(`/dashboard/client/sessions/${appointment.id}`, req.url), 303)
       }
 
       const appointmentAmount = getAppointmentBillingAmount(appointment)
@@ -77,9 +102,11 @@ export async function POST(req: Request) {
 
       // 1. Handle Referral Credit (Free)
       if (netAmount === 0 || processor === 'referral-credit') {
-        await prisma.payment.update({
-            where: { id: payment.id },
-            data: { status: PaymentStatus.COMPLETED }
+        await finalizeCheckoutPayment({
+          paymentId: payment.id,
+          appointmentId: appointment.id,
+          recurringPattern: recurringPattern as RecurringPattern,
+          processor: 'referral-credit',
         })
         return NextResponse.redirect(new URL(`/dashboard/client/checkout/${sessionId}/success?method=referral-credit`, req.url), 303)
       }
@@ -127,7 +154,7 @@ export async function POST(req: Request) {
 
         await prisma.payment.update({
             where: { id: payment.id },
-            data: { stripePaymentId: stripeSession.id }
+            data: { stripeCheckoutSessionId: stripeSession.id }
         })
 
         return NextResponse.redirect(stripeSession.url, 303)

@@ -201,7 +201,7 @@ function ResetPasswordContent() {
 
                 <div className="mt-10 flex justify-center items-center gap-2 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
                   <ShieldCheck size={14} className="text-oku-purple-dark" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-oku-darkgrey">HIPAA Compliant · AES-256 Secure</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-oku-darkgrey">Protected Access · Account Recovery</span>
                 </div>
               </motion.div>
             )}

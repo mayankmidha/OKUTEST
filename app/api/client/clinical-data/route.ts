@@ -40,7 +40,7 @@ export async function GET() {
             status: 'PENDING'
         },
         include: { 
-            assessment: { select: { title: true, price: true } },
+            assessment: { select: { id: true, title: true, price: true } },
             practitioner: { select: { name: true } }
         }
       })

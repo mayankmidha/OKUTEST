@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import { NextResponse } from 'next/server'
+import { savePrivateFile } from '@/lib/private-storage'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
 const MAX_BYTES = 5 * 1024 * 1024 // 5MB
@@ -27,12 +28,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'File must be under 5MB' }, { status: 400 })
     }
 
+    const storedFile = await savePrivateFile({
+      file,
+      scope: `kyc/${session.user.id}`,
+      preferredName: file.name,
+    })
+
     const document = await prisma.document.create({
       data: {
         clientId: session.user.id,
         practitionerId: session.user.id,
         name: file.name,
-        url: `/kyc-pending/${session.user.id}/${file.name}`,
+        url: storedFile.storageKey,
         type: 'KYC_LICENSE',
         uploadedBy: 'PRACTITIONER',
         isPrivate: true,
@@ -65,6 +72,11 @@ export async function GET() {
   const docs = await prisma.document.findMany({
     where: { practitionerId: session.user.id, type: 'KYC_LICENSE' },
     orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+    },
   })
 
   return NextResponse.json(docs)

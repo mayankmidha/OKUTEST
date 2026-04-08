@@ -33,14 +33,14 @@ const crisisLines = [
 
 export default function ClientSupportPage() {
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/10 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Ambient blobs */}
       <div className="absolute top-[10%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+        <div className="mb-14 flex flex-col justify-between gap-8 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Link
@@ -51,21 +51,21 @@ export default function ClientSupportPage() {
               </Link>
               <span className="chip bg-white/60 border-white/80">Help Desk</span>
             </div>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               We&rsquo;re <span className="text-oku-purple-dark italic">Here.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            <p className="border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic text-oku-darkgrey/60 sm:pl-8 sm:text-lg lg:text-xl">
               Support that holds you — practically and gently.
             </p>
           </div>
         </div>
 
-        <div className="grid xl:grid-cols-12 gap-12">
+        <div className="grid gap-10 xl:grid-cols-12 xl:gap-12">
           {/* Left column: FAQ + Contact */}
           <div className="xl:col-span-8 space-y-12">
             {/* FAQ Accordion */}
-            <section className="card-glass-3d !p-12 !bg-white/40">
-              <div className="flex items-center gap-4 mb-12">
+            <section className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex items-center gap-4 sm:mb-12">
                 <div className="w-12 h-12 rounded-[1rem] bg-oku-lavender flex items-center justify-center text-oku-purple-dark">
                   <HelpCircle size={22} strokeWidth={1.5} />
                 </div>
@@ -80,8 +80,8 @@ export default function ClientSupportPage() {
             </section>
 
             {/* Contact Form */}
-            <section className="card-glass-3d !p-12 !bg-oku-butter">
-              <div className="flex items-center gap-4 mb-10">
+            <section className="card-glass-3d !bg-oku-butter !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex items-center gap-4 sm:mb-10">
                 <div className="w-12 h-12 rounded-[1rem] bg-white/60 flex items-center justify-center text-oku-purple-dark">
                   <MessageSquare size={22} strokeWidth={1.5} />
                 </div>
@@ -99,7 +99,7 @@ export default function ClientSupportPage() {
           {/* Right column: Crisis resources + direct channels */}
           <div className="xl:col-span-4 space-y-10">
             {/* Crisis Resources */}
-            <section className="card-glass-3d !p-10 !bg-oku-peach/30 border-2 border-oku-peach/40">
+            <section className="card-glass-3d border-2 border-oku-peach/40 !bg-oku-peach/30 !p-6 sm:!p-8 lg:!p-10">
               <div className="flex items-center gap-3 mb-8">
                 <AlertTriangle size={20} className="text-oku-darkgrey/60" />
                 <div>
@@ -134,7 +134,7 @@ export default function ClientSupportPage() {
             </section>
 
             {/* Direct Channels */}
-            <section className="card-glass-3d !p-10 !bg-white/40">
+            <section className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-10">
               <h3 className="heading-display text-xl text-oku-darkgrey mb-8">
                 Direct <span className="italic text-oku-purple-dark">Channels</span>
               </h3>
@@ -173,7 +173,7 @@ export default function ClientSupportPage() {
             </section>
 
             {/* Security note */}
-            <div className="card-glass-3d !p-8 !bg-oku-darkgrey text-white relative overflow-hidden">
+            <div className="relative overflow-hidden card-glass-3d !bg-oku-darkgrey !p-6 text-white sm:!p-8">
               <div className="relative z-10">
                 <ShieldCheck size={20} className="text-oku-purple-dark/80 mb-4" />
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-3">Security Note</p>

@@ -66,7 +66,7 @@ export default async function ClientMessagesPage({ searchParams }: { searchParam
                 <div className="clinic-surface bg-oku-purple/5 p-4 sm:p-6">
                     <ShieldCheck size={20} className="text-oku-purple mb-3" />
                     <p className="text-xs text-oku-taupe leading-relaxed">
-                        This portal is encrypted. Do not use this for medical emergencies. In an emergency, please call your local emergency services.
+                        This portal uses protected transport and account access controls. Do not use it for medical emergencies. In an emergency, please call your local emergency services.
                     </p>
                 </div>
             </div>

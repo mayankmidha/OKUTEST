@@ -62,7 +62,7 @@ export default function PractitionerSignupPage() {
       })
 
       if (response.ok) {
-        router.push('/auth/login?message=Practitioner account created successfully')
+        router.push('/auth/verify-email?sent=1')
       } else {
         const data = await response.json()
         setError(data.error || 'Failed to create account')

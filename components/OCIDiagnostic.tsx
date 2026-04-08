@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Loader2, Terminal, ShieldCheck, AlertCircle, Zap, Brain } from 'lucide-react'
+import { Loader2, Terminal, AlertCircle } from 'lucide-react'
 
 export function OCIDiagnostic() {
   const [data, setData] = useState<any>(null)
@@ -76,12 +76,14 @@ export function OCIDiagnostic() {
                         </p>
                      </div>
                      <div>
-                        <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Nodes</p>
-                        <p className="text-xs font-bold text-white">{data?.vitals?.totalUsers || 0} Integrated</p>
+                        <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Recent Sessions</p>
+                        <p className="text-xs font-bold text-white">{data?.vitals?.economicMoat?.sessionVolume || 0} Reviewed</p>
                      </div>
                      <div>
-                        <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Integrity</p>
-                        <p className="text-xs font-bold text-white">99.9% Verified</p>
+                        <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Consent Coverage</p>
+                        <p className="text-xs font-bold text-white">
+                          {Math.round(data?.vitals?.governance?.consentCoverage || 0)}%
+                        </p>
                      </div>
                      <div>
                         <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Timestamp</p>
@@ -99,7 +101,7 @@ export function OCIDiagnostic() {
                   </div>
 
                   <div className="pt-6 border-t border-white/5 flex items-center justify-between text-[9px] uppercase tracking-[0.3em] text-white/20">
-                     <span>Encryption: AES-256 System-wide</span>
+                     <span>Signals: Consent, risk, and activity review</span>
                      <span>Secured by Oku Core</span>
                   </div>
                </motion.div>

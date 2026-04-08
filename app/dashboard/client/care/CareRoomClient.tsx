@@ -160,7 +160,7 @@ export function CareRoomClient({ user, initialContext }: { user: any, initialCon
                 
                 <div className="mt-8 flex justify-center gap-12">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40">
-                        <Sparkles size={14} /> HIPAA Secure
+                        <Sparkles size={14} /> Logged-In Space
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-taupe opacity-40">
                         <MessageCircle size={14} /> Clinical Reflection

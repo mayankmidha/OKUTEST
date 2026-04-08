@@ -108,7 +108,7 @@ export default async function CircleDetailPage({ params }: PageProps) {
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-1">Privacy Tier</p>
                   <p className="text-xl font-bold text-oku-darkgrey">High-Safety</p>
-                  <p className="text-xs text-oku-darkgrey/40 italic mt-1">Clinical-grade encryption</p>
+                  <p className="text-xs text-oku-darkgrey/40 italic mt-1">Secure practitioner-hosted video</p>
                 </div>
               </div>
             </div>

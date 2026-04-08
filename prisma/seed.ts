@@ -16,6 +16,7 @@ async function main() {
       name: 'Oku Admin',
       password: hashedPassword,
       role: UserRole.ADMIN,
+      emailVerified: new Date(),
     },
   })
 
@@ -95,6 +96,7 @@ async function main() {
           name: t.name,
           password: hashedPassword,
           role: UserRole.THERAPIST,
+          emailVerified: new Date(),
           avatar: t.avatar,
           practitionerProfile: {
             create: {
@@ -133,6 +135,7 @@ async function main() {
         name: c.name,
         password: hashedPassword,
         role: UserRole.CLIENT,
+        emailVerified: new Date(),
         clientProfile: {
           create: {
             noShowCount: 0

@@ -14,7 +14,12 @@ export async function GET(req: Request) {
           include: {
             service: true
           }
-        }
+        },
+        assignedAssessment: {
+          include: {
+            assessment: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' }
     })

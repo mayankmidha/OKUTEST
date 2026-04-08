@@ -4,11 +4,19 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Sparkles, ArrowRight } from 'lucide-react'
 import { signIn, useSession } from 'next-auth/react'
-import confetti from 'canvas-confetti'
 
-export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string, isAuthenticated: boolean }) {
+export function JoinCircleForm({
+  circleId,
+  isAuthenticated,
+  requiresPayment,
+}: {
+  circleId: string
+  isAuthenticated: boolean
+  requiresPayment: boolean
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [guidelinesAccepted, setGuidelinesAccepted] = useState(false)
   const { update } = useSession()
   const [userDetails, setUserDetails] = useState({
     name: '',
@@ -50,18 +58,20 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
         await update()
       }
 
-      // 3. Join the Circle (API call)
-      const joinRes = await fetch(`/api/circles/${circleId}/join`, {
-        method: 'POST'
-      })
+      if (requiresPayment) {
+        router.push(`/dashboard/client/checkout?type=GROUP_SESSION&id=${circleId}`)
+      } else {
+        const joinRes = await fetch(`/api/circles/${circleId}/join`, {
+          method: 'POST'
+        })
 
-      if (!joinRes.ok) {
-        const data = await joinRes.json().catch(() => ({ message: "Could not join circle." }))
-        throw new Error(data.message || "Could not join circle.")
+        if (!joinRes.ok) {
+          const data = await joinRes.json().catch(() => ({ message: "Could not join circle." }))
+          throw new Error(data.message || "Could not join circle.")
+        }
+
+        router.push(`/dashboard/client/circles?success=true&circleId=${circleId}`)
       }
-
-      confetti({ particleCount: 150, spread: 70 })
-      router.push(`/dashboard/client/circles?success=true&circleId=${circleId}`)
 
     } catch (err: any) {
       setError(err.message)
@@ -77,16 +87,25 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
            <Sparkles size={40} className="text-oku-purple-dark" />
         </div>
         <div>
-           <h3 className="heading-display text-3xl text-oku-darkgrey">You're almost there.</h3>
+           <h3 className="heading-display text-3xl text-oku-darkgrey">You&apos;re almost there.</h3>
            <p className="text-oku-darkgrey/40 font-display italic mt-2">Click below to finalize your attendance.</p>
         </div>
         <button
           onClick={() => handleJoin()}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !guidelinesAccepted}
           className="btn-pill-3d bg-oku-darkgrey text-white w-full !py-5"
         >
-          {isSubmitting ? <Loader2 className="animate-spin" /> : 'Confirm My Spot'}
+          {isSubmitting ? <Loader2 className="animate-spin" /> : requiresPayment ? 'Continue to Payment' : 'Confirm My Spot'}
         </button>
+        <label className="flex items-start gap-3 text-xs text-oku-darkgrey/60 text-left">
+          <input
+            type="checkbox"
+            checked={guidelinesAccepted}
+            onChange={e => setGuidelinesAccepted(e.target.checked)}
+            className="mt-1"
+          />
+          <span>I agree to the community guidelines and understand circle sessions are confidential spaces.</span>
+        </label>
       </div>
     )
   }
@@ -149,16 +168,26 @@ export function JoinCircleForm({ circleId, isAuthenticated }: { circleId: string
         </div>
       </div>
 
+      <label className="flex items-start gap-3 text-xs text-oku-darkgrey/60">
+        <input
+          type="checkbox"
+          checked={guidelinesAccepted}
+          onChange={e => setGuidelinesAccepted(e.target.checked)}
+          className="mt-1"
+        />
+        <span>I agree to the community guidelines and understand circle sessions are confidential spaces.</span>
+      </label>
+
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !guidelinesAccepted}
         className="btn-pill-3d bg-oku-darkgrey text-white w-full !py-5 mt-8 shadow-xl hover:bg-oku-purple-dark transition-all"
       >
-        {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <><Sparkles size={18} className="mr-2" /> Complete Registration & Join</>}
+        {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <><Sparkles size={18} className="mr-2" /> Complete Registration & Continue</>}
       </button>
 
       <p className="text-[9px] text-center text-oku-darkgrey/30 mt-6 px-4">
-        By continuing, you agree to OKU's clinical consent and privacy protocol.
+        By continuing, you agree to OKU&apos;s clinical consent and privacy protocol.
       </p>
     </form>
   )

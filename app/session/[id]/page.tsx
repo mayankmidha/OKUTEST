@@ -127,7 +127,7 @@ export default function TelehealthSessionPage() {
             <div className="flex items-center gap-6">
                 <div className="hidden sm:flex items-center gap-2 text-oku-green text-[10px] uppercase tracking-widest font-bold">
                     <ShieldCheck size={14} />
-                    E2E Encrypted
+                    Encrypted Session
                 </div>
                 <div className="w-px h-6 bg-white/10 hidden sm:block" />
                 <button 

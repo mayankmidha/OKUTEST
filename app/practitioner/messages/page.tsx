@@ -74,7 +74,7 @@ export default async function PractitionerMessagesPage({ searchParams }: { searc
                 <div className="rounded-[2rem] bg-oku-dark p-4 text-white shadow-xl sm:rounded-[2.5rem] sm:p-6">
                     <ShieldCheck size={20} className="text-oku-purple mb-3" />
                     <p className="text-xs text-white/60 leading-relaxed font-medium">
-                        All communications are E2E encrypted. Please ensure clinical boundaries are maintained during asynchronous chat.
+                        Messages are protected in transit and stored with platform access controls. Please maintain clinical boundaries during asynchronous chat.
                     </p>
                 </div>
             </div>

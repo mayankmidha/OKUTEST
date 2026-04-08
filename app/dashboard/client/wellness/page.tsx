@@ -84,7 +84,7 @@ export default async function WellnessPage() {
   ]
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen bg-oku-lavender/5 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1400px] overflow-hidden bg-oku-lavender/5 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Header */}
       <div className="mb-16 space-y-4">
         <div className="flex items-center gap-3">
@@ -95,21 +95,21 @@ export default async function WellnessPage() {
             Your Inner Garden
           </span>
         </div>
-        <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+        <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
           Wellness <span className="text-oku-purple-dark italic">Hub.</span>
         </h1>
-        <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-6 max-w-xl">
+        <p className="max-w-xl border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic text-oku-darkgrey/60 sm:pl-6 sm:text-lg lg:text-xl">
           Track your mood, build resilience, and find calm in the chaos.
         </p>
       </div>
 
       {/* Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
         {navCards.map((card) => (
           <Link
             key={card.href + card.title}
             href={card.href}
-            className={`card-glass-3d !p-10 group flex flex-col justify-between min-h-[240px] hover:scale-[1.02] transition-all ${card.color}`}
+            className={`group card-glass-3d flex min-h-[220px] flex-col justify-between !p-6 transition-all hover:scale-[1.02] sm:min-h-[240px] sm:!p-8 lg:!p-10 ${card.color}`}
           >
             <div className="flex justify-between items-start">
               <div
@@ -133,10 +133,10 @@ export default async function WellnessPage() {
       </div>
 
       {/* Quick Mood Snapshot */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Recent Moods */}
-        <div className="lg:col-span-2 card-glass-3d !p-10">
-          <div className="flex items-center justify-between mb-8">
+        <div className="card-glass-3d lg:col-span-2 !p-6 sm:!p-8 lg:!p-10">
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-oku-darkgrey/40 mb-1">
                 Mood Snapshot

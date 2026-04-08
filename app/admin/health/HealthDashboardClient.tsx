@@ -33,7 +33,10 @@ interface HealthData {
     totalUsers: number;
     totalAppointments: number;
     errorRate24h: number;
+    pendingPayments: number;
+    stalePendingAppointments: number;
   };
+  alerts?: string[];
 }
 
 export default function HealthDashboardClient() {
@@ -84,7 +87,7 @@ export default function HealthDashboardClient() {
       {/* ── STATUS BAR ── */}
       <div className="flex flex-wrap items-center justify-between gap-6 px-10 py-6 bg-white/40 backdrop-blur-xl border border-white/80 rounded-[2.5rem] shadow-xl relative z-10 animate-float-3d">
         <div className="flex items-center gap-6">
-          <div className={`w-4 h-4 rounded-full animate-pulse ${data?.status === 'HEALTHY' ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+          <div className={`w-4 h-4 rounded-full animate-pulse ${getHealthStatusColor(data?.status)}`} />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-oku-darkgrey/30">Global Status</p>
             <p className="text-xl font-display font-black text-oku-darkgrey">{data?.status || 'UNKNOWN'}</p>
@@ -108,6 +111,16 @@ export default function HealthDashboardClient() {
           <RefreshCw size={16} className={`mr-3 ${loading ? 'animate-spin' : ''}`} /> Refresh Data
         </button>
       </div>
+
+      {data?.alerts && data.alerts.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+          {data.alerts.map((alert, idx) => (
+            <div key={idx} className="rounded-[1.5rem] border border-amber-200 bg-amber-50/80 px-5 py-4 text-sm text-amber-900">
+              {alert}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── CORE METRICS ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
@@ -248,6 +261,12 @@ export default function HealthDashboardClient() {
       </div>
     </div>
   )
+}
+
+function getHealthStatusColor(status?: string) {
+  if (status === 'HEALTHY') return 'bg-emerald-400'
+  if (status === 'DEGRADED') return 'bg-amber-400'
+  return 'bg-rose-400'
 }
 
 function MetricCard({ title, value, sub, icon, color }: any) {

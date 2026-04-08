@@ -30,9 +30,21 @@ export async function GET(
 
     // Security: Only the client who took it, or their therapist, or an admin can download
     const isOwner = response.userId === session.user.id
-    const isTherapist = session.user.role === 'THERAPIST' || session.user.role === 'ADMIN'
+    const isAdmin = session.user.role === 'ADMIN'
+    const hasClinicalRelationship =
+      session.user.role === 'THERAPIST'
+        ? Boolean(
+            await prisma.appointment.findFirst({
+              where: {
+                practitionerId: session.user.id,
+                clientId: response.userId,
+              },
+              select: { id: true },
+            })
+          )
+        : false
 
-    if (!isOwner && !isTherapist) {
+    if (!isOwner && !isAdmin && !hasClinicalRelationship) {
       return new NextResponse('Forbidden', { status: 403 })
     }
 

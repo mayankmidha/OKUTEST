@@ -28,7 +28,7 @@ export default function PrivacyPage() {
 
             <section>
                 <h3 className="text-2xl font-display font-bold text-oku-dark mb-4 tracking-tight">3. Security Standards</h3>
-                <p>All data is encrypted using AES-256 at rest. Communication is secured via TLS 1.3. We perform regular third-party security audits to maintain clinical-grade integrity.</p>
+                <p>We use account access controls, protected transport, and private file handling for sensitive workflows. Security controls continue to evolve as the platform matures, and we avoid making certification claims that are not independently verified.</p>
             </section>
         </div>
 

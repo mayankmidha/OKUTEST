@@ -17,7 +17,7 @@ const features = [
   {
     icon: <Globe className="w-8 h-8 text-oku-purple" />,
     title: 'Secure & Confidential',
-    description: 'HIPAA-compliant video and messaging ensures your privacy is protected at all times.',
+    description: 'Private video, messaging, and account access controls help keep your care journey confidential.',
   },
   {
     icon: <Users className="w-8 h-8 text-oku-blue" />,

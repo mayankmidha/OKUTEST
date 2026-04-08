@@ -125,25 +125,25 @@ export default async function ClientDashboardPage() {
       : 'Ready for active care'
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/5">
+    <div className="mx-auto min-h-screen max-w-[1600px] bg-oku-lavender/5 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       
       {/* ── HEADER: THE SANCTUARY ── */}
-      <section className="card-glass-3d !p-12 mb-12 bg-white/40">
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_0.7fr] items-end">
-          <div className="space-y-6">
+      <section className="card-glass-3d mb-10 !bg-white/40 !p-6 sm:mb-12 sm:!p-8 lg:!p-12">
+        <div className="grid items-end gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:gap-12">
+          <div className="space-y-5 sm:space-y-6">
             <div className="flex flex-wrap items-center gap-3">
               <span className="px-4 py-1.5 bg-white/60 backdrop-blur-md border border-white/80 rounded-full text-[9px] font-black uppercase tracking-widest text-oku-purple-dark shadow-sm">Client Sanctuary</span>
               <span className="chip !bg-oku-darkgrey/5 !text-oku-darkgrey/45 font-display italic">{careStatus}</span>
             </div>
 
             <div>
-              <h1 className="heading-display text-5xl lg:text-8xl tracking-tighter text-oku-darkgrey leading-[0.85]">
+              <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey leading-[0.85] sm:text-5xl lg:text-7xl xl:text-8xl">
                 Welcome back, <br />
                 <span className="italic text-oku-purple-dark">
                   {user.name?.split(' ')[0] || 'friend'}
                 </span>.
               </h1>
-              <p className="text-xl text-oku-darkgrey/60 font-display italic mt-6 max-w-2xl border-l-4 border-oku-purple-dark/10 pl-8 leading-relaxed">
+              <p className="mt-5 max-w-2xl border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic leading-relaxed text-oku-darkgrey/60 sm:mt-6 sm:pl-8 sm:text-lg lg:text-xl">
                 Your healing journey is a returning, not a destination. Everything you need to stay connected and grounded is held right here.
               </p>
             </div>
@@ -151,14 +151,14 @@ export default async function ClientDashboardPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap pt-4">
               <Link
                 href={nextSession ? `/session/${nextSession.id}` : '/dashboard/client/therapists'}
-                className="btn-pill-3d bg-oku-darkgrey text-white !px-10 !py-5 shadow-2xl hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+                className="btn-pill-3d flex w-full items-center justify-center gap-3 bg-oku-darkgrey !px-6 !py-4 text-white shadow-2xl hover:scale-105 active:scale-95 sm:w-auto sm:!px-10 sm:!py-5"
               >
                 {nextSession ? 'Join Session Room' : 'Begin Your Care'}
                 <ArrowRight size={16} />
               </Link>
               <Link
                 href="/dashboard/client/clinical"
-                className="btn-pill-3d bg-white text-oku-darkgrey !px-10 !py-5 border-white shadow-sm hover:bg-oku-lavender/20"
+                className="btn-pill-3d w-full border-white bg-white !px-6 !py-4 text-center text-oku-darkgrey shadow-sm hover:bg-oku-lavender/20 sm:w-auto sm:!px-10 sm:!py-5"
               >
                 View Clinical Records
               </Link>
@@ -181,57 +181,57 @@ export default async function ClientDashboardPage() {
         autoOpen={isNewUser || !hasIntake}
       />
 
-      <div className="grid gap-12 lg:grid-cols-12 relative z-10">
+      <div className="relative z-10 grid gap-8 lg:grid-cols-12 lg:gap-12">
         
         {/* ── COLUMN 1: CLINICAL & CORE ── */}
-        <div className="lg:col-span-8 space-y-12">
+        <div className="space-y-10 lg:col-span-8 lg:space-y-12">
           
           {/* Active Care & Sessions */}
-          <section className="space-y-8">
-             <div className="flex items-center justify-between px-4">
+          <section className="space-y-6 sm:space-y-8">
+             <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <h2 className="heading-display text-3xl tracking-tight">Active <span className="italic">Care</span></h2>
                 <Link href="/dashboard/client/sessions" className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30 hover:text-oku-purple-dark transition-colors">Session Ledger →</Link>
              </div>
 
              {nextSession ? (
-                <div className="card-glass-3d !p-10 !bg-oku-darkgrey text-white relative overflow-hidden group">
-                   <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+                <div className="group relative overflow-hidden card-glass-3d !bg-oku-darkgrey !p-6 text-white sm:!p-8 lg:!p-10">
+                   <div className="relative z-10 grid items-center gap-6 md:grid-cols-2 md:gap-8">
                       <div>
                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-purple mb-4">Upcoming Clinical Window</p>
-                         <h3 className="text-4xl font-black tracking-tight mb-2">{nextSession.practitioner.name}</h3>
-                         <p className="text-white/60 font-display italic text-lg leading-relaxed">
+                         <h3 className="mb-2 text-3xl font-black tracking-tight sm:text-4xl">{nextSession.practitioner.name}</h3>
+                         <p className="font-display text-base italic leading-relaxed text-white/60 sm:text-lg">
                             {formatDateTime(nextSession.startTime)} <br />
                             <span className="text-sm uppercase tracking-widest opacity-40 font-black">{nextSession.service?.name}</span>
                          </p>
                       </div>
                       <div className="flex flex-col gap-4">
-                         <Link href={`/session/${nextSession.id}`} className="btn-pill-3d bg-white text-oku-darkgrey !py-5 text-center">Enter Room</Link>
-                         <Link href="/dashboard/client/messages" className="btn-pill-3d bg-white/10 text-white border-white/10 hover:bg-white/20 !py-5 text-center">Secure Message</Link>
+                         <Link href={`/session/${nextSession.id}`} className="btn-pill-3d bg-white text-center text-oku-darkgrey !py-4 sm:!py-5">Enter Room</Link>
+                         <Link href="/dashboard/client/messages" className="btn-pill-3d border-white/10 bg-white/10 text-center text-white hover:bg-white/20 !py-4 sm:!py-5">Secure Message</Link>
                       </div>
                    </div>
                    <div className="absolute top-0 right-0 w-1/2 h-full bg-oku-purple/10 blur-3xl group-hover:bg-oku-purple/20 transition-all duration-1000" />
                 </div>
              ) : (
-                <div className="card-glass-3d !p-12 border-dashed border-oku-darkgrey/10 bg-white/40 text-center">
+                <div className="card-glass-3d border-dashed border-oku-darkgrey/10 bg-white/40 !p-8 text-center sm:!p-12">
                    <Calendar size={48} className="mx-auto text-oku-darkgrey/10 mb-6" />
                    <p className="font-bold text-oku-darkgrey text-xl mb-2">No Session Scheduled</p>
                    <p className="text-oku-darkgrey/50 text-sm italic mb-8">Ready to return? Browse our collective or join a community circle.</p>
                    <div className="flex flex-col sm:flex-row justify-center gap-4">
-                      <Link href="/dashboard/client/therapists" className="btn-pill-3d bg-oku-darkgrey text-white !px-10">Find a Therapist</Link>
-                      <Link href="/dashboard/client/circles" className="btn-pill-3d bg-white text-oku-darkgrey border-white shadow-sm !px-10">Explore Circles</Link>
+                      <Link href="/dashboard/client/therapists" className="btn-pill-3d bg-oku-darkgrey text-white !px-6 sm:!px-10">Find a Therapist</Link>
+                      <Link href="/dashboard/client/circles" className="btn-pill-3d border-white bg-white text-oku-darkgrey shadow-sm !px-6 sm:!px-10">Explore Circles</Link>
                    </div>
                 </div>
              )}
           </section>
 
           {/* Clinical Assessments Grid (Vision Tiers) */}
-          <section className="space-y-8">
-             <div className="flex items-center justify-between px-4">
+          <section className="space-y-6 sm:space-y-8">
+             <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <h2 className="heading-display text-3xl tracking-tight">Clinical <span className="italic">Assessments</span></h2>
                 <span className="chip bg-oku-lavender/40 border-oku-purple/20">4 Tiers Active</span>
              </div>
              
-             <div className="grid md:grid-cols-2 gap-6">
+             <div className="grid gap-6 md:grid-cols-2">
                 <ModuleCard 
                    href="/dashboard/client/clinical" 
                    title="Clinical Tasks" 
@@ -268,14 +268,14 @@ export default async function ClientDashboardPage() {
           </section>
 
           {/* Community & Circles */}
-          <section className="space-y-8">
-             <div className="flex items-center justify-between px-4">
+          <section className="space-y-6 sm:space-y-8">
+             <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <h2 className="heading-display text-3xl tracking-tight">Support <span className="italic">Circles</span></h2>
                 <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/30">{activeCircles} Active Memberships</span>
              </div>
-             <Link href="/dashboard/client/circles" className="block card-glass-3d !p-10 !bg-oku-babyblue/30 border-none group">
-                <div className="flex justify-between items-center">
-                   <div className="flex items-center gap-8">
+             <Link href="/dashboard/client/circles" className="group block card-glass-3d border-none !bg-oku-babyblue/30 !p-6 sm:!p-8 lg:!p-10">
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                   <div className="flex items-start gap-5 sm:items-center sm:gap-8">
                       <div className="w-16 h-16 rounded-[1.5rem] bg-white flex items-center justify-center text-oku-babyblue-dark shadow-sm">
                          <Users size={32} />
                       </div>
@@ -284,20 +284,20 @@ export default async function ClientDashboardPage() {
                          <p className="text-sm text-oku-darkgrey/50 italic leading-relaxed mt-1">Trauma, ADHD, Grief, and Queer-affirming spaces.</p>
                       </div>
                    </div>
-                   <ArrowRight size={24} className="text-oku-babyblue-dark/30 group-hover:translate-x-2 transition-all" />
+                   <ArrowRight size={24} className="self-end text-oku-babyblue-dark/30 transition-all group-hover:translate-x-2 sm:self-auto" />
                 </div>
              </Link>
           </section>
         </div>
 
         {/* ── COLUMN 2: GROWTH & UTILITY ── */}
-        <div className="lg:col-span-4 space-y-12">
+        <div className="space-y-10 lg:col-span-4 lg:space-y-12">
           
           {/* ADHD Manager (Conditional) */}
           {user.clientProfile?.adhdDiagnosed ? (
              <section className="space-y-6">
                 <p className="clinic-kicker ml-4">Unlocked</p>
-                <Link href="/dashboard/client/adhd" className="block p-10 rounded-[3rem] bg-oku-peach/20 border-2 border-oku-peach/30 hover:bg-oku-peach/25 transition-all group relative overflow-hidden shadow-xl">
+                <Link href="/dashboard/client/adhd" className="group relative block overflow-hidden rounded-[2rem] border-2 border-oku-peach/30 bg-oku-peach/20 p-6 shadow-xl transition-all hover:bg-oku-peach/25 sm:rounded-[3rem] sm:p-10">
                    <div className="relative z-10">
                       <div className="flex items-center gap-4 mb-8">
                          <div className="p-4 bg-white rounded-2xl text-oku-peach-dark shadow-sm"><Brain size={28} /></div>
@@ -321,7 +321,7 @@ export default async function ClientDashboardPage() {
           ) : (
              <section className="space-y-6 opacity-40">
                 <p className="clinic-kicker ml-4">Locked Feature</p>
-                <div className="p-10 rounded-[3rem] bg-white/40 border-2 border-dashed border-oku-darkgrey/10">
+                <div className="rounded-[2rem] border-2 border-dashed border-oku-darkgrey/10 bg-white/40 p-6 sm:rounded-[3rem] sm:p-10">
                    <div className="flex items-center gap-4 mb-4">
                       <div className="p-4 bg-white/60 rounded-2xl text-oku-darkgrey/30"><Brain size={28} /></div>
                       <h4 className="text-xl font-display font-bold tracking-tight">ADHD Manager</h4>
@@ -336,7 +336,7 @@ export default async function ClientDashboardPage() {
           {/* Referrals & Credits */}
           <section className="space-y-6">
              <p className="clinic-kicker ml-4">Growth</p>
-             <div className="card-glass-3d !p-10 !bg-oku-mint/30 border-none">
+             <div className="card-glass-3d border-none !bg-oku-mint/30 !p-6 sm:!p-8 lg:!p-10">
                 <div className="flex items-center gap-4 mb-6">
                    <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-emerald-600 shadow-sm">
                       <Gift size={24} />
@@ -371,7 +371,7 @@ export default async function ClientDashboardPage() {
 
 function MetricCard({ label, value, icon }: { label: string, value: string, icon: React.ReactNode }) {
   return (
-    <div className="card-glass-3d !p-6 !bg-white/60 flex items-center justify-between">
+    <div className="card-glass-3d flex items-center justify-between gap-4 !bg-white/60 !p-5 sm:!p-6">
        <div>
           <p className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/40 mb-1">{label}</p>
           <p className="text-2xl font-bold tracking-tight text-oku-darkgrey">{value}</p>
@@ -384,7 +384,7 @@ function MetricCard({ label, value, icon }: { label: string, value: string, icon
 function QuickLink({ href, icon, label }: { href: string, icon: React.ReactNode, label: string }) {
   return (
     <Link href={href} className="flex items-center justify-between p-5 bg-white/60 rounded-2xl border border-white hover:bg-white transition-all shadow-sm group">
-       <div className="flex items-center gap-4">
+       <div className="flex min-w-0 items-center gap-4">
           <div className="text-oku-purple-dark/40 group-hover:text-oku-purple-dark transition-colors">{icon}</div>
           <span className="text-[11px] font-black uppercase tracking-widest text-oku-darkgrey">{label}</span>
        </div>
@@ -436,9 +436,9 @@ function ModuleCard({
   return (
     <Link
       href={href}
-      className={`group card-glass-3d !p-8 transition-all hover:-translate-y-1 ${toneClass} border-none`}
+      className={`group card-glass-3d border-none !p-6 transition-all hover:-translate-y-1 sm:!p-8 ${toneClass}`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/85 text-oku-purple-dark shadow-sm">
           {icon}
         </div>

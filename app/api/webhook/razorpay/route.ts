@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
 import crypto from 'crypto'
-import { AppointmentStatus, PaymentStatus } from '@prisma/client'
-import { awardReferralRewardForAppointment } from '@/lib/referrals'
+import { finalizeCheckoutPayment } from '@/lib/payment-finalization'
 
 export async function POST(req: Request) {
   if (!process.env.RAZORPAY_WEBHOOK_SECRET) {
@@ -41,32 +40,12 @@ export async function POST(req: Request) {
     });
 
     if (paymentRecord) {
-      // 1. Update Payment Record
-      await prisma.payment.update({
-        where: { id: paymentRecord.id },
-        data: { 
-            status: PaymentStatus.COMPLETED,
-            updatedAt: new Date()
-        }
-      });
-
-      // 2. Update Appointment Status
-      if (paymentRecord.appointmentId) {
-        await prisma.appointment.update({
-            where: { id: paymentRecord.appointmentId },
-            data: { 
-                status: AppointmentStatus.SCHEDULED,
-                updatedAt: new Date()
-            }
-        });
-        console.log(`[RAZORPAY_WEBHOOK] Appointment ${paymentRecord.appointmentId} confirmed.`);
-        
-        try {
-            await awardReferralRewardForAppointment(paymentRecord.appointmentId);
-        } catch (e) {
-            console.error('Failed to award referral reward via Razorpay', e);
-        }
-      }
+      await finalizeCheckoutPayment({
+        paymentId: paymentRecord.id,
+        appointmentId: paymentRecord.appointmentId,
+        assignmentId: paymentRecord.assignedAssessmentId,
+        processor: 'razorpay',
+      })
     } else {
       console.warn(`Payment record not found for Razorpay Order ID: ${payment.order_id}`);
     }

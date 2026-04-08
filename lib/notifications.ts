@@ -333,7 +333,7 @@ export async function sendWelcomeEmail(userId: string) {
             </div>
             <hr style="border: none; border-top: 1px solid #F0EEF8; margin-bottom: 24px;" />
             <p style="color: #C4BFD4; font-size: 11px; text-align: center; line-height: 1.8;">
-              HIPAA Compliant · AES-256 Encrypted · Private by Design<br/>
+              Private by design · Protected access · Human support when you need it<br/>
               &copy; ${new Date().getFullYear()} Oku Therapy Integrated. All rights reserved.
             </p>
           </div>

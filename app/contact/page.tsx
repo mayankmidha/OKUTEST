@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin } from 'lucide-react'
+import { ContactForm } from './ContactForm'
 
 export default function ContactPage() {
   return (
@@ -39,23 +40,7 @@ export default function ContactPage() {
            <div className="bg-oku-page-bg p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-oku-purple/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
               <h3 className="text-3xl font-display font-bold text-oku-dark mb-8">Send us a message</h3>
-              <form className="space-y-6">
-                 <div>
-                    <label className="block text-sm font-black uppercase tracking-widest text-oku-taupe mb-2">Name</label>
-                    <input type="text" className="w-full bg-white border border-oku-taupe/20 p-4 rounded-pill focus:ring-2 focus:ring-oku-purple transition-all outline-none" placeholder="Your Name" />
-                 </div>
-                 <div>
-                    <label className="block text-sm font-black uppercase tracking-widest text-oku-taupe mb-2">Email</label>
-                    <input type="email" className="w-full bg-white border border-oku-taupe/20 p-4 rounded-pill focus:ring-2 focus:ring-oku-purple transition-all outline-none" placeholder="your@email.com" />
-                 </div>
-                 <div>
-                    <label className="block text-sm font-black uppercase tracking-widest text-oku-taupe mb-2">Message</label>
-                    <textarea rows={4} className="w-full bg-white border border-oku-taupe/20 p-4 rounded-xl focus:ring-2 focus:ring-oku-purple transition-all outline-none" placeholder="How can we help?"></textarea>
-                 </div>
-                 <button className="bg-oku-dark text-white px-12 py-4 rounded-pill font-bold text-lg hover:bg-opacity-90 transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 w-full">
-                    Send Message
-                 </button>
-              </form>
+              <ContactForm />
            </div>
         </div>
       </div>

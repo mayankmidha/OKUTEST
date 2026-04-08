@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { UserRole } from "@prisma/client"
-import { analyzeClinicalTranscript, getOkuAiSettings, transcribeClinicalAudio } from "@/lib/oku-ai"
+import { analyzeClinicalTranscript, getOkuAiSettings, isOkuAiConfigured, transcribeClinicalAudio } from "@/lib/oku-ai"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -56,6 +56,9 @@ export async function POST(req: Request) {
 
     if (!settings.okuAiEnabled) {
       return NextResponse.json({ error: "OKU_AI_DISABLED" }, { status: 503 })
+    }
+    if (!isOkuAiConfigured()) {
+      return NextResponse.json({ error: "OKU_AI_PROVIDER_UNAVAILABLE" }, { status: 503 })
     }
 
     if (settings.requireConsentBeforeTranscription && !appointment.client?.hasSignedConsent) {
@@ -135,6 +138,12 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error("[CLINICAL_TRANSCRIBE_ERROR]", error)
+    if (error instanceof Error && error.message === 'TRANSCRIPTION_PROVIDER_UNAVAILABLE') {
+      return NextResponse.json({ error: "TRANSCRIPTION_PROVIDER_UNAVAILABLE" }, { status: 503 })
+    }
+    if (error instanceof Error && error.message === 'OKU_AI_PROVIDER_UNAVAILABLE') {
+      return NextResponse.json({ error: "OKU_AI_PROVIDER_UNAVAILABLE" }, { status: 503 })
+    }
     return new NextResponse("Clinical transcription failed", { status: 500 })
   }
 }

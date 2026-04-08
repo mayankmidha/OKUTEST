@@ -84,7 +84,15 @@ export function KYCDocumentUpload() {
                   {new Date(doc.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}
                 </p>
               </div>
-              <CheckCircle2 size={14} className="text-oku-darkgrey/30 shrink-0" />
+              <a
+                href={`/api/documents/${doc.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:opacity-70 shrink-0"
+              >
+                <CheckCircle2 size={14} className="text-oku-darkgrey/30 shrink-0" />
+                View
+              </a>
             </div>
           ))}
         </div>

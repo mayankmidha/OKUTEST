@@ -21,6 +21,12 @@ export default async function PractitionerAssessmentsPage() {
 
   const [assessments, appointments, profile] = await Promise.all([
     prisma.assessment.findMany({
+        where: {
+          OR: [
+            { isCustom: false },
+            { creatorId: session.user.id },
+          ],
+        },
         orderBy: { createdAt: 'desc' }
     }),
     prisma.appointment.findMany({

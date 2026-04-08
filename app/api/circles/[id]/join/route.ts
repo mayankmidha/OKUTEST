@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { PaymentStatus } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,7 +46,7 @@ export async function POST(_req: Request, { params }: RouteContext) {
     // Check capacity
     const spotsLeft = (circle.maxParticipants || 10) - circle.participants.length
     if (spotsLeft <= 0) {
-      return NextResponse.json({ message: 'This circle is at full capacity. Please browse other upcoming sessions.' }, { status: 409 })
+      return NextResponse.json({ message: 'This circle is at full capacity. Join the waitlist instead.' }, { status: 409 })
     }
 
     // Check if user already joined
@@ -56,9 +57,41 @@ export async function POST(_req: Request, { params }: RouteContext) {
       return NextResponse.json({ message: 'You have already secured a spot in this circle. Check your dashboard.' }, { status: 409 })
     }
 
+    const requiresPayment = (circle.priceSnapshot || 0) > 0
+
+    if (requiresPayment) {
+      const payment = await prisma.payment.findFirst({
+        where: {
+          appointmentId: id,
+          userId: session.user.id,
+          status: PaymentStatus.COMPLETED,
+        },
+        select: { id: true },
+        orderBy: { createdAt: 'desc' },
+      })
+
+      if (!payment) {
+        return NextResponse.json({ message: 'This circle requires payment before you can join.' }, { status: 402 })
+      }
+    }
+
     // Create GroupParticipant record
-    const participant = await prisma.groupParticipant.create({
-      data: {
+    const participant = await prisma.groupParticipant.upsert({
+      where: {
+        appointmentId_userId: {
+          appointmentId: id,
+          userId: session.user.id,
+        },
+      },
+      update: {},
+      create: {
+        appointmentId: id,
+        userId: session.user.id,
+      },
+    })
+
+    await prisma.circleWaitlist.deleteMany({
+      where: {
         appointmentId: id,
         userId: session.user.id,
       },

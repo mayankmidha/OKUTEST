@@ -102,8 +102,8 @@ export function AiCareBriefingButton({ appointmentId }: AiCareBriefingButtonProp
                        </div>
                        <div className="text-center space-y-2">
                           <ShieldCheck size={16} className="mx-auto text-oku-purple-dark opacity-40" />
-                          <p className="text-[8px] font-black uppercase tracking-widest text-oku-darkgrey/30">HIPAA Data</p>
-                          <p className="text-[9px] font-bold text-oku-darkgrey">PII Scrubbed</p>
+                          <p className="text-[8px] font-black uppercase tracking-widest text-oku-darkgrey/30">Protected Context</p>
+                          <p className="text-[9px] font-bold text-oku-darkgrey">Clinician Review</p>
                        </div>
                     </div>
 

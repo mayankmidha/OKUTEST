@@ -12,15 +12,27 @@ export default function V1LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isResendingVerification, setIsResendingVerification] = useState(false)
   const [error, setError] = useState('')
+  const [info, setInfo] = useState('')
+  const [needsVerification, setNeedsVerification] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const message = searchParams.get('message')
+  const oauthError = searchParams.get('error')
+
+  useEffect(() => {
+    if (oauthError === 'OAuthAccountNotLinked') {
+      setError('This email is already linked to another sign-in method. Try your original login path first.')
+    }
+  }, [oauthError])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsLoading(true)
     setError('')
+    setInfo('')
+    setNeedsVerification(false)
 
     try {
       const result = await signIn('credentials', {
@@ -30,7 +42,12 @@ export default function V1LoginPage() {
       })
 
       if (result?.error) {
-        setError("Invalid email or password. Please try again.")
+        if (result.code === 'email_not_verified') {
+          setNeedsVerification(true)
+          setError('Please verify your email before signing in.')
+        } else {
+          setError("Invalid email or password. Please try again.")
+        }
       } else {
         router.push('/dashboard')
         router.refresh()
@@ -39,6 +56,39 @@ export default function V1LoginPage() {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    if (!email.trim()) {
+      setError('Enter your email first so we know where to send the verification link.')
+      return
+    }
+
+    setIsResendingVerification(true)
+    setError('')
+    setInfo('')
+
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const payload = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Could not resend verification email.')
+      }
+
+      setInfo(payload.message || 'If that account exists, a verification email has been sent.')
+    } catch (resendError: any) {
+      setError(resendError.message || 'Could not resend verification email.')
+    } finally {
+      setIsResendingVerification(false)
     }
   }
 
@@ -60,9 +110,9 @@ export default function V1LoginPage() {
                 <p className="text-sm text-oku-darkgrey/50 font-bold uppercase tracking-widest">Access your sanctuary</p>
             </div>
 
-            {(message || error) && (
+            {(message || error || info) && (
                 <div className={`mb-8 p-5 backdrop-blur-sm border rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 ${error ? 'bg-red-50/50 border-red-100/50 text-red-700' : 'bg-green-50/50 border-green-100/50 text-green-700'}`}>
-                    {error ? <Lock size={18} /> : <ShieldCheck size={18} />} {error || message}
+                    {error ? <Lock size={18} /> : <ShieldCheck size={18} />} {error || info || message}
                 </div>
             )}
 
@@ -111,6 +161,21 @@ export default function V1LoginPage() {
                     {isLoading ? <Loader2 className="animate-spin mx-auto" size={20} /> : "Enter Sanctuary"}
                 </button>
 
+                {needsVerification && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={isResendingVerification}
+                    className="btn-pill-3d bg-white border-white text-oku-darkgrey w-full !py-5"
+                  >
+                    {isResendingVerification ? (
+                      <Loader2 className="animate-spin mx-auto" size={18} />
+                    ) : (
+                      'Resend Verification Email'
+                    )}
+                  </button>
+                )}
+
                 <div className="relative py-4">
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-oku-darkgrey/5"></span>
@@ -149,7 +214,7 @@ export default function V1LoginPage() {
 
             <div className="mt-10 flex justify-center items-center gap-2 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
                 <ShieldCheck size={14} className="text-oku-purple-dark" />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-oku-darkgrey">HIPAA Compliant · AES-256 Secure</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-oku-darkgrey">Protected Login · Privacy First</span>
             </div>
         </div>
       </motion.div>

@@ -54,14 +54,14 @@ export default async function ClientProfilePage() {
   ]
 
   return (
-    <div className="py-12 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-oku-lavender/10 relative overflow-hidden">
+    <div className="relative mx-auto min-h-screen max-w-[1600px] overflow-hidden bg-oku-lavender/10 px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-12">
       {/* Ambient blobs */}
       <div className="absolute top-[10%] right-[-5%] w-96 h-96 bg-oku-blush/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-5%] w-80 h-80 bg-oku-mint/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20">
+        <div className="mb-14 flex flex-col justify-between gap-8 lg:mb-20 lg:flex-row lg:items-end lg:gap-10">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Link
@@ -72,16 +72,16 @@ export default async function ClientProfilePage() {
               </Link>
               <span className="chip bg-white/60 border-white/80">Your Profile</span>
             </div>
-            <h1 className="heading-display text-6xl lg:text-8xl text-oku-darkgrey tracking-tighter">
+            <h1 className="heading-display text-4xl tracking-tighter text-oku-darkgrey sm:text-5xl lg:text-7xl xl:text-8xl">
               Your <span className="text-oku-purple-dark italic">Self.</span>
             </h1>
-            <p className="text-xl text-oku-darkgrey/60 font-display italic border-l-4 border-oku-purple-dark/10 pl-8">
+            <p className="border-l-4 border-oku-purple-dark/10 pl-5 font-display text-base italic text-oku-darkgrey/60 sm:pl-8 sm:text-lg lg:text-xl">
               The information that helps us care for you, well.
             </p>
           </div>
 
           {/* Avatar section */}
-          <div className="card-glass-3d !p-8 !bg-white/60 flex items-center gap-6 self-start lg:self-auto">
+          <div className="card-glass-3d flex w-full items-center gap-4 self-start !bg-white/60 !p-6 sm:w-auto sm:gap-6 sm:!p-8 lg:self-auto">
             <div className="w-20 h-20 rounded-[1.5rem] bg-oku-lavender flex items-center justify-center text-4xl font-black text-oku-purple-dark shadow-inner border-4 border-white overflow-hidden">
               {user.avatar ? (
                 <img src={user.avatar} className="w-full h-full object-cover" alt={user.name} />
@@ -99,13 +99,13 @@ export default async function ClientProfilePage() {
           </div>
         </div>
 
-        <div className="grid xl:grid-cols-12 gap-12">
+        <div className="grid gap-10 xl:grid-cols-12 xl:gap-12">
           {/* Main profile info */}
           <div className="xl:col-span-8 space-y-10">
             {/* Personal Information */}
-            <section className="card-glass-3d !p-12 !bg-white/40">
-              <div className="flex items-center justify-between mb-10">
-                <h2 className="heading-display text-3xl text-oku-darkgrey tracking-tight">
+            <section className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="heading-display text-2xl tracking-tight text-oku-darkgrey sm:text-3xl">
                   Personal <span className="italic text-oku-purple-dark">Details</span>
                 </h2>
                 <Link
@@ -116,11 +116,11 @@ export default async function ClientProfilePage() {
                 </Link>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:gap-6">
                 {fields.map((field, i) => (
                   <div
                     key={i}
-                    className="p-6 rounded-[1.5rem] bg-white/60 border border-white/80"
+                    className="rounded-[1.5rem] border border-white/80 bg-white/60 p-5 sm:p-6"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-oku-purple-dark/40">{field.icon}</span>
@@ -135,19 +135,19 @@ export default async function ClientProfilePage() {
             </section>
 
             {/* Emergency Contact */}
-            <section className="card-glass-3d !p-12 !bg-oku-peach/30">
-              <div className="flex items-center gap-4 mb-10">
+            <section className="card-glass-3d !bg-oku-peach/30 !p-6 sm:!p-8 lg:!p-12">
+              <div className="mb-8 flex items-center gap-4 sm:mb-10">
                 <div className="w-12 h-12 rounded-[1rem] bg-oku-peach flex items-center justify-center text-oku-darkgrey">
                   <Heart size={20} strokeWidth={1.5} />
                 </div>
-                <h2 className="heading-display text-3xl text-oku-darkgrey tracking-tight">
+                <h2 className="heading-display text-2xl tracking-tight text-oku-darkgrey sm:text-3xl">
                   Emergency <span className="italic text-oku-purple-dark">Contact</span>
                 </h2>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:gap-6">
                 {emergencyFields.map((field, i) => (
-                  <div key={i} className="p-6 rounded-[1.5rem] bg-white/60 border border-white/80">
+                  <div key={i} className="rounded-[1.5rem] border border-white/80 bg-white/60 p-5 sm:p-6">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/30 mb-2">{field.label}</p>
                     <p className="text-sm font-bold text-oku-darkgrey">{field.value}</p>
                   </div>
@@ -155,12 +155,12 @@ export default async function ClientProfilePage() {
               </div>
 
               {!profile?.emergencyContactName && (
-                <div className="mt-6 flex items-center gap-3 p-5 rounded-[1.5rem] bg-white/40 border border-oku-peach/40">
+                <div className="mt-6 flex flex-col items-start gap-3 rounded-[1.5rem] border border-oku-peach/40 bg-white/40 p-5 sm:flex-row sm:items-center">
                   <AlertCircle size={16} className="text-oku-darkgrey/40 flex-shrink-0" />
                   <p className="text-[11px] text-oku-darkgrey/50 font-display italic">
                     Emergency contact not set. Update your intake form to add one.
                   </p>
-                  <Link href="/dashboard/client/intake" className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline ml-auto flex-shrink-0">
+                  <Link href="/dashboard/client/intake" className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark hover:underline sm:ml-auto sm:flex-shrink-0">
                     Update
                   </Link>
                 </div>
@@ -174,7 +174,7 @@ export default async function ClientProfilePage() {
           {/* Right column: Status cards */}
           <div className="xl:col-span-4 space-y-10">
             {/* Onboarding status */}
-            <div className="card-glass-3d !p-10 !bg-oku-lavender/60">
+            <div className="card-glass-3d !bg-oku-lavender/60 !p-6 sm:!p-8 lg:!p-10">
               <h3 className="heading-display text-xl text-oku-darkgrey mb-8">
                 Account <span className="italic text-oku-purple-dark">Status</span>
               </h3>
@@ -226,7 +226,7 @@ export default async function ClientProfilePage() {
             </div>
 
             {/* Privacy & Security */}
-            <div className="card-glass-3d !p-10 !bg-white/40">
+            <div className="card-glass-3d !bg-white/40 !p-6 sm:!p-8 lg:!p-10">
               <div className="flex items-center gap-3 mb-8">
                 <Shield size={18} className="text-oku-purple-dark/60" />
                 <h3 className="heading-display text-xl text-oku-darkgrey">Privacy & Security</h3>
@@ -243,16 +243,16 @@ export default async function ClientProfilePage() {
                   <span className="text-[9px] font-black uppercase tracking-widest text-oku-purple-dark">Active</span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-2xl bg-oku-mint/40 border border-white/60">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">HIPAA Compliance</span>
-                  <span className="text-[9px] font-black uppercase tracking-widest text-oku-purple-dark">Certified</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-oku-darkgrey">Privacy Review</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey/50">Review in progress</span>
                 </div>
               </div>
-              <PrivacyControls />
+              <PrivacyControls twoFactorEnabled={user.twoFactorEnabled} />
             </div>
 
             {/* Referral code */}
             {user.referralCode && (
-              <div className="card-glass-3d !p-10 !bg-oku-butter">
+              <div className="card-glass-3d !bg-oku-butter !p-6 sm:!p-8 lg:!p-10">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40 mb-4">Your Referral Code</p>
                 <p className="text-3xl heading-display text-oku-darkgrey tracking-widest">{user.referralCode}</p>
                 <p className="text-[10px] text-oku-darkgrey/40 font-display italic mt-3">

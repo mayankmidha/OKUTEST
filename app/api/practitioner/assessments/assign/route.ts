@@ -18,16 +18,46 @@ export async function POST(req: Request) {
       return new NextResponse("Missing required fields", { status: 400 })
     }
 
-    const [assessment, settings] = await Promise.all([
-      prisma.assessment.findUnique({
-        where: { id: assessmentId },
+    const [assessment, settings, existingRelationship, existingAssignment] = await Promise.all([
+      prisma.assessment.findFirst({
+        where: {
+          id: assessmentId,
+          OR: [
+            { isCustom: false },
+            { creatorId: session.user.id },
+          ],
+        },
         select: { id: true, price: true },
       }),
       getPlatformSettings(),
+      prisma.appointment.findFirst({
+        where: {
+          practitionerId: session.user.id,
+          clientId,
+        },
+        select: { id: true },
+      }),
+      prisma.assignedAssessment.findFirst({
+        where: {
+          clientId,
+          practitionerId: session.user.id,
+          assessmentId,
+          status: 'PENDING',
+        },
+        select: { id: true },
+      }),
     ])
 
     if (!assessment) {
       return new NextResponse("Assessment not found", { status: 404 })
+    }
+
+    if (!existingRelationship) {
+      return new NextResponse("You can only assign assessments to clients in your caseload.", { status: 403 })
+    }
+
+    if (existingAssignment) {
+      return new NextResponse("This assessment is already pending for the selected client.", { status: 409 })
     }
 
     const chargeAmount = assessment.price || 0

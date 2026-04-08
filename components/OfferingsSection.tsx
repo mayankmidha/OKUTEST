@@ -10,7 +10,7 @@ const offerings = [
   },
   {
     title: "Trauma & EMDR",
-    description: "EMDR certified, Somatic-aware, Gentle pace for deep healing.",
+    description: "EMDR-informed, Somatic-aware, Gentle pace for deep healing.",
     color: "bg-oku-blue/10"
   },
   {
@@ -20,7 +20,7 @@ const offerings = [
   },
   {
     title: "Psychometric Assessments",
-    description: "RCI Certified, Insight-led, Evidence-based mental health screenings.",
+    description: "Structured, insight-led, evidence-based mental health screenings.",
     color: "bg-oku-sage/10"
   },
   {

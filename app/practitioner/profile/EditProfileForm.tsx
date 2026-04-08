@@ -147,8 +147,8 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
                     {step === 2 && (
                         <div className="space-y-10">
                             <div className="bg-oku-dark text-white p-10 rounded-[3rem] relative overflow-hidden">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender mb-4">Magic Sync Link</p>
-                                <p className="text-xs text-white/60 mb-6 leading-relaxed">Subscribe in Apple, Google, or Outlook to see your OKU sessions update in real-time.</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender mb-4">Private Calendar Feed</p>
+                                <p className="text-xs text-white/60 mb-6 leading-relaxed">Subscribe in Apple, Google, or Outlook to pull your OKU schedule into an external calendar. Direct provider push sync is not connected here yet.</p>
                                 <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl border border-white/5">
                                     <input readOnly value={syncLink} className="flex-1 bg-transparent border-none outline-none text-[10px] font-mono opacity-60 truncate" />
                                     <button type="button" onClick={() => { navigator.clipboard.writeText(syncLink); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="bg-white text-oku-dark px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-oku-lavender transition-all">
@@ -163,7 +163,7 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
                             </div>
                             <div className="flex items-center gap-4 p-6 bg-oku-lavender/20 rounded-3xl border border-oku-lavender/30">
                                 <input type="checkbox" className="w-6 h-6 rounded-lg text-oku-purple" checked={formData.syncEnabled} onChange={e => setFormData({...formData, syncEnabled: e.target.checked})} />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">Enable Universal Two-Way Sync</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">Enable private calendar feed access</p>
                             </div>
                         </div>
                     )}
@@ -285,22 +285,27 @@ export default function EditProfileForm({ initialData }: { initialData: any }) {
            <div className="p-4 bg-oku-mint rounded-2xl text-oku-mint-dark"><Calendar size={24} /></div>
            <div>
               <h3 className="text-2xl font-display font-bold text-oku-dark">Calendar Sync</h3>
-              <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe/60">Universal Handshake</p>
+              <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe/60">Private Feed Access</p>
            </div>
         </div>
         <div className="space-y-8">
             <div className="bg-oku-dark text-white p-10 rounded-[3rem] relative overflow-hidden">
-                <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender mb-2">Magic iCal Link</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-lavender mb-2">Private iCal Feed</p>
                 <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl border border-white/5">
                     <input readOnly value={syncLink} className="flex-1 bg-transparent border-none outline-none text-[10px] font-mono opacity-60 truncate" />
                     <button type="button" onClick={() => { navigator.clipboard.writeText(syncLink); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="bg-white text-oku-dark px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest">
                         {copied ? 'Copied!' : 'Copy'}
                     </button>
                 </div>
+                <p className="text-xs text-white/60 mt-4 leading-relaxed">Use this feed URL in Apple Calendar, Google Calendar, or Outlook subscriptions. Direct push sync is not connected in this environment.</p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
                 <input className="input-pebble" placeholder="Calendly Link" value={formData.calendlyLink} onChange={e => setFormData({...formData, calendlyLink: e.target.value})} />
                 <input className="input-pebble" placeholder="Google Calendar Email" value={formData.googleCalendarEmail} onChange={e => setFormData({...formData, googleCalendarEmail: e.target.value})} />
+            </div>
+            <div className="flex items-center gap-4 p-6 bg-oku-lavender/20 rounded-3xl border border-oku-lavender/30">
+                <input type="checkbox" className="w-6 h-6 rounded-lg text-oku-purple" checked={formData.syncEnabled} onChange={e => setFormData({...formData, syncEnabled: e.target.checked})} />
+                <p className="text-[10px] font-black uppercase tracking-widest text-oku-purple-dark">Publish private calendar feed</p>
             </div>
         </div>
       </div>

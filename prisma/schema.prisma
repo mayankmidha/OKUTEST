@@ -162,6 +162,7 @@ model AssignedAssessment {
   assessment              Assessment              @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   client                  User                    @relation("ClientAssignments", fields: [clientId], references: [id], onDelete: Cascade)
   practitioner            User                    @relation("PractitionerAssignments", fields: [practitionerId], references: [id], onDelete: Cascade)
+  payments                Payment[]               @relation("AssessmentPayments")
 
   @@index([practitionerId, billingStatus])
   @@index([clientId, billingStatus])
@@ -565,21 +566,27 @@ model AssessmentAnswer {
 }
 
 model Payment {
-  id              String        @id @default(cuid())
-  appointmentId   String
-  userId          String
-  amount          Float
-  platformFeePercent Float      @default(0)
-  platformFeeAmount Float       @default(0)
-  practitionerPayoutAmount Float @default(0)
-  stripePaymentId String?
-  razorpayOrderId String?
-  processor       String?
-  status          PaymentStatus @default(PENDING)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  appointment     Appointment   @relation(fields: [appointmentId], references: [id], map: "Payment_appointmentId_fkey")
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Payment_userId_fkey")
+  id                    String              @id @default(cuid())
+  appointmentId         String?
+  assignedAssessmentId  String?
+  userId                String
+  amount                Float
+  platformFeePercent    Float               @default(0)
+  platformFeeAmount     Float               @default(0)
+  practitionerPayoutAmount Float            @default(0)
+  stripePaymentId       String?
+  stripeCheckoutSessionId String?
+  razorpayOrderId       String?
+  processor             String?
+  status                PaymentStatus       @default(PENDING)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  appointment           Appointment?        @relation(fields: [appointmentId], references: [id], map: "Payment_appointmentId_fkey")
+  assignedAssessment    AssignedAssessment? @relation("AssessmentPayments", fields: [assignedAssessmentId], references: [id], onDelete: Cascade)
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Payment_userId_fkey")
+
+  @@index([appointmentId])
+  @@index([assignedAssessmentId])
 }
 
 model ReferralReward {

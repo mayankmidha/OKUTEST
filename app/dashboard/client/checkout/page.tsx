@@ -4,6 +4,9 @@ import { redirect, notFound } from 'next/navigation'
 import { getCheckoutReferralCredit } from '@/lib/referrals'
 import { detectCurrency, formatCurrency, getLiveExchangeRates, localizeAmount } from '@/lib/currency'
 import { getAppointmentBillingAmount } from '@/lib/pricing'
+import { normalizeCheckoutType } from '@/lib/checkout'
+import { resolveAssessmentCheckoutAssignment } from '@/lib/assessment-checkout'
+import { slugifyAssessmentTitle } from '@/lib/assessment-utils'
 import { 
   CreditCard, ShieldCheck,
   Sparkles, Lock,
@@ -22,6 +25,8 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
   if (!session?.user) redirect('/auth/login')
   if (!id) notFound()
 
+  const normalizedType = normalizeCheckoutType(type)
+
   const [currentUser, exchangeRates] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
@@ -37,9 +42,10 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
   let netAmount = 0
   let creditApplied = 0
   let availableCredit = 0
+  let checkoutId = id
 
   // 1. Resolve Data based on Type
-  if (type === 'APPOINTMENT') {
+  if (normalizedType === 'APPOINTMENT') {
       const booking = await prisma.appointment.findUnique({
         where: { id },
         include: { practitioner: true, service: true }
@@ -56,12 +62,43 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
       subtitle = `${booking.service.name} • ${new Date(booking.startTime).toLocaleString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
       entityDetails = { image: booking.practitioner.avatar, icon: "🧘" }
 
-  } else if (type === 'ASSESSMENT') {
-      const assignment = await prisma.assignedAssessment.findUnique({
+  } else if (normalizedType === 'GROUP_SESSION') {
+      const circle = await prisma.appointment.findUnique({
         where: { id },
-        include: { assessment: true, practitioner: true }
+        include: {
+          practitioner: true,
+          participants: {
+            select: { userId: true },
+          },
+        },
       })
+      if (!circle || !circle.isGroupSession) notFound()
+      if (circle.participants.some((participant) => participant.userId === session.user.id)) {
+        redirect(`/dashboard/client/circles/${circle.id}`)
+      }
+      if (circle.status !== 'CONFIRMED' || circle.participants.length >= (circle.maxParticipants || 10)) {
+        redirect(`/dashboard/client/circles/${circle.id}`)
+      }
+
+      grossAmount = circle.priceSnapshot || 0
+      netAmount = grossAmount
+      title = (circle.notes || 'Community Circle').split('|')[0] || 'Community Circle'
+      subtitle = `Circle session • ${new Date(circle.startTime).toLocaleString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+      entityDetails = { image: circle.practitioner?.avatar, icon: '⭕' }
+
+  } else if (normalizedType === 'ASSESSMENT') {
+      const assignment = await resolveAssessmentCheckoutAssignment(id, session.user.id)
       if (!assignment) notFound()
+
+      checkoutId = assignment.id
+
+      if (assignment.billingStatus === 'COMPLETED') {
+        const assessmentSlug = assignment.assessment.isCustom
+          ? assignment.assessment.id
+          : slugifyAssessmentTitle(assignment.assessment.title)
+
+        redirect(`/dashboard/client/assessments/${assessmentSlug}?assignmentId=${assignment.id}`)
+      }
       
       grossAmount = assignment.chargeAmount || assignment.assessment.price || 0
       netAmount = grossAmount
@@ -138,11 +175,11 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
                     <div className="flex items-center justify-center gap-8 opacity-30 grayscale group hover:grayscale-0 hover:opacity-100 transition-all duration-700">
                         <div className="flex items-center gap-2">
                             <ShieldCheck size={16} className="text-oku-purple-dark" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey">AES-256 Encrypted</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey">Protected Billing Flow</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <CreditCard size={16} className="text-oku-purple-dark" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey">PCI-DSS Compliant</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-oku-darkgrey">Hosted Card Processor</span>
                         </div>
                     </div>
                 </div>
@@ -155,8 +192,8 @@ export default async function UniversalCheckoutPage({ searchParams }: CheckoutPa
                             
                             <div className="space-y-4">
                                 <form action="/api/checkout/universal" method="POST">
-                                    <input type="hidden" name="id" value={id} />
-                                    <input type="hidden" name="type" value={type} />
+                                    <input type="hidden" name="id" value={checkoutId} />
+                                    <input type="hidden" name="type" value={normalizedType} />
                                     <input type="hidden" name="method" value="stripe" />
                                     <button className="btn-pill-3d bg-white text-oku-dark border-white w-full !py-5 flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform group/btn">
                                         Pay with Card <CreditCard size={18} className="group-hover/btn:rotate-12 transition-transform" />

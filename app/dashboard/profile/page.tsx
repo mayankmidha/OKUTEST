@@ -28,7 +28,7 @@ export default async function ProfilePage() {
   if (!user) redirect('/auth/login')
 
   return (
-    <div className="py-12 px-10 max-w-[1600px] mx-auto">
+    <div className="mx-auto max-w-[1600px] px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-12">
       <DashboardHeader 
         title={session.user.role === 'ADMIN' ? "Command Profile" : "Account Sanctuary"} 
         description={session.user.role === 'ADMIN' ? "Manage your administrative identity and secure credentials." : "Manage your personal space, clinical preferences, and secure credentials."}

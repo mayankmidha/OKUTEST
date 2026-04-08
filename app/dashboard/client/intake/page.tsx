@@ -18,10 +18,10 @@ export default async function IntakePage() {
   })
 
   return (
-    <div className="py-12 px-10">
+    <div className="px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-12">
       <DashboardHeader 
         title="Clinical Intake" 
-        description="Please complete your clinical onboarding documents to ensure a safe and legally compliant care journey."
+        description="Please complete your clinical onboarding documents to support a safe, well-documented care journey."
       />
 
       <div className="max-w-4xl">

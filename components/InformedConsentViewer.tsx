@@ -84,7 +84,7 @@ export function InformedConsentViewer() {
 
               <h3 className="font-display font-bold text-xl mb-4">2. Privacy & Data Security</h3>
               <p className="text-oku-taupe leading-relaxed mb-6">
-                All communications through the platform are end-to-end encrypted. We maintain HIPAA-compliant standards for data storage. Your session transcripts are processed by OKU CORE AI to provide clinical insights for your therapist, but are never shared with third parties for marketing purposes.
+                Communications through the platform are protected in transit and access-controlled within your account. Session transcripts may be processed by OKU CORE AI to generate clinical drafts for your therapist, and are not shared with third parties for marketing purposes.
               </p>
 
               <h3 className="font-display font-bold text-xl mb-4">3. Confidentiality</h3>

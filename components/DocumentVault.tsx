@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { 
   FileText, Upload, Trash2, Shield, 
   ExternalLink, EyeOff, Loader2, Plus, 
@@ -11,7 +11,6 @@ import { motion, AnimatePresence } from 'motion/react'
 interface Document {
   id: string
   name: string
-  url: string
   type: string
   uploadedBy: string
   isPrivate: boolean
@@ -23,11 +22,14 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isUploading, setIsUploading] = useState(false)
   const [showUploadModal, setShowUploadModal] = useState(false)
+  const [uploadError, setUploadError] = useState('')
   
   // Form State
   const [newName, setNewName] = useState('')
   const [newType, setNewType] = useState('WORKSHEET')
-  const [isPrivate, setIsPrivate] = useState(false)
+  const [isPrivate, setIsPrivate] = useState(true)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetchDocuments()
@@ -44,30 +46,43 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
     }
   }
 
-  const handleSimulatedUpload = async (e: React.FormEvent) => {
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsUploading(true)
+    setUploadError('')
     
-    // In a real production app, we'd upload to S3/Cloudinary first
-    // For now, we simulate the DB entry with a placeholder URL
     try {
-      const res = await fetch('/api/documents', {
+      if (!selectedFile) {
+        throw new Error('Please choose a file to upload.')
+      }
+
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+      formData.append('title', newName || selectedFile.name)
+      formData.append('type', newType)
+      formData.append('isPrivate', String(isPrivate))
+      if (clientId) {
+        formData.append('clientId', clientId)
+      }
+
+      const res = await fetch('/api/documents/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newName,
-          type: newType,
-          url: 'https://okutherapy.com/sample-clinical-doc.pdf', // Placeholder
-          clientId: clientId,
-          isPrivate
-        })
+        body: formData,
       })
 
       if (res.ok) {
         setNewName('')
+        setSelectedFile(null)
+        setIsPrivate(true)
         setShowUploadModal(false)
         fetchDocuments()
+      } else {
+        const message = await res.text()
+        throw new Error(message || 'Upload failed')
       }
+    } catch (error) {
+      console.error('Document upload failed', error)
+      setUploadError(error instanceof Error ? error.message : 'Upload failed')
     } finally {
       setIsUploading(false)
     }
@@ -75,14 +90,14 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-display font-bold text-oku-dark tracking-tight">Clinical Vault</h2>
+          <h2 className="text-2xl font-display font-bold tracking-tight text-oku-dark sm:text-3xl">Clinical Vault</h2>
           <p className="text-[10px] uppercase tracking-widest font-black text-oku-taupe/60 mt-1">Secure Document Management</p>
         </div>
         <button 
           onClick={() => setShowUploadModal(true)}
-          className="btn-primary py-3 px-6 rounded-full text-[10px] flex items-center gap-2 shadow-xl"
+          className="btn-primary flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-[10px] shadow-xl sm:w-auto"
         >
           <Plus size={14} /> Upload File
         </button>
@@ -125,8 +140,8 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
                     <span className="text-[9px] font-black uppercase tracking-widest text-oku-taupe">Secure</span>
                  </div>
                  <a 
-                   href={doc.url} 
-                   target="_blank" 
+                   href={`/api/documents/${doc.id}`}
+                   target="_blank"
                    rel="noopener noreferrer"
                    className="p-3 bg-oku-cream-warm rounded-full text-oku-dark hover:bg-oku-dark hover:text-white transition-all shadow-sm"
                  >
@@ -141,19 +156,19 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
       {/* Upload Modal */}
       <AnimatePresence>
         {showUploadModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowUploadModal(false)}
               className="absolute inset-0 bg-oku-dark/40 backdrop-blur-sm"
             />
             <motion.form 
-              onSubmit={handleSimulatedUpload}
+              onSubmit={handleUpload}
               initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white rounded-[3rem] shadow-2xl overflow-hidden p-10"
+              className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl sm:rounded-[3rem] sm:p-10"
             >
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-2xl font-display font-bold text-oku-dark">Upload Secure File</h3>
+              <div className="mb-8 flex items-center justify-between gap-4">
+                <h3 className="text-xl font-display font-bold text-oku-dark sm:text-2xl">Upload Secure File</h3>
                 <button type="button" onClick={() => setShowUploadModal(false)} className="p-2 hover:bg-oku-cream rounded-full transition-colors text-oku-taupe"><X size={20} /></button>
               </div>
 
@@ -161,6 +176,23 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe ml-2">Document Name</label>
                   <input required value={newName} onChange={e => setNewName(e.target.value)} type="text" placeholder="e.g. CBT Worksheet Week 1" className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-oku-taupe ml-2">File</label>
+                  <input
+                    ref={fileInputRef}
+                    required
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"
+                    onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                    className="w-full bg-oku-cream/30 border border-oku-taupe/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-oku-purple"
+                  />
+                  {selectedFile && (
+                    <p className="text-[10px] font-black uppercase tracking-widest text-oku-taupe/60">
+                      {selectedFile.name}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -178,10 +210,14 @@ export function DocumentVault({ clientId }: { clientId?: string }) {
                       <input type="checkbox" checked={isPrivate} onChange={e => setIsPrivate(e.target.checked)} className="w-5 h-5 accent-oku-purple" />
                       <div>
                          <p className="text-sm font-bold text-oku-dark">Mark as Private</p>
-                         <p className="text-[10px] text-oku-taupe opacity-60">If checked, only you can access this file.</p>
+                         <p className="text-[10px] text-oku-taupe opacity-60">If checked, only the uploader can access this file from the vault.</p>
                       </div>
                    </label>
                 </div>
+
+                {uploadError && (
+                  <p className="text-sm font-bold text-red-600">{uploadError}</p>
+                )}
 
                 <button 
                   disabled={isUploading || !newName}

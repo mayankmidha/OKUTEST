@@ -13,8 +13,8 @@ import {
   WifiOff,
   MessageSquare,
 } from 'lucide-react'
-import { JoinCircleButton } from '../JoinCircleButton'
 import { AnonymousPreChat } from '@/components/AnonymousPreChat'
+import { CircleMembershipActions } from './CircleMembershipActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -47,6 +47,13 @@ export default async function CircleDetailPage({ params }: PageProps) {
           service: { select: { name: true } },
           participants: { select: { id: true, userId: true, joinedAt: true } },
           circleWaitlist: { select: { id: true, userId: true } },
+          groupNote: {
+            select: {
+              theme: true,
+              summary: true,
+              groupDynamics: true,
+            },
+          },
         },
     }),
     prisma.clientProfile.findUnique({
@@ -254,41 +261,43 @@ export default async function CircleDetailPage({ params }: PageProps) {
 
             {/* CTA card */}
             <div className="card-glass-3d !p-8 !bg-white/60 space-y-4">
-              {isMember ? (
-                <>
-                  <div className="flex items-center gap-3 mb-2">
-                    <CheckCircle2 size={20} className="text-green-600" />
-                    <p className="text-sm font-bold text-oku-darkgrey">You&apos;re a member</p>
-                  </div>
-                  <Link
-                    href={`/dashboard/client/circles/${id}/session`}
-                    className="btn-pill-3d w-full !py-5 bg-oku-purple-dark text-white border-oku-purple-dark text-center flex items-center justify-center gap-3"
-                  >
-                    <Video size={16} /> Join Live Session
-                  </Link>
-                </>
-              ) : isFull ? (
-                <>
-                  <div className="flex items-center gap-3 mb-1">
-                    <WifiOff size={18} className="text-oku-darkgrey/40" />
-                    <p className="text-sm font-bold text-oku-darkgrey">Circle is full</p>
-                  </div>
-                  {isOnWaitlist ? (
-                    <div className="btn-pill-3d w-full !py-5 bg-white border-oku-darkgrey/20 text-oku-darkgrey/50 text-center pointer-events-none text-xs font-black uppercase tracking-widest">
-                      On Waitlist
-                    </div>
-                  ) : (
-                    <JoinCircleButton circleId={id} isFull={true} />
-                  )}
-                </>
-              ) : (
-                <JoinCircleButton circleId={id} isFull={false} />
+              {isFull && !isMember && !isOnWaitlist && (
+                <div className="flex items-center gap-3 mb-1">
+                  <WifiOff size={18} className="text-oku-darkgrey/40" />
+                  <p className="text-sm font-bold text-oku-darkgrey">Circle is full</p>
+                </div>
               )}
+
+              <CircleMembershipActions
+                circleId={id}
+                sessionHref={`/dashboard/client/circles/${id}/session`}
+                isMember={isMember}
+                isOnWaitlist={isOnWaitlist}
+                isFull={isFull}
+                requiresPayment={(appointment.priceSnapshot || 0) > 0}
+              />
 
               <p className="text-[9px] text-oku-darkgrey/40 text-center uppercase tracking-widest font-black pt-2">
                 Secure · Anonymised · Not recorded
               </p>
             </div>
+
+            {appointment.groupNote && (
+              <div className="card-glass-3d !p-8 !bg-white/60 space-y-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-oku-darkgrey/40">
+                  Shared Notes
+                </p>
+                {appointment.groupNote.theme && (
+                  <p className="text-sm font-bold text-oku-darkgrey">{appointment.groupNote.theme}</p>
+                )}
+                {appointment.groupNote.summary && (
+                  <p className="text-sm text-oku-darkgrey/60 leading-relaxed">{appointment.groupNote.summary}</p>
+                )}
+                {appointment.groupNote.groupDynamics && (
+                  <p className="text-xs text-oku-darkgrey/50 italic leading-relaxed">{appointment.groupNote.groupDynamics}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

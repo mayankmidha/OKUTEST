@@ -20,6 +20,18 @@ export async function POST(_req: Request, { params }: RouteContext) {
 
     const { id } = await params
 
+    const circle = await prisma.appointment.findUnique({
+      where: { id },
+      select: {
+        practitionerId: true,
+        isGroupSession: true,
+      },
+    })
+
+    if (!circle || !circle.isGroupSession) {
+      return new NextResponse('Circle not found', { status: 404 })
+    }
+
     // Verify user is a GroupParticipant of this circle
     const participant = await prisma.groupParticipant.findUnique({
       where: {
@@ -36,7 +48,7 @@ export async function POST(_req: Request, { params }: RouteContext) {
       select: { role: true },
     })
 
-    const isFacilitator = user?.role === 'THERAPIST' || user?.role === 'ADMIN'
+    const isFacilitator = circle.practitionerId === session.user.id || user?.role === 'ADMIN'
 
     if (!participant && !isFacilitator) {
       return new NextResponse('Forbidden: you are not a member of this circle', { status: 403 })

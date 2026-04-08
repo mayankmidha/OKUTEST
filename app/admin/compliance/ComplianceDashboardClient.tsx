@@ -36,9 +36,9 @@ export default function ComplianceDashboardClient() {
       {/* ── METRICS ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
         <ComplianceStat 
-          title="HIPAA Health" 
-          value="100%" 
-          sub="All systems compliant" 
+          title="Governance Health" 
+          value={`${data?.summary?.governanceScore || 0}%`} 
+          sub={`${data?.summary?.attentionItems || 0} items need attention`} 
           icon={<ShieldCheck size={28} />}
           color="bg-emerald-500/10 text-emerald-600"
         />
@@ -51,8 +51,8 @@ export default function ComplianceDashboardClient() {
         />
         <ComplianceStat 
           title="Audit Volume" 
-          value={data?.auditLogs?.length || 0} 
-          sub="Logs tracked today" 
+          value={data?.summary?.governanceEventsLast7Days || 0} 
+          sub="Audit and activity events this week" 
           icon={<History size={28} />}
           color="bg-oku-blush/60 text-oku-darkgrey"
         />
@@ -70,16 +70,17 @@ export default function ComplianceDashboardClient() {
         <div className="card-glass-3d !p-10 !rounded-[3rem] border border-white/60 shadow-xl">
            <h3 className="text-xl font-display font-black text-oku-darkgrey mb-8 flex items-center gap-3">
              <CheckCircle2 size={20} className="text-oku-purple-dark" />
-             HIPAA/GDPR Health
+             Governance Health
            </h3>
            <div className="space-y-4">
              {data?.checklist?.map((item: any) => (
                <div key={item.id} className="p-5 bg-white/40 border border-white rounded-2xl flex items-center justify-between group hover:bg-white/60 transition-colors">
                   <div className="space-y-1">
                     <p className="text-xs font-black text-oku-darkgrey uppercase tracking-widest">{item.task}</p>
-                    <p className="text-[10px] text-oku-darkgrey/40">Verified: {new Date(item.lastChecked).toLocaleDateString()}</p>
+                    <p className="text-[10px] text-oku-darkgrey/40">{item.detail}</p>
+                    <p className="text-[10px] text-oku-darkgrey/30">Checked: {new Date(item.lastChecked).toLocaleDateString()}</p>
                   </div>
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded-full uppercase tracking-widest">
+                  <span className={`px-3 py-1 text-[9px] font-black rounded-full uppercase tracking-widest ${getChecklistStatusStyles(item.status)}`}>
                     {item.status}
                   </span>
                </div>
@@ -88,7 +89,11 @@ export default function ComplianceDashboardClient() {
            
            <div className="mt-8 p-6 bg-oku-darkgrey rounded-2xl text-white">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-3">Governance Alert</p>
-              <p className="text-sm font-light leading-relaxed">System-wide data encryption key rotation scheduled for next Sunday at 00:00 UTC.</p>
+              <p className="text-sm font-light leading-relaxed">
+                {data?.summary?.attentionItems > 0
+                  ? `${data.summary.attentionItems} governance areas are currently below full readiness. Review the checklist before making stronger compliance claims.`
+                  : 'Current governance signals look stable. Keep reviewing the checklist as usage grows.'}
+              </p>
            </div>
         </div>
 
@@ -110,7 +115,8 @@ export default function ComplianceDashboardClient() {
            </div>
 
            <div className="flex-1 overflow-y-auto max-h-[600px] custom-scrollbar">
-              <table className="w-full text-left border-collapse">
+              <div className="overflow-x-auto">
+              <table className="min-w-[900px] w-full text-left border-collapse">
                 <thead className="sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-oku-darkgrey/5">
                    <tr>
                       <th className="p-6 text-[10px] font-black uppercase tracking-widest text-oku-darkgrey/40">Timestamp</th>
@@ -149,11 +155,25 @@ export default function ComplianceDashboardClient() {
                    ))}
                 </tbody>
               </table>
+              </div>
            </div>
         </div>
       </div>
     </div>
   )
+}
+
+function getChecklistStatusStyles(status: string) {
+  switch (status) {
+    case 'COMPLIANT':
+      return 'bg-emerald-100 text-emerald-700'
+    case 'PARTIAL':
+      return 'bg-amber-100 text-amber-700'
+    case 'IN_PROGRESS':
+      return 'bg-sky-100 text-sky-700'
+    default:
+      return 'bg-rose-100 text-rose-700'
+  }
 }
 
 function ComplianceStat({ title, value, sub, icon, color }: any) {

@@ -63,13 +63,17 @@ export default async function CircleJoinPage({ params }: { params: Promise<{ id:
                </div>
                <div className="flex items-center gap-4 text-oku-darkgrey/40">
                   <Lock size={20} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">End-to-End Encrypted Session</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Secure hosted video session</span>
                </div>
             </div>
           </div>
 
           <div className="card-glass-3d !p-12 !bg-white shadow-2xl !rounded-[3rem]">
-            <JoinCircleForm circleId={id} isAuthenticated={!!session} />
+            <JoinCircleForm
+              circleId={id}
+              isAuthenticated={!!session}
+              requiresPayment={(circle.priceSnapshot || 0) > 0}
+            />
           </div>
         </div>
       </div>

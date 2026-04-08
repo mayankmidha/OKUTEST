@@ -127,7 +127,7 @@ export function SecureChat({
             <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
                 <Lock size={32} className="text-oku-taupe mb-4" strokeWidth={1} />
                 <p className="font-display italic text-lg text-oku-dark">This is the beginning of a secure conversation.</p>
-                <p className="text-xs text-oku-taupe mt-2 max-w-xs">Messages sent here are end-to-end encrypted and HIPAA-adjacent.</p>
+                <p className="text-xs text-oku-taupe mt-2 max-w-xs">Messages sent here are encrypted in transit and stored with platform access controls.</p>
             </div>
         ) : (
             <AnimatePresence initial={false}>

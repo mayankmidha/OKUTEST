@@ -152,9 +152,15 @@ export default async function AdminPractitionersPage() {
                   ) : (
                     <div className="mt-2 space-y-1.5">
                       {docs.slice(0, 2).map((doc) => (
-                        <p key={doc.id} className="inline-flex items-center gap-1.5 text-[10px] font-black text-oku-purple-dark">
+                        <a
+                          key={doc.id}
+                          href={`/api/documents/${doc.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[10px] font-black text-oku-purple-dark hover:opacity-70"
+                        >
                           <FileText size={11} /> {doc.name}
-                        </p>
+                        </a>
                       ))}
                       {docs.length > 2 && (
                         <p className="text-[9px] text-oku-darkgrey/40">+{docs.length - 2} more</p>
@@ -235,9 +241,15 @@ export default async function AdminPractitionersPage() {
                       ) : (
                         <div className="flex flex-col gap-1">
                           {docs.slice(0, 2).map((doc) => (
-                            <span key={doc.id} className="inline-flex items-center gap-1.5 text-[9px] font-black text-oku-purple-dark">
+                            <a
+                              key={doc.id}
+                              href={`/api/documents/${doc.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-[9px] font-black text-oku-purple-dark hover:opacity-70"
+                            >
                               <FileText size={10} /> {doc.name.length > 20 ? doc.name.slice(0, 20) + '…' : doc.name}
-                            </span>
+                            </a>
                           ))}
                           {docs.length > 2 && (
                             <span className="text-[9px] text-oku-darkgrey/40">+{docs.length - 2} more</span>

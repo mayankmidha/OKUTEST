@@ -33,6 +33,17 @@ export async function GET() {
 
     const totalUsers = await prisma.user.count()
     const totalAppointments = await prisma.appointment.count()
+    const pendingPayments = await prisma.payment.count({
+      where: { status: 'PENDING' },
+    })
+    const stalePendingAppointments = await prisma.appointment.count({
+      where: {
+        status: 'PENDING',
+        createdAt: {
+          lte: new Date(Date.now() - 20 * 60 * 1000),
+        },
+      },
+    })
     
     // Error rate (last 24h from Audit Logs if applicable, or simulate for now)
     const errorLogsCount = await prisma.auditLog.count({
@@ -42,8 +53,16 @@ export async function GET() {
       }
     })
 
+    const alerts: string[] = []
+    if (dbResponseTime > 500) alerts.push(`Database latency is elevated at ${dbResponseTime}ms.`)
+    if (memUsage >= 90) alerts.push(`Memory usage is high at ${memUsage.toFixed(1)}%.`)
+    if (stalePendingAppointments > 0) alerts.push(`${stalePendingAppointments} pending appointments are older than 20 minutes.`)
+    if (errorLogsCount > 5) alerts.push(`${errorLogsCount} error-class audit events were logged in the last 24 hours.`)
+
+    const status = alerts.length === 0 ? 'HEALTHY' : alerts.length <= 2 ? 'DEGRADED' : 'UNHEALTHY'
+
     return NextResponse.json({
-      status: 'HEALTHY',
+      status,
       timestamp: new Date().toISOString(),
       system: {
         uptime,
@@ -66,8 +85,11 @@ export async function GET() {
         activeUsers: activeUsersCount,
         totalUsers,
         totalAppointments,
-        errorRate24h: errorLogsCount
-      }
+        errorRate24h: errorLogsCount,
+        pendingPayments,
+        stalePendingAppointments,
+      },
+      alerts,
     })
   } catch (error) {
     console.error('HEALTH_CHECK_FAILED', error)

@@ -257,6 +257,7 @@ function CircleCard({ circle, title, desc, spotsLeft, isJoined }: CircleCardProp
           <JoinCircleButton
             circleId={circle.id}
             isFull={isFull}
+            requiresPayment={(circle.priceSnapshot || 0) > 0}
           />
         )}
       </div>

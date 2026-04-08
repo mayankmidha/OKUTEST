@@ -1,6 +1,20 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { UserRole } from "@prisma/client"
+import { savePrivateFile } from "@/lib/private-storage"
+
+const ALLOWED_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'text/plain',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]
+
+const MAX_BYTES = 10 * 1024 * 1024
 
 /**
  * Patient Portal 2.0 - Secure Document Vault
@@ -16,25 +30,83 @@ export async function POST(req: Request) {
 
   try {
     const formData = await req.formData()
-    const file = formData.get('file') as File
-    const name = formData.get('title') as string || file.name
+    const file = formData.get('file') as File | null
+    const name = (formData.get('title') as string | null)?.trim() || file?.name
+    const requestedType = (formData.get('type') as string | null)?.trim()
+    const clientId = (formData.get('clientId') as string | null)?.trim()
+    const isPrivateField = formData.get('isPrivate')
     
     if (!file) {
       return new NextResponse('No file uploaded', { status: 400 })
     }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return new NextResponse('Unsupported file type', { status: 400 })
+    }
+    if (file.size > MAX_BYTES) {
+      return new NextResponse('File must be under 10MB', { status: 400 })
+    }
 
-    // In a full production BAA environment, we would stream this to AWS S3/Azure Blob.
-    // For this launch, we log the intent and create the clinical record placeholder.
-    console.log(`[VAULT] Upload received: ${name} from user ${session.user.id}`)
+    const isTherapist = session.user.role === UserRole.THERAPIST
+    let finalClientId = session.user.id
+    let finalPractitionerId: string | null = null
+
+    if (isTherapist) {
+      if (!clientId) {
+        return new NextResponse('Missing client ID', { status: 400 })
+      }
+
+      const relationship = await prisma.appointment.findFirst({
+        where: {
+          practitionerId: session.user.id,
+          clientId,
+        },
+        select: { id: true },
+      })
+
+      if (!relationship) {
+        return new NextResponse('You can only upload documents for clients in your caseload.', { status: 403 })
+      }
+
+      finalClientId = clientId
+      finalPractitionerId = session.user.id
+    } else {
+      const lastAppt = await prisma.appointment.findFirst({
+        where: { clientId: session.user.id },
+        orderBy: { createdAt: 'desc' },
+        select: { practitionerId: true },
+      })
+
+      if (!lastAppt?.practitionerId) {
+        return new NextResponse('No assigned practitioner found for this upload.', { status: 400 })
+      }
+
+      finalPractitionerId = lastAppt.practitionerId
+    }
+
+    const isPrivate =
+      typeof isPrivateField === 'string'
+        ? isPrivateField === 'true'
+        : isPrivateField instanceof File
+          ? true
+          : true
+
+    const storedFile = await savePrivateFile({
+      file,
+      scope: `documents/${finalClientId}`,
+      preferredName: name,
+    })
+
+    console.log(`[VAULT] Upload stored: ${name} from user ${session.user.id}`)
 
     const document = await prisma.document.create({
         data: {
-            clientId: session.user.id,
-            name: name,
-            url: `/placeholder-secure-storage/${file.name}`, // Would be S3 URL in full prod
-            type: file.type,
-            uploadedBy: 'CLIENT', // Tracking the source of the document
-            isPrivate: false,
+            clientId: finalClientId,
+            practitionerId: finalPractitionerId,
+            name: name || file.name,
+            url: storedFile.storageKey,
+            type: requestedType || file.type,
+            uploadedBy: isTherapist ? 'PRACTITIONER' : 'CLIENT',
+            isPrivate,
         }
     })
 
@@ -44,7 +116,7 @@ export async function POST(req: Request) {
             userId: session.user.id,
             action: 'DOCUMENT_UPLOADED',
             category: 'CLINICAL_DOCUMENTATION',
-            metadata: { documentId: document.id, fileName: name },
+            metadata: { documentId: document.id, fileName: name, size: file.size },
         }
     })
 
